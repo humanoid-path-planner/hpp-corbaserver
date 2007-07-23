@@ -1,0 +1,294 @@
+/*
+  Research carried out within the scope of the Associated International Laboratory: Joint Japanese-French Robotics Laboratory (JRL)
+
+  Developed by Florent Lamiraux (LAAS-CNRS)
+
+*/
+
+#ifndef HPPCI_ROBOT_SERVER_IDL
+#define HPPCI_ROBOT_SERVER_IDL
+
+#include "hppciCommonServer.idl"
+
+/**
+ * \brief Array of joint bounds.in order [v1_min,v1_max,v2_min,v2_max,...].
+ */
+typedef sequence<double> jointBoundSeq;
+
+/**
+ * \brief Homogeneous matrix.
+ */
+typedef double matrix4[4][4];
+
+/**
+ * \brief Sequence of names
+ */
+typedef sequence<string> nameSeq;
+
+/**
+ * \brief Creation of a ChppDevice, joints and bodies.
+ */
+interface ChppciRobot {
+  /**
+     \name Create and register robot
+     @{
+   */
+
+  /** 
+   * \brief Create an empty device and store it temporarily before adding it in object hppPlanner.
+   \param inRobotName name of the robot (ChppDevice).
+
+   * Fails if another robot is already in construction.
+  */
+  short createRobot(in string inRobotName);
+  /** 
+   * \brief Once a robot is built, add it in object ChppciServer::hppPlanner.
+   * \param inRobotName name of the robot.
+   * \return 0 if success, -1 if failure.
+   */
+  short addHppProblem(in string inRobotName);
+
+  /**
+   * \brief Set a joint as root joint to a robot.
+   * \param inRobotName name of the robot (ChppDevice).
+   * \param inJointName name of the joint.
+   */
+  short setRobotRootJoint(in string inRobotName, in string inJointName);
+
+#if WITH_OPENHRP
+
+  /**
+   * \brief Load HRP2 model by sending a Corba request to OpenHRP
+   *
+   */
+  short loadHrp2Model(in string inHrp2Name, in string inCorbaNameService);
+#endif
+
+  /** 
+   *@}
+   */
+
+  /**
+     \name Degrees of freedom
+     @{
+  */
+
+  /**
+     \brief Create an extra dof for inseting in a device.
+     \param inDofName name of the extra dof.
+     \param inRevolute whether dof is revolute.
+     \param inValueMin minimal value of the dof.
+     \param inValueMax maximal value of the dof.
+     \note if inValueMax < inValueMin, the dof is not bounded.
+  */
+  short createExtraDof(in string inDofName, in boolean inRevolute, in double inValueMin, in double inValueMax);
+
+  /**
+     \brief Add an extra degree of freedom to a robot.
+     \param inRobotName name of the robot.
+     \param inDofName name of the extra dof
+  */
+  short addExtraDofToRobot(in string inRobotName, in string inDofName);
+
+  /** \brief Get number of dof of robot in ProblemId 
+      \param problemId rank of robot in vector of robots. 
+      \param deviceDim TODO
+  */
+  short getDeviceDim(in short problemId, out short deviceDim);
+
+  /** 
+   *@}
+   */
+
+  /**
+     \name Joints
+     @{
+  */
+
+  /**
+  * \brief Create joint.
+  * \param inJointName name of the joint.
+  * \param inJointType type of joint in {"anchor", "freeflyer", "plan", "rotation", "translation"}.
+  * \param pos 4x4 position matrix of the joint.
+  * \param inJointBound sequence of joint dof bounds in order [v0_min,v0_max,v1_min,v1_max,...]. If vi_min > vi_max, dof of rank i is not bounded. If size of sequence is different from twice the number of dofs, no dof is bounded.
+   * \return 0 if success, -1 if failure.
+  */
+  short createJoint(in string inJointName, in string inJointType, in matrix4 pos, 
+		    in jointBoundSeq inJointBound);
+  /**
+   * \brief Add a child joint to a joint.
+   * \param inParentName name of the joint to which a child is added.
+   * \param inChildName name of the child joint added to the previous one.
+   * \return 0 if success, -1 if failure.
+   */
+  short addJoint(in string inParentName, in string inChildName);
+
+  /**
+   * \brief set a bound for the joint
+   * \param jointId name of the joint.
+   * \param inJointBound sequence of joint dof bounds in order [v0_min,v0_max,v1_min,v1_max,...]. If vi_min > vi_max, dof of rank i is not bounded. If size of sequence is different from twice the number of dofs, no dof is bounded.
+   * \param problemId TODO
+  */
+  short setJointBounds(in short problemId, in short jointId, in jointBoundSeq inJointBound);
+
+  /**
+   * \brief set locking/unlocking  for the joint
+   * \param problemId id of the problem
+   * \param jointId id of the joint.
+   * \param locked true (locked)  false (unlocked)
+   * \param lockedValue (if locked) give the value
+   */
+  short setJointLocked(in short problemId, in short jointId, in boolean locked, in double lockedValue);
+
+
+  /** 
+   *@}
+   */
+
+  /**
+     \name Configuration
+     @{
+  */
+
+  /** 
+      \brief get current configuration of specified robot in ChppPlanner::robotVector.
+      \param inProblemId rank of problem in vector of hppProblems.
+      \return dofArray Array of degrees of freedom 
+  */
+  dofSeq getCurrentConfig(in short inProblemId);
+
+  /** 
+      \brief get current configuration of specified robot in ChppPlanner::robotVector.
+      \brief in the order of the joints in OpenHRP.
+      \param inProblemId rank of problem in vector of hppProblems.
+      \return dofArray Array of degrees of freedom in the order of joints in OpenHRP (RARM, LARM, RHAND, LHAND)
+  */
+  dofSeq getCurrentConfigOpenHRP(in short inProblemId);
+
+  /** \brief set current configuration of specified robot in ChppPlanner::robotVector.
+   \param problemId rank of problem in vector of hppProblems.
+   \param dofArray Array of degrees of freedom */
+  short setCurrentConfig(in short problemId, in dofSeq dofArray);
+
+  /** \brief set current configuration of specified robot in ChppPlanner::robotVector
+      \brief in the order of the joints in OpenHRP.
+   \param problemId rank of problem in vector of hppProblems.
+   \param dofArray Array of degrees of freedom in the order of joints in OpenHRP (RARM, LARM, RHAND, LHAND)
+  */
+  short setCurrentConfigOpenHRP(in short problemId, in dofSeq dofArray);
+
+  /** 
+   *@}
+   */
+
+
+  /**
+     \name Bodies
+     @{
+  */
+
+  /**
+   * \brief Attach body to joint.
+   * \param inJointName name of the joint to which the body is attached.
+   * \param inBodyName name of the body.
+   * \return 0 if success, -1 if failure.
+   */
+  short attachBodyToJoint(in string inJointName, in string inBodyName);
+  
+  /**
+   * \brief Create a body of given name.
+   * \return 0 if success, -1 if failure.
+   */
+  short createBody(in string inBodyName);
+  /**
+   * \brief Set list of collision as inner object to body.
+   * \param inBodyName name of the body to which collision list is attached.
+   * \param inListName name of the collision list.
+   */
+  short setBodyInnerObject(in string inBodyName, in string inListName);
+
+  /**
+     \brief Get the list of object attached to a body.
+     \param inBodyName name of the body.
+     \return list of names of KCDobject attached to the body.
+  */
+  nameSeq getBodyInnerObject(in string inBodyName);
+
+  /**
+     \brief Get the list of object tested for collision with a body.
+     \param inBodyName name of the body.
+     \return list of names of KCDobject that are tested for collision with the body.
+  */
+  nameSeq getBodyOuterObject(in string inBodyName);
+
+  /** 
+   *@}
+   */
+
+  /**
+     \name Collision checking
+     @{
+  */
+  
+  /**
+   * \brief Create an empty collision list with given name.
+   *\return 0 if success, -1 if failure.
+   */
+  short createCollisionList(in string inListName);
+  /**
+   * \brief Add a polyhedron to a collision list.
+   * \param inListName name of the list.
+   * \param inPolyName name of the polyhedron.
+   * \return 0 if success, -1 if failure.
+   *
+   * \note Build collision entity of polyhedron for KCD.
+   */
+  short addPolyToCollList(in string inListName, in string inPolyName);
+
+  /** \brief see if the link is colliding.
+      \param jointId the number of the joint [in Kineo] 
+      \param problemId TODO
+      \param result TODO
+  */
+  short checkLinkCollision(in short problemId, in short jointId, out short result);
+
+  /** 
+   *@}
+   */
+
+  /**
+     \name Polyhedra
+     @{
+  */
+
+  /**
+   * \brief create an empty polyhedron.
+   * \param inPolyName name of the polyhedron.
+   * \return 0 if success, -1 if failure.
+   */
+  short createPolyhedron(in string inPolyName);
+  /**
+   * \brief Add a point to a polyhedron
+   * \param inPolyName the name of the polyhedron.
+   * \param x coordinate of the point. 
+   * \param y coordinate of the point. 
+   * \param z coordinate of the point. 
+   * \return rank of point in polyhedron or -1 if failure.
+   */
+  short addPoint(in string inPolyName, in double x, in double y, in double z);
+  /**
+   * \brief Add a point to a polyhedron
+   * \param inPolyName the name of the polyhedron.
+   * \param pt1 rank of first point in polyhedron. 
+   * \param pt2 rank of second point in polyhedron. 
+   * \param pt3 rank of third point in polyhedron. 
+   * \return rank of triangle in polyhedron or -1 if failure.
+   */
+  short addTriangle(in string inPolyName, in long pt1, in long pt2, in long pt3);
+
+  /** 
+   *@}
+   */
+};
+
+#endif

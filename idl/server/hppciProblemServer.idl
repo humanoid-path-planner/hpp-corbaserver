@@ -1,0 +1,77 @@
+/*
+  Research carried out within the scope of the Associated International Laboratory: Joint Japanese-French Robotics Laboratory (JRL)
+
+  Developed by Florent Lamiraux (LAAS-CNRS)
+
+*/
+
+#ifndef HPPCI_PROBLEM_SERVER_IDL
+#define HPPCI_PROBLEM_SERVER_IDL
+
+#include "hppciCommonServer.idl"
+
+/**
+ * \brief To define and solve a path planning problem.
+ */
+interface ChppciProblem {
+  /** \brief Set steering method of specified robot in ChppPlanner::robotVector.
+   \param inProblemId rank of problem in vector of hppProblems.
+   \param inSteeringMethod name of the steering method in {"linear", "flic"}.
+   \param inOriented whether local method is oriented or not.
+  */
+  short setSteeringMethod(in short inProblemId, in string inSteeringMethod, in boolean inOriented);
+  /** \brief Set roadmap builder of specified robot in ChppPlanner::robotVector.
+   \param inProblemId rank of problem in vector of hppProblems.
+   \param inRoadmapBuilder name of the roadmap builder in {"basic", "diffusing", "IPP"}.
+  */
+  short setRoadmapbuilder(in short inProblemId, in string inRoadmapBuilder);
+  /** \brief Set path optimizer of specified robot in ChppPlanner::robotVector.
+   \param inProblemId rank of problem in vector of hppProblems.
+   \param inPathOptimizer name of the steering method in {"clear", "adaptiveShortcut", "random", "none"}.
+  */
+  short setPathOptimizer(in short inProblemId, in string inPathOptimizer);
+  /** \brief Set initial configuration of specified robot in ChppPlanner::robotVector.
+   \param inProblemId rank of robot in vector of robots.
+   \param dofArray Array of degrees of freedom */
+  short setInitialConfig(in short inProblemId, in dofSeq dofArray);
+  /** \brief Set goal configuration of specified robot in ChppPlanner::robotVector.
+   \param inProblemId rank of robot in vector of robots.
+   \param dofArray Array of degrees of freedom */
+  short setGoalConfig(in short inProblemId, in dofSeq dofArray);
+  /** \brief Solve specified problem in ChppPlanner::robotVector.
+      \param inProblemId rank of robot in vector of robots.
+      \param inLastPathId rank of the last path created
+      \param pathLength : length of inLastPathId
+      \return the status : KD_OK or KD_ERROR
+      \note  HOW TO USE IN PYTHON SCRIPT :
+             the python script doesn't allow you to call the function by the following prototype :
+             short solveOneProblem(in short inProblemId, out short inLastPathId, out double pathLength)
+             in python script the function is use as follow :
+             (short, short inLastPathId, double pathLength ) = solveOneProblem(in short inProblemId)
+             which return a list of all the return parameter
+  */
+  short solveOneProblem(in short inProblemId, out short inLastPathId, out double pathLength);
+  /**
+     \brief Solve the problem of corresponding ChppPlanner object
+  */
+  short solve();
+  /** \brief get the robot's config at param on the a path 
+      \param inProblemId rank of robot in vector of robots.
+      \param pathId rank of the path in the problem
+      \param pathLength : length of the path
+      \param atDistance : the user parameter choice
+      \return dofseq : the config at param
+  */
+  dofSeq configAtDistance(in short inProblemId, in short pathId, in double pathLength, in double atDistance);
+
+  /** \brief set tolerance of the obstacles registered in the planner
+      \param inProblemId: rank of robot in vector of robots.
+      \param tolerance: tolerance set to the obstacles
+             if there are no obstacles nothing is done.
+      \return success(0 - KD_OK) or failure(-1 - KD_ERROR) 
+  */
+  short setObstacleTolerance(in short inProblemId, in double tolerance);
+  
+};
+
+#endif

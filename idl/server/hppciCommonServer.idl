@@ -1,0 +1,16 @@
+/*
+  Research carried out within the scope of the Associated International Laboratory: Joint Japanese-French Robotics Laboratory (JRL)
+
+  Developed by Florent Lamiraux (LAAS-CNRS)
+
+*/
+
+#ifndef HPPCI_COMMON_SERVER_IDL
+#define HPPCI_COMMON_SERVER_IDL
+/** 
+ * \brief KineoWorks configurations are defined by sequences of dof values.
+ */
+
+typedef sequence<double> dofSeq;
+
+#endif
