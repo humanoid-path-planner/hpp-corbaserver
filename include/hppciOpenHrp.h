@@ -83,35 +83,39 @@ public:
 
   /** 
       \brief Initialize Orb and load model of HRP2 by sending a Corba request modelLoader to OpenHRP. 
-      \param argc, argv[] are passed to Orb initialization.
 
       This function gets the model of HRP2 from a CORBA request and initializes a ChppProblem with this robot.
       Note that the robot is set into half-sitting configuration.
   */
-  ktStatus loadHrp2Model(int argc, char ** argv);
+  ktStatus loadHrp2Model();
 
   /**
      \brief  Initialize Orb and load model of HRP2 by sending a Corba request modelLoader to OpenHRP.
-     \param argc, argv[] are passed to Orb initialization.
-     \retval o_device The model of HRP2 set in half-sitting position.
+     \retval outDevice The model of HRP2 set in half-sitting position.
 
       Note that the robot is set into half-sitting configuration.
   */
-  ktStatus loadHrp2Model(int argc, char **argv, ChppDeviceShPtr &o_device);
+  ktStatus loadHrp2Model(ChppDeviceShPtr &outDevice);
 
   /**
      \brief  Initialize Orb and load model of a robot by sending a Corba request modelLoader to OpenHRP.
-     \param argc, argv[] are passed to Orb initialization.
-     \retval o_device The model of robot.
+     \param inFilename Name of the wrl file containing the description of the robot.
+     \param inDeviceName Name of the device
+     \retval outDevice The model of robot.
+
+     The file is looked for in OpenHrp installation directory.
   */
-  ktStatus loadRobotModel(int argc, char **argv, ChppDeviceShPtr &o_device);
+  ktStatus loadRobotModel(std::string inFilename, std::string inDeviceName, ChppDeviceShPtr &outDevice);
 
   /** 
       \brief Initialize Orb and load model of objects by sending a Corba request modelLoader to OpenHRP. 
-      Param argc, argv[] are passed to Orb initialization.
-      ** add internal map of planner to be added later
-      */
-  ktStatus loadObstacleModel(int _argc, char **_argv, std::vector<ChppPolyhedronShPtr> &polyList);
+      \param inFilename Name of the wrl file containing the description of the robot.
+      \param inObstacleName Name of the obstacle.
+      \retval outPolyhedron shared pointer to the polyhedron.
+
+     The file is looked for in OpenHrp installation directory.
+  */
+  ktStatus loadObstacleModel(std::string inFilename, std::string inObstacleName, ChppPolyhedronShPtr& outPolyhedron);
  
   /** 
       \brief Build a KineoWorks device from HRP2 model stored in Corba. 
@@ -129,9 +133,14 @@ public:
 private :
 
   /**
-     \brief Get Information from corba server (ModelLoader ...)
+     \brief Get URL of robot for loadRobotModel function.
   */
-  ktStatus getInfoFromCorba(int argc, char **argv);
+  ktStatus getRobotURL();
+
+  /**
+     \brief Get URL of obstacle for loadObstacleModel function.
+  */
+  ktStatus getObstacleURL(std::string inFilename);
 
   /** 
       \brief Pointer to Path Planner object allocated elsewhere.

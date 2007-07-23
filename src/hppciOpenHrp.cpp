@@ -3,6 +3,7 @@
 INCLUDE
 **************************************/
 #include <iostream>
+#include <string>
 
 #include "hppciOpenHrp.h"
 
@@ -52,7 +53,9 @@ public :
     attOpenHrpClient = openHrpClientPtr ;
   } ; 
 
-  ktStatus getModelLoader(int argc, char **argv, ModelLoader_var& outLoader);
+  ktStatus getModelLoader();
+
+  ModelLoader_var attLoader;
 
 } ; 
 
@@ -81,13 +84,12 @@ ChppciOpenHrpClient::~ChppciOpenHrpClient() {
   
 // ==============================================================================
 
-ktStatus ChppciOpenHrpClient::loadHrp2Model(int argc, char **argv, 
-					    ChppDeviceShPtr &HRP2Device)
+ktStatus ChppciOpenHrpClient::loadHrp2Model(ChppDeviceShPtr &HRP2Device)
 {
   // 
   // Get Corba objects containing model of HRP2 and Obstacles.
   //
-  if (getInfoFromCorba(argc, argv)!= KD_OK) {
+  if (getRobotURL()!= KD_OK) {
     privateCorbaObject->orb->destroy();
     cerr << "ERROR : ChppciOpenHrpClient::loadHrp2Model::Failed to load Hrp2 model" 
 	 << endl;
@@ -124,31 +126,29 @@ ktStatus ChppciOpenHrpClient::loadHrp2Model(int argc, char **argv,
 
 
 
-ktStatus ChppciOpenHrpClient::loadRobotModel(int argc, char **argv, 
-					     ChppDeviceShPtr &o_device)
+ktStatus ChppciOpenHrpClient::loadRobotModel(std::string inFilename, std::string inDeviceName, 
+					     ChppDeviceShPtr &outDevice)
 {
   ModelLoader_var loader;
-  if (privateCorbaObject->getModelLoader(argc, argv, loader) != KD_OK){
+  if (privateCorbaObject->getModelLoader() != KD_OK){
     cerr << "ERROR : ChppciOpenHrpClient::loadRobotModel::Failed to load robot model" 
 	 << endl;
     return KD_ERROR;
   }
 	
-  int url_idx=0;
-  for (unsigned int i=0; (int)i<argc; i++){
-    if (strcmp("-vrml", argv[i])==0){
-      url_idx = ++i;
-      break;
-    }
-  }
-  url_idx += 1; // skip name  
-
   //
   // Build hppDevice from OpenHRPModel
   //
+  std::string url("file://");
+  url += std::string(OPENHRP_PREFIX);
+  url += std::string("/etc/");
+  url += inFilename;
+    
+  std:: cout << "ChppciOpenHrpClient::loadRobotModel: reading " << url << std::endl;
+
   try{
-    CparserOpenHRPKineoDevice parser(loader->loadURL(argv[url_idx])) ;
-    o_device=parser.parser() ;
+    CparserOpenHRPKineoDevice parser(privateCorbaObject->attLoader->loadURL(url.c_str())) ;
+    outDevice=parser.parser() ;
   } catch (CORBA::SystemException &ex) {
     cerr << "System exception: " << ex._rep_id() << endl;
     return KD_ERROR;
@@ -156,7 +156,7 @@ ktStatus ChppciOpenHrpClient::loadRobotModel(int argc, char **argv,
     cerr << "Unknown exception" << endl;
     return KD_ERROR;
   }
-  if (!o_device) {
+  if (!outDevice) {
     cerr << " ERROR : ChppciOpenHrpClient::loadRobotModel : Failed building Kineo Robot Model" << endl ;
     return KD_ERROR;
   }
@@ -164,7 +164,7 @@ ktStatus ChppciOpenHrpClient::loadRobotModel(int argc, char **argv,
   //
   // set joints in invisible mode by default
   //
-  o_device->isVisible(false) ;
+  outDevice->isVisible(false) ;
 
   privateCorbaObject->orb->destroy();
 
@@ -174,10 +174,10 @@ ktStatus ChppciOpenHrpClient::loadRobotModel(int argc, char **argv,
 
 
 
-ktStatus  ChppciOpenHrpClient::loadHrp2Model(int argc, char **argv)
+ktStatus  ChppciOpenHrpClient::loadHrp2Model()
 {
   ChppDeviceShPtr HRP2Device;
-  if (loadHrp2Model(argc, argv, HRP2Device) != KD_OK){
+  if (loadHrp2Model(HRP2Device) != KD_OK){
     return KD_ERROR;
   }
   
@@ -189,49 +189,19 @@ ktStatus  ChppciOpenHrpClient::loadHrp2Model(int argc, char **argv)
     return KD_ERROR;
   }
 
-  //
-  // build obstacles (if there is some obstacle)
-  //
-  if (privateCorbaObject->obstInfoVector.size() > 0){  
-
-
-    //
-    // Build KineoObstacle from OpenHRPModel
-    //
-    CparserOpenHRPKineoObstacle parserObstacle(privateCorbaObject->obstInfoVector) ;
-    vector<ChppPolyhedronShPtr> obstacleVector = parserObstacle.parser() ;
-    if (obstacleVector.size() == 0) {
-      cerr << "ERROR ChppciOpenHrpClient::loadHrp2Model : Failed to parse the obstacle model " <<  endl;
-      return KD_ERROR;
-    }
-
-    //
-    // ADD Obstacle to the planner
-    //
-    for(unsigned int i=0; i < obstacleVector.size(); i++){
-      if (hppPlanner->addObstacle(obstacleVector[i]) != KD_OK) {
-	cerr << "ChppciOpenHrpClient::loadHrp2Model: Failed ta add obstacle in hppPlanner" << endl;
-	return KD_ERROR;
-      }
-    }
-  }
-
-  privateCorbaObject->orb->destroy();
-
   return KD_OK;
  
 }
 
 // ==============================================================================
 
-ktStatus  ChppciOpenHrpClient::loadObstacleModel(int argc, char **argv, 
-						 std::vector<ChppPolyhedronShPtr> &obstacleVector)
+ktStatus  ChppciOpenHrpClient::loadObstacleModel(std::string inFilename, std::string inObstacleName, 
+						 ChppPolyhedronShPtr& outPolyhedron)
 {
- 
   // 
   // Get Corba objects containing model of HRP2 and Obstacles.
   //
-  if (getInfoFromCorba(argc, argv)!= KD_OK) {
+  if (getObstacleURL(inFilename)!= KD_OK) {
     privateCorbaObject->orb->destroy();
     cerr << "ERROR : ChppciOpenHrpClient::loadHrp2Model::Failed to load Hrp2 model" 
 	 << endl;
@@ -248,30 +218,30 @@ ktStatus  ChppciOpenHrpClient::loadObstacleModel(int argc, char **argv,
     // Build KineoObstacle from OpenHRPModel
     //
     CparserOpenHRPKineoObstacle parserObstacle(privateCorbaObject->obstInfoVector) ;
-    obstacleVector = parserObstacle.parser() ;
+    std::vector<ChppPolyhedronShPtr> obstacleVector = parserObstacle.parser() ;
     if (obstacleVector.size() == 0) {
       cerr << "ERROR ChppciOpenHrpClient::loadHrp2Model : Failed to parse the obstacle model " <<  endl;
       return KD_ERROR;
     }
-
+    outPolyhedron = obstacleVector[0];
   }
 
   privateCorbaObject->orb->destroy();
-
 
   return KD_OK;
 }
 
 
   
-ktStatus CinternalCorbaObject::getModelLoader(int argc, char **argv, 
-					      ModelLoader_var& outLoader)
+ktStatus CinternalCorbaObject::getModelLoader()
 {
   // Services
   string modelLoaderString="ModelLoaderJRL" ;
   string nameServiceString="NameService" ;
 
   try {
+    int argc=1;
+    char *argv[1]={"unused"};
     // ORB Creation.
     orb = CORBA::ORB_init(argc, argv);
 
@@ -279,12 +249,11 @@ ktStatus CinternalCorbaObject::getModelLoader(int argc, char **argv,
     try {
       nameService = orb->resolve_initial_references(nameServiceString.c_str());
     } catch (const CORBA::ORB::InvalidName&) {
-      cerr << "ERROR :ChppciOpenHrpClient::getModelLoader : " << argv[0] << ": can't resolve " << nameServiceString << endl;
+      cerr << "ERROR :ChppciOpenHrpClient::getModelLoader : cannot resolve " << nameServiceString << endl;
       return KD_ERROR;
     }
     if(CORBA::is_nil(nameService)) {
-      cerr << argv[0]
-	   << " ERROR :ChppciOpenHrpClient::getModelLoader "<< nameServiceString << "is a nil object reference"
+      cerr << " ERROR :ChppciOpenHrpClient::getModelLoader "<< nameServiceString << "is a nil object reference"
 	   << endl;
       return KD_ERROR;
     }
@@ -293,8 +262,7 @@ ktStatus CinternalCorbaObject::getModelLoader(int argc, char **argv,
     CosNaming::NamingContext_var cxt = 
       CosNaming::NamingContext::_narrow(nameService);
     if(CORBA::is_nil(cxt)) {
-      cerr << argv[0]
-	   << " ERROR :ChppciOpenHrpClient::getModelLoader "<< nameServiceString << " is not a NamingContext object reference"
+      cerr << " ERROR :ChppciOpenHrpClient::getModelLoader "<< nameServiceString << " is not a NamingContext object reference"
 	   << endl;
       return KD_ERROR;
     }
@@ -309,7 +277,7 @@ ktStatus CinternalCorbaObject::getModelLoader(int argc, char **argv,
     mFactory[0].kind = CORBA::string_dup("");
 
     try {
-      outLoader = ModelLoader::_narrow(cxt -> resolve(mFactory));
+      attLoader = ModelLoader::_narrow(cxt -> resolve(mFactory));
     } catch (const CosNaming::NamingContext::NotFound&){
       cerr << "ERROR :  ChppciOpenHrpClient::getModelLoader : "<< modelLoaderString <<  "NOT FOUND" << endl;
       return KD_ERROR;
@@ -324,10 +292,70 @@ ktStatus CinternalCorbaObject::getModelLoader(int argc, char **argv,
   return KD_OK;
 }
 
+
+ktStatus ChppciOpenHrpClient::getRobotURL()
+{
+  if (privateCorbaObject->getModelLoader() != KD_OK){
+      return KD_ERROR;
+  }
+  
+  if(privateCorbaObject->attLoader) {
+    //Get HRP2 Information 
+    std::string url("file://");
+    url += std::string(OPENHRP_PREFIX);
+    url += std::string("/etc/HRP2JRL/HRP2JRLmain.wrl");
+
+    privateCorbaObject->HRP2info = privateCorbaObject->attLoader->loadURL(url.c_str());
+    
+    // TO CHECK ON SCREEN
+    cout << endl ;
+    cout << "Loaded URL        : " << privateCorbaObject->HRP2info->getUrl()<<endl;
+    cout << "Loaded Model Name : " << privateCorbaObject->HRP2info->getCharObject()->name() << endl ; 
+    cout << "Loaded Model Size : " << privateCorbaObject->HRP2info->getCharObject()->modelObjectSeq()->length() << endl;
+  }
+  return KD_OK;
+}
+
 // ==============================================================================
 
-ktStatus ChppciOpenHrpClient::getInfoFromCorba(int argc, char **argv)
+ktStatus ChppciOpenHrpClient::getObstacleURL(std::string inFilename)
 {
+  if (privateCorbaObject->getModelLoader() != KD_OK){
+      return KD_ERROR;
+  }
+  
+  if(privateCorbaObject->attLoader) {
+    //Get HRP2 Information 
+    std::string url("file://");
+    url += std::string(OPENHRP_PREFIX);
+    url += std::string("/etc/");
+    url += inFilename;
+
+    privateCorbaObject->obstInfoVector.push_back(privateCorbaObject->attLoader->loadURL(url.c_str()));
+    int sz_obst = privateCorbaObject->obstInfoVector.size();
+	                 
+    // TO CHECK ON SCREEN
+    cout << endl ;
+    cout << "Vector Obstacle " << 0 << endl ; 
+    cout << "Loaded URL        : " << privateCorbaObject->obstInfoVector[0]->getUrl() << endl;
+    cout << "Loaded Model Name : " << privateCorbaObject->obstInfoVector[0]->getCharObject()->name() << endl ; 
+    cout << "Loaded Model Size : " << privateCorbaObject->obstInfoVector[0]->getCharObject()->modelObjectSeq()->length() << endl ;
+  }
+  return KD_OK;
+}
+  
+
+// ==============================================================================
+
+#if 0
+ktStatus ChppciOpenHrpClient::getInfoFromCorba()
+{
+  int argc=4;
+  char *argv[4] = {"unused",
+		   "-vrml",
+		   "HRP2JRL",
+		   "file://"OPENHRP_PREFIX"/etc/HRP2JRL/HRP2JRLmain.wrl"};
+
   int vrml_idx=0;
   for (unsigned int i=0; (int)i<argc; i++){
     if (strcmp("-vrml", argv[i])==0){
@@ -335,8 +363,7 @@ ktStatus ChppciOpenHrpClient::getInfoFromCorba(int argc, char **argv)
     }
   }
 
-  ModelLoader_var loader;
-  if (privateCorbaObject->getModelLoader(argc, argv, loader) != KD_OK){
+  if (privateCorbaObject->getModelLoader() != KD_OK){
       return KD_ERROR;
   }
 
@@ -352,11 +379,11 @@ ktStatus ChppciOpenHrpClient::getInfoFromCorba(int argc, char **argv)
 	//
 	// GET INFORMATIONS
 	//
-	if(loader) {
+	if(privateCorbaObject->attLoader) {
 	  if(strstr(argv[i],"HRP2") != NULL){ 
 	    
 	    //Get HRP2 Information 
-	    privateCorbaObject->HRP2info = loader->loadURL(argv[i+1]);
+	    privateCorbaObject->HRP2info = privateCorbaObject->attLoader->loadURL(argv[i+1]);
 	    
 	    // TO CHECK ON SCREEN
             cout << endl ;
@@ -367,7 +394,7 @@ ktStatus ChppciOpenHrpClient::getInfoFromCorba(int argc, char **argv)
 	  else {  
 	   	    
 	    // Get Obstacle Information
-	    privateCorbaObject->obstInfoVector.push_back(loader->loadURL(argv[i+1]));
+	    privateCorbaObject->obstInfoVector.push_back(privateCorbaObject->attLoader->loadURL(argv[i+1]));
 	    int sz_obst = privateCorbaObject->obstInfoVector.size();
 	    int idLastObst = sz_obst - 1 ;
 
@@ -399,3 +426,4 @@ ktStatus ChppciOpenHrpClient::getInfoFromCorba(int argc, char **argv)
   return KD_OK;
 }
   
+#endif

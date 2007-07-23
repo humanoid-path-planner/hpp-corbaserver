@@ -7,6 +7,9 @@
 
 hppCorbaServerdir = @includedir@/hpp
 hppCorbaServer_HEADERS = \
-	hppciServer.h \
-	hppciOpenHrp.h 
+	hppciServer.h
 
+if OPENHRP
+hppCorbaServer_HEADERS += \
+	hppciOpenHrp.h 
+endif

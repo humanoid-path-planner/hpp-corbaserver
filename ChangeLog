@@ -1,3 +1,6 @@
 2007/07/23
+	1. Make dependence to OpenHRP conditional, as it was initially.
+	2. Simplified a lot interfaces of ChppciOpenHrpClient: no more argc and argv. Only loadHrp2Model() has been tested.
+2007/07/23
 	Initial version of hppCorbaServer exported from hpp.
 	
