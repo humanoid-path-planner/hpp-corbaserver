@@ -93,17 +93,8 @@ CORBA::Short ChppciRobot_impl::setRobotRootJoint(const char* inRobotName,
 #if WITH_OPENHRP
 CORBA::Short ChppciRobot_impl::loadHrp2Model(const char* inHrp2Name, const char* inCorbaNameService)
 {
-  std::string hrp2Name(inHrp2Name);
-  int argc=6;
-  char *argv[6] = {"unused", "-ORBInitRef", 
-		   "allocate256charactersxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-		   "-vrml",
-		   "HRP2JRL",
-		   "file:///local/jrl/src/OpenHRP/etc/HRP2JRL/HRP2JRLmain.wrl"};
-
-  argv[2] = strcpy(argv[2],inCorbaNameService);
   ChppciOpenHrpClient openHrpClient(hppPlanner);
-  if (openHrpClient.loadHrp2Model(argc, argv) != KD_OK) {
+  if (openHrpClient.loadHrp2Model() != KD_OK) {
     return KD_ERROR;
   }
   return KD_OK;
