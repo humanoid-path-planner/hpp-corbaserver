@@ -203,7 +203,7 @@ ktStatus  ChppciOpenHrpClient::loadObstacleModel(std::string inFilename, std::st
   //
   if (getObstacleURL(inFilename)!= KD_OK) {
     privateCorbaObject->orb->destroy();
-    cerr << "ERROR : ChppciOpenHrpClient::loadHrp2Model::Failed to load Hrp2 model" 
+    cerr << "ERROR : ChppciOpenHrpClient::loadObstacleModel: failed to load Hrp2 model" 
 	 << endl;
     return KD_ERROR;
   }
@@ -217,8 +217,10 @@ ktStatus  ChppciOpenHrpClient::loadObstacleModel(std::string inFilename, std::st
     //
     // Build KineoObstacle from OpenHRPModel
     //
-    CparserOpenHRPKineoObstacle parserObstacle(privateCorbaObject->obstInfoVector) ;
+    CparserOpenHRPKineoObstacle parserObstacle(privateCorbaObject->obstInfoVector);
+
     std::vector<ChppPolyhedronShPtr> obstacleVector = parserObstacle.parser() ;
+
     if (obstacleVector.size() == 0) {
       cerr << "ERROR ChppciOpenHrpClient::loadHrp2Model : Failed to parse the obstacle model " <<  endl;
       return KD_ERROR;
@@ -330,17 +332,22 @@ ktStatus ChppciOpenHrpClient::getObstacleURL(std::string inFilename)
     url += std::string(OPENHRP_PREFIX);
     url += std::string("/etc/");
     url += inFilename;
-
-    privateCorbaObject->obstInfoVector.push_back(privateCorbaObject->attLoader->loadURL(url.c_str()));
-    int sz_obst = privateCorbaObject->obstInfoVector.size();
+   
+    try {
+      privateCorbaObject->obstInfoVector.push_back(privateCorbaObject->attLoader->loadURL(url.c_str()));
+      int sz_obst = privateCorbaObject->obstInfoVector.size();
 	                 
-    // TO CHECK ON SCREEN
-    cout << endl ;
-    cout << "Vector Obstacle " << 0 << endl ; 
-    cout << "Loaded URL        : " << privateCorbaObject->obstInfoVector[0]->getUrl() << endl;
-    cout << "Loaded Model Name : " << privateCorbaObject->obstInfoVector[0]->getCharObject()->name() << endl ; 
-    cout << "Loaded Model Size : " << privateCorbaObject->obstInfoVector[0]->getCharObject()->modelObjectSeq()->length() << endl ;
-  }
+      // TO CHECK ON SCREEN
+      cout << endl ;
+      cout << "Vector Obstacle " << 0 << endl ; 
+      cout << "Loaded URL        : " << privateCorbaObject->obstInfoVector[0]->getUrl() << endl;
+      cout << "Loaded Model Name : " << privateCorbaObject->obstInfoVector[0]->getCharObject()->name() << endl ; 
+      cout << "Loaded Model Size : " << privateCorbaObject->obstInfoVector[0]->getCharObject()->modelObjectSeq()->length() << endl ;
+    } catch (ModelLoader::ModelLoaderException& exception) {
+      std::cerr << "ChppciOpenHrpClient::getObstacleURL: could not open file" << std::endl;
+      return KD_ERROR;
+    }
+  } 
   return KD_OK;
 }
   
