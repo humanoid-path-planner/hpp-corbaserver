@@ -86,6 +86,7 @@ public:
       \param argc, argv[] are passed to Orb initialization.
 
       This function gets the model of HRP2 from a CORBA request and initializes a ChppProblem with this robot.
+      Note that the robot is set into half-sitting configuration.
   */
   ktStatus loadHrp2Model(int argc, char ** argv);
 
@@ -93,11 +94,13 @@ public:
      \brief  Initialize Orb and load model of HRP2 by sending a Corba request modelLoader to OpenHRP.
      \param argc, argv[] are passed to Orb initialization.
      \retval o_device The model of HRP2 set in half-sitting position.
+
+      Note that the robot is set into half-sitting configuration.
   */
   ktStatus loadHrp2Model(int argc, char **argv, ChppDeviceShPtr &o_device);
 
   /**
-     \brief  Initialize Orb and load model of robot by sending a Corba request modelLoader to OpenHRP.
+     \brief  Initialize Orb and load model of a robot by sending a Corba request modelLoader to OpenHRP.
      \param argc, argv[] are passed to Orb initialization.
      \retval o_device The model of robot.
   */
@@ -110,13 +113,6 @@ public:
       */
   ktStatus loadObstacleModel(int _argc, char **_argv, std::vector<ChppPolyhedronShPtr> &polyList);
  
-public:
-
-  /**
-     \brief Get Information from corba server (ModelLoader ...)
-  */
-  ktStatus getInfoFromCorba(int argc, char **argv);
-
   /** 
       \brief Build a KineoWorks device from HRP2 model stored in Corba. 
       Once created, the device is store in hppPlanner.
@@ -131,6 +127,11 @@ public:
   ChppPlanner *planner() {return hppPlanner; };
 
 private :
+
+  /**
+     \brief Get Information from corba server (ModelLoader ...)
+  */
+  ktStatus getInfoFromCorba(int argc, char **argv);
 
   /** 
       \brief Pointer to Path Planner object allocated elsewhere.
