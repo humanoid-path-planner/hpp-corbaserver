@@ -643,7 +643,7 @@ nameSeq* ChppciRobot_impl::getBodyInnerObject(const char* inBodyName)
 	// Cast object into CkppKCDPolyhedron.
 	if (CkppKCDPolyhedronShPtr hppPolyhedron = boost::dynamic_pointer_cast<CkppKCDPolyhedron>(kcdObject)) {
 	  // Get name of polyhedron and add it into the list.
-	  std::string polyhedronName = hppPolyhedron->name();
+	  std::string polyhedronName = kppPolyhedron->name();
 	  nameList[iObject] = (char*)malloc(sizeof(char)*(polyhedronName.length()+1));
 	  strcpy(nameList[iObject], polyhedronName.c_str());
 	}
@@ -684,7 +684,7 @@ nameSeq* ChppciRobot_impl::getBodyOuterObject(const char* inBodyName)
 	// Cast object into CkppKCDPolyhedron.
 	if (CkppKCDPolyhedronShPtr hppPolyhedron = boost::dynamic_pointer_cast<CkppKCDPolyhedron>(kcdObject)) {
 	  // Get name of polyhedron and add it into the list.
-	  std::string polyhedronName = hppPolyhedron->name();
+	  std::string polyhedronName = kppPolyhedron->name();
 	  nameList[iObject] = (char*)malloc(sizeof(char)*(polyhedronName.length()+1));
 	  strcpy(nameList[iObject], polyhedronName.c_str());
 	}
