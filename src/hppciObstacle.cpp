@@ -8,8 +8,9 @@
 #include <iostream>
 #include "hppciServer.h"
 #include "hppciObstacle.h"
+#if 0
 #include "hppciOpenHrp.h"
-
+#endif
 #include "kcd2/kcdPolyhedron.h"
 
 #include "hppPolyhedron.h"
@@ -56,7 +57,7 @@ CORBA::Short ChppciObstacle_impl::addObstacle(const char* inPolyhedronName)
 	 << polyhedronName << " does not exist." << endl;
     return -1;
   }
-  ChppPolyhedronShPtr hppPolyhedron = polyhedronMap[polyhedronName];
+  CkppKCDPolyhedronShPtr hppPolyhedron = polyhedronMap[polyhedronName];
 
   // Build collision entity for KCD.
   hppPolyhedron->makeCollisionEntity();
@@ -76,7 +77,7 @@ CORBA::Short ChppciObstacle_impl::addObstacleConfig(const char* inPolyName,
 	 << polyhedronName << " does not exist." << endl;
     return -1;
   }
-  ChppPolyhedronShPtr polyhedron = polyhedronMap[polyhedronName];
+  CkppKCDPolyhedronShPtr polyhedron = polyhedronMap[polyhedronName];
 
   // Build collision entity for KCD.
   polyhedron->makeCollisionEntity();
@@ -112,9 +113,9 @@ CORBA::Short ChppciObstacle_impl::moveObstacleConfig(const char* inPolyName,
 
   // get the hppPolyhedron
   bool findFlag = false;
-  ChppPolyhedronShPtr poly;
+  CkppKCDPolyhedronShPtr poly;
   for(unsigned int i=0; i<obstList.size(); i++){
-    if(poly =  boost::dynamic_pointer_cast<ChppPolyhedron>(obstList[i])){
+    if(poly =  boost::dynamic_pointer_cast<CkppKCDPolyhedron>(obstList[i])){
       if(polyhedronName == poly->name()){
 	findFlag=true;
 	cout<<" obstacle "<<polyhedronName<<" found in the tree."<<endl;
@@ -122,7 +123,7 @@ CORBA::Short ChppciObstacle_impl::moveObstacleConfig(const char* inPolyName,
       }
     }
     else{
-      cerr<<" object ChppPolyhedron, not supported. "<<endl;
+      cerr<<" object CkppKCDPolyhedron, not supported. "<<endl;
     }
   }
 
@@ -187,7 +188,7 @@ CORBA::Short ChppciObstacle_impl::addPolyToCollList(const char* inListName,
 #ifdef VERBOSE
   std::cout<<" in ChppciObstacle_impl::addPolyToCollList() polyhedronMap size "
 	   << polyhedronMap.size() << std::endl;
-  std::map<std::string, ChppPolyhedronShPtr>::iterator it = polyhedronMap.begin();
+  std::map<std::string, CkppKCDPolyhedronShPtr>::iterator it = polyhedronMap.begin();
   for(; it != polyhedronMap.end(); it++) {
     cout<<" name: "<< it->first << endl;
   }
@@ -199,7 +200,7 @@ CORBA::Short ChppciObstacle_impl::addPolyToCollList(const char* inListName,
     return -1;
   }
   std::vector<CkcdObjectShPtr> kcdCollisionList ;
-  ChppPolyhedronShPtr polyhedron = polyhedronMap[polyhedronName];
+  CkppKCDPolyhedronShPtr polyhedron = polyhedronMap[polyhedronName];
 
   // Build collision entity for KCD.
   polyhedron->makeCollisionEntity();
@@ -221,7 +222,7 @@ CORBA::Short ChppciObstacle_impl::createPolyhedron(const char* inPolyhedronName)
 	 << polyhedronName << " already exists." << endl;
     return -1;
   }
-  ChppPolyhedronShPtr hppPolyhedron = ChppPolyhedron::create(polyhedronName);
+  CkppKCDPolyhedronShPtr hppPolyhedron = CkppKCDPolyhedron::create(polyhedronName);
 
   if (!hppPolyhedron) {
     cerr << "ChppciObstacle_impl::createPolyhedron: failed to create polyhedron "
@@ -244,7 +245,7 @@ CORBA::Short ChppciObstacle_impl::addPoint(const char* inPolyhedronName,
 #ifdef VERBOSE
   // Check that polyhedron exists.
   std::cout<<" in ChppciObstacle_impl::addPoint() polyhedronMap size "<<polyhedronMap.size()<<std::endl;
-  std::map<std::string, ChppPolyhedronShPtr>::iterator it = polyhedronMap.begin();
+  std::map<std::string, CkppKCDPolyhedronShPtr>::iterator it = polyhedronMap.begin();
   for(; it != polyhedronMap.end(); it++) {
     cout<<" name: "<<it->first<<endl;
   }
@@ -255,7 +256,7 @@ CORBA::Short ChppciObstacle_impl::addPoint(const char* inPolyhedronName,
 	 << " does not exist." << endl;
     return -1;
   }
-  ChppPolyhedronShPtr polyhedron = polyhedronMap[polyhedronName];
+  CkppKCDPolyhedronShPtr polyhedron = polyhedronMap[polyhedronName];
   unsigned int rank;
 
   /*
@@ -263,7 +264,7 @@ CORBA::Short ChppciObstacle_impl::addPoint(const char* inPolyhedronName,
   CkcdPolyhedronShPtr poly = KIT_DYNAMIC_PTR_CAST(CkcdPolyhedron, hppPolyhedron);
   */
 
-  polyhedron->addPoint(x, y, z, rank);
+  polyhedron->CkcdPolyhedron::addPoint(x, y, z, rank);
 
   return rank;
 }
@@ -278,7 +279,7 @@ CORBA::Short ChppciObstacle_impl::addTriangle(const char* inPolyhedronName,
 #ifdef VERBOSE
   // Check that polyhedron exists.
   std::cout<<" in ChppciObstacle_impl::addTriangle() polyhedronMap size "<<polyhedronMap.size()<<std::endl;
-  std::map<std::string, ChppPolyhedronShPtr>::iterator it = polyhedronMap.begin();
+  std::map<std::string, CkppKCDPolyhedronShPtr>::iterator it = polyhedronMap.begin();
   for(; it != polyhedronMap.end(); it++) {
     cout<<" name: "<<it->first<<endl;
   }
@@ -289,7 +290,7 @@ CORBA::Short ChppciObstacle_impl::addTriangle(const char* inPolyhedronName,
 	 << " does not exist." << endl;
     return -1;
   }
-  ChppPolyhedronShPtr polyhedron = polyhedronMap[polyhedronName];
+  CkppKCDPolyhedronShPtr polyhedron = polyhedronMap[polyhedronName];
   unsigned int rank;
 
   polyhedron->addTriangle(pt1, pt2, pt3, rank);

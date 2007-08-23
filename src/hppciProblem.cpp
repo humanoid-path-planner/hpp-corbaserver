@@ -25,7 +25,7 @@ CORBA::Short ChppciProblem_impl::setSteeringMethod(CORBA::Short inProblemId,
   // Test that rank is less than number of robots in vector.
   if (hppProblemId < nbProblems) {
     // Get robot in hppPlanner object.
-    ChppDeviceShPtr hppRobot = hppPlanner->robotIthProblem(hppProblemId);
+    CkppDeviceComponentShPtr hppRobot = hppPlanner->robotIthProblem(hppProblemId);
 
     // Create steering method
     if (steeringMethodName == "linear") {
@@ -60,7 +60,7 @@ CORBA::Short ChppciProblem_impl::setRoadmapbuilder(CORBA::Short inProblemId, con
   // Test that rank is less than number of robots in vector.
   if (hppProblemId < nbProblems) {
     // Get robot in hppPlanner object.
-    ChppDeviceShPtr hppRobot = hppPlanner->robotIthProblem(hppProblemId);
+    CkppDeviceComponentShPtr hppRobot = hppPlanner->robotIthProblem(hppProblemId);
 
     // Create an empty roadmap for the robot.
     CkwsRoadmapShPtr roadmap = CkwsRoadmap::create(hppRobot);
@@ -110,7 +110,7 @@ CORBA::Short ChppciProblem_impl::setPathOptimizer(CORBA::Short inProblemId, cons
   // Test that rank is less than number of robots in vector.
   if (hppProblemId < nbProblems) {
     // Get robot in hppPlanner object.
-    ChppDeviceShPtr hppRobot = hppPlanner->robotIthProblem(hppProblemId);
+    CkppDeviceComponentShPtr hppRobot = hppPlanner->robotIthProblem(hppProblemId);
     if (pathOptimizerName == "clear") {
       CkwsClearOptimizerShPtr pathOptimizer = CkwsClearOptimizer::create();
       status = hppPlanner->pathOptimizerIthProblem(hppProblemId, pathOptimizer);
@@ -159,7 +159,7 @@ CORBA::Short ChppciProblem_impl::setInitialConfig(CORBA::Short inProblemId, cons
   // Test that rank is less than nulber of robots in vector.
   if (hppProblemId < nbProblems) {
     // Get robot in hppPlanner object.
-    ChppDeviceShPtr hppRobot = hppPlanner->robotIthProblem(hppProblemId);
+    CkppDeviceComponentShPtr hppRobot = hppPlanner->robotIthProblem(hppProblemId);
     // Fill dof vector with dof array.
     for (unsigned int iDof=0; iDof<configDim; iDof++) {
       dofVector.push_back(dofArray[iDof]);
@@ -194,7 +194,7 @@ CORBA::Short ChppciProblem_impl::setGoalConfig(CORBA::Short inProblemId, const d
   // Test that rank is less than nulber of robots in vector.
   if (hppProblemId < nbProblems) {
     // Get robot in hppPlanner object.
-    ChppDeviceShPtr hppRobot = hppPlanner->robotIthProblem(hppProblemId);
+    CkppDeviceComponentShPtr hppRobot = hppPlanner->robotIthProblem(hppProblemId);
     // Fill dof vector with dof array.
     for (unsigned int iDof=0; iDof<configDim; iDof++) {
       dofVector.push_back(dofArray[iDof]);

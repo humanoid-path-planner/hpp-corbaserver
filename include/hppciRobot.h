@@ -10,12 +10,12 @@
 
 /**
 Robots and obstacles are stored in object ChppPlanner. 
-The kinematic part of a robot (excluding inertia information) is stored in a KineoWorks device (see KineoWorks documentation). A hppDevice is a tree of joints starting at the root joint. 
+The kinematic part of a robot is stored in a CkppDeviceComponent object (see KineoWorks documentation). 
 \li To each \em joint is attached a \em body (CkwsBody).
-\li Each \em body contains a list of CkcdObject (derived into ChppPolyhedron).
+\li Each \em body contains a list of CkcdObject (derived into CkppKCDPolyhedron).
 \li A \em polyhedron is defined by a set of \em vertices and a set of \em facets.
 
-Obstacles are stored in collision lists (CkcdCollisionList) composed of polyhedra (ChppPolyhedron).
+Obstacles are stored in collision lists (CkcdCollisionList) composed of polyhedra (CkppKCDPolyhedron).
 
  */
 
@@ -142,7 +142,7 @@ public:
 private:
   // Store devices, joints and bodies in construction.
   /// \brief map of devices in construction.
-  std::map<std::string, ChppDeviceShPtr> robotMap;
+  std::map<std::string, CkppDeviceComponentShPtr> robotMap;
   /// \brief map of extra degrees of freedom in construction.
   std::map<std::string, CkwsDofShPtr> extraDofMap;
   /// \brief map of joints in construction.
@@ -152,7 +152,7 @@ private:
   /// \brief map of collision lists in construction.
   std::map<std::string, std::vector<CkcdObjectShPtr> > collisionListMap;
   /// \brief map of polyhedra in construction.
-  std::map<std::string, ChppPolyhedronShPtr> polyhedronMap;
+  std::map<std::string, CkppKCDPolyhedronShPtr> polyhedronMap;
   /// \brief Pointer to hppPlanner object of hppciServer.
   /// Instantiated at construction.
   ChppPlanner *hppPlanner;

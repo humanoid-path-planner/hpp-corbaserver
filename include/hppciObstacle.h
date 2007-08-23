@@ -59,7 +59,7 @@ private:
   std::map<std::string, std::vector<CkcdObjectShPtr> > collisionListMap;
 
   /// \brief map of polyhedra in construction.
-  std::map<std::string, ChppPolyhedronShPtr> polyhedronMap;
+  std::map<std::string, CkppKCDPolyhedronShPtr> polyhedronMap;
 
   /// \brief Pointer to hppPlanner object of hppciServer.
   ChppPlanner *hppPlanner;

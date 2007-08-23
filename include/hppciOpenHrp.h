@@ -20,7 +20,7 @@ INCLUDE
 #include "hppPlanner.h"
 
 
-KIT_PREDEF_CLASS(ChppPolyhedron);
+KIT_PREDEF_CLASS(CkppKCDPolyhedron);
 
 /*************************************
 STRUCTURES
@@ -115,7 +115,7 @@ public:
 
      The file is looked for in OpenHrp installation directory.
   */
-  ktStatus loadObstacleModel(std::string inFilename, std::string inObstacleName, ChppPolyhedronShPtr& outPolyhedron);
+  ktStatus loadObstacleModel(std::string inFilename, std::string inObstacleName, CkppKCDPolyhedronShPtr& outPolyhedron);
  
   /** 
       \brief Build a KineoWorks device from HRP2 model stored in Corba. 

@@ -196,7 +196,7 @@ ktStatus  ChppciOpenHrpClient::loadHrp2Model()
 // ==============================================================================
 
 ktStatus  ChppciOpenHrpClient::loadObstacleModel(std::string inFilename, std::string inObstacleName, 
-						 ChppPolyhedronShPtr& outPolyhedron)
+						 CkppKCDPolyhedronShPtr& outPolyhedron)
 {
   // 
   // Get Corba objects containing model of HRP2 and Obstacles.
@@ -219,7 +219,7 @@ ktStatus  ChppciOpenHrpClient::loadObstacleModel(std::string inFilename, std::st
     //
     CparserOpenHRPKineoObstacle parserObstacle(privateCorbaObject->obstInfoVector);
 
-    std::vector<ChppPolyhedronShPtr> obstacleVector = parserObstacle.parser() ;
+    std::vector<CkppKCDPolyhedronShPtr> obstacleVector = parserObstacle.parser() ;
 
     if (obstacleVector.size() == 0) {
       cerr << "ERROR ChppciOpenHrpClient::loadHrp2Model : Failed to parse the obstacle model " <<  endl;
