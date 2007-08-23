@@ -10,8 +10,10 @@
 
 #include <map>
 #include <string>
+
+#include "KineoKCDModel/kppKCDPolyhedron.h"
+
 #include "hppPlanner.h"
-#include "hppPolyhedron.h"
 #include "hppciObstacleServer.hh"
 
 

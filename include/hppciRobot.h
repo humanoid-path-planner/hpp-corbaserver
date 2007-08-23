@@ -21,9 +21,9 @@ Obstacles are stored in collision lists (CkcdCollisionList) composed of polyhedr
 
 #include <map>
 #include <string>
+
 #include "hppPlanner.h"
 #include "hppBody.h"
-#include "hppPolyhedron.h"
 #include "hppciRobotServer.hh"
 
 

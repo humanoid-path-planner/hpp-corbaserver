@@ -6,16 +6,9 @@
 */
 
 #include <iostream>
+
 #include "hppciServer.h"
 #include "hppciObstacle.h"
-#if 0
-#include "hppciOpenHrp.h"
-#endif
-#include "kcd2/kcdPolyhedron.h"
-
-#include "hppPolyhedron.h"
-
-#include "kprParserXML/kprParserManager.h"
 
 #define VERBOSE
 
