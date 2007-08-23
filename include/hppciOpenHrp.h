@@ -19,6 +19,7 @@ INCLUDE
 #include <string>
 #include "hppPlanner.h"
 
+#include "hppDevice.h"
 
 KIT_PREDEF_CLASS(CkppKCDPolyhedron);
 
