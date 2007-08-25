@@ -6,6 +6,6 @@ includedir=@includedir@
 Name: @PACKAGE@
 Description: Corba server of humanoid path planner
 Version: @VERSION@
-Requires: hppCore >= 1.0, omniORB4 >= 4.0.7, hppOpenHRP >= 1.0, jrl-modelloader >= 1.0
+Requires: hppCore >= 1.0, omniORB4 >= 4.0.7@OPENHRP_DEPENDENCES@
 Libs: -L${libdir} -lhppCorbaServer @HPPCORE_LIBS@ @OMNIORB4_LIBS@ @HPPOPENHRP_LIBS@
 Cflags: -I${includedir}/hpp @HPPCORE_CFLAGS@  @OMNIORB4_CFLAGS@ @HPPOPENHRP_CFLAGS@ 

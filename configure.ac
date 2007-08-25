@@ -37,6 +37,8 @@ AC_ARG_WITH(openhrp,
 )
 AM_CONDITIONAL(OPENHRP, test x$with_openhrp = xtrue)
 
+AC_SUBST(OPENHRP_DEPENDENCES, [])
+
 if test x$with_openhrp = xtrue; then
 	PKG_CHECK_MODULES(HPPOPENHRP, hppOpenHRP)
 	HPPOPENHRP_PREFIX=`$PKG_CONFIG hppOpenHRP --variable=prefix`
@@ -49,6 +51,8 @@ if test x$with_openhrp = xtrue; then
 	PKG_CHECK_MODULES(MODELLOADERJRL, jrl-modelloader)
 	MODELLOADERJRL_IDL=`$PKG_CONFIG jrl-modelloader --variable=idldir`
 	AC_SUBST(MODELLOADERJRL_IDL)
+
+	OPENHRP_DEPENDENCES=", hppOpenHRP >= 1.0, jrl-modelloader >= 1.0"
 fi
 
 AC_OUTPUT(Makefile
