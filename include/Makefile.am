@@ -7,9 +7,16 @@
 
 hppCorbaServerdir = @includedir@/hpp
 hppCorbaServer_HEADERS = \
-	hppciServer.h
+	hppciServer.h		\
+	hppciObstacle.h		\
+	hppciProblem.h		\
+	hppciRobot.h
 
 if OPENHRP
 hppCorbaServer_HEADERS += \
 	hppciOpenHrp.h 
 endif
+
+EXTRA_DIST=\
+	hppciServerPrivate.h
+
