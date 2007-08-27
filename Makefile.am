@@ -6,14 +6,10 @@
 #
 
 SUBDIRS = \
-	idl/server \
-	src \
-	include
+	idl/server 	\
+	src		\
+	include		\
+	doc
 
 hppdir = $(libdir)/pkgconfig
 hpp_DATA = hppCorbaServer.pc
-
-install-data-hook: documentation
-
-documentation:
-	cd doc; $(MAKE) install
