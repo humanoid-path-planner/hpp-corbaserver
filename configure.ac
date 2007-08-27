@@ -46,7 +46,7 @@ if test x$with_openhrp = xtrue; then
 	AC_SUBST(HPPOPENHRP_PREFIX)
 	AC_SUBST(OPENHRP_PREFIX)
 	
-	define(jrlmodelloader_reqd, [jrlmodelloader >= 1.1])
+	define(jrlmodelloader_reqd, [jrl-modelloader >= 1.1])
 	AC_SUBST(JRLMODELLOADER_REQD, "jrlmodelloader_reqd")
 	PKG_CHECK_MODULES(MODELLOADERJRL, jrlmodelloader_reqd)
 	MODELLOADERJRL_IDL=`$PKG_CONFIG jrl-modelloader --variable=idldir`
