@@ -9,27 +9,25 @@ dnl
 AC_INIT([hppCorbaServer],[1.0],[openrobot@laas.fr])
 AC_PREREQ(2.59)
 
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([foreign no-define])
 AC_PROG_INSTALL
 AC_PROG_LIBTOOL
 
 AC_PROG_CXX
 
-PKG_CHECK_MODULES(HPPCORE, hppCore)
+define(hppcore_reqd, [hppCore >= 1.1])
+AC_SUBST(HPPCORE_REQD, "hppcore_reqd")
+PKG_CHECK_MODULES(HPPCORE, hppcore_reqd)
 HPPCORE_PREFIX=`$PKG_CONFIG hppCore --variable=prefix`
-AC_SUBST(HPPCORE_CFLAGS)
-AC_SUBST(HPPCORE_LIBS)
 AC_SUBST(HPPCORE_PREFIX)
 
 PKG_CHECK_MODULES(OMNIORB4, omniORB4)
 OMNIORB_PREFIX=`$PKG_CONFIG omniORB4 --variable=prefix`
-AC_SUBST(OMNIORB4_CFLAGS)
-AC_SUBST(OMNIORB4_LIBS)
 AC_SUBST(OMNIORB_PREFIX)
 
 AC_SUBST(WITH_OPENHRP)
 AC_ARG_WITH(openhrp,
-	AS_HELP_STRING([--with-openhrp], [to implemente an OpenHRP client]),
+	AS_HELP_STRING([--with-openhrp], [to implement an OpenHRP client]),
 	CXXFLAGS="${CXXFLAGS} -DWITH_OPENHRP=1"
 	with_openhrp=true,
 	CXXFLAGS="${CXXFLAGS} -DWITH_OPENHRP=0"
@@ -40,19 +38,21 @@ AM_CONDITIONAL(OPENHRP, test x$with_openhrp = xtrue)
 AC_SUBST(OPENHRP_DEPENDENCES, [])
 
 if test x$with_openhrp = xtrue; then
-	PKG_CHECK_MODULES(HPPOPENHRP, hppOpenHRP)
+	define(hppopenhrp_reqd, [hppOpenHRP >= 1.0])
+	AC_SUBST(HPPOPENHRP_REQD, "hppopenhrp_reqd")
+	PKG_CHECK_MODULES(HPPOPENHRP, hppopenhrp_reqd)
 	HPPOPENHRP_PREFIX=`$PKG_CONFIG hppOpenHRP --variable=prefix`
 	OPENHRP_PREFIX=`$PKG_CONFIG hppOpenHRP --variable=OpenHRP_prefix`
-	AC_SUBST(HPPOPENHRP_CFLAGS)
-	AC_SUBST(HPPOPENHRP_LIBS)
 	AC_SUBST(HPPOPENHRP_PREFIX)
 	AC_SUBST(OPENHRP_PREFIX)
 	
-	PKG_CHECK_MODULES(MODELLOADERJRL, jrl-modelloader)
+	define(jrlmodelloader_reqd, [jrlmodelloader >= 1.1])
+	AC_SUBST(JRLMODELLOADER_REQD, "jrlmodelloader_reqd")
+	PKG_CHECK_MODULES(MODELLOADERJRL, jrlmodelloader_reqd)
 	MODELLOADERJRL_IDL=`$PKG_CONFIG jrl-modelloader --variable=idldir`
 	AC_SUBST(MODELLOADERJRL_IDL)
 
-	OPENHRP_DEPENDENCES=", hppOpenHRP >= 1.0, jrl-modelloader >= 1.0"
+	OPENHRP_DEPENDENCES=", hppopenhrp_reqd, jrlmodelloader_reqd"
 fi
 
 AC_OUTPUT(Makefile

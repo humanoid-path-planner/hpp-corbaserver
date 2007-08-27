@@ -1,12 +1,12 @@
-2007/08/23
-	1. Replaced ChppPolyhedron by CkppKCDPolyhedron since they are the same.
-	2. Replaced ChppDevice by CkppDeviceComponent since
-	  2.1 ChppDevice derives from CkppDeviceComponent and
-	  2.2 The operations performed on objects of this type only concern CkppDeviceComponent part.
+$Id: ChangeLog 2007/08/27 14:48:51 mallet $
+
+hpp-corbaserver 1.0 released August 27th, 2007.
 	
-2007/07/23
-	1. Make dependence to OpenHRP conditional, as it was initially.
-	2. Simplified a lot interfaces of ChppciOpenHrpClient: no more argc and argv. Only loadHrp2Model() has been tested.
-2007/07/23
-	Initial version of hppCorbaServer exported from hpp.
-	
+	4. Replaced ChppPolyhedron by CkppKCDPolyhedron since they are the same.
+	3. Replaced ChppDevice by CkppDeviceComponent since
+	  1 ChppDevice derives from CkppDeviceComponent and
+	  2 The operations performed on objects of this type only concern
+	    CkppDeviceComponent part.
+	2. Make dependence to OpenHRP conditional, as it was initially.
+	1. Simplified a lot interfaces of ChppciOpenHrpClient: no more
+	argc and argv. Only loadHrp2Model() has been tested.
