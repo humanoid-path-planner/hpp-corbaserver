@@ -7,13 +7,20 @@
 
 lib_LTLIBRARIES = libhppCorbaServer.la
 
-libhppCorbaServer_la_SOURCES = \
-	hppciCommonServerSK.cc \
-	hppciObstacleServerSK.cc \
-	hppciProblemServerSK.cc \
-	hppciRobotServerSK.cc 
+BUILT_SOURCES = \
+	hppciCommonServerSK.cc		\
+	hppciObstacleServerSK.cc	\
+	hppciProblemServerSK.cc		\
+	hppciRobotServerSK.cc		\
+	hppciCommonServer.hh		\
+	hppciObstacleServer.hh		\
+	hppciProblemServer.hh		\
+	hppciRobotServer.hh 
 
-libhppCorbaServer_la_SOURCES += \
+nodist_libhppCorbaServer_la_SOURCES = \
+	$(BUILT_SOURCES)
+
+libhppCorbaServer_la_SOURCES= \
 	hppciObstacle.cpp \
 	hppciProblem.cpp \
 	hppciRobot.cpp \
@@ -29,27 +36,34 @@ libhppCorbaServer_la_CPPFLAGS += \
 	@HPPCORE_CFLAGS@ \
 	@OMNIORB4_CFLAGS@ 
 
-
 libhppCorbaServer_la_LIBADD = \
 	@HPPCORE_LIBS@ \
 	@OMNIORB4_LIBS@ 
 
+libhppCorbaServer_la_LDLAGS= \
+	-release $(PACKAGE_VERSION)
+
 if OPENHRP
-libhppCorbaServer_la_SOURCES += \
-	common-modelloaderSK.cc \
-	jrl-modelloaderSK.cc \
+BUILT_SOURCES+= \
+	common-modelloader.hh		\
+	jrl-modelloader.hh
+
+nodist_libhppCorbaServer_la_SOURCES+= \
+	common-modelloader.hh	\
+	jrl-modelloader.hh
+
+libhppCorbaServer_la_SOURCES+= \
 	hppciOpenHrp.cpp 
 
 libhppCorbaServer_la_CPPFLAGS += \
 	@HPPOPENHRP_CFLAGS@ -DOPENHRP_PREFIX='"@OPENHRP_PREFIX@"'
 
-
 libhppCorbaServer_la_LIBADD += \
 	@HPPOPENHRP_LIBS@
 endif
 
-%SK.cc: ../idl/server/%.idl
+%SK.cc %.hh: ../idl/server/%.idl
 	@OMNIORB_PREFIX@/bin/omniidl -bcxx $<
 
-%SK.cc: @MODELLOADERJRL_IDL@/%.idl
+%SK.cc %.hh: @MODELLOADERJRL_IDL@/%.idl
 	@OMNIORB_PREFIX@/bin/omniidl -bcxx $<
