@@ -192,7 +192,7 @@ CORBA::Short ChppciObstacle_impl::addPolyToCollList(const char* inListName,
 	 << polyhedronName << " does not exist." << endl;
     return -1;
   }
-  std::vector<CkcdObjectShPtr> kcdCollisionList ;
+  std::vector<CkcdObjectShPtr>& kcdCollisionList = collisionListMap[listName];
   CkppKCDPolyhedronShPtr polyhedron = polyhedronMap[polyhedronName];
 
   // Build collision entity for KCD.

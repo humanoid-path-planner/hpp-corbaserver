@@ -1,5 +1,8 @@
 $Id: ChangeLog 2007/08/27 14:48:51 mallet $
 
+2007/09/07
+	Correction of a bug in Corba request that adds a polyhedron to a list.
+	
 hpp-corbaserver 1.0 released August 27th, 2007.
 	
 	4. Replaced ChppPolyhedron by CkppKCDPolyhedron since they are the same.
