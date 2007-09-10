@@ -103,6 +103,12 @@ interface ChppciObstacle {
    */
   short createPolyhedron(in string inPolyName);
   /**
+     \brief Create a box
+     \param inBoxName name of the box
+     \param x, y, z Size of the box
+  */
+  short createBox(in string inBoxName, in double x, in double y, in double z);
+  /**
    * \brief Add a point to a polyhedron
    * \param inPolyName the name of the polyhedron.
    * \param x coordinate of the point. 

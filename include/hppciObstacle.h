@@ -47,6 +47,10 @@ public:
   /// \brief Comment in interface ChppciObstacle::createPolyhedron.
   virtual CORBA::Short createPolyhedron(const char* inPolyhedronName)
     throw(CORBA::SystemException);
+  /// \brief Comment in ChppciObstacle::createBox.
+  virtual CORBA::Short createBox(const char* inBoxName, CORBA::Double x, 
+	     CORBA::Double y, CORBA::Double z)
+    throw(CORBA::SystemException);
   /// \brief Comment in interface ChppciObstacle::addPoint.
   virtual CORBA::Short 
     addPoint(const char* inPolyhedronName, CORBA::Double x, 

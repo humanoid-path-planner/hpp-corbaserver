@@ -7,6 +7,7 @@
 
 #include <iostream>
 
+#include "KineoKCDModel/kppKCDBox.h"
 #include "hppciServer.h"
 #include "hppciObstacle.h"
 
@@ -216,6 +217,32 @@ CORBA::Short ChppciObstacle_impl::createPolyhedron(const char* inPolyhedronName)
     return -1;
   }
   CkppKCDPolyhedronShPtr hppPolyhedron = CkppKCDPolyhedron::create(polyhedronName);
+
+  if (!hppPolyhedron) {
+    cerr << "ChppciObstacle_impl::createPolyhedron: failed to create polyhedron "
+	 << polyhedronName << endl;
+    return -1;
+  }
+  polyhedronMap[polyhedronName] = hppPolyhedron;
+
+  return 0;
+}
+
+// ==========================================================================
+ 
+CORBA::Short ChppciObstacle_impl::createBox(const char* inBoxName, 
+					CORBA::Double x, CORBA::Double y, 
+					CORBA::Double z)
+  throw(CORBA::SystemException)
+{
+  std::string polyhedronName(inBoxName);
+  // Check that polyhedron does not already exist.
+  if (polyhedronMap.count(polyhedronName) != 0) {
+    cerr << "ChppciObstacle_impl::createPolyhedron: polyhedron "
+	 << polyhedronName << " already exists." << endl;
+    return -1;
+  }
+  CkppKCDPolyhedronShPtr hppPolyhedron = CkppKCDBox::create(polyhedronName, x, y, z);
 
   if (!hppPolyhedron) {
     cerr << "ChppciObstacle_impl::createPolyhedron: failed to create polyhedron "

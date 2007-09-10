@@ -1,5 +1,7 @@
 $Id: ChangeLog 2007/08/27 14:48:51 mallet $
-
+2007/09/10
+	Added a request to create a box in obstacle server.
+	
 2007/09/07
 	Correction of a bug in Corba request that adds a polyhedron to a list.
 	
