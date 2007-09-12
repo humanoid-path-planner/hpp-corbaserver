@@ -215,6 +215,15 @@ CORBA::Short ChppciProblem_impl::setGoalConfig(CORBA::Short inProblemId, const d
   return KD_OK;
 }
 
+CORBA::Short ChppciProblem_impl::initializeProblem()
+{
+  // get object hppPlanner of Corba server.
+  ChppPlanner *hppPlanner = ChppciServer::getInstance()->getHppPlanner();
+
+  ktStatus status  = hppPlanner->initializeProblem();
+  return (CORBA::Short)status;
+}
+
 
 CORBA::Short ChppciProblem_impl::solveOneProblem(CORBA::Short inProblemId, CORBA::Short& inLastPathId, CORBA::Double& pathLength)
 {

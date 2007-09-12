@@ -52,6 +52,10 @@ interface ChppciProblem {
   */
   short solveOneProblem(in short inProblemId, out short inLastPathId, out double pathLength);
   /**
+     \brief Initialize the path planning problem
+  */
+  short initializeProblem();
+  /**
      \brief Solve the problem of corresponding ChppPlanner object
   */
   short solve();

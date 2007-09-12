@@ -22,6 +22,7 @@ public:
   virtual CORBA::Short setPathOptimizer(CORBA::Short inProblemId, const char* inPathOptimizer);
   virtual CORBA::Short setInitialConfig(CORBA::Short inProblemId, const dofSeq& dofArray);
   virtual CORBA::Short setGoalConfig(CORBA::Short inProblemId, const dofSeq& dofArray);
+  virtual CORBA::Short initializeProblem();
   virtual CORBA::Short solveOneProblem(CORBA::Short inProblemId, CORBA::Short& inLastPathId, CORBA::Double& pathLength) ;
   virtual CORBA::Short solve();
   virtual dofSeq* configAtDistance(CORBA::Short inProblemId, CORBA::Short pathId, CORBA::Double pathLength, CORBA::Double atDistance) ;

@@ -1,4 +1,7 @@
 $Id: ChangeLog 2007/08/27 14:48:51 mallet $
+2007/09/12
+	Added request initializeProblem.
+	
 2007/09/10
 	Added a request to create a box in obstacle server.
 	
