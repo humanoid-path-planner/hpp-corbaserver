@@ -13,8 +13,10 @@ hppCorbaServer_HEADERS = \
 	hppciRobot.h
 
 if OPENHRP
-hppCorbaServer_HEADERS += \
-	hppciOpenHrp.h 
+install-data-hook: hppciOpenHrp
+
+hppciOpenHrp:
+	$(INSTALL_DATA) hppciOpenHrp.h @includedir@/hpp
 endif
 
 EXTRA_DIST=\

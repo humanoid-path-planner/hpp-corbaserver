@@ -56,7 +56,7 @@ libhppCorbaServer_la_SOURCES+= \
 	hppciOpenHrp.cpp 
 
 libhppCorbaServer_la_CPPFLAGS += \
-	@HPPOPENHRP_CFLAGS@ -DOPENHRP_PREFIX='"@OPENHRP_PREFIX@"'
+	@HPPOPENHRP_CFLAGS@ -DSTRING_OPENHRP_PREFIX='"@OPENHRP_PREFIX@"' -I@top_builddir@/include
 
 libhppCorbaServer_la_LIBADD += \
 	@HPPOPENHRP_LIBS@

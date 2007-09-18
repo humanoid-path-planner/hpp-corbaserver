@@ -208,6 +208,7 @@ SHOW_DIRECTORIES       = NO
 FILE_PATTERNS          = *.h *.idl
 EXCLUDE_PATTERNS       = 
 INPUT                  = @top_srcdir@/include \
+			 @top_builddir@/include \
 			 @top_srcdir@/idl/server \
                          @srcdir@/additionalDoc
 

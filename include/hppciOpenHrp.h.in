@@ -102,21 +102,27 @@ public:
      \brief  Initialize Orb and load model of a robot by sending a Corba request modelLoader to OpenHRP.
      \param inFilename Name of the wrl file containing the description of the robot.
      \param inDeviceName Name of the device
+     \param inOpenHrpPrefix Prefix of OpenHRP installation. Default value is provided by hppOpenHRP package.
      \retval outDevice The model of robot.
 
-     The file is looked for in OpenHrp installation directory.
+     \note The model of the robot is downloaded from "file://"+inOpenHrpPrefix+"/etc/"+inFileName
+
   */
-  ktStatus loadRobotModel(std::string inFilename, std::string inDeviceName, ChppDeviceShPtr &outDevice);
+  ktStatus loadRobotModel(std::string inFilename, std::string inDeviceName, ChppDeviceShPtr &outDevice, 
+			  std::string inOpenHrpPrefix=std::string("@OPENHRP_PREFIX@"));
 
   /** 
       \brief Initialize Orb and load model of objects by sending a Corba request modelLoader to OpenHRP. 
       \param inFilename Name of the wrl file containing the description of the robot.
       \param inObstacleName Name of the obstacle.
+      \param inOpenHrpPrefix Prefix of OpenHRP installation. Default value is provided by hppOpenHRP package.
       \retval outPolyhedron shared pointer to the polyhedron.
 
-     The file is looked for in OpenHrp installation directory.
+     \note The model of the obstacle is downloaded from "file://"+inOpenHrpPrefix+"/etc/"+inFileName
+
   */
-  ktStatus loadObstacleModel(std::string inFilename, std::string inObstacleName, CkppKCDPolyhedronShPtr& outPolyhedron);
+  ktStatus loadObstacleModel(std::string inFilename, std::string inObstacleName, CkppKCDPolyhedronShPtr& outPolyhedron,
+			     std::string inOpenHrpPrefix=std::string("@OPENHRP_PREFIX@"));
  
   /** 
       \brief Build a KineoWorks device from HRP2 model stored in Corba. 
