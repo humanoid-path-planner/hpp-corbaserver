@@ -28,6 +28,7 @@ libhppCorbaServer_la_SOURCES= \
 	hppciServerPrivate.cpp
 
 libhppCorbaServer_la_CPPFLAGS = \
+	-I@top_builddir@/include \
 	-I$(srcdir)/../include \
 	-I. \
 	-I@top_builddir@/idl/server
@@ -56,7 +57,7 @@ libhppCorbaServer_la_SOURCES+= \
 	hppciOpenHrp.cpp 
 
 libhppCorbaServer_la_CPPFLAGS += \
-	@HPPOPENHRP_CFLAGS@ -DSTRING_OPENHRP_PREFIX='"@OPENHRP_PREFIX@"' -I@top_builddir@/include
+	@HPPOPENHRP_CFLAGS@ -DSTRING_OPENHRP_PREFIX='"@OPENHRP_PREFIX@"' 
 
 libhppCorbaServer_la_LIBADD += \
 	@HPPOPENHRP_LIBS@
