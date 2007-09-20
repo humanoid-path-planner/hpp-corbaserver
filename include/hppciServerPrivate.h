@@ -15,20 +15,14 @@ public:
 private:
   CORBA::ORB_var orb;
   PortableServer::POA_var poa;
-#if 0
-  PortableServer::POAManager_var mgr;
-#endif
+
   /// \brief Implementation of object ChppciRobot
   ChppciRobot_impl *robotServant;
   /// \brief Implementation of object ChppciObstacle
   ChppciObstacle_impl *obstacleServant;
   /// \brief Implementation of object ChppciProblem.
   ChppciProblem_impl *problemServant;
-#if 0
-  /// \brief Stringifield reference of object.
-  CORBA::String_var strRef;
-  CosNaming::Name objectName;
-#endif
+
   /// \brief Corba context.
   CosNaming::NamingContext_var hppContext;
   // methods

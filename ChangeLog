@@ -1,4 +1,7 @@
 $Id: ChangeLog 2007/08/27 14:48:51 mallet $
+2007/09/20
+	Requests of hppCorbaServer are treated sequentially in order to avoid concurrent access problems.
+	
 2007/09/18
 	Methods loadRobotModel and loadObstacleModel of ChppciOpenHrpClient now takes as optional input the prefix where OpenHRP wrl files are installed.
 	

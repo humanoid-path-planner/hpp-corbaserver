@@ -37,7 +37,22 @@ int ChppciServer::startCorbaServer(int argc, char *argv[])
   try {
     attPrivate->orb = CORBA::ORB_init(argc, argv);
     CORBA::Object_var obj = attPrivate->orb->resolve_initial_references("RootPOA");
-    attPrivate->poa = PortableServer::POA::_narrow(obj);
+    PortableServer::POA_var rootPoa = PortableServer::POA::_narrow(obj);
+
+    //
+    // Make the CORBA object single-threaded to avoid GUI krash
+    //
+    // Create a sigle threaded policy object
+    PortableServer::ThreadPolicy_var singleThread = rootPoa->create_thread_policy(PortableServer::SINGLE_THREAD_MODEL);
+    CORBA::PolicyList policyList;
+    policyList.length(1);
+    policyList[0] = PortableServer::ThreadPolicy::_duplicate(singleThread);
+
+    attPrivate->poa = rootPoa->create_POA("child", PortableServer::POAManager::_nil(),
+					  policyList);
+
+    // Destroy policy object
+    singleThread->destroy();
 
     attPrivate->robotServant = new ChppciRobot_impl(hppPlanner);
     attPrivate->obstacleServant = new ChppciObstacle_impl(hppPlanner);
