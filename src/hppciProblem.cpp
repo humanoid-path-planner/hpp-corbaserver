@@ -10,6 +10,11 @@
 #include "hppciProblem.h"
 #include "flicSteeringMethod.h"
 
+ChppciProblem_impl::ChppciProblem_impl(ChppciServer* inHppciServer) : 
+  attHppciServer(inHppciServer), attHppPlanner(inHppciServer->getHppPlanner())
+{
+}
+
 
 CORBA::Short ChppciProblem_impl::setSteeringMethod(CORBA::Short inProblemId, 
 						   const char* inSteeringMethod, CORBA::Boolean inOriented)
@@ -18,14 +23,12 @@ CORBA::Short ChppciProblem_impl::setSteeringMethod(CORBA::Short inProblemId,
 
   unsigned int hppProblemId = (unsigned int)inProblemId;
 
-  // get object hppPlanner of Corba server.
-  ChppPlanner *hppPlanner = ChppciServer::getInstance()->getHppPlanner();
-  unsigned int nbProblems = hppPlanner->getNbHppProblems();
+  unsigned int nbProblems = attHppPlanner->getNbHppProblems();
 
   // Test that rank is less than number of robots in vector.
   if (hppProblemId < nbProblems) {
     // Get robot in hppPlanner object.
-    CkppDeviceComponentShPtr hppRobot = hppPlanner->robotIthProblem(hppProblemId);
+    CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppProblemId);
 
     // Create steering method
     if (steeringMethodName == "linear") {
@@ -53,14 +56,12 @@ CORBA::Short ChppciProblem_impl::setRoadmapbuilder(CORBA::Short inProblemId, con
   unsigned int hppProblemId = (unsigned int)inProblemId;
   ktStatus status; 
 
-  // get object hppPlanner of Corba server.
-  ChppPlanner *hppPlanner = ChppciServer::getInstance()->getHppPlanner();
-  unsigned int nbProblems = hppPlanner->getNbHppProblems();
+  unsigned int nbProblems = attHppPlanner->getNbHppProblems();
 
   // Test that rank is less than number of robots in vector.
   if (hppProblemId < nbProblems) {
     // Get robot in hppPlanner object.
-    CkppDeviceComponentShPtr hppRobot = hppPlanner->robotIthProblem(hppProblemId);
+    CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppProblemId);
 
     // Create an empty roadmap for the robot.
     CkwsRoadmapShPtr roadmap = CkwsRoadmap::create(hppRobot);
@@ -70,15 +71,15 @@ CORBA::Short ChppciProblem_impl::setRoadmapbuilder(CORBA::Short inProblemId, con
     // Create roadmapBuilder
     if (roadmapBuilderName == "basic") {
       CkwsBasicRdmBuilderShPtr roadmapBuilder = CkwsBasicRdmBuilder::create(roadmap, penetration);
-      status = hppPlanner->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder);
+      status = attHppPlanner->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder);
       return status;      
     } else if (roadmapBuilderName == "diffusing") {
       CkwsDiffusingRdmBuilderShPtr roadmapBuilder = CkwsDiffusingRdmBuilder::create(roadmap, penetration);
-      status = hppPlanner->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder);
+      status = attHppPlanner->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder);
       return status;      
     } else if (roadmapBuilderName == "IPP") {
       CkwsIPPRdmBuilderShPtr roadmapBuilder = CkwsIPPRdmBuilder::create(roadmap, penetration);
-      status = hppPlanner->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder);
+      status = attHppPlanner->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder);
     } else {
       cerr << "ChppciProblem_impl::setRoadmapbuilder: unknown roadmap builder" << endl;
       return KD_ERROR;
@@ -99,10 +100,7 @@ CORBA::Short ChppciProblem_impl::setPathOptimizer(CORBA::Short inProblemId, cons
   ktStatus status;
   unsigned int hppProblemId = (unsigned int)inProblemId;
 
-  // get object hppPlanner of Corba server.
-  ChppPlanner *hppPlanner = ChppciServer::getInstance()->getHppPlanner();
-
-  unsigned int nbProblems = hppPlanner->getNbHppProblems();
+  unsigned int nbProblems = attHppPlanner->getNbHppProblems();
 
   cerr<<"ChppciProblem_impl::setPathOptimizer: nbProblems "<<nbProblems
       <<"problem id "<<inProblemId<<", pathOptimizerName "
@@ -110,25 +108,25 @@ CORBA::Short ChppciProblem_impl::setPathOptimizer(CORBA::Short inProblemId, cons
   // Test that rank is less than number of robots in vector.
   if (hppProblemId < nbProblems) {
     // Get robot in hppPlanner object.
-    CkppDeviceComponentShPtr hppRobot = hppPlanner->robotIthProblem(hppProblemId);
+    CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppProblemId);
     if (pathOptimizerName == "clear") {
       CkwsClearOptimizerShPtr pathOptimizer = CkwsClearOptimizer::create();
-      status = hppPlanner->pathOptimizerIthProblem(hppProblemId, pathOptimizer);
+      status = attHppPlanner->pathOptimizerIthProblem(hppProblemId, pathOptimizer);
       cerr<<"ChppciProblem_impl::setPathOptimizer: clear path optimizer set."<<endl;
       return (CORBA::Short)status;
     } else if (pathOptimizerName == "adaptiveShortcut") {
       CkwsAdaptiveShortcutOptimizerShPtr pathOptimizer = CkwsAdaptiveShortcutOptimizer::create();
-      status = hppPlanner->pathOptimizerIthProblem(hppProblemId, pathOptimizer);
+      status = attHppPlanner->pathOptimizerIthProblem(hppProblemId, pathOptimizer);
       cerr<<"ChppciProblem_impl::setPathOptimizer: adaptive shortcut path optimizer set."<<endl;
       return (CORBA::Short)status;
     } else if (pathOptimizerName == "random") {
       CkwsRandomOptimizerShPtr pathOptimizer = CkwsRandomOptimizer::create();
-      status = hppPlanner->pathOptimizerIthProblem(hppProblemId, pathOptimizer);
+      status = attHppPlanner->pathOptimizerIthProblem(hppProblemId, pathOptimizer);
       cerr<<"ChppciProblem_impl::setPathOptimizer: random path optimizer set."<<endl;
       return (CORBA::Short)status;
     } else if (pathOptimizerName == "none") {
       CkwsPathOptimizerShPtr pathOptimizer;
-      status = hppPlanner->pathOptimizerIthProblem(hppProblemId, pathOptimizer);
+      status = attHppPlanner->pathOptimizerIthProblem(hppProblemId, pathOptimizer);
       cerr<<"ChppciProblem_impl::setPathOptimizer: no path optimizer set."<<endl;
       return (CORBA::Short)status;
     } else {
@@ -151,15 +149,12 @@ CORBA::Short ChppciProblem_impl::setInitialConfig(CORBA::Short inProblemId, cons
   unsigned int configDim = (unsigned int)dofArray.length();
   std::vector<double> dofVector;
 
-  // get object hppPlanner of Corba server.
-  ChppPlanner *hppPlanner = ChppciServer::getInstance()->getHppPlanner();
-
-  unsigned int nbProblems = hppPlanner->getNbHppProblems();
+  unsigned int nbProblems = attHppPlanner->getNbHppProblems();
   
   // Test that rank is less than nulber of robots in vector.
   if (hppProblemId < nbProblems) {
     // Get robot in hppPlanner object.
-    CkppDeviceComponentShPtr hppRobot = hppPlanner->robotIthProblem(hppProblemId);
+    CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppProblemId);
     // Fill dof vector with dof array.
     for (unsigned int iDof=0; iDof<configDim; iDof++) {
       dofVector.push_back(dofArray[iDof]);
@@ -171,7 +166,7 @@ CORBA::Short ChppciProblem_impl::setInitialConfig(CORBA::Short inProblemId, cons
       return KD_ERROR;
     }
     
-    return (short)hppPlanner->initConfIthProblem(hppProblemId, config);
+    return (short)attHppPlanner->initConfIthProblem(hppProblemId, config);
   }
   else {
     cerr << "ChppciProblem_impl::setInitialConfig: wrong robot Id" << endl;
@@ -186,15 +181,12 @@ CORBA::Short ChppciProblem_impl::setGoalConfig(CORBA::Short inProblemId, const d
   unsigned int configDim = (unsigned int)dofArray.length();
   std::vector<double> dofVector;
 
-  // get object hppPlanner of Corba server.
-  ChppPlanner *hppPlanner = ChppciServer::getInstance()->getHppPlanner();
-
-  unsigned int nbProblems = hppPlanner->getNbHppProblems();
+  unsigned int nbProblems = attHppPlanner->getNbHppProblems();
   
   // Test that rank is less than nulber of robots in vector.
   if (hppProblemId < nbProblems) {
     // Get robot in hppPlanner object.
-    CkppDeviceComponentShPtr hppRobot = hppPlanner->robotIthProblem(hppProblemId);
+    CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppProblemId);
     // Fill dof vector with dof array.
     for (unsigned int iDof=0; iDof<configDim; iDof++) {
       dofVector.push_back(dofArray[iDof]);
@@ -206,7 +198,7 @@ CORBA::Short ChppciProblem_impl::setGoalConfig(CORBA::Short inProblemId, const d
       return KD_ERROR;
     }
     
-    return (short)hppPlanner->goalConfIthProblem(hppProblemId, config);
+    return (short)attHppPlanner->goalConfIthProblem(hppProblemId, config);
   }
   else {
     cerr << "ChppciProblem_impl::setGoalConfig: wrong robot Id" << endl;
@@ -217,10 +209,7 @@ CORBA::Short ChppciProblem_impl::setGoalConfig(CORBA::Short inProblemId, const d
 
 CORBA::Short ChppciProblem_impl::initializeProblem()
 {
-  // get object hppPlanner of Corba server.
-  ChppPlanner *hppPlanner = ChppciServer::getInstance()->getHppPlanner();
-
-  ktStatus status  = hppPlanner->initializeProblem();
+  ktStatus status  = attHppPlanner->initializeProblem();
   return (CORBA::Short)status;
 }
 
@@ -233,20 +222,17 @@ CORBA::Short ChppciProblem_impl::solveOneProblem(CORBA::Short inProblemId, CORBA
   pathLength = 0;
   
   unsigned int hppProblemId = (unsigned int)inProblemId;
-  // get object hppPlanner of Corba server.
-  ChppPlanner *hppPlanner = ChppciServer::getInstance()->getHppPlanner();
-
-  unsigned int nbProblems = hppPlanner->getNbHppProblems();
+  unsigned int nbProblems = attHppPlanner->getNbHppProblems();
   
   // Test that rank is less than nulber of robots in vector.
   if (hppProblemId < nbProblems) {
-    status = hppPlanner->solveOneProblem(hppProblemId);
+    status = attHppPlanner->solveOneProblem(hppProblemId);
   }
  
 
-  inLastPathId = hppPlanner->getNbPaths(hppProblemId) - 1;
+  inLastPathId = attHppPlanner->getNbPaths(hppProblemId) - 1;
   if (inLastPathId > -1) {
-    pathLength = hppPlanner->getPath(hppProblemId, inLastPathId)->length();
+    pathLength = attHppPlanner->getPath(hppProblemId, inLastPathId)->length();
   }
   else {
     cerr << "ChppciProblem_impl::solveOneProblem: no path in hppProblem "
@@ -259,10 +245,7 @@ CORBA::Short ChppciProblem_impl::solveOneProblem(CORBA::Short inProblemId, CORBA
 
 CORBA::Short ChppciProblem_impl::solve()
 {
-  // get object hppPlanner of Corba server.
-  ChppPlanner *hppPlanner = ChppciServer::getInstance()->getHppPlanner();
-
-  ktStatus status  = hppPlanner->solve();
+  ktStatus status  = attHppPlanner->solve();
   return (CORBA::Short)status;
 }
 
@@ -273,11 +256,9 @@ dofSeq* ChppciProblem_impl::configAtDistance(CORBA::Short inProblemId, CORBA::Sh
 
   // get the planner  
   unsigned int hppProblemId = (unsigned int)inProblemId;
-  // get object hppPlanner of Corba server.
-  ChppPlanner *hppPlanner = ChppciServer::getInstance()->getHppPlanner();
 
   //get the nb of dof of the robot in the problem
-  unsigned int nbDofRobot = hppPlanner->robotIthProblem(inProblemId)->countDofs();
+  unsigned int nbDofRobot = attHppPlanner->robotIthProblem(inProblemId)->countDofs();
 
   //init the seqdof
   // Allocate result now that the size is known.
@@ -293,7 +274,7 @@ dofSeq* ChppciProblem_impl::configAtDistance(CORBA::Short inProblemId, CORBA::Sh
   }
   else {
      CkwsConfigShPtr inConfig ;
-     inConfig = hppPlanner->getPath(hppProblemId, pathId)->configAtDistance(atDistance) ; 
+     inConfig = attHppPlanner->getPath(hppProblemId, pathId)->configAtDistance(atDistance) ; 
      //convert the config in dofseq
      for ( unsigned int i = 0 ; i < inConfig->size() ; i++){
        DofList[i] =  inConfig->dofValue(i) ;
@@ -312,14 +293,13 @@ CORBA::Short ChppciProblem_impl::setObstacleTolerance(CORBA::Short inProblemId, 
   // get the planner  
   unsigned int hppProblemId = (unsigned int)inProblemId;
   // get object hppPlanner of Corba server.
-  ChppPlanner *hppPlanner = ChppciServer::getInstance()->getHppPlanner();
 
-  if(!hppPlanner){
+  if(!attHppPlanner){
     cerr<<"problem "<<hppProblemId<<" not found"<<endl;
     return -1;
   }
 
-  std::vector<CkcdObjectShPtr> oList = hppPlanner->obstacleList();
+  std::vector<CkcdObjectShPtr> oList = attHppPlanner->obstacleList();
 
   if(oList.size() == 0)
     cerr<<" there are no obstacle in problem "<<hppProblemId<<endl;

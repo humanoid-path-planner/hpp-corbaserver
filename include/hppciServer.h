@@ -8,6 +8,7 @@
 #ifndef HPPCI_SERVER_H
 #define HPPCI_SERVER_H
 
+#include <pthread.h>
 #include "hppPlanner.h"
 
 class ChppciServerPrivate;
@@ -32,8 +33,8 @@ A pointer to a ChppPlanner object (ChppciServer::hppPlanner) is passed to the co
 
 class ChppciServer {
 public:
-  /** \brief Constructor 
-      Store in ChppciServer::hppPlanner.
+  /** 
+      \brief Constructor 
   */
   ChppciServer(ChppPlanner* inHppPlanner);
   /// \brief Shutdown CORBA server
@@ -43,12 +44,35 @@ public:
   /// \param argv arguments for Corba server initialization.
   /// \return 0 if success, -1 if failure.
   int startCorbaServer(int argc, char *argv[]);
-  /// \brief If CORBA requests are pending, process them
+  /// \brief If ORB work is pending, process it
   /// \param loop if true, the function never returns; if false, the function processes pending requests and returns.
   int processRequest(bool loop);
   /// \brief return a pointer to object ChppciServer::hppPlanner.
   ChppPlanner *getHppPlanner();
 
+  /**
+     \name Mutex operations
+     @{
+  */
+
+  /**
+     \brief Wait for the mutex to be unlocked and lock it.
+  */
+  void waitForMutex();
+
+  /**
+     \brief Unlock the mutex
+  */
+  void unlockMutex();
+
+  /**
+     \brief Test whether mutex is locked
+     \return true if the mutex is unlocked, false otherwise
+  */
+  bool testMutexUnlocked();
+  /**
+     @}
+  */
   // 
   // Static public
   // 
@@ -63,6 +87,14 @@ private:
   /// \brief pointer to ChppPlanner Object.
   /// At initialization, the constructor creates a ChppPlanner object and keeps a pointer to it. All Corba requests are processed by this object. Notice that this pointer is passed to each constructor of implementation classes of the server Corba interface.
   ChppPlanner *hppPlanner;
+
+  /**
+     \brief Semaphore that protects access to data-structures manipulated by CORBA.
+     
+     CORBA requests are handled by separate threads. They may therefore run concurrently.
+     The data manipulated by the request thus need to be protected by a semaphor.
+  */
+  pthread_mutex_t attRequestMutex;
 };
 
 #endif

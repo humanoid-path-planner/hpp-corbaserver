@@ -26,6 +26,7 @@ Obstacles are stored in collision lists (CkcdCollisionList) composed of polyhedr
 #include "hppBody.h"
 #include "hppciRobotServer.hh"
 
+class ChppciServer;
 
 /**
  * \brief Implementation of corba interface ChppciRobot.
@@ -35,7 +36,7 @@ The construction of a
 class ChppciRobot_impl : public virtual POA_ChppciRobot {
 public:
   /// \brief Store pointer to ChppPlanner object of hppciServer.
-  ChppciRobot_impl(ChppPlanner *hppPl);
+  ChppciRobot_impl(ChppciServer *inHppciServer);
   /// \brief Comment in interface ChppciRobot::createRobot.
   virtual CORBA::Short createRobot(const char* inRobotName) 
     throw(CORBA::SystemException);
@@ -153,9 +154,12 @@ private:
   std::map<std::string, std::vector<CkcdObjectShPtr> > collisionListMap;
   /// \brief map of polyhedra in construction.
   std::map<std::string, CkppKCDPolyhedronShPtr> polyhedronMap;
+
+  /// \brief Pointer to the ChppciServer owning this object
+  ChppciServer* attHppciServer;
   /// \brief Pointer to hppPlanner object of hppciServer.
   /// Instantiated at construction.
-  ChppPlanner *hppPlanner;
+  ChppPlanner *attHppPlanner;
 };
 
 

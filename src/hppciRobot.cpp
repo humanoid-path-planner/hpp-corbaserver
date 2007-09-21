@@ -14,9 +14,9 @@
 
 // ==========================================================================
 
-ChppciRobot_impl::ChppciRobot_impl(ChppPlanner *inHppPlanner)
+ChppciRobot_impl::ChppciRobot_impl(ChppciServer *inHppciServer) : 
+  attHppciServer(inHppciServer), attHppPlanner(inHppciServer->getHppPlanner())
 {
-  hppPlanner = inHppPlanner;
 }
 
 // ==========================================================================
@@ -54,7 +54,7 @@ CORBA::Short ChppciRobot_impl::addHppProblem(const char* inRobotName)
   }
   CkppDeviceComponentShPtr hppDevice = robotMap[robotName];
   // Create a new problem with this robot.
-  hppPlanner->addHppProblem(hppDevice);
+  attHppPlanner->addHppProblem(hppDevice);
   
   return 0;
 }
@@ -93,7 +93,7 @@ CORBA::Short ChppciRobot_impl::setRobotRootJoint(const char* inRobotName,
 #if WITH_OPENHRP
 CORBA::Short ChppciRobot_impl::loadHrp2Model(const char* inHrp2Name, const char* inCorbaNameService)
 {
-  ChppciOpenHrpClient openHrpClient(hppPlanner);
+  ChppciOpenHrpClient openHrpClient(attHppPlanner);
   if (openHrpClient.loadHrp2Model() != KD_OK) {
     return KD_ERROR;
   }
@@ -278,14 +278,12 @@ CORBA::Short ChppciRobot_impl::setJointBounds(CORBA::Short problemId, CORBA::Sho
   unsigned int hppProblemId = (unsigned int)problemId;
   unsigned int jointId = (unsigned int)inJointId;
 
-  // get object hppPlanner of Corba server.
-  ChppPlanner *hppPlanner = ChppciServer::getInstance()->getHppPlanner();
-  unsigned int nbProblems = hppPlanner->getNbHppProblems();
+  unsigned int nbProblems = attHppPlanner->getNbHppProblems();
   
   // Test that rank is less than number of robots in vector.
   if (hppProblemId < nbProblems) {
     // Get robot in hppPlanner object.
-    CkppDeviceComponentShPtr hppRobot = hppPlanner->robotIthProblem(hppProblemId);
+    CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppProblemId);
 
     // get joint
     CkwsDevice::TJointVector jointVector;
@@ -342,15 +340,12 @@ CORBA::Short ChppciRobot_impl::setJointLocked(CORBA::Short problemId, CORBA::Sho
 {
   unsigned int hppRobotId = (unsigned int)problemId;
 
-  // get object hppPlanner of Corba server.
-  ChppPlanner *hppPlanner = ChppciServer::getInstance()->getHppPlanner();
-
-  unsigned int nbRobots = hppPlanner->getNbHppProblems();
+  unsigned int nbRobots = attHppPlanner->getNbHppProblems();
   
   // Test that rank is less than number of robots in vector.
   if (hppRobotId < nbRobots) {
     // Get robot in hppPlanner object.
-    CkppDeviceComponentShPtr hppRobot = hppPlanner->robotIthProblem(hppRobotId);
+    CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppRobotId);
 
     // get joint
     CkwsDevice::TDofVector dofList;
@@ -385,15 +380,12 @@ CORBA::Short ChppciRobot_impl::setCurrentConfig(CORBA::Short inProblemId,
 
   std::vector<double> dofVector;
 
-  // get object hppPlanner of Corba server.
-  ChppPlanner *hppPlanner = ChppciServer::getInstance()->getHppPlanner();
-
-  unsigned int nbProblems = hppPlanner->getNbHppProblems();
+  unsigned int nbProblems = attHppPlanner->getNbHppProblems();
   
   // Test that rank is less than number of robots in vector.
   if (hppProblemId < nbProblems) {
     // Get robot in hppPlanner object.
-    CkppDeviceComponentShPtr hppRobot = hppPlanner->robotIthProblem(hppProblemId);
+    CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppProblemId);
 
     // by Yoshida 06/08/25
     unsigned int deviceDim = hppRobot->countDofs ();
@@ -417,7 +409,7 @@ CORBA::Short ChppciRobot_impl::setCurrentConfig(CORBA::Short inProblemId,
     // Create a config for robot initialized with dof vector.
     CkwsConfig config(hppRobot, dofVector);
     
-    return (short)hppPlanner->robotCurrentConfIthProblem(hppProblemId, config);
+    return (short)attHppPlanner->robotCurrentConfIthProblem(hppProblemId, config);
   }
   else {
     cerr << "ChppciRobotConfig_impl::setCurrentConfig: wrong robot Id" << endl;
@@ -461,14 +453,11 @@ dofSeq* ChppciRobot_impl::getCurrentConfig(CORBA::Short inProblemId)
 
   dofSeq *dofArray;
 
-  // get object hppPlanner of Corba server.
-  ChppPlanner *hppPlanner = ChppciServer::getInstance()->getHppPlanner();
-
-  unsigned int nbProblems = hppPlanner->getNbHppProblems();
+  unsigned int nbProblems = attHppPlanner->getNbHppProblems();
 
   if (hppProblemId < nbProblems) {
     // Get robot in hppPlanner object.
-    CkppDeviceComponentShPtr hppRobot = hppPlanner->robotIthProblem(hppProblemId);
+    CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppProblemId);
 
     std::vector<double> dofVector;
     hppRobot->getCurrentDofValues(dofVector);
@@ -626,7 +615,7 @@ nameSeq* ChppciRobot_impl::getBodyInnerObject(const char* inBodyName)
 
   nameSeq *innerObjectSeq = NULL;
   // Find the body corresponding to the name in ChppPlanner object.
-  ChppBodyConstShPtr hppBody = hppPlanner->findBodyByName(bodyName);
+  ChppBodyConstShPtr hppBody = attHppPlanner->findBodyByName(bodyName);
   CkwsKCDBodyConstShPtr kcdBody;
 
   if (hppBody) {
@@ -668,7 +657,7 @@ nameSeq* ChppciRobot_impl::getBodyOuterObject(const char* inBodyName)
 
   nameSeq *outerObjectSeq = NULL;
   // Find the body corresponding to the name in ChppPlanner object.
-  ChppBodyConstShPtr hppBody = hppPlanner->findBodyByName(bodyName);
+  ChppBodyConstShPtr hppBody = attHppPlanner->findBodyByName(bodyName);
   CkwsKCDBodyConstShPtr kcdBody;
 
   if (hppBody) {
@@ -762,15 +751,12 @@ throw(CORBA::SystemException)
   unsigned int hppProblemId = (unsigned int)problemId;
   unsigned int hppJointId = (unsigned int)jointId; // +DOF_SHIFT;
   
-  // get object hppPlanner of Corba server.
-  ChppPlanner *hppPlanner = ChppciServer::getInstance()->getHppPlanner();
-
-  unsigned int nbProblems = hppPlanner->getNbHppProblems();
+  unsigned int nbProblems = attHppPlanner->getNbHppProblems();
 
 
   if (hppProblemId < nbProblems) {
     // Get robot in hppPlanner object.
-    CkppDeviceComponentShPtr hppRobot = hppPlanner->robotIthProblem(hppProblemId);
+    CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppProblemId);
 
     // by Yoshida 06/08/25
     unsigned int deviceDim = hppRobot->countDofs ();
@@ -909,15 +895,12 @@ throw(CORBA::SystemException)
 {
   unsigned int hppProblemId = (unsigned int)problemId;
 
-  // get object hppPlanner of Corba server.
-  ChppPlanner *hppPlanner = ChppciServer::getInstance()->getHppPlanner();
-
-  unsigned int nbProblems = hppPlanner->getNbHppProblems();
+  unsigned int nbProblems = attHppPlanner->getNbHppProblems();
   
   // Test that rank is less than number of robots in vector.
   if (hppProblemId < nbProblems) {
     // Get robot in hppPlanner object.
-    CkppDeviceComponentShPtr hppRobot = hppPlanner->robotIthProblem(hppProblemId);
+    CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppProblemId);
 
    
     deviceDim = hppRobot->countDofs ();

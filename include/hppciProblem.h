@@ -11,11 +11,13 @@
 #include <vector>
 #include "hppciProblemServer.hh"
 
+class ChppciServer;
 /**
  * \brief Implementation of corba interface ChppciProblem.
  */
 class ChppciProblem_impl : public virtual POA_ChppciProblem {
 public:
+  ChppciProblem_impl(ChppciServer* inHppciServer);
   virtual CORBA::Short setSteeringMethod(CORBA::Short inProblemId, 
 					 const char* inSteeringMethod, CORBA::Boolean inOriented);
   virtual CORBA::Short setRoadmapbuilder(CORBA::Short inProblemId, const char* inRoadmapBuilder);
@@ -29,7 +31,12 @@ public:
   /// \brief set tolerance to the objects in the planner
   virtual CORBA::Short setObstacleTolerance(CORBA::Short inProblemId, CORBA::Double tolerance)
     throw(CORBA::SystemException);
-
+private:
+  /// \brief Pointer to the ChppciServer owning this object
+  ChppciServer* attHppciServer;
+  /// \brief Pointer to hppPlanner object of hppciServer.
+  /// Instantiated at construction.
+  ChppPlanner *attHppPlanner;
 };  
 
 

@@ -13,9 +13,10 @@
 
 #include "KineoKCDModel/kppKCDPolyhedron.h"
 
-#include "hppPlanner.h"
+#include "hppsPlanner.h"
 #include "hppciObstacleServer.hh"
 
+class ChppciServer;
 
 /**
  * \brief Implementation of corba interface ChppciObstacle.
@@ -23,7 +24,7 @@
 class ChppciObstacle_impl : public virtual POA_ChppciObstacle {
 public:
   /// \brief store pointer to ChppPlanner object.
-  ChppciObstacle_impl(ChppPlanner *inHppPlanner);
+  ChppciObstacle_impl(ChppciServer *inHppciServer);
   /// \brief Comment in interface ChppciObstacle::setObstacles
   CORBA::Short setObstacles(const char* inListName);
   /// \brief Comment in interface ChppciObstacle::addObstacle
@@ -68,7 +69,10 @@ private:
   std::map<std::string, CkppKCDPolyhedronShPtr> polyhedronMap;
 
   /// \brief Pointer to hppPlanner object of hppciServer.
-  ChppPlanner *hppPlanner;
+  ChppPlanner *attHppPlanner;
+
+  /// \brief Pointer to the ChppciServer owning this object
+  ChppciServer* attHppciServer;
 };
 
 #endif
