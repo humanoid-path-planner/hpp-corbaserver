@@ -5,6 +5,8 @@
 
 */
 
+#include <errno.h>
+#include <pthread.h>
 #include <iostream>
 #include "hppciServer.h"
 #include "hppciServerPrivate.h"
@@ -18,37 +20,16 @@ ChppciServer::ChppciServer(ChppPlanner *inHppPlanner) :
 {
   s_hppciServer = this, 
   attPrivate = new ChppciServerPrivate;
-  pthread_mutex_init(&attRequestMutex, NULL);
 }
 
 /// \brief Shutdown CORBA server
 ChppciServer::~ChppciServer()
 {
-  pthread_mutex_destroy(&attRequestMutex);
   attPrivate->orb->shutdown(0);
   delete hppPlanner;
   delete attPrivate;
   s_hppciServer = NULL;
 }
-
-void ChppciServer::waitForMutex()
-{
-  pthread_mutex_lock(&attRequestMutex);
-}
-
-void ChppciServer::unlockMutex()
-{
-  pthread_mutex_unlock(&attRequestMutex);
-}
-
-bool ChppciServer::testMutexUnlocked()
-{
-  if (pthread_mutex_trylock(&attRequestMutex) == 0) {
-    return true;
-  }
-  return false;
-}
-
 
 ChppciServer* ChppciServer::getInstance()
 {
@@ -66,7 +47,7 @@ int ChppciServer::startCorbaServer(int argc, char *argv[])
     // Make the CORBA object single-threaded to avoid GUI krash
     //
     // Create a sigle threaded policy object
-    PortableServer::ThreadPolicy_var singleThread = rootPoa->create_thread_policy(PortableServer::SINGLE_THREAD_MODEL);
+    PortableServer::ThreadPolicy_var singleThread = rootPoa->create_thread_policy(PortableServer::MAIN_THREAD_MODEL);
     CORBA::PolicyList policyList;
     policyList.length(1);
     policyList[0] = PortableServer::ThreadPolicy::_duplicate(singleThread);

@@ -91,7 +91,7 @@ CORBA::Short ChppciRobot_impl::setRobotRootJoint(const char* inRobotName,
 }
 
 #if WITH_OPENHRP
-CORBA::Short ChppciRobot_impl::loadHrp2Model(const char* inHrp2Name, const char* inCorbaNameService)
+CORBA::Short ChppciRobot_impl::loadHrp2Model()
 {
   ChppciOpenHrpClient openHrpClient(attHppPlanner);
   if (openHrpClient.loadHrp2Model() != KD_OK) {

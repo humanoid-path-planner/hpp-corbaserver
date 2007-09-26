@@ -9,3 +9,5 @@ Version: @VERSION@
 Requires: @HPPCORE_REQD@, omniORB4 >= 4.0.7@OPENHRP_DEPENDENCES@
 Libs: -L${libdir} -lhppCorbaServer
 Cflags: -I${includedir}/hpp
+
+openhrp_flag=@WITH_OPENHRP@

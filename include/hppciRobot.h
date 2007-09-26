@@ -49,7 +49,7 @@ public:
     throw(CORBA::SystemException);
 #if WITH_OPENHRP
   /// \brief Comment in interface ChppciRobot::loadHrp2Model.
-  virtual CORBA::Short loadHrp2Model(const char* inHrp2Name, const char* inCorbaNameService);
+  virtual CORBA::Short loadHrp2Model();
 #endif
   /// \brief Comment in interface ChppciRobot::createExtraDof.
   virtual CORBA::Short createExtraDof(const char* inDofName, CORBA::Boolean inRevolute, 

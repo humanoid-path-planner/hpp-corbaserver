@@ -1,4 +1,7 @@
 $Id: ChangeLog 2007/08/27 14:48:51 mallet $
+2007/09/26
+	Create POA with PortableServer::MAIN_THREAD_MODEL as thread policy in order to make main thread process corba requests.
+	
 2007/09/20
 	Requests of hppCorbaServer are treated sequentially in order to avoid concurrent access problems.
 	

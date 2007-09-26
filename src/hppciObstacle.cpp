@@ -235,13 +235,12 @@ CORBA::Short ChppciObstacle_impl::createBox(const char* inBoxName,
 					    CORBA::Double z)
   throw(CORBA::SystemException)
 {
-  attHppciServer->waitForMutex();
+  //  attHppciServer->waitForMutex(std::string("ChppciObstacle_impl::createBox"));
   std::string polyhedronName(inBoxName);
   // Check that polyhedron does not already exist.
   if (polyhedronMap.count(polyhedronName) != 0) {
     cerr << "ChppciObstacle_impl::createPolyhedron: polyhedron "
 	 << polyhedronName << " already exists." << endl;
-    attHppciServer->unlockMutex();
     return -1;
   }
   CkppKCDPolyhedronShPtr hppPolyhedron = CkppKCDBox::create(polyhedronName, x, y, z);
@@ -249,12 +248,10 @@ CORBA::Short ChppciObstacle_impl::createBox(const char* inBoxName,
   if (!hppPolyhedron) {
     cerr << "ChppciObstacle_impl::createPolyhedron: failed to create polyhedron "
 	 << polyhedronName << endl;
-    attHppciServer->unlockMutex();
     return -1;
   }
   polyhedronMap[polyhedronName] = hppPolyhedron;
 
-  attHppciServer->unlockMutex();
   return 0;
 }
 

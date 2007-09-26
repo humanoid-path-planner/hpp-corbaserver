@@ -35,7 +35,8 @@ libhppCorbaServer_la_CPPFLAGS = \
 
 libhppCorbaServer_la_CPPFLAGS += \
 	@HPPCORE_CFLAGS@ \
-	@OMNIORB4_CFLAGS@ 
+	@OMNIORB4_CFLAGS@ \
+	@WITH_OPENHRP@ 
 
 libhppCorbaServer_la_LIBADD = \
 	@HPPCORE_LIBS@ \
@@ -64,7 +65,7 @@ libhppCorbaServer_la_LIBADD += \
 endif
 
 %SK.cc %.hh: ../idl/server/%.idl
-	@OMNIORB_PREFIX@/bin/omniidl -bcxx $<
+	@OMNIORB_PREFIX@/bin/omniidl -bcxx @WITH_OPENHRP@ $<
 
 %SK.cc %.hh: @MODELLOADERJRL_IDL@/%.idl
 	@OMNIORB_PREFIX@/bin/omniidl -bcxx $<

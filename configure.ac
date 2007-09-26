@@ -28,9 +28,9 @@ AC_SUBST(OMNIORB_PREFIX)
 AC_SUBST(WITH_OPENHRP)
 AC_ARG_WITH(openhrp,
 	AS_HELP_STRING([--with-openhrp], [to implement an OpenHRP client]),
-	CXXFLAGS="${CXXFLAGS} -DWITH_OPENHRP=1"
+	AC_SUBST(WITH_OPENHRP, "-DWITH_OPENHRP=1")
 	with_openhrp=true,
-	CXXFLAGS="${CXXFLAGS} -DWITH_OPENHRP=0"
+	AC_SUBST(WITH_OPENHRP, "-DWITH_OPENHRP=0")
 	with_openhrp=false
 )
 AM_CONDITIONAL(OPENHRP, test x$with_openhrp = xtrue)

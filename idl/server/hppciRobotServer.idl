@@ -61,7 +61,7 @@ interface ChppciRobot {
    * \brief Load HRP2 model by sending a Corba request to OpenHRP
    *
    */
-  short loadHrp2Model(in string inHrp2Name, in string inCorbaNameService);
+  short loadHrp2Model();
 #endif
 
   /** 
