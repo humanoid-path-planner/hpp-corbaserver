@@ -1,4 +1,15 @@
 $Id: ChangeLog 2007/08/27 14:48:51 mallet $
+
+2007/09/27
+	hppCorbaServer can now run with KPP interface without crashing. The CORBA interface enables a user
+	  - to build a robot joint by joint and body by body,
+	  - to add and move obstacles
+	  - to define initial and goal configurations and
+	  - to solve a problem.
+	
+	2. Made corrections in interface implementation ChppciRobotServer.idl to take into account the new version of KineoPathPlanner. This had not been done.
+	1. Added Reeds and Shepp local steering method.
+	
 2007/09/26
 	Create POA with PortableServer::MAIN_THREAD_MODEL as thread policy in order to make main thread process corba requests.
 	

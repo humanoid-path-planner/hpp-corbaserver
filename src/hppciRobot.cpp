@@ -6,11 +6,40 @@
 */
 
 #include <iostream>
+
+#include "KineoModel/kppAnchorJointComponent.h"
+#include "KineoModel/kppFreeFlyerJointComponent.h"
+#include "KineoModel/kppTranslationJointComponent.h"
+#include "KineoModel/kppRotationJointComponent.h"
+#include "KineoModel/kppSolidComponentRef.h"
+#include "KineoKCDModel/kppKCDBox.h"
+
 #include "hppciServer.h"
 #include "hppciRobot.h"
 #if WITH_OPENHRP
 #include "hppciOpenHrp.h"
 #endif
+
+#include "hppciTools.h"
+
+static ktStatus attachSolidComponentsToJoint(const CkppJointComponentShPtr& inKppJoint, 
+					     const ChppBodyShPtr& inHppBody)
+{
+  std::vector<CkcdObjectShPtr> innerObjectVector;
+  inHppBody->getInnerObjects(innerObjectVector);
+
+  for (unsigned int iObj=0; iObj<innerObjectVector.size(); iObj++) {
+    CkcdObjectShPtr object = innerObjectVector[iObj];
+
+    CkppKCDPolyhedronShPtr kppPoly = KIT_DYNAMIC_PTR_CAST(CkppKCDPolyhedron, object);
+    if (!kppPoly) {
+      std::cerr << "attachSolidComponentsToJoint: Object is not a CkppKCDPolyhedron." << std::endl;
+      return KD_ERROR;
+    }
+    inKppJoint->addSolidComponentRef(CkppSolidComponentRef::create(kppPoly)); 
+  }
+  return KD_OK;
+}
 
 // ==========================================================================
 
@@ -79,9 +108,9 @@ CORBA::Short ChppciRobot_impl::setRobotRootJoint(const char* inRobotName,
     return -1;
   }
   CkppDeviceComponentShPtr hppDevice = robotMap[robotName];
-  CkwsJointShPtr kwsJoint = jointMap[jointName];
+  CkppJointComponentShPtr kppJoint = jointMap[jointName];
   
-  if (hppDevice->setRootJoint(kwsJoint)!=KD_OK) {
+  if (hppDevice->rootJointComponent(kppJoint)!=KD_OK) {
     cerr << "ChppciRobot_impl::setRobotRootJoint: failed to set joint "
 	 << jointName << " as root joint of robot " << robotName << "." 
 	 << endl;
@@ -166,7 +195,7 @@ CORBA::Short ChppciRobot_impl::addExtraDofToRobot(const char* inRobotName, const
 // ==========================================================================
 
 CORBA::Short ChppciRobot_impl::createJoint(const char* inJointName, 
-					   const char* inJointType, const matrix4 pos, 
+					   const char* inJointType, const Configuration& pos, 
 					   const jointBoundSeq& inJointBound) 
   throw(CORBA::SystemException)
 {
@@ -180,35 +209,46 @@ CORBA::Short ChppciRobot_impl::createJoint(const char* inJointName,
     return -1;
   }
 
-  CkwsJointShPtr kwsJoint;
+  CkppJointComponentShPtr kppJoint;
 
-	// Fill position matrix
+  // Fill position matrix
   CkitMat4 posMatrix;
-  for (unsigned int iRow=0; iRow < 4; iRow++) {
-  	for (unsigned int iCol=0; iCol < 4; iCol++) {
-  		posMatrix(iRow, iCol) = pos[iRow][iCol];
-  	}
-  } 
-//  cout << "Position matrix = (( " << posMatrix(0, 0) << ",\t " << posMatrix(0, 1) << ",\t " << posMatrix(0, 2) << ",\t " << posMatrix(0, 3) << " )" << endl;
-//  cout << "                   ( " << posMatrix(1, 0) << ",\t " << posMatrix(1, 1) << ",\t " << posMatrix(1, 2) << ",\t " << posMatrix(1, 3) << " )" << endl;
-//  cout << "                   ( " << posMatrix(2, 0) << ",\t " << posMatrix(2, 1) << ",\t " << posMatrix(2, 2) << ",\t " << posMatrix(2, 3) << " )" << endl;
-//  cout << "                   ( " << posMatrix(3, 0) << ",\t " << posMatrix(3, 1) << ",\t " << posMatrix(3, 2) << ",\t " << posMatrix(3, 3) << " ))" << endl;
+  ConfigurationToCkitMat4(pos, posMatrix);
+
+  //  cout << "Position matrix = (( " << posMatrix(0, 0) << ",\t " << posMatrix(0, 1) << ",\t " << posMatrix(0, 2) << ",\t " << posMatrix(0, 3) << " )" << endl;
+  //  cout << "                   ( " << posMatrix(1, 0) << ",\t " << posMatrix(1, 1) << ",\t " << posMatrix(1, 2) << ",\t " << posMatrix(1, 3) << " )" << endl;
+  //  cout << "                   ( " << posMatrix(2, 0) << ",\t " << posMatrix(2, 1) << ",\t " << posMatrix(2, 2) << ",\t " << posMatrix(2, 3) << " )" << endl;
+  //  cout << "                   ( " << posMatrix(3, 0) << ",\t " << posMatrix(3, 1) << ",\t " << posMatrix(3, 2) << ",\t " << posMatrix(3, 3) << " ))" << endl;
 
   // Determine type of joint.
   if (jointType == "anchor") {
-    kwsJoint = CkwsJointAnchor::create();
+    CkppAnchorJointComponentShPtr kppAnchorJoint = CkppAnchorJointComponent::create(std::string(inJointName));
+    kppAnchorJoint->setCurrentPosition(posMatrix);
+    kppJoint = kppAnchorJoint;
   }
   else if (jointType == "freeflyer") {
-    kwsJoint = CkwsJointFreeFlyer::create(posMatrix);
+    CkppFreeFlyerJointComponentShPtr kppFreeFlyerJoint = CkppFreeFlyerJointComponent::create(std::string(inJointName));
+    kppFreeFlyerJoint->setCurrentPosition(posMatrix);
+    kppJoint = kppFreeFlyerJoint;
   }
   else if (jointType == "plan") {
-    kwsJoint = CkwsJointPlan::create(posMatrix);
+    CkppFreeFlyerJointComponentShPtr kppFreeFlyerJoint = CkppFreeFlyerJointComponent::create(std::string(inJointName));
+    kppFreeFlyerJoint->dof(2)->isLocked(true);
+    kppFreeFlyerJoint->dof(3)->isLocked(true);
+    kppFreeFlyerJoint->dof(4)->isLocked(true);
+
+    kppFreeFlyerJoint->setCurrentPosition(posMatrix);
+    kppJoint = kppFreeFlyerJoint;
   }
   else if (jointType == "rotation") {
-    kwsJoint = CkwsJointRotation::create(posMatrix);
+    CkppRotationJointComponentShPtr kppRotationJoint = CkppRotationJointComponent::create(std::string(inJointName));
+    kppRotationJoint->setCurrentPosition(posMatrix);
+    kppJoint = kppRotationJoint;
   }
   else if (jointType == "translation") {
-    kwsJoint = CkwsJointTranslation::create(posMatrix);
+    CkppTranslationJointComponentShPtr kppTranslationJoint = CkppTranslationJointComponent::create(std::string(inJointName));
+    kppTranslationJoint->setCurrentPosition(posMatrix);
+    kppJoint = kppTranslationJoint;
   }
   else {
     cerr << "ChppciRobot_impl::createJoint: joint type " << jointType 
@@ -216,12 +256,13 @@ CORBA::Short ChppciRobot_impl::createJoint(const char* inJointName,
     return -1;
   }
   // Check whether creation failed.
-  if (!kwsJoint) {
+  if (!kppJoint) {
     cerr << "ChppciRobot_impl::createJoint: failed to create joint "
 	 << jointName << endl;
     return -1;
   } 
   // Bound joint if needed.
+  CkwsJointShPtr kwsJoint = KIT_DYNAMIC_PTR_CAST(CkwsJoint, kppJoint);
   unsigned int nbJointBounds = (unsigned int)inJointBound.length();
   unsigned int kwsJointNbDofs = kwsJoint->countDofs(); 
   if (nbJointBounds == 2*kwsJointNbDofs) {
@@ -235,7 +276,7 @@ CORBA::Short ChppciRobot_impl::createJoint(const char* inJointName,
     }
   }
   // Store joint in jointMap.
-  jointMap[jointName] = kwsJoint;
+  jointMap[jointName] = kppJoint;
 
   return 0;
 }
@@ -259,9 +300,9 @@ CORBA::Short ChppciRobot_impl::addJoint(const char* inParentName,
 	 << " does not exist." << endl;
     return -1;
   }
-  CkwsJointShPtr parentJoint = jointMap[inParentName];
-  CkwsJointShPtr childJoint = jointMap[inChildName];
-  if (parentJoint->addJoint(childJoint) != KD_OK) {
+  CkppJointComponentShPtr parentJoint = jointMap[inParentName];
+  CkppJointComponentShPtr childJoint = jointMap[inChildName];
+  if (parentJoint->addChildJointComponent(childJoint) != KD_OK) {
     cerr << "ChppciRobot_impl::addJoint: failed to attach joint "
 	 << inChildName << " to joint " << inParentName << endl;
     return -1;
@@ -420,6 +461,7 @@ CORBA::Short ChppciRobot_impl::setCurrentConfig(CORBA::Short inProblemId,
 
 // ==========================================================================
 
+#if WITH_OPENHRP
 
 #define LARM_JOINT0_OPENHRP 29
 #define RHAND_JOINT0_OPENHRP 36
@@ -444,6 +486,27 @@ CORBA::Short ChppciRobot_impl::setCurrentConfigOpenHRP(CORBA::Short problemId, c
   return setCurrentConfig(problemId, dofArrayKineo);
 }
 
+/// \brief Comment in interface ChppciRobot::getCurrentConfig
+dofSeq* ChppciRobot_impl::getCurrentConfigOpenHRP(CORBA::Short inProblemId)
+    throw(CORBA::SystemException)
+{
+  dofSeq *dofArray = getCurrentConfig(inProblemId);
+  
+  dofSeq dofArrayKineo(*dofArray);
+
+  // LARM
+  for(unsigned int i=0; i<7; i++){
+    (*dofArray)[LARM_JOINT0_OPENHRP+i] = dofArrayKineo[LARM_JOINT0_KINEO+i];
+  }
+  // RHAND
+  for(unsigned int i=0; i<5; i++){
+    (*dofArray)[RHAND_JOINT0_OPENHRP+i] = dofArrayKineo[RHAND_JOINT0_KINEO+i];
+  }
+
+  return dofArray;
+}
+
+#endif
 
 /// \brief Comment in interface ChppciRobot::getCurrentConfig
 dofSeq* ChppciRobot_impl::getCurrentConfig(CORBA::Short inProblemId)
@@ -488,35 +551,6 @@ dofSeq* ChppciRobot_impl::getCurrentConfig(CORBA::Short inProblemId)
   return new dofSeq(1);
 }
 
-/// \brief Comment in interface ChppciRobot::getCurrentConfig
-dofSeq* ChppciRobot_impl::getCurrentConfigOpenHRP(CORBA::Short inProblemId)
-    throw(CORBA::SystemException)
-{
-  dofSeq *dofArray = getCurrentConfig(inProblemId);
-  
-  dofSeq dofArrayKineo(*dofArray);
-
-  // LARM
-  for(unsigned int i=0; i<7; i++){
-    (*dofArray)[LARM_JOINT0_OPENHRP+i] = dofArrayKineo[LARM_JOINT0_KINEO+i];
-  }
-  // RHAND
-  for(unsigned int i=0; i<5; i++){
-    (*dofArray)[RHAND_JOINT0_OPENHRP+i] = dofArrayKineo[RHAND_JOINT0_KINEO+i];
-  }
-
-  return dofArray;
-}
-
-/*
-/// \brief Comment in interface ChppciRobot::getCurrentConfig
-CORBA::Short ChppciRobot_impl::Test(CORBA::Short inProblemId)
-    throw(CORBA::SystemException)
-{
-
-}
-*/
-
 // ==========================================================================
 
 CORBA::Short ChppciRobot_impl::attachBodyToJoint(const char* inJointName, 
@@ -538,7 +572,8 @@ CORBA::Short ChppciRobot_impl::attachBodyToJoint(const char* inJointName,
 	 << bodyName << " does not exist." << endl;
     return -1;
   }
-  CkwsJointShPtr kwsJoint = jointMap[jointName];
+  CkppJointComponentShPtr kppJoint = jointMap[jointName];
+  CkwsJointShPtr kwsJoint = KIT_DYNAMIC_PTR_CAST(CkwsJoint, kppJoint);
   ChppBodyShPtr hppBody = bodyMap[bodyName];
 
   if (kwsJoint->setAttachedBody(hppBody) != KD_OK) {
@@ -546,6 +581,10 @@ CORBA::Short ChppciRobot_impl::attachBodyToJoint(const char* inJointName,
 	 << bodyName << " to joint " << jointName << endl;
     return -1;
   }
+  // If objects are attached to the body, the corresponding component need to
+  // be attached to the joint component
+  attachSolidComponentsToJoint(kppJoint, hppBody);
+
   return 0;
 }
 
@@ -574,35 +613,6 @@ CORBA::Short ChppciRobot_impl::createBody(const char* inBodyName)
   hppBody->setOuterObjects(emptyObjectList);
   // Store body in map.
   bodyMap[bodyName] = hppBody;
-
-  return 0;
-}
-
-// ==========================================================================
-
-CORBA::Short ChppciRobot_impl::setBodyInnerObject(const char* inBodyName, 
-						  const char* inListName)
-  throw(CORBA::SystemException)
-{
-  std::string bodyName(inBodyName);
-  std::string listName(inListName);
-
-  // Check that body of this name exits.
-  if (bodyMap.count(bodyName) != 1) {
-    cerr << "ChppciRobot_impl::setBodyInnerObject: body "
-	 << bodyName << " does not exist." << endl;
-    return -1;
-  }
-  // Check that collision list of this name exists.
-  if (collisionListMap.count(listName) != 1) {
-    cerr << "ChppciRobot_impl::setBodyInnerObject: collision list " 
-	 << listName << " does not exist." << endl;
-    return -1;
-  }
-  ChppBodyShPtr hppBody = bodyMap[bodyName];
-  std::vector<CkcdObjectShPtr> kcdCollisionList = collisionListMap[listName];
-
-  hppBody->setInnerObjects(kcdCollisionList);
 
   return 0;
 }
@@ -688,55 +698,6 @@ nameSeq* ChppciRobot_impl::getBodyOuterObject(const char* inBodyName)
   }
 
   return outerObjectSeq;
-}
-
-// ==========================================================================
-
-CORBA::Short ChppciRobot_impl::createCollisionList(const char* inListName)
-  throw(CORBA::SystemException)
-{
-  std::string listName(inListName);
-
-  // Check that collision list does not already exist.
-  if (collisionListMap.count(listName) != 0) {
-    cerr << "ChppciRobot_impl::createCollisionList: collision list "
-	 << listName << " already exists." << endl;
-    return -1;
-  }
-  std::vector<CkcdObjectShPtr> collisionList ;
-  collisionListMap[listName] = collisionList;
-  return 0;
-}
-
-// ==========================================================================
-
-CORBA::Short ChppciRobot_impl::addPolyToCollList(const char* inListName, 
-						 const char* inPolyhedronName)
-  throw(CORBA::SystemException)
-{
-  std::string listName(inListName);
-  std::string polyhedronName(inPolyhedronName);
-
-  // Check that collision list exists.
-  if (collisionListMap.count(listName) != 1) {
-    cerr << "ChppciRobot_impl::addPolyToCollList: collision list "
-	 << listName << " does not exist." << endl;
-    return -1;
-  }
-  // Check that polyhedron exists.
-  if (polyhedronMap.count(polyhedronName) != 1) {
-    cerr << "ChppciRobot_impl::addPolyToCollList: polyhedron "
-	 << polyhedronName << " does not exist." << endl;
-    return -1;
-  }
-  std::vector< CkcdObjectShPtr > kcdCollisionList = collisionListMap[listName];
-  CkppKCDPolyhedronShPtr hppPolyhedron = polyhedronMap[polyhedronName];
-
-  // Build collision entity for KCD.
-  hppPolyhedron->makeCollisionEntity();
-  kcdCollisionList.push_back(hppPolyhedron);
-
-  return 0;
 }
 
 #define DOF_SHIFT 7 // DOF shift. extraDof + 6 dof of the free-flying base.
@@ -833,14 +794,41 @@ CORBA::Short ChppciRobot_impl::createPolyhedron(const char* inPolyhedronName)
 	 << polyhedronName << " already exists." << endl;
     return -1;
   }
-  CkppKCDPolyhedronShPtr hppPolyhedron = CkppKCDPolyhedron::create(polyhedronName);
+  CkppKCDPolyhedronShPtr kppPolyhedron = CkppKCDPolyhedron::create(polyhedronName);
 
-  if (!hppPolyhedron) {
+  if (!kppPolyhedron) {
     cerr << "ChppciRobot_impl::createPolyhedron: failed to create polyhedron "
 	 << polyhedronName << endl;
     return -1;
   }
-  polyhedronMap[polyhedronName] = hppPolyhedron;
+  polyhedronMap[polyhedronName] = kppPolyhedron;
+
+  return 0;
+}
+
+// ==========================================================================
+ 
+CORBA::Short ChppciRobot_impl::createBox(const char* inBoxName, 
+					 CORBA::Double x, CORBA::Double y, 
+					 CORBA::Double z)
+  throw(CORBA::SystemException)
+{
+  //  attHppciServer->waitForMutex(std::string("ChppciObstacle_impl::createBox"));
+  std::string polyhedronName(inBoxName);
+  // Check that polyhedron does not already exist.
+  if (polyhedronMap.count(polyhedronName) != 0) {
+    cerr << "ChppciObstacle_impl::createPolyhedron: polyhedron "
+	 << polyhedronName << " already exists." << endl;
+    return -1;
+  }
+  CkppKCDPolyhedronShPtr kppPolyhedron = CkppKCDBox::create(polyhedronName, x, y, z);
+
+  if (!kppPolyhedron) {
+    cerr << "ChppciObstacle_impl::createPolyhedron: failed to create polyhedron "
+	 << polyhedronName << endl;
+    return -1;
+  }
+  polyhedronMap[polyhedronName] = kppPolyhedron;
 
   return 0;
 }
@@ -860,9 +848,9 @@ CORBA::Short ChppciRobot_impl::addPoint(const char* inPolyhedronName,
 	 << " does not exist." << endl;
     return -1;
   }
-  CkppKCDPolyhedronShPtr hppPolyhedron = polyhedronMap[polyhedronName];
+  CkppKCDPolyhedronShPtr kppPolyhedron = polyhedronMap[polyhedronName];
   unsigned int rank;
-  hppPolyhedron->CkcdPolyhedron::addPoint(x, y, z, rank);
+  kppPolyhedron->CkcdPolyhedron::addPoint(x, y, z, rank);
 
   return rank;
 }
@@ -881,9 +869,9 @@ CORBA::Short ChppciRobot_impl::addTriangle(const char* inPolyhedronName,
 	 << " does not exist." << endl;
     return -1;
   }
-  CkppKCDPolyhedronShPtr hppPolyhedron = polyhedronMap[polyhedronName];
+  CkppKCDPolyhedronShPtr kppPolyhedron = polyhedronMap[polyhedronName];
   unsigned int rank;
-  hppPolyhedron->addTriangle(pt1, pt2, pt3, rank);
+  kppPolyhedron->addTriangle(pt1, pt2, pt3, rank);
 
   return rank;
 }
@@ -912,3 +900,45 @@ throw(CORBA::SystemException)
   return KD_OK;
 }
 
+// ==========================================================================
+
+CORBA::Short ChppciRobot_impl::addPolyToBody(const char* inBodyName, const char* inPolyhedronName, 
+					     const Configuration& inConfig)
+  throw(CORBA::SystemException)
+{
+  std::string bodyName(inBodyName);
+  std::string polyhedronName(inPolyhedronName);
+
+  // Check that body of this name exits.
+  if (bodyMap.count(bodyName) != 1) {
+    cerr << "ChppciRobot_impl::setBodyInnerObject: body "
+	 << bodyName << " does not exist." << endl;
+    return -1;
+  }
+  // Check that polyhedron exists.
+  if (polyhedronMap.count(polyhedronName) != 1) {
+    cerr << "ChppciRobot_impl::addPolyToCollList: polyhedron "
+	 << polyhedronName << " does not exist." << endl;
+    return -1;
+  }
+
+  ChppBodyShPtr hppBody = bodyMap[bodyName];
+  CkppKCDPolyhedronShPtr kppPolyhedron = polyhedronMap[polyhedronName];
+
+  // Set polyhedron in given configuration.
+  CkitMat4 pos;
+  ConfigurationToCkitMat4(inConfig, pos);
+  kppPolyhedron->setAbsolutePosition(pos);
+  
+  std::vector<CkcdObjectShPtr> innerObjectVector;
+  hppBody->getInnerObjects(innerObjectVector);
+  innerObjectVector.push_back(kppPolyhedron);
+  hppBody->setInnerObjects(innerObjectVector);
+
+  // If body is already attached to a joint, add polyhedron to the corresponding joint component.
+  CkwsJointShPtr kwsJoint = hppBody->joint();
+  if (CkppJointComponentShPtr kppJoint = KIT_DYNAMIC_PTR_CAST(CkppJointComponent, kwsJoint)) {
+    kppJoint->addSolidComponentRef(CkppSolidComponentRef::create(kppPolyhedron)); 
+  }  
+  return 0;
+}

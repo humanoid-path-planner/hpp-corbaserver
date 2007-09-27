@@ -29,6 +29,29 @@ Obstacles are stored in collision lists (CkcdCollisionList) composed of polyhedr
 class ChppciServer;
 
 /**
+   \brief List of kcd objects with shared pointer to the joint owning the objects.
+*/
+class ChppKcdObjectVector : public std::vector<CkcdObjectShPtr> 
+{
+public:
+  /**
+     \brief Get joint
+  */
+  const CkppJointComponentShPtr& kppJoint() const { 
+    return attKppJoint; 
+  };
+  
+  /**
+     \brief Set joint
+  */
+  void kppJoint(const CkppJointComponentShPtr& inKppJoint) {attKppJoint = inKppJoint;};
+
+private:
+  CkppJointComponentShPtr attKppJoint;
+};
+
+
+/**
  * \brief Implementation of corba interface ChppciRobot.
 
 The construction of a 
@@ -64,7 +87,7 @@ public:
 
   /// \brief Comment in interface ChppciRobot::createJoint.
   virtual CORBA::Short 
-    createJoint(const char* inJointName, const char* inJointType, const matrix4 pos,
+    createJoint(const char* inJointName, const char* inJointType, const  Configuration& pos,
 		            const jointBoundSeq& jointBound) throw(CORBA::SystemException);
   /// \brief Comment in interface ChppciRobot::addJoint.
   virtual CORBA::Short 
@@ -85,16 +108,17 @@ public:
   virtual CORBA::Short setCurrentConfig(CORBA::Short inProblemId, const dofSeq& dofArray) 
     throw(CORBA::SystemException);
 
+#if WITH_OPENHRP
   /// \brief Comment in interface ChppciRobot::setCurrentConfig in the order of joint of OpenHRP
   virtual CORBA::Short setCurrentConfigOpenHRP(CORBA::Short inProblemId, const dofSeq& dofArray) 
     throw(CORBA::SystemException);
 
-  /// \brief Comment in interface ChppciRobot::getCurrentConfig
-  virtual dofSeq* getCurrentConfig(CORBA::Short inProblemId)
-    throw(CORBA::SystemException);
-
   /// \brief Comment in interface ChppciRobot::getCurrentConfig in the order of joint of OpenHRP
   virtual dofSeq* getCurrentConfigOpenHRP(CORBA::Short inProblemId)
+    throw(CORBA::SystemException);
+#endif
+  /// \brief Comment in interface ChppciRobot::getCurrentConfig
+  virtual dofSeq* getCurrentConfig(CORBA::Short inProblemId)
     throw(CORBA::SystemException);
 
   /// \brief Comment in interface ChppciRobot::getCurrentConfig
@@ -110,27 +134,20 @@ public:
   /// \brief Comment in interface ChppciRobot::createBody.
   virtual CORBA::Short createBody(const char* inBodyName)
     throw(CORBA::SystemException);
-  /// \brief Comment in interface ChppciRobot::setBodyInnerObject.
-  virtual CORBA::Short 
-    setBodyInnerObject(const char* inBodyName, const char* inListName)
-    throw(CORBA::SystemException);
   /// \brief Comment in interface ChppciRobot::getBodyInnerObject.
   virtual nameSeq* getBodyInnerObject(const char* inBodyName);
   /// \brief Comment in interface ChppciRobot::getBodyOuterObject.
   virtual nameSeq* getBodyOuterObject(const char* inBodyName);
 
-  /// \brief Comment in interface ChppciRobot::createCollisionList.
-  virtual CORBA::Short createCollisionList(const char* inListName)
-    throw(CORBA::SystemException);
-  /// \brief Comment in interface ChppciRobot::addPolyToCollList.
-  virtual CORBA::Short 
-    addPolyToCollList(const char* inListName, const char* inPolyhedronName)
-    throw(CORBA::SystemException);
   /// \brief Comment in interface ChppciRobot::checkLinkCollision.
   CORBA::Short checkLinkCollision(CORBA::Short problemId, CORBA::Short jointId, CORBA::Short& result)
     throw(CORBA::SystemException);
   /// \brief Comment in interface ChppciRobot::createPolyhedron.
   virtual CORBA::Short createPolyhedron(const char* inPolyhedronName)
+    throw(CORBA::SystemException);
+  /// \brief Comment in ChppciObstacle::createBox.
+  virtual CORBA::Short createBox(const char* inBoxName, CORBA::Double x, 
+	     CORBA::Double y, CORBA::Double z)
     throw(CORBA::SystemException);
   /// \brief Comment in interface ChppciRobot::addPoint.
   virtual CORBA::Short 
@@ -140,6 +157,10 @@ public:
   virtual CORBA::Short 
     addTriangle(const char* inPolyhedronName, long pt1, long pt2, long pt3)
     throw(CORBA::SystemException);
+  /// \brief Comment in interface ChppciRobot::addPolyToBody.
+  virtual CORBA::Short
+  addPolyToBody(const char* inBodyName, const char* inPolyhedronName, const Configuration& inConfig)
+    throw(CORBA::SystemException);
 private:
   // Store devices, joints and bodies in construction.
   /// \brief map of devices in construction.
@@ -147,11 +168,9 @@ private:
   /// \brief map of extra degrees of freedom in construction.
   std::map<std::string, CkwsDofShPtr> extraDofMap;
   /// \brief map of joints in construction.
-  std::map<std::string, CkwsJointShPtr> jointMap;
+  std::map<std::string, CkppJointComponentShPtr> jointMap;
   /// \brief map of bodies in construction.
   std::map<std::string, ChppBodyShPtr> bodyMap;
-  /// \brief map of collision lists in construction.
-  std::map<std::string, std::vector<CkcdObjectShPtr> > collisionListMap;
   /// \brief map of polyhedra in construction.
   std::map<std::string, CkppKCDPolyhedronShPtr> polyhedronMap;
 

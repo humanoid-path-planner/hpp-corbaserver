@@ -9,6 +9,7 @@
 #include "hppciServer.h"
 #include "hppciProblem.h"
 #include "flicSteeringMethod.h"
+#include "reedsSheppSteeringMethod.h"
 
 ChppciProblem_impl::ChppciProblem_impl(ChppciServer* inHppciServer) : 
   attHppciServer(inHppciServer), attHppPlanner(inHppciServer->getHppPlanner())
@@ -37,6 +38,9 @@ CORBA::Short ChppciProblem_impl::setSteeringMethod(CORBA::Short inProblemId,
 
     } else if (steeringMethodName == "flic") {
       CflicSteeringMethodShPtr steeringMethod = CflicSteeringMethod::create(inOriented);
+      hppRobot->steeringMethod(steeringMethod);
+    } else if (steeringMethodName == "rs") {
+      CreedsSheppSteeringMethodShPtr steeringMethod = CreedsSheppSteeringMethod::create(inOriented);
       hppRobot->steeringMethod(steeringMethod);
     } else {
       cerr << "ChppciProblem_impl::setSteeringMethod: unknown steering method." << endl;

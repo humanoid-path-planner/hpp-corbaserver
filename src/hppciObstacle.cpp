@@ -11,6 +11,8 @@
 #include "hppciServer.h"
 #include "hppciObstacle.h"
 
+#include "hppciTools.h"
+
 #define VERBOSE
 
 // ==========================================================================
@@ -76,19 +78,9 @@ CORBA::Short ChppciObstacle_impl::addObstacleConfig(const char* inPolyName,
   // Build collision entity for KCD.
   polyhedron->makeCollisionEntity();
 
-  double array[4][4];
-  for(int i=0; i<3; i++){
-    for(int j=0; j<3; j++)
-      array[i][j] = cfg.rot[i*3+j];
-  }
-  for(int i=0; i<3; i++)
-    array[i][3] = cfg.trs[i];
-  for(int i=0; i<3; i++)
-    array[3][i] = 0.0;
-  array[3][3] = 1.0;
-
-  CkitMat4 mat(array);
-
+  CkitMat4 mat;
+  ConfigurationToCkitMat4(cfg, mat);
+  
   polyhedron->setAbsolutePosition(mat);
   attHppPlanner->addObstacle(polyhedron);
   return 0;  
@@ -123,18 +115,8 @@ CORBA::Short ChppciObstacle_impl::moveObstacleConfig(const char* inPolyName,
 
   // if there is, change its configuration.
   if(findFlag){
-    double array[4][4];
-    for(int i=0; i<3; i++){
-      for(int j=0; j<3; j++)
-	array[i][j] = cfg.rot[i*3+j];
-    }
-    for(int i=0; i<3; i++)
-      array[i][3] = cfg.trs[i];
-    for(int i=0; i<3; i++)
-      array[3][i] = 0.0;
-    array[3][3] = 1.0;
-
-    CkitMat4 mat(array);
+    CkitMat4 mat;
+    ConfigurationToCkitMat4(cfg, mat);
 
     poly->setAbsolutePosition(mat);
   

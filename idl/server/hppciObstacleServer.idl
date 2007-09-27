@@ -8,17 +8,7 @@
 #ifndef HPPCI_OBSTACLE_SERVER_IDL
 #define HPPCI_OBSTACLE_SERVER_IDL
 
-/**
- * \brief Sequence of string
- */
-typedef sequence<string> strSeq;
-
-typedef double Translation[3];
-typedef double Rotation[9];
-struct Configuration{
-  Translation trs;
-  Rotation rot;
-};
+#include "hppciCommonServer.idl"
 
 /**
  * \brief Creation of obstacles

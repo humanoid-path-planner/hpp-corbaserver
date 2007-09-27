@@ -25,7 +25,8 @@ libhppCorbaServer_la_SOURCES= \
 	hppciProblem.cpp \
 	hppciRobot.cpp \
 	hppciServer.cpp \
-	hppciServerPrivate.cpp
+	hppciServerPrivate.cpp \
+	hppciTools.cpp
 
 libhppCorbaServer_la_CPPFLAGS = \
 	-I@top_builddir@/include \

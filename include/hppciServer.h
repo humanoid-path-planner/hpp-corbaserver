@@ -8,7 +8,6 @@
 #ifndef HPPCI_SERVER_H
 #define HPPCI_SERVER_H
 
-#include <pthread.h>
 #include "hppPlanner.h"
 
 class ChppciServerPrivate;

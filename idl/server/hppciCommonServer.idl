@@ -13,4 +13,11 @@
 
 typedef sequence<double> dofSeq;
 
+typedef double Translation[3];
+typedef double Rotation[9];
+struct Configuration {
+  Translation trs;
+  Rotation rot;
+};
+
 #endif
