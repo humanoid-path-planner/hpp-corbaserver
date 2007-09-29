@@ -12,6 +12,7 @@
 #include "KineoModel/kppTranslationJointComponent.h"
 #include "KineoModel/kppRotationJointComponent.h"
 #include "KineoModel/kppSolidComponentRef.h"
+#include "KineoModel/kppExtraDofComponent.h"
 #include "KineoKCDModel/kppKCDBox.h"
 
 #include "hppciServer.h"
@@ -143,7 +144,7 @@ CORBA::Short ChppciRobot_impl::createExtraDof(const char* inDofName, CORBA::Bool
 	 << dofName << " already exists." << endl;
     return -1;
   }
-  CkwsDofShPtr extraDof = CkwsDof::create(inRevolute);
+  CkppExtraDofComponentShPtr extraDof = CkppExtraDofComponent::create(inRevolute, "inDofName");
   // Check whether creation failed.
   if (!extraDof) {
     cerr << "ChppciRobot_impl::createExtraDof: failed to create extra degree of freedom "
@@ -151,10 +152,10 @@ CORBA::Short ChppciRobot_impl::createExtraDof(const char* inDofName, CORBA::Bool
     return -1;
   }
   if (inValueMin <= inValueMax) {
-    extraDof->isBounded(true);
-    extraDof->bounds(inValueMin, inValueMax);
+    extraDof->CkppDofComponent::isBounded(true);
+    extraDof->CkppDofComponent::bounds(inValueMin, inValueMax);
   } else {
-    extraDof->isBounded(false);
+    extraDof->CkppDofComponent::isBounded(false);
   }
   // Store extra degree of freedom in map.
   extraDofMap[dofName] = extraDof;
@@ -181,7 +182,7 @@ CORBA::Short ChppciRobot_impl::addExtraDofToRobot(const char* inRobotName, const
     return -1;
   }
   CkppDeviceComponentShPtr hppDevice = robotMap[robotName];
-  CkwsDofShPtr kwsExtraDof = extraDofMap[dofName];
+  CkppExtraDofComponentShPtr kwsExtraDof = extraDofMap[dofName];
   
   if (hppDevice->addExtraDof(kwsExtraDof)!=KD_OK) {
     cerr << "ChppciRobot_impl::addExtraDofToRobot: failed add extra degree of freedom "
@@ -196,7 +197,8 @@ CORBA::Short ChppciRobot_impl::addExtraDofToRobot(const char* inRobotName, const
 
 CORBA::Short ChppciRobot_impl::createJoint(const char* inJointName, 
 					   const char* inJointType, const Configuration& pos, 
-					   const jointBoundSeq& inJointBound) 
+					   const jointBoundSeq& inJointBound,
+					   CORBA::Boolean inDisplay) 
   throw(CORBA::SystemException)
 {
   std::string jointName(inJointName);
@@ -275,6 +277,7 @@ CORBA::Short ChppciRobot_impl::createJoint(const char* inJointName,
       }
     }
   }
+  kppJoint->doesDisplayPath(inDisplay);
   // Store joint in jointMap.
   jointMap[jointName] = kppJoint;
 
@@ -375,8 +378,8 @@ CORBA::Short ChppciRobot_impl::setJointBounds(CORBA::Short problemId, CORBA::Sho
 
 // ==========================================================================
 
-CORBA::Short ChppciRobot_impl::setJointLocked(CORBA::Short problemId, CORBA::Short jointId, 
-					      CORBA::Boolean locked, CORBA::Double lockedValue)
+CORBA::Short ChppciRobot_impl::setDofLocked(CORBA::Short problemId, CORBA::Short jointId, 
+					    CORBA::Boolean locked, CORBA::Double lockedValue)
   throw(CORBA::SystemException)
 {
   unsigned int hppRobotId = (unsigned int)problemId;

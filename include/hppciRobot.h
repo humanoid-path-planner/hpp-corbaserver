@@ -88,7 +88,7 @@ public:
   /// \brief Comment in interface ChppciRobot::createJoint.
   virtual CORBA::Short 
     createJoint(const char* inJointName, const char* inJointType, const  Configuration& pos,
-		            const jointBoundSeq& jointBound) throw(CORBA::SystemException);
+		const jointBoundSeq& jointBound, CORBA::Boolean inDisplay) throw(CORBA::SystemException);
   /// \brief Comment in interface ChppciRobot::addJoint.
   virtual CORBA::Short 
     addJoint(const char* inParentName, const char* inChildName)
@@ -99,9 +99,9 @@ public:
 				     const jointBoundSeq& jointBound)
     throw(CORBA::SystemException);
 
-  /// \brief Comment in interface ChppciRobot::setJointLocked.
-  virtual CORBA::Short setJointLocked(CORBA::Short problemId, CORBA::Short jointId, 
-				      CORBA::Boolean locked, CORBA::Double lockedValue)
+  /// \brief Comment in interface ChppciRobot::setDofLocked.
+  virtual CORBA::Short setDofLocked(CORBA::Short problemId, CORBA::Short jointId, 
+				    CORBA::Boolean locked, CORBA::Double lockedValue)
     throw(CORBA::SystemException);
 
   /// \brief Comment in interface ChppciRobot::setCurrentConfig
@@ -166,7 +166,7 @@ private:
   /// \brief map of devices in construction.
   std::map<std::string, CkppDeviceComponentShPtr> robotMap;
   /// \brief map of extra degrees of freedom in construction.
-  std::map<std::string, CkwsDofShPtr> extraDofMap;
+  std::map<std::string, CkppExtraDofComponentShPtr> extraDofMap;
   /// \brief map of joints in construction.
   std::map<std::string, CkppJointComponentShPtr> jointMap;
   /// \brief map of bodies in construction.

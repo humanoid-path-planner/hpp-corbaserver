@@ -16,8 +16,13 @@
 interface ChppciProblem {
   /** \brief Set steering method of specified robot in ChppPlanner::robotVector.
    \param inProblemId rank of problem in vector of hppProblems.
-   \param inSteeringMethod name of the steering method in {"linear", "flic"}.
+   \param inSteeringMethod name of the steering method in {"linear", "flic", "rs"}.
    \param inOriented whether local method is oriented or not.
+
+   The steering method implemented are
+   \li "linear": linear interpolation in configuration parameter space,
+   \li "flic": flat interpolation for cart-like robot
+   \li "rs": Reeds and Shepp optimal curves
   */
   short setSteeringMethod(in short inProblemId, in string inSteeringMethod, in boolean inOriented);
   /** \brief Set roadmap builder of specified robot in ChppPlanner::robotVector.
@@ -59,6 +64,14 @@ interface ChppciProblem {
      \brief Solve the problem of corresponding ChppPlanner object
   */
   short solve();
+
+    /**
+       \brief Optimize a given path
+       \param inProblemId Id of the problem owning the path.
+       \param inPathId Id of the path in this problem.
+    */
+  short optimizePath(in short inProblemId, in short inPathId);
+
   /** \brief get the robot's config at param on the a path 
       \param inProblemId rank of robot in vector of robots.
       \param pathId rank of the path in the problem
@@ -75,6 +88,18 @@ interface ChppciProblem {
       \return success(0 - KD_OK) or failure(-1 - KD_ERROR) 
   */
   short setObstacleTolerance(in short inProblemId, in double tolerance);
+
+  /**
+     \brief Draw the roadmap of given problem
+     \param inProblemId: rank of robot in vector of robots.
+  */
+  short drawRoadmap(in short inProblemId);
+  
+  /**
+     \brief Stop drawing the roadmap of given problem
+     \param inProblemId: rank of robot in vector of robots.
+  */
+  short stopDrawingRoadmap(in short inProblemId);
   
 };
 

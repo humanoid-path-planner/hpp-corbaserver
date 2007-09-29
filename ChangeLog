@@ -1,4 +1,7 @@
-$Id: ChangeLog 2007/08/27 14:48:51 mallet $
+2007/09/29
+	1. Added CORBA requests to display a roadmap in the interface.
+	2. Added a CORBA request to optimize a path.
+	3. Renamed setJointLocked into setDofLocked.
 
 2007/09/27
 	hppCorbaServer can now run with KPP interface without crashing. The CORBA interface enables a user

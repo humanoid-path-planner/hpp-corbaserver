@@ -18,19 +18,49 @@ class ChppciServer;
 class ChppciProblem_impl : public virtual POA_ChppciProblem {
 public:
   ChppciProblem_impl(ChppciServer* inHppciServer);
+  /// \brief Comment in interface ChppciPRoblem::setSteeringMethod.
   virtual CORBA::Short setSteeringMethod(CORBA::Short inProblemId, 
 					 const char* inSteeringMethod, CORBA::Boolean inOriented);
+
+  /// \brief Comment in interface ChppciPRoblem::setRoadmapbuilder
   virtual CORBA::Short setRoadmapbuilder(CORBA::Short inProblemId, const char* inRoadmapBuilder);
+
+  /// \brief Comment in interface ChppciPRoblem::setPathOptimizer
   virtual CORBA::Short setPathOptimizer(CORBA::Short inProblemId, const char* inPathOptimizer);
+
+  /// \brief Comment in interface ChppciPRoblem::setInitialConfig
   virtual CORBA::Short setInitialConfig(CORBA::Short inProblemId, const dofSeq& dofArray);
+
+  /// \brief Comment in interface ChppciPRoblem::setGoalConfig
   virtual CORBA::Short setGoalConfig(CORBA::Short inProblemId, const dofSeq& dofArray);
+
+  /// \brief Comment in interface ChppciPRoblem::initializeProblem
   virtual CORBA::Short initializeProblem();
+
+  /// \brief Comment in interface ChppciPRoblem::solveOneProblem
   virtual CORBA::Short solveOneProblem(CORBA::Short inProblemId, CORBA::Short& inLastPathId, CORBA::Double& pathLength) ;
+
+  /// \brief Comment in interface ChppciPRoblem::solve
   virtual CORBA::Short solve();
+
+  /// \brief Comment in interface ChppciPRoblem::optimizePath
+  virtual CORBA::Short optimizePath(CORBA::Short inProblemId, CORBA::Short inPathId);
+
+  /// \brief Comment in interface ChppciPRoblem::configAtDistance
   virtual dofSeq* configAtDistance(CORBA::Short inProblemId, CORBA::Short pathId, CORBA::Double pathLength, CORBA::Double atDistance) ;
-  /// \brief set tolerance to the objects in the planner
+
+  /// \brief Comment in interface ChppciPRoblem::setObstacleTolerance
   virtual CORBA::Short setObstacleTolerance(CORBA::Short inProblemId, CORBA::Double tolerance)
     throw(CORBA::SystemException);
+
+  /// \brief Comment in interface ChppciPRoblem::drawRoadmap
+  virtual short drawRoadmap(CORBA::Short inProblemId)
+    throw(CORBA::SystemException);
+
+  /// \brief Comment in interface ChppciPRoblem::stopDrawingRoadmap
+  virtual short stopDrawingRoadmap(CORBA::Short inProblemId)
+    throw(CORBA::SystemException);
+
 private:
   /// \brief Pointer to the ChppciServer owning this object
   ChppciServer* attHppciServer;

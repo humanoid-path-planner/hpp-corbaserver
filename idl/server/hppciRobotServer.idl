@@ -106,10 +106,12 @@ interface ChppciRobot {
   * \param inJointType type of joint in {"anchor", "freeflyer", "plan", "rotation", "translation"}.
   * \param pos position of the joint.
   * \param inJointBound sequence of joint dof bounds in order [v0_min,v0_max,v1_min,v1_max,...]. If vi_min > vi_max, dof of rank i is not bounded. If size of sequence is different from twice the number of dofs, no dof is bounded.
+  * \param inDisplay Whether the path of the joint should be displayed in interface.
+
    * \return 0 if success, -1 if failure.
   */
   short createJoint(in string inJointName, in string inJointType, in Configuration pos, 
-		    in jointBoundSeq inJointBound);
+		    in jointBoundSeq inJointBound, in boolean inDisplay);
   /**
    * \brief Add a child joint to a joint.
    * \param inParentName name of the joint to which a child is added.
@@ -122,18 +124,18 @@ interface ChppciRobot {
    * \brief set a bound for the joint
    * \param jointId name of the joint.
    * \param inJointBound sequence of joint dof bounds in order [v0_min,v0_max,v1_min,v1_max,...]. If vi_min > vi_max, dof of rank i is not bounded. If size of sequence is different from twice the number of dofs, no dof is bounded.
-   * \param problemId TODO
+   * \param problemId Id of the problem containing the robot.
   */
   short setJointBounds(in short problemId, in short jointId, in jointBoundSeq inJointBound);
 
   /**
    * \brief set locking/unlocking  for the joint
-   * \param problemId id of the problem
+   * \param problemId id of the problem containing the robot.
    * \param jointId id of the joint.
    * \param locked true (locked)  false (unlocked)
    * \param lockedValue (if locked) give the value
    */
-  short setJointLocked(in short problemId, in short jointId, in boolean locked, in double lockedValue);
+  short setDofLocked(in short problemId, in short jointId, in boolean locked, in double lockedValue);
 
 
   /** 
