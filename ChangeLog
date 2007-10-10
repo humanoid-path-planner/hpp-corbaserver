@@ -1,3 +1,8 @@
+hpp-corbaserver 1.1 released October 10, 2007.
+
+2007/10/10
+	1. Added missing hppTools.h in EXTRA_DIST.
+	
 2007/09/29
 	1. Added CORBA requests to display a roadmap in the interface.
 	2. Added a CORBA request to optimize a path.

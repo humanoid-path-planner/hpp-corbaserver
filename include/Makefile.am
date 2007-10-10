@@ -19,6 +19,6 @@ hppciOpenHrp:
 	$(INSTALL_DATA) hppciOpenHrp.h @includedir@/hpp
 endif
 
-EXTRA_DIST=\
-	hppciServerPrivate.h
-
+EXTRA_DIST = \
+	hppciTools.h \
+	hppciServerPrivate.h 

@@ -6,7 +6,7 @@ dnl
 dnl   Author: Florent Lamiraux and Mathieu Poirier LAAS-CNRS
 dnl
 
-AC_INIT([hppCorbaServer],[1.0],[openrobot@laas.fr])
+AC_INIT([hppCorbaServer],[1.1],[openrobot@laas.fr])
 AC_PREREQ(2.59)
 
 AM_INIT_AUTOMAKE([foreign no-define])
@@ -15,7 +15,7 @@ AC_PROG_LIBTOOL
 
 AC_PROG_CXX
 
-define(hppcore_reqd, [hppCore >= 1.1])
+define(hppcore_reqd, [hppCore >= 1.2])
 AC_SUBST(HPPCORE_REQD, "hppcore_reqd")
 PKG_CHECK_MODULES(HPPCORE, hppcore_reqd)
 HPPCORE_PREFIX=`$PKG_CONFIG hppCore --variable=prefix`
