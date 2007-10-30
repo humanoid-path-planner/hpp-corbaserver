@@ -65,6 +65,9 @@ libhppCorbaServer_la_LIBADD += \
 	@HPPOPENHRP_LIBS@
 endif
 
+clean-local:
+	rm -f *SK.cc *.hh
+
 %SK.cc %.hh: ../idl/server/%.idl
 	@OMNIORB_PREFIX@/bin/omniidl -bcxx @WITH_OPENHRP@ $<
 

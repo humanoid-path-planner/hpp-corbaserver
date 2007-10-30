@@ -27,7 +27,7 @@ static ktStatus attachSolidComponentsToJoint(const CkppJointComponentShPtr& inKp
 					     const ChppBodyShPtr& inHppBody)
 {
   std::vector<CkcdObjectShPtr> innerObjectVector;
-  inHppBody->getInnerObjects(innerObjectVector);
+  inHppBody->innerObjects(innerObjectVector);
 
   for (unsigned int iObj=0; iObj<innerObjectVector.size(); iObj++) {
     CkcdObjectShPtr object = innerObjectVector[iObj];
@@ -933,8 +933,9 @@ CORBA::Short ChppciRobot_impl::addPolyToBody(const char* inBodyName, const char*
   ConfigurationToCkitMat4(inConfig, pos);
   kppPolyhedron->setAbsolutePosition(pos);
   
+#if 0
   std::vector<CkcdObjectShPtr> innerObjectVector;
-  hppBody->getInnerObjects(innerObjectVector);
+  hppBody->innerObjects(innerObjectVector);
   innerObjectVector.push_back(kppPolyhedron);
   hppBody->setInnerObjects(innerObjectVector);
 
@@ -943,5 +944,11 @@ CORBA::Short ChppciRobot_impl::addPolyToBody(const char* inBodyName, const char*
   if (CkppJointComponentShPtr kppJoint = KIT_DYNAMIC_PTR_CAST(CkppJointComponent, kwsJoint)) {
     kppJoint->addSolidComponentRef(CkppSolidComponentRef::create(kppPolyhedron)); 
   }  
+#else
+  if (!hppBody->addSolidComponent(CkppSolidComponentRef::create(kppPolyhedron))) {
+    return -1;
+  }
+#endif
   return 0;
+
 }
