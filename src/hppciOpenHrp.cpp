@@ -5,7 +5,7 @@ INCLUDE
 #include <iostream>
 #include <string>
 
-#include "hppciOpenHrp.h"
+#include "hppCorbaServer/hppciOpenHrp.h"
 
 #include "common-modelloader.hh"
 #include "jrl-modelloader.hh"

@@ -1,5 +1,12 @@
+/*
+  Research carried out within the scope of the Associated International Laboratory: Joint Japanese-French Robotics Laboratory (JRL)
+
+  Developed by Florent Lamiraux (LAAS-CNRS)
+
+*/
+
 #include <iostream>
-#include "hppciServerPrivate.h"
+#include "hppCorbaServer/hppciServerPrivate.h"
 
 CORBA::Boolean ChppciServerPrivate::createHppContext()
 {

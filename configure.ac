@@ -59,7 +59,7 @@ AC_OUTPUT(Makefile
 	idl/server/Makefile
 	src/Makefile
 	include/Makefile
-	include/hppciOpenHrp.h
+	include/hppCorbaServer/hppciOpenHrp.h
 	doc/Makefile
 	doc/hpp.dox
 	hppCorbaServer.pc

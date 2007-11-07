@@ -15,13 +15,13 @@
 #include "KineoModel/kppExtraDofComponent.h"
 #include "KineoKCDModel/kppKCDBox.h"
 
-#include "hppciServer.h"
-#include "hppciRobot.h"
+#include "hppCorbaServer/hppciServer.h"
+#include "hppCorbaServer/hppciRobot.h"
 #if WITH_OPENHRP
-#include "hppciOpenHrp.h"
+#include "hppCorbaServer/hppciOpenHrp.h"
 #endif
 
-#include "hppciTools.h"
+#include "hppCorbaServer/hppciTools.h"
 
 static ktStatus attachSolidComponentsToJoint(const CkppJointComponentShPtr& inKppJoint, 
 					     const ChppBodyShPtr& inHppBody)

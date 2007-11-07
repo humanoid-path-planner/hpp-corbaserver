@@ -6,8 +6,8 @@
 */
 
 #include <iostream>
-#include "hppciServer.h"
-#include "hppciProblem.h"
+#include "hppCorbaServer/hppciServer.h"
+#include "hppCorbaServer/hppciProblem.h"
 #include "flicSteeringMethod.h"
 #include "reedsSheppSteeringMethod.h"
 #include "kwsPlusRoadmap.h"

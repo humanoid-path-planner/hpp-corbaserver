@@ -1,4 +1,11 @@
-#include "hppciTools.h"
+/*
+  Research carried out within the scope of the Associated International Laboratory: Joint Japanese-French Robotics Laboratory (JRL)
+
+  Developed by Florent Lamiraux (LAAS-CNRS)
+
+*/
+
+#include "hppCorbaServer/hppciTools.h"
 
 void ConfigurationToCkitMat4(const Configuration inConfig, CkitMat4& outMatrix4)
 {

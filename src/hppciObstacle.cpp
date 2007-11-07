@@ -8,10 +8,10 @@
 #include <iostream>
 
 #include "KineoKCDModel/kppKCDBox.h"
-#include "hppciServer.h"
-#include "hppciObstacle.h"
+#include "hppCorbaServer/hppciServer.h"
+#include "hppCorbaServer/hppciObstacle.h"
 
-#include "hppciTools.h"
+#include "hppCorbaServer/hppciTools.h"
 
 #define VERBOSE
 

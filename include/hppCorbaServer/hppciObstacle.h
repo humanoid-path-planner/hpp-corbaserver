@@ -13,7 +13,7 @@
 
 #include "KineoKCDModel/kppKCDPolyhedron.h"
 
-#include "hppPlanner.h"
+#include "hppCore/hppPlanner.h"
 #include "hppciObstacleServer.hh"
 
 class ChppciServer;

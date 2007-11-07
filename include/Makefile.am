@@ -5,18 +5,18 @@
 # Author: Florent Lamiraux
 #
 
-hppCorbaServerdir = @includedir@/hpp
+hppCorbaServerdir = @includedir@/hppCorbaServer
 hppCorbaServer_HEADERS = \
-	hppciServer.h		\
-	hppciObstacle.h		\
-	hppciProblem.h		\
-	hppciRobot.h
+	hppCorbaServer/hppciServer.h		\
+	hppCorbaServer/hppciObstacle.h		\
+	hppCorbaServer/hppciProblem.h		\
+	hppCorbaServer/hppciRobot.h
 
 if OPENHRP
 install-data-hook: hppciOpenHrp
 
 hppciOpenHrp:
-	$(INSTALL_DATA) hppciOpenHrp.h @includedir@/hpp
+	$(INSTALL_DATA) hppCorbaServer/hppciOpenHrp.h @includedir@/hppCorbaServer
 endif
 
 EXTRA_DIST = \

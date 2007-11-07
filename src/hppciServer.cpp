@@ -8,8 +8,8 @@
 #include <errno.h>
 #include <pthread.h>
 #include <iostream>
-#include "hppciServer.h"
-#include "hppciServerPrivate.h"
+#include "hppCorbaServer/hppciServer.h"
+#include "hppCorbaServer/hppciServerPrivate.h"
 
 
 	

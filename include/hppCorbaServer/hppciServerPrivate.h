@@ -1,9 +1,9 @@
 #ifndef CHPPCISERVERPRIVATE_H
 #define CHPPCISERVERPRIVATE_H
 
-#include "hppciRobot.h"
-#include "hppciObstacle.h"
-#include "hppciProblem.h"
+#include "hppCorbaServer/hppciRobot.h"
+#include "hppCorbaServer/hppciObstacle.h"
+#include "hppCorbaServer/hppciProblem.h"
 
 class ChppciServerPrivate {
 public:
