@@ -17,9 +17,9 @@ INCLUDE
 #include <map>
 #include <vector>
 #include <string>
-#include "hppPlanner.h"
+#include "hppCore/hppPlanner.h"
 
-#include "hppDevice.h"
+#include "hppModel/hppDevice.h"
 
 KIT_PREDEF_CLASS(CkppKCDPolyhedron);
 
