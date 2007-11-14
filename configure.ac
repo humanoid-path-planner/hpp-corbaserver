@@ -29,8 +29,10 @@ AC_SUBST(WITH_OPENHRP)
 AC_ARG_WITH(openhrp,
 	AS_HELP_STRING([--with-openhrp], [to implement an OpenHRP client]),
 	AC_SUBST(WITH_OPENHRP, "-DWITH_OPENHRP=1")
+	AC_SUBST(OPENHRP, "1")
 	with_openhrp=true,
 	AC_SUBST(WITH_OPENHRP, "-DWITH_OPENHRP=0")
+	AC_SUBST(OPENHRP, "0")
 	with_openhrp=false
 )
 AM_CONDITIONAL(OPENHRP, test x$with_openhrp = xtrue)

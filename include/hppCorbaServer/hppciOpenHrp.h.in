@@ -8,6 +8,7 @@
 #ifndef HPPCI_OPENHRP_H
 #define HPPCI_OPENHRP_H
 
+#if @OPENHRP@
 /*************************************
 INCLUDE
 **************************************/
@@ -158,5 +159,5 @@ private :
 
 };
 
-
+#endif
 #endif
