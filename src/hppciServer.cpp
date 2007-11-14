@@ -26,7 +26,6 @@ ChppciServer::ChppciServer(ChppPlanner *inHppPlanner) :
 ChppciServer::~ChppciServer()
 {
   attPrivate->orb->shutdown(0);
-  delete hppPlanner;
   delete attPrivate;
   s_hppciServer = NULL;
 }

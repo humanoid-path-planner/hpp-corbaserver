@@ -1,4 +1,5 @@
 2007/11/14
+	Do not delete attribute attHppPlanner at destruction of ChppciServer.
 	Correction of documentation generation related to previous modification.
 	
 2007/11/07
