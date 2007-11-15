@@ -42,7 +42,7 @@ CORBA::Short ChppciProblem_impl::setSteeringMethod(CORBA::Short inProblemId,
       CflicSteeringMethodShPtr steeringMethod = CflicSteeringMethod::create(inOriented);
       hppRobot->steeringMethod(steeringMethod);
     } else if (steeringMethodName == "rs") {
-      CreedsSheppSteeringMethodShPtr steeringMethod = CreedsSheppSteeringMethod::create(1.0, RS_ALL, inOriented);
+      CreedsSheppSteeringMethodShPtr steeringMethod = CreedsSheppSteeringMethod::create(1.0, inOriented);
       hppRobot->steeringMethod(steeringMethod);
     } else {
       cerr << "ChppciProblem_impl::setSteeringMethod: unknown steering method." << endl;
