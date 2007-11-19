@@ -88,18 +88,6 @@ interface ChppciProblem {
       \return success(0 - KD_OK) or failure(-1 - KD_ERROR) 
   */
   short setObstacleTolerance(in short inProblemId, in double tolerance);
-
-  /**
-     \brief Draw the roadmap of given problem
-     \param inProblemId: rank of robot in vector of robots.
-  */
-  short drawRoadmap(in short inProblemId);
-  
-  /**
-     \brief Stop drawing the roadmap of given problem
-     \param inProblemId: rank of robot in vector of robots.
-  */
-  short stopDrawingRoadmap(in short inProblemId);
   
 };
 

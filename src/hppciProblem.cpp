@@ -10,7 +10,6 @@
 #include "hppCorbaServer/hppciProblem.h"
 #include "flicSteeringMethod.h"
 #include "reedsSheppSteeringMethod.h"
-#include "kwsPlusRoadmap.h"
 #include "hppVisRdmBuilder.h"
 
 ChppciProblem_impl::ChppciProblem_impl(ChppciServer* inHppciServer) : 
@@ -70,7 +69,7 @@ CORBA::Short ChppciProblem_impl::setRoadmapbuilder(CORBA::Short inProblemId, con
     CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppProblemId);
 
     // Create an empty roadmap for the robot.
-    CkwsPlusRoadmapShPtr roadmap = CkwsPlusRoadmap::create(hppRobot, std::string("kwsPlusRoadmap"));
+    CkwsRoadmapShPtr roadmap = CkwsRoadmap::create(hppRobot->kwsDevice());
     // Set arbitrary penetration.
     double penetration = 0.05;
 
@@ -325,36 +324,3 @@ CORBA::Short ChppciProblem_impl::setObstacleTolerance(CORBA::Short inProblemId, 
   
   return 0;
 }
-
-short ChppciProblem_impl::drawRoadmap(CORBA::Short inProblemId)
-  throw(CORBA::SystemException)
-{
-  unsigned int hppProblemId = (unsigned int)inProblemId;
-
-  if (hppProblemId >= attHppPlanner->getNbHppProblems()) {
-    cerr << "ChppciProblem_impl::drawRoadmap: inProblemId = " << hppProblemId << " >= " 
-	 <<  attHppPlanner->getNbHppProblems() << endl;
-    return -1;
-  }
-  if (attHppPlanner->drawRoadmap(hppProblemId) == KD_ERROR) {
-    return -1;
-  }
-  return 0;
-}
-
-short ChppciProblem_impl::stopDrawingRoadmap(CORBA::Short inProblemId)
-    throw(CORBA::SystemException)
-{
-  unsigned int hppProblemId = (unsigned int)inProblemId;
-
-  if (hppProblemId >= attHppPlanner->getNbHppProblems()) {
-    cerr << "ChppciProblem_impl::drawRoadmap: inProblemId = " << hppProblemId << " >= " 
-	 <<  attHppPlanner->getNbHppProblems() << endl;
-    return -1;
-  }
-  if (attHppPlanner->stopdrawingRoadmap(hppProblemId) == KD_ERROR) {
-    return -1;
-  }
-  return 0;
-}
-

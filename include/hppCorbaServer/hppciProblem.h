@@ -53,14 +53,6 @@ public:
   virtual CORBA::Short setObstacleTolerance(CORBA::Short inProblemId, CORBA::Double tolerance)
     throw(CORBA::SystemException);
 
-  /// \brief Comment in interface ChppciPRoblem::drawRoadmap
-  virtual short drawRoadmap(CORBA::Short inProblemId)
-    throw(CORBA::SystemException);
-
-  /// \brief Comment in interface ChppciPRoblem::stopDrawingRoadmap
-  virtual short stopDrawingRoadmap(CORBA::Short inProblemId)
-    throw(CORBA::SystemException);
-
 private:
   /// \brief Pointer to the ChppciServer owning this object
   ChppciServer* attHppciServer;
