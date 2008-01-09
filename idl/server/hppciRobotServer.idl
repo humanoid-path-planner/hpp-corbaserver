@@ -277,6 +277,8 @@ interface ChppciRobot {
      \param inBodyName name of the body
      \param inPolyhedronName name of the polyhedron
      \param inConfig relative position of the polyhedron in the body
+
+     \note The body must be attached to a joint.
   */
 
   short addPolyToBody(in string inBodyName, in string inPolyhedronName, in Configuration inConfig);
