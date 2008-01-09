@@ -928,11 +928,6 @@ CORBA::Short ChppciRobot_impl::addPolyToBody(const char* inBodyName, const char*
   ChppBodyShPtr hppBody = bodyMap[bodyName];
   CkppKCDPolyhedronShPtr kppPolyhedron = polyhedronMap[polyhedronName];
 
-  // Set polyhedron in given configuration.
-  CkitMat4 pos;
-  ConfigurationToCkitMat4(inConfig, pos);
-  kppPolyhedron->setAbsolutePosition(pos);
-  
 #if 0
   std::vector<CkcdObjectShPtr> innerObjectVector;
   hppBody->innerObjects(innerObjectVector);
@@ -945,7 +940,11 @@ CORBA::Short ChppciRobot_impl::addPolyToBody(const char* inBodyName, const char*
     kppJoint->addSolidComponentRef(CkppSolidComponentRef::create(kppPolyhedron)); 
   }  
 #else
-  if (!hppBody->addSolidComponent(CkppSolidComponentRef::create(kppPolyhedron))) {
+  // Set polyhedron in given configuration.
+  CkitMat4 pos;
+  ConfigurationToCkitMat4(inConfig, pos);
+  
+  if (!hppBody->addSolidComponent(CkppSolidComponentRef::create(kppPolyhedron), pos)) {
     return -1;
   }
 #endif
