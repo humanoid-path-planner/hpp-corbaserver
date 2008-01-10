@@ -1,3 +1,5 @@
+2008/01/10
+	Added recently developed roadmap builders in ChppciProblem::setRoadmapbuilder.
 2007/11/19
 	Remove reference to kwsPlusRoadmap.
 2007/11/14

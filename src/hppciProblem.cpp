@@ -11,6 +11,7 @@
 #include "flicSteeringMethod.h"
 #include "reedsSheppSteeringMethod.h"
 #include "hppVisRdmBuilder.h"
+#include "kwsPlusPCARdmBuilder.h"
 
 ChppciProblem_impl::ChppciProblem_impl(ChppciServer* inHppciServer) : 
   attHppciServer(inHppciServer), attHppPlanner(inHppciServer->getHppPlanner())
@@ -82,11 +83,20 @@ CORBA::Short ChppciProblem_impl::setRoadmapbuilder(CORBA::Short inProblemId, con
       CkwsDiffusingRdmBuilderShPtr roadmapBuilder = CkwsDiffusingRdmBuilder::create(roadmap, penetration);
       status = attHppPlanner->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder);
       return status;      
+    } else if (roadmapBuilderName == "bi-diffusing") {
+      CkwsDiffusingRdmBuilderShPtr roadmapBuilder = CkwsDiffusingRdmBuilder::create(roadmap, penetration);
+      roadmapBuilder->buildingStrategy(CkwsDiffusingRdmBuilder::BIDIFFUSE);
+      status = attHppPlanner->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder);
+      return status;      
     } else if (roadmapBuilderName == "IPP") {
       CkwsIPPRdmBuilderShPtr roadmapBuilder = CkwsIPPRdmBuilder::create(roadmap, penetration);
       status = attHppPlanner->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder);
     } else if (roadmapBuilderName == "visibility") {
       ChppVisRdmBuilderShPtr roadmapBuilder = ChppVisRdmBuilder::create(roadmap, penetration);
+      status = attHppPlanner->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder);
+    } else if (roadmapBuilderName == "PCA<diffusing>") {
+      KIT_SHARED_PTR(CkwsPlusPCARdmBuilder<CkwsDiffusingRdmBuilder>) roadmapBuilder = 
+	CkwsPlusPCARdmBuilder<CkwsDiffusingRdmBuilder>::create(roadmap, penetration);
       status = attHppPlanner->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder);
     } else {
       cerr << "ChppciProblem_impl::setRoadmapbuilder: unknown roadmap builder" << endl;

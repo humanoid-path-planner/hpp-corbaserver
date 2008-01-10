@@ -27,7 +27,7 @@ interface ChppciProblem {
   short setSteeringMethod(in short inProblemId, in string inSteeringMethod, in boolean inOriented);
   /** \brief Set roadmap builder of specified robot in ChppPlanner::robotVector.
    \param inProblemId rank of problem in vector of hppProblems.
-   \param inRoadmapBuilder name of the roadmap builder in {"basic", "diffusing", "IPP"}.
+   \param inRoadmapBuilder name of the roadmap builder in {"basic", "diffusing", "bi-diffusing", "IPP", "visibility", "PCA<diffusing>"}.
   */
   short setRoadmapbuilder(in short inProblemId, in string inRoadmapBuilder);
   /** \brief Set path optimizer of specified robot in ChppPlanner::robotVector.
