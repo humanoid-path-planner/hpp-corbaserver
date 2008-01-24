@@ -114,11 +114,11 @@ ktStatus ChppciOpenHrpClient::loadHrp2Model(ChppDeviceShPtr &HRP2Device)
   //
   // set HRP2 in a default configuration (HALFSITTING) ;
   //
-  CkwsConfigShPtr halfSittingConfig = CkwsConfig::create(HRP2Device) ;
+  CkwsConfig halfSittingConfig(HRP2Device);
   double dInitPos[46] = HALFSITTINGPOSITION_RAD_KINEO ;
   std::vector<double>  halfSittingVector (dInitPos  , dInitPos + sizeof(dInitPos) / sizeof(double) );
-  halfSittingConfig->setDofValues( halfSittingVector ) ; 
-  HRP2Device->applyCurrentConfig(halfSittingConfig) ;
+  halfSittingConfig.setDofValues( halfSittingVector ) ; 
+  HRP2Device->hppSetCurrentConfig(halfSittingConfig) ;
 
   return KD_OK;
 }
