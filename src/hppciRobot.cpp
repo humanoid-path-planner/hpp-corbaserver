@@ -144,7 +144,7 @@ CORBA::Short ChppciRobot_impl::createExtraDof(const char* inDofName, CORBA::Bool
 	 << dofName << " already exists." << endl;
     return -1;
   }
-  CkppExtraDofComponentShPtr extraDof = CkppExtraDofComponent::create(inRevolute, "inDofName");
+  CkppExtraDofComponentShPtr extraDof = CkppExtraDofComponent::create(inRevolute, dofName);
   // Check whether creation failed.
   if (!extraDof) {
     cerr << "ChppciRobot_impl::createExtraDof: failed to create extra degree of freedom "
