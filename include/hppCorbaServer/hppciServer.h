@@ -27,13 +27,32 @@ This class initializes the Corba server and starts the following Corba interface
 \li ChppciServer::obstacleServant,
 \li ChppciServer::problemServant.
 
-A pointer to a ChppPlanner object (ChppciServer::hppPlanner) is passed to the constructor of each of these implementation classes in order for them to be able to process requests.
+To use this object, call the constructor
+\code
+int argc=1;
+char *argv[1] = {"program"};
+ChppPlanner* hppPlanner = new ChppPlanner;
+ChppciServer server(ChppPlanner* hppPlanner, argc, argv);
+\endcode
+After starting a name server and configuring your Corba implementation, start the servers.
+\code
+server.startCorbaServer();
+\endcode
+Then, enter in the loop that handle the Corba requests
+\code
+server.processRequest(true);
+\endcode
+You can then send request to the servers.
 */
 
 class ChppciServer {
 public:
   /** 
       \brief Constructor 
+      \param inHppPlanner the object that will handle Corba requests.
+      \param argc, argv parameter to feed ORB initialization. 
+      
+      \note It is recommended to configure your Corba implementation through environment variables and to set argc to 1 and argv to any string.
   */
   ChppciServer(ChppPlanner* inHppPlanner, int argc, char *argv[]);
   /// \brief Shutdown CORBA server
