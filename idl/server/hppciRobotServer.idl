@@ -129,13 +129,35 @@ interface ChppciRobot {
   short setJointBounds(in short problemId, in short jointId, in jointBoundSeq inJointBound);
 
   /**
+   * \brief Set whether a joint is visible.
+
+   * \param problemId Id of the problem containing the robot.
+   * \param jointId name of the joint.
+   * \param inVisible wether the joint should be visible in the interface.
+   *
+   * \note When running without interface, this request has no effect.
+  */
+  short setJointVisible(in short problemId, in short jointId, in boolean inVisible);
+
+  /**
+   * \brief Set whether a joint is transparent.
+
+   * \param problemId Id of the problem containing the robot.
+   * \param jointId name of the joint.
+   * \param inTransparent wether the joint should be transparent in the interface.
+   *
+   * \note When running without interface, this request has no effect.
+  */
+  short setJointTransparent(in short problemId, in short jointId, in boolean inTransparent);
+
+  /**
    * \brief set locking/unlocking  for the joint
    * \param problemId id of the problem containing the robot.
-   * \param jointId id of the joint.
+   * \param dofId id of the degree of freedom.
    * \param locked true (locked)  false (unlocked)
    * \param lockedValue (if locked) give the value
    */
-  short setDofLocked(in short problemId, in short jointId, in boolean locked, in double lockedValue);
+  short setDofLocked(in short problemId, in short dofId, in boolean locked, in double lockedValue);
 
 
   /** 

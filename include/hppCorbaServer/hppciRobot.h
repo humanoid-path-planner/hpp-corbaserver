@@ -84,7 +84,7 @@ public:
   virtual CORBA::Short addExtraDofToRobot(const char* inRobotName, const char* inDofName)
     throw(CORBA::SystemException);
   /// \brief Comment in interface ChppciRobot::getDeviceDim.
-  virtual CORBA::Short getDeviceDim(CORBA::Short problemId, CORBA::Short& deviceDim)
+  virtual CORBA::Short getDeviceDim(CORBA::Short inProblemId, CORBA::Short& deviceDim)
     throw(CORBA::SystemException);
 
   /// \brief Comment in interface ChppciRobot::createJoint.
@@ -97,12 +97,20 @@ public:
     throw(CORBA::SystemException);
 
   /// \brief Comment in interface ChppciRobot::setJointBound.
-  virtual CORBA::Short setJointBounds(CORBA::Short problemId, CORBA::Short jointId, 
+  virtual CORBA::Short setJointBounds(CORBA::Short inProblemId, CORBA::Short inJointId, 
 				     const jointBoundSeq& jointBound)
     throw(CORBA::SystemException);
 
+  /// \brief Comment in interface ChppciRobot::setJointVisible.
+  virtual CORBA::Short setJointVisible(CORBA::Short inProblemId, CORBA::Short inJointId, CORBA::Boolean inVisible)
+    throw(CORBA::SystemException);
+
+  /// \brief Comment in interface ChppciRobot::setJointTransparent.
+  virtual CORBA::Short setJointTransparent(CORBA::Short inProblemId, CORBA::Short inJointId, CORBA::Boolean isTransparent)
+    throw(CORBA::SystemException);
+
   /// \brief Comment in interface ChppciRobot::setDofLocked.
-  virtual CORBA::Short setDofLocked(CORBA::Short problemId, CORBA::Short jointId, 
+  virtual CORBA::Short setDofLocked(CORBA::Short inProblemId, CORBA::Short dofId, 
 				    CORBA::Boolean locked, CORBA::Double lockedValue)
     throw(CORBA::SystemException);
 
@@ -142,7 +150,7 @@ public:
   virtual nameSeq* getBodyOuterObject(const char* inBodyName);
 
   /// \brief Comment in interface ChppciRobot::checkLinkCollision.
-  CORBA::Short checkLinkCollision(CORBA::Short problemId, CORBA::Short jointId, CORBA::Short& result)
+  CORBA::Short checkLinkCollision(CORBA::Short inProblemId, CORBA::Short inJointId, CORBA::Short& result)
     throw(CORBA::SystemException);
   /// \brief Comment in interface ChppciRobot::createPolyhedron.
   virtual CORBA::Short createPolyhedron(const char* inPolyhedronName)

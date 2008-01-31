@@ -315,11 +315,11 @@ CORBA::Short ChppciRobot_impl::addJoint(const char* inParentName,
 
 // ==========================================================================
 
-CORBA::Short ChppciRobot_impl::setJointBounds(CORBA::Short problemId, CORBA::Short inJointId, 
+CORBA::Short ChppciRobot_impl::setJointBounds(CORBA::Short inProblemId, CORBA::Short inJointId, 
 					      const jointBoundSeq& inJointBound)
   throw(CORBA::SystemException)
 {
-  unsigned int hppProblemId = (unsigned int)problemId;
+  unsigned int hppProblemId = (unsigned int)inProblemId;
   unsigned int jointId = (unsigned int)inJointId;
 
   unsigned int nbProblems = attHppPlanner->getNbHppProblems();
@@ -367,7 +367,7 @@ CORBA::Short ChppciRobot_impl::setJointBounds(CORBA::Short problemId, CORBA::Sho
     }
   }
   else {
-    cerr << "ChppciRobotConfig_impl::setJointBounds: problemId=" 
+    cerr << "ChppciRobotConfig_impl::setJointBounds: inProblemId=" 
 	 << hppProblemId 
 	 << " should be smaller than number of problems="
 	 << nbProblems << endl;
@@ -378,11 +378,61 @@ CORBA::Short ChppciRobot_impl::setJointBounds(CORBA::Short problemId, CORBA::Sho
 
 // ==========================================================================
 
-CORBA::Short ChppciRobot_impl::setDofLocked(CORBA::Short problemId, CORBA::Short jointId, 
+CORBA::Short ChppciRobot_impl::setJointVisible(CORBA::Short inProblemId, CORBA::Short inJointId, 
+					       CORBA::Boolean inVisible)
+  throw(CORBA::SystemException)
+{
+  unsigned int hppProblemId = (unsigned int)inProblemId;
+  unsigned int jointId = (unsigned int)inJointId;
+
+  unsigned int nbProblems = attHppPlanner->getNbHppProblems();
+  
+  // Test that rank is less than number of robots in vector.
+  if (hppProblemId < nbProblems) {
+    // Get robot in hppPlanner object.
+    CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppProblemId);
+    CkppJointComponentShPtr kppJoint = hppRobot->jointComponent(jointId);
+
+    if (kppJoint) {
+      kppJoint->isVisible(inVisible);
+      return KD_OK;
+    }
+  }
+  return KD_ERROR;
+}
+
+// ==========================================================================
+
+CORBA::Short ChppciRobot_impl::setJointTransparent(CORBA::Short inProblemId, CORBA::Short inJointId, 
+						   CORBA::Boolean inTransparent)
+  throw(CORBA::SystemException)
+{
+  unsigned int hppProblemId = (unsigned int)inProblemId;
+  unsigned int jointId = (unsigned int)inJointId;
+
+  unsigned int nbProblems = attHppPlanner->getNbHppProblems();
+  
+  // Test that rank is less than number of robots in vector.
+  if (hppProblemId < nbProblems) {
+    // Get robot in hppPlanner object.
+    CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppProblemId);
+    CkppJointComponentShPtr kppJoint = hppRobot->jointComponent(jointId);
+
+    if (kppJoint) {
+      kppJoint->isTransparent(inTransparent);
+      return KD_OK;
+    }
+  }
+  return KD_ERROR;
+}
+
+// ==========================================================================
+
+CORBA::Short ChppciRobot_impl::setDofLocked(CORBA::Short inProblemId, CORBA::Short dofId, 
 					    CORBA::Boolean locked, CORBA::Double lockedValue)
   throw(CORBA::SystemException)
 {
-  unsigned int hppRobotId = (unsigned int)problemId;
+  unsigned int hppRobotId = (unsigned int)inProblemId;
 
   unsigned int nbRobots = attHppPlanner->getNbHppProblems();
   
@@ -395,16 +445,16 @@ CORBA::Short ChppciRobot_impl::setDofLocked(CORBA::Short problemId, CORBA::Short
     CkwsDevice::TDofVector dofList;
     hppRobot->getDofVector(dofList);
 
-    if(jointId >= (unsigned short) dofList.size()){
-      cerr <<"ChppciRobot_impl::setJointBound: joint Id "<<jointId<<" is larger than total size"
+    if(dofId >= (unsigned short) dofList.size()){
+      cerr <<"ChppciRobot_impl::setJointBound: joint Id "<<dofId<<" is larger than total size"
 	   <<dofList.size();
       return KD_ERROR;
     }
 
-    dofList[jointId]->isLocked(locked);
+    dofList[dofId]->isLocked(locked);
 
     if(locked)
-      dofList[jointId]->lockedValue(lockedValue);
+      dofList[dofId]->lockedValue(lockedValue);
   }
   else {
     cerr << "ChppciRobotConfig_impl::setJointBound: wrong robot Id" << endl;
@@ -472,7 +522,7 @@ CORBA::Short ChppciRobot_impl::setCurrentConfig(CORBA::Short inProblemId,
 #define RHAND_JOINT0_KINEO 29
 
 /// \brief the config is in the order of OpenHRP Joints  RARM, LARM, RHAND, LHAND
-CORBA::Short ChppciRobot_impl::setCurrentConfigOpenHRP(CORBA::Short problemId, const dofSeq& dofArray)
+CORBA::Short ChppciRobot_impl::setCurrentConfigOpenHRP(CORBA::Short inProblemId, const dofSeq& dofArray)
     throw(CORBA::SystemException)
 {
   dofSeq dofArrayKineo(dofArray);
@@ -486,7 +536,7 @@ CORBA::Short ChppciRobot_impl::setCurrentConfigOpenHRP(CORBA::Short problemId, c
     dofArrayKineo[RHAND_JOINT0_KINEO+i] = dofArray[RHAND_JOINT0_OPENHRP+i];
   }
 
-  return setCurrentConfig(problemId, dofArrayKineo);
+  return setCurrentConfig(inProblemId, dofArrayKineo);
 }
 
 /// \brief Comment in interface ChppciRobot::getCurrentConfig
@@ -708,11 +758,11 @@ nameSeq* ChppciRobot_impl::getBodyOuterObject(const char* inBodyName)
 // ==========================================================================
 
 CORBA::Short 
-ChppciRobot_impl::checkLinkCollision(CORBA::Short problemId, CORBA::Short jointId, 
+ChppciRobot_impl::checkLinkCollision(CORBA::Short inProblemId, CORBA::Short jointId, 
 				     CORBA::Short& result) 
 throw(CORBA::SystemException)
 {
-  unsigned int hppProblemId = (unsigned int)problemId;
+  unsigned int hppProblemId = (unsigned int)inProblemId;
   unsigned int hppJointId = (unsigned int)jointId; // +DOF_SHIFT;
   
   unsigned int nbProblems = attHppPlanner->getNbHppProblems();
@@ -881,10 +931,10 @@ CORBA::Short ChppciRobot_impl::addTriangle(const char* inPolyhedronName,
 
 // ==========================================================================
 
-CORBA::Short ChppciRobot_impl::getDeviceDim(CORBA::Short problemId, CORBA::Short& deviceDim)
+CORBA::Short ChppciRobot_impl::getDeviceDim(CORBA::Short inProblemId, CORBA::Short& deviceDim)
 throw(CORBA::SystemException)
 {
-  unsigned int hppProblemId = (unsigned int)problemId;
+  unsigned int hppProblemId = (unsigned int)inProblemId;
 
   unsigned int nbProblems = attHppPlanner->getNbHppProblems();
   

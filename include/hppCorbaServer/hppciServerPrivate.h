@@ -7,11 +7,13 @@
 
 class ChppciServerPrivate {
 public:
-  ~ChppciServerPrivate() {
-    if (robotServant) delete robotServant;
-    if (obstacleServant) delete obstacleServant;
-    if (problemServant) delete problemServant;
-  };
+  ~ChppciServerPrivate();
+
+  /**
+     \brief Create and activate the Corba servers
+  */
+  void createAndActivateServers(ChppciServer* inHppciServer);
+
 private:
   CORBA::ORB_var orb;
   PortableServer::POA_var poa;
@@ -23,6 +25,22 @@ private:
   /// \brief Implementation of object ChppciProblem.
   ChppciProblem_impl *problemServant;
 
+  /** 
+      \brief It seems that we need to store this object to deactivate the server.
+  */
+  //PortableServer::ObjectId_var robotServantid;
+  PortableServer::ObjectId* robotServantid;
+  /** 
+      \brief It seems that we need to store this object to deactivate the server.
+  */
+  //PortableServer::ObjectId_var obstacleServantid;
+  PortableServer::ObjectId* obstacleServantid;
+  /** 
+      \brief It seems that we need to store this object to deactivate the server.
+  */
+  //PortableServer::ObjectId_var problemServantid;
+  PortableServer::ObjectId* problemServantid;
+
   /// \brief Corba context.
   CosNaming::NamingContext_var hppContext;
   // methods
@@ -32,6 +50,12 @@ private:
   CORBA::Boolean bindObjectToName(CORBA::Object_ptr objref,
 				  CosNaming::Name objectName);
 
+
+  /**
+     \brief Deactivate and destroy servers
+     Destroying active servers raises a Corba exception.
+  */
+  void deactivateAndDestroyServers();
 
   friend class ChppciServer;
 };

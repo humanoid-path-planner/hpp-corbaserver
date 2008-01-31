@@ -25,8 +25,10 @@ ChppciServer::ChppciServer(ChppPlanner *inHppPlanner) :
 /// \brief Shutdown CORBA server
 ChppciServer::~ChppciServer()
 {
+  attPrivate->deactivateAndDestroyServers();
   attPrivate->orb->shutdown(0);
   delete attPrivate;
+  attPrivate = NULL;
   s_hppciServer = NULL;
 }
 
@@ -39,6 +41,10 @@ int ChppciServer::startCorbaServer(int argc, char *argv[])
 {
   try {
     attPrivate->orb = CORBA::ORB_init(argc, argv);
+    if (CORBA::is_nil(attPrivate->orb)) {
+      std::cerr << "StartCorbaServer: failed to initialize ORB" << std::endl;
+      return KD_ERROR;
+    }
     CORBA::Object_var obj = attPrivate->orb->resolve_initial_references("RootPOA");
     PortableServer::POA_var rootPoa = PortableServer::POA::_narrow(obj);
 
@@ -57,16 +63,7 @@ int ChppciServer::startCorbaServer(int argc, char *argv[])
     // Destroy policy object
     singleThread->destroy();
 
-    attPrivate->robotServant = new ChppciRobot_impl(this);
-    attPrivate->obstacleServant = new ChppciObstacle_impl(this);
-    attPrivate->problemServant = new ChppciProblem_impl(this);
-
-    PortableServer::ObjectId_var robotServantid = 
-      attPrivate->poa->activate_object(attPrivate->robotServant);
-    PortableServer::ObjectId_var obstacleServantid = 
-      attPrivate->poa->activate_object(attPrivate->obstacleServant);
-    PortableServer::ObjectId_var problemServantid = 
-      attPrivate->poa->activate_object(attPrivate->problemServant);
+    attPrivate->createAndActivateServers(this);
 
     // Obtain a reference to objects, and register them in
     // the naming service.

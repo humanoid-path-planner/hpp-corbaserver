@@ -6,7 +6,52 @@
 */
 
 #include <iostream>
+#include "hppCorbaServer/hppciRobot.h"
+#include "hppCorbaServer/hppciObstacle.h"
+#include "hppCorbaServer/hppciProblem.h"
 #include "hppCorbaServer/hppciServerPrivate.h"
+
+ChppciServerPrivate::~ChppciServerPrivate()
+{
+  delete robotServantid;
+  robotServantid = NULL;
+  delete problemServantid;
+  problemServantid = NULL;
+  delete obstacleServantid;
+  obstacleServantid = NULL;
+}
+
+void ChppciServerPrivate::createAndActivateServers(ChppciServer* inHppciServer)
+{
+  robotServant = new ChppciRobot_impl(inHppciServer);
+  obstacleServant = new ChppciObstacle_impl(inHppciServer);
+  problemServant = new ChppciProblem_impl(inHppciServer);
+  
+  robotServantid = poa->activate_object(robotServant);
+  obstacleServantid = poa->activate_object(obstacleServant);
+  problemServantid = poa->activate_object(problemServant);
+}
+
+void ChppciServerPrivate::deactivateAndDestroyServers()
+{
+  if (robotServant) {
+    poa->deactivate_object(*robotServantid);
+    delete robotServant;
+    robotServant = NULL;
+  }
+  if (obstacleServant) {
+    poa->deactivate_object(*obstacleServantid);
+    delete obstacleServant;
+    obstacleServant = NULL;
+  }
+  if (problemServant) {
+    poa->deactivate_object(*problemServantid);
+    delete problemServant;
+    problemServant = NULL;
+  }
+}
+
+
 
 CORBA::Boolean ChppciServerPrivate::createHppContext()
 {
