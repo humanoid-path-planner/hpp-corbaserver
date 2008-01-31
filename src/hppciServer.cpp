@@ -15,11 +15,13 @@
 	
 ChppciServer* ChppciServer::s_hppciServer;
 
-ChppciServer::ChppciServer(ChppPlanner *inHppPlanner) : 
+ChppciServer::ChppciServer(ChppPlanner *inHppPlanner, int argc, char *argv[]) : 
   hppPlanner(inHppPlanner)
 {
   s_hppciServer = this, 
   attPrivate = new ChppciServerPrivate;
+
+  initORBandServers(argc, argv);
 }
 
 /// \brief Shutdown CORBA server
@@ -37,7 +39,7 @@ ChppciServer* ChppciServer::getInstance()
   return s_hppciServer;
 }
 
-int ChppciServer::startCorbaServer(int argc, char *argv[])
+ktStatus ChppciServer::initORBandServers(int argc, char *argv[])
 {
   try {
     attPrivate->orb = CORBA::ORB_init(argc, argv);
@@ -64,7 +66,32 @@ int ChppciServer::startCorbaServer(int argc, char *argv[])
     singleThread->destroy();
 
     attPrivate->createAndActivateServers(this);
+  }
+  catch(CORBA::SystemException&) {
+    cerr << "Caught CORBA::SystemException." << endl;
+    return KD_ERROR;
+  }
+  catch(CORBA::Exception&) {
+    cerr << "Caught CORBA::Exception." << endl;
+    return KD_ERROR;
+  }
+  catch(omniORB::fatalException& fe) {
+    cerr << "Caught omniORB::fatalException:" << endl;
+    cerr << "  file: " << fe.file() << endl;
+    cerr << "  line: " << fe.line() << endl;
+    cerr << "  mesg: " << fe.errmsg() << endl;
+    return KD_ERROR;
+  }
+  catch(...) {
+    cerr << "Caught unknown exception." << endl;
+    return KD_ERROR;
+  }
+  return KD_OK;
+}
 
+int ChppciServer::startCorbaServer()
+{
+  try {
     // Obtain a reference to objects, and register them in
     // the naming service.
     CORBA::Object_var robotObj = attPrivate->robotServant->_this();

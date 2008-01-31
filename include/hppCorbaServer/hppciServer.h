@@ -35,14 +35,14 @@ public:
   /** 
       \brief Constructor 
   */
-  ChppciServer(ChppPlanner* inHppPlanner);
+  ChppciServer(ChppPlanner* inHppPlanner, int argc, char *argv[]);
   /// \brief Shutdown CORBA server
   ~ChppciServer();
   /// \brief Initialize CORBA server to process requests from clients to hpp module
   /// \param argc arguments for Corba server initialization.
   /// \param argv arguments for Corba server initialization.
   /// \return 0 if success, -1 if failure.
-  int startCorbaServer(int argc, char *argv[]);
+  int startCorbaServer();
   /// \brief If ORB work is pending, process it
   /// \param loop if true, the function never returns; if false, the function processes pending requests and returns.
   int processRequest(bool loop);
@@ -55,6 +55,8 @@ public:
   static ChppciServer* getInstance();
 
 private:
+
+  ktStatus initORBandServers(int argc, char *argv[]);
 
   ChppciServerPrivate* attPrivate;
   /// \brief static pointer to the only object of this class.
