@@ -54,7 +54,15 @@ if test x$with_openhrp = xtrue; then
 	MODELLOADERJRL_IDL=`$PKG_CONFIG jrl-modelloader --variable=idldir`
 	AC_SUBST(MODELLOADERJRL_IDL)
 
-	OPENHRP_DEPENDENCES=", hppopenhrp_reqd, jrlmodelloader_reqd"
+	define(hrp2dynamics_reqd, [hrp2Dynamics >= 1.0])
+	AC_SUBST(HRP2DYNAMICS_REQD, "hrp2dynamics_reqd")
+	PKG_CHECK_MODULES(HRP2DYNAMICS, hrp2dynamics_reqd)
+
+	define(hrp2_14_reqd, [hrp2_14 >= 1.0])
+	AC_SUBST(HRP2_14_REQD, "hrp2_14_reqd")
+	PKG_CHECK_MODULES(HRP2_14, hrp2_14_reqd)
+
+	OPENHRP_DEPENDENCES=", hppopenhrp_reqd, jrlmodelloader_reqd, hrp2dynamics_reqd, hrp2_14_reqd"
 fi
 
 AC_OUTPUT(Makefile

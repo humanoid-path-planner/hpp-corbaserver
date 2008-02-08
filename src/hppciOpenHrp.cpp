@@ -10,9 +10,16 @@ INCLUDE
 #include "common-modelloader.hh"
 #include "jrl-modelloader.hh"
 
-#include "hppOpenHRP/parserOpenHRPKineoHRP2.h"
+#include "hppOpenHRP/parserOpenHRPKineoDevice.h"
 #include "hppOpenHRP/parserOpenHRPKineoObstacle.h"
 
+#include "hppModel/hppJoint.h"
+#include "hppModel/hppBody.h"
+#include "hppModel/hppSpecificHumanoidRobot.h"
+
+#include "hrp2Dynamics/hrp2OptHumanoidDynamicRobot.h"
+
+#include "hrp2_14/hrp2_14.h"
 
 /*************************************
 DEFINE
@@ -83,6 +90,356 @@ ChppciOpenHrpClient::~ChppciOpenHrpClient() {
 }
   
 // ==============================================================================
+enum {
+  BODY = 0 ,
+
+  RLEG_LINK0 = 1 ,
+  RLEG_LINK1 ,
+  RLEG_LINK2 ,
+  RLEG_LINK3 ,
+  RLEG_LINK4 ,
+  RLEG_LINK5 ,
+
+  LLEG_LINK0 = 7 ,
+  LLEG_LINK1 ,	
+  LLEG_LINK2 ,
+  LLEG_LINK3 ,
+  LLEG_LINK4 ,
+  LLEG_LINK5 ,
+
+  CHEST_LINK0 = 13 ,
+  CHEST_LINK1 ,
+
+  HEAD_LINK0 = 15 ,
+  HEAD_LINK1 ,
+
+  RARM_LINK0 = 17 ,
+  RARM_LINK1 ,
+  RARM_LINK2 ,
+  RARM_LINK3 ,
+  RARM_LINK4 ,
+  RARM_LINK5 ,
+  RARM_LINK6 ,
+
+  RHAND_LINK0 =	24 ,
+  RHAND_LINK1 ,	
+  RHAND_LINK2 ,
+  RHAND_LINK3 ,
+  RHAND_LINK4 ,
+
+  LARM_LINK0 = 29 ,
+  LARM_LINK1 ,
+  LARM_LINK2 ,
+  LARM_LINK3 ,
+  LARM_LINK4 ,
+  LARM_LINK5 ,
+  LARM_LINK6 ,
+
+  LHAND_LINK0 =	36 ,
+  LHAND_LINK1 ,
+  LHAND_LINK2 ,
+  LHAND_LINK3 ,
+  LHAND_LINK4 ,	
+
+  NO_LINK = 41
+
+} ;
+
+void makeColPair(ChppColPair &cp)
+{
+  // BODY:  +ARM2  +LEG2 
+  cp.addColPairRange(BODY, RARM_LINK2, RARM_LINK6);
+  cp.addColPairRange(BODY, LARM_LINK2, LARM_LINK6);
+  cp.addColPairRange(BODY, RHAND_LINK0, RHAND_LINK4);
+  cp.addColPairRange(BODY, LHAND_LINK0, LHAND_LINK4);
+  cp.addColPairRange(BODY, RLEG_LINK2, RLEG_LINK5);
+  cp.addColPairRange(BODY, LLEG_LINK2, LLEG_LINK5);
+  cp.addColPairRange(CHEST_LINK0, RARM_LINK3, RARM_LINK6);
+  // BODY + CHEST_JOINT1
+  cp.addColPair(BODY, CHEST_LINK1);
+
+  // CHEST0  +ARM3  +LEG3 
+  cp.addColPairRange(CHEST_LINK0, RARM_LINK3, RARM_LINK6);
+  cp.addColPairRange(CHEST_LINK0, LARM_LINK3, LARM_LINK6);
+  cp.addColPairRange(CHEST_LINK0, RHAND_LINK0, RHAND_LINK4);
+  cp.addColPairRange(CHEST_LINK0, LHAND_LINK0, LHAND_LINK4);
+  cp.addColPairRange(CHEST_LINK0, RLEG_LINK3, RLEG_LINK5);
+  cp.addColPairRange(CHEST_LINK0, LLEG_LINK3, LLEG_LINK5);
+
+  // CHEST1  +ARM2  +LEG3
+  cp.addColPairRange(CHEST_LINK1, RARM_LINK2, RARM_LINK6);
+  cp.addColPairRange(CHEST_LINK1, LARM_LINK2, LARM_LINK6);
+  cp.addColPairRange(CHEST_LINK1, RHAND_LINK0, RHAND_LINK4);
+  cp.addColPairRange(CHEST_LINK1, LHAND_LINK0, LHAND_LINK4);
+  cp.addColPairRange(CHEST_LINK1, RLEG_LINK3, RLEG_LINK5);
+  cp.addColPairRange(CHEST_LINK1, LLEG_LINK3, LLEG_LINK5);
+
+  // HEAD0  +ARM4
+  cp.addColPairRange(HEAD_LINK0, RARM_LINK4, RARM_LINK6);
+  cp.addColPairRange(HEAD_LINK0, LARM_LINK4, LARM_LINK6);
+  cp.addColPairRange(HEAD_LINK0, RHAND_LINK0, RHAND_LINK4);
+  cp.addColPairRange(HEAD_LINK0, LHAND_LINK0, LHAND_LINK4);
+
+  // HEAD1  +ARM4
+  cp.addColPairRange(HEAD_LINK1, RARM_LINK4, RARM_LINK6);
+  cp.addColPairRange(HEAD_LINK1, LARM_LINK4, LARM_LINK6);
+  cp.addColPairRange(HEAD_LINK1, RHAND_LINK0, RHAND_LINK4);
+  cp.addColPairRange(HEAD_LINK1, LHAND_LINK0, LHAND_LINK4);
+
+  // LEGS
+  //        Same side leg       other side          others
+  // LEG0    +LINK4             LINK0, LINK2-5      +ARM3
+  // LEG1    Not exposed to outside. no collision check
+  // LEG2     none              +LINK2              +ARM2 (same) +ARM3 (other)
+  // LEG3    LINK5*             LINK0, LINK2-5      +ARM2 (same) +ARM3 (other)
+  //          * can go very close.
+  // LEG4     none              +LEG2               +ARM2 (same) +ARM3 (other)
+  // LEG5     none              +LEG2               +ARM2 (same) +ARM3 (other)
+
+
+  // Right legs
+  // LEG0
+  cp.addColPairRange(RLEG_LINK0, RLEG_LINK4, RLEG_LINK5);
+  cp.addColPair(RLEG_LINK0, LLEG_LINK0);
+  cp.addColPairRange(RLEG_LINK0, LLEG_LINK2, LLEG_LINK5);
+  cp.addColPairRange(RLEG_LINK0, RARM_LINK3, RARM_LINK6);
+  cp.addColPairRange(RLEG_LINK0, LARM_LINK3, LARM_LINK6);
+  cp.addColPairRange(RLEG_LINK0, RHAND_LINK0, RHAND_LINK4);
+  cp.addColPairRange(RLEG_LINK0, LHAND_LINK0, LHAND_LINK4);
+
+  // LEG2
+  cp.addColPairRange(RLEG_LINK2, LLEG_LINK2, LLEG_LINK5);
+
+  // LEG3
+  // pair leg3 and leg5 excluded.
+  // addColPair(RLEG_LINK3, RLEG_LINK5, cp);
+  cp.addColPair(RLEG_LINK3, LLEG_LINK0);
+  cp.addColPairRange(RLEG_LINK3, LLEG_LINK2, LLEG_LINK3);
+  // leg4 no need
+  cp.addColPair(RLEG_LINK3, LLEG_LINK5);
+
+  // LEG4 no need.
+  // addColPair(RLEG_LINK4, LLEG_LINK0, cp);
+
+  // LEG5
+  cp.addColPair(RLEG_LINK5, LLEG_LINK0);
+  // addColPairRange(RLEG_LINK5, LLEG_LINK2, LLEG_LINK5, cp);
+  cp.addColPairRange(RLEG_LINK5, LLEG_LINK2, LLEG_LINK3);
+  cp.addColPair(RLEG_LINK5, LLEG_LINK5);
+
+  // for arm/hands
+  for(unsigned int j=RLEG_LINK2; j<=RLEG_LINK5; j++){
+    cp.addColPairRange(j, RARM_LINK2, RARM_LINK6);
+    cp.addColPairRange(j, LARM_LINK3, LARM_LINK6);
+    cp.addColPairRange(j, RHAND_LINK0, RHAND_LINK4);
+    cp.addColPairRange(j, LHAND_LINK0, LHAND_LINK4);
+  }
+
+
+  // Left legs
+  // LEG0
+  cp.addColPairRange(LLEG_LINK0, LLEG_LINK4, LLEG_LINK5);
+  cp.addColPair(LLEG_LINK0, RLEG_LINK0);
+  cp.addColPairRange(LLEG_LINK0, RLEG_LINK2, RLEG_LINK5);
+  cp.addColPairRange(LLEG_LINK0, RARM_LINK3, RARM_LINK6);
+  cp.addColPairRange(LLEG_LINK0, LARM_LINK3, LARM_LINK6);
+  cp.addColPairRange(LLEG_LINK0, RHAND_LINK0, RHAND_LINK4);
+  cp.addColPairRange(LLEG_LINK0, LHAND_LINK0, LHAND_LINK4);
+
+  // LEG2
+  cp.addColPairRange(LLEG_LINK2, RLEG_LINK2, RLEG_LINK5);
+
+  // LEG3
+  // pair leg3 and leg5 excluded.
+  // addColPair(LLEG_LINK3, LLEG_LINK5, cp);
+  cp.addColPair(LLEG_LINK3, RLEG_LINK0);
+  // addColPairRange(LLEG_LINK3, RLEG_LINK2, RLEG_LINK5, cp);
+  cp.addColPairRange(LLEG_LINK3, RLEG_LINK2, RLEG_LINK3);
+  cp.addColPair(LLEG_LINK3, RLEG_LINK5);
+
+  // LEG4 no need.
+  // addColPair(LLEG_LINK4, RLEG_LINK0, cp);
+
+  // LEG5 leg4 exluded.
+  cp.addColPair(LLEG_LINK5, RLEG_LINK0);
+  // addColPairRange(LLEG_LINK5, RLEG_LINK2, RLEG_LINK5, cp);
+  cp.addColPairRange(LLEG_LINK5, RLEG_LINK2, RLEG_LINK3);
+  cp.addColPair(LLEG_LINK5, RLEG_LINK5);
+
+  // for arm/hands
+  for(unsigned int j=LLEG_LINK2; j<=LLEG_LINK5; j++){
+    cp.addColPairRange(j, RARM_LINK2, RARM_LINK6);
+    cp.addColPairRange(j, LARM_LINK2, LARM_LINK6);
+    cp.addColPairRange(j, RHAND_LINK0, RHAND_LINK4);
+    cp.addColPairRange(j, LHAND_LINK0, LHAND_LINK4);
+  }
+
+  // ARM/HANDS
+  //        Same side arm/hand     other side arm/hand
+  // ARM0      +ARM4                  +ARM4
+  // ARM1      none
+  // ARM2      none                   +ARM3
+  // ARM3      none                   +ARM3
+  // ARM4      none                   +ARM2
+  // ARM5      none                   +ARM2
+  // ARM6      none                   +ARM2
+  // HANDS     none                   +ARM2
+
+  // Right arm/hands
+
+  // LINK0
+  cp.addColPairRange(RARM_LINK0, RARM_LINK4, RARM_LINK6);
+  cp.addColPairRange(RARM_LINK0, RHAND_LINK0, RHAND_LINK4);
+  cp.addColPairRange(RARM_LINK0, LARM_LINK4, LARM_LINK6);
+  cp.addColPairRange(RARM_LINK0, LHAND_LINK0, LHAND_LINK4);
+
+  // LINK1
+  cp.addColPairRange(RARM_LINK1, LARM_LINK3, LARM_LINK6);
+  cp.addColPairRange(RARM_LINK1, LHAND_LINK0, LHAND_LINK4);
+
+  // LINK2
+  cp.addColPairRange(RARM_LINK2, LARM_LINK3, LARM_LINK6);
+  cp.addColPairRange(RARM_LINK2, LHAND_LINK0, LHAND_LINK4);
+
+  // LINK3 - LINK6, HAND
+  for(unsigned int j=RARM_LINK3; j<=RARM_LINK6; j++){
+    cp.addColPairRange(j, LARM_LINK2, LARM_LINK6);
+    cp.addColPairRange(j, LHAND_LINK0, LHAND_LINK4);
+  }
+  for(unsigned int j=RHAND_LINK0; j<=RHAND_LINK4; j++){
+    cp.addColPairRange(j, LARM_LINK2, LARM_LINK6);
+    cp.addColPairRange(j, LHAND_LINK0, LHAND_LINK4);
+  }
+
+  // Left arm/hands
+
+  // LINK0
+  cp.addColPairRange(LARM_LINK0, LARM_LINK4, LARM_LINK6);
+  cp.addColPairRange(LARM_LINK0, LHAND_LINK0, LHAND_LINK4);
+  cp.addColPairRange(LARM_LINK0, RARM_LINK4, RARM_LINK6);
+  cp.addColPairRange(LARM_LINK0, RHAND_LINK0, RHAND_LINK4);
+
+  // LINK1
+  cp.addColPairRange(LARM_LINK1, RARM_LINK3, RARM_LINK6);
+  cp.addColPairRange(LARM_LINK1, RHAND_LINK0, RHAND_LINK4);
+
+  // LINK2
+  cp.addColPairRange(LARM_LINK2, RARM_LINK3, RARM_LINK6);
+  cp.addColPairRange(LARM_LINK2, RHAND_LINK0, RHAND_LINK4);
+
+  // LINK3 - LINK6, HAND
+  for(unsigned int j=LARM_LINK3; j<=LARM_LINK6; j++){
+    cp.addColPairRange(j, RARM_LINK2, RARM_LINK6);
+    cp.addColPairRange(j, RHAND_LINK0, RHAND_LINK4);
+  }
+  for(unsigned int j=LHAND_LINK0; j<=LHAND_LINK4; j++){
+    cp.addColPairRange(j, RARM_LINK2, RARM_LINK6);
+    cp.addColPairRange(j, RHAND_LINK0, RHAND_LINK4);
+  }
+}
+
+void setHRP2Specificities(ChppHumanoidRobotShPtr i_humanoid, 
+			  ChppJoint *i_joint)
+{
+    const std::string& name = i_joint->kppJoint()->name();
+    if (name == "HEAD_JOINT1"){
+	i_humanoid->gazeJoint(i_joint->jrlJoint());
+	i_humanoid->gaze(vector3d(0,0,-1), vector3d(0,0.118,0));
+    }else if (name == "RLEG_JOINT5"){
+	i_humanoid->rightFoot(i_joint->jrlJoint());
+    }else if (name == "LLEG_JOINT5"){
+	i_humanoid->leftFoot(i_joint->jrlJoint());
+    }else if (name == "RARM_JOINT5"){
+	i_humanoid->rightWrist(i_joint->jrlJoint());
+	vector3d center,okayAxis,showingAxis,palmAxis;
+	center[0] = 0;
+	center[1] = 0;
+	center[2] = 0.17;
+	okayAxis[0] = 0;
+	okayAxis[1] = 1;
+	okayAxis[2] = 0;
+	showingAxis[0] = 0;
+	showingAxis[1] = 0;
+	showingAxis[2] = 1;
+	palmAxis[0] = 1;
+	palmAxis[1] = 0;
+	palmAxis[2] = 0;
+	i_humanoid->rightHand(new CimplHand(i_humanoid->rightWrist(), center, 
+					    okayAxis, showingAxis, palmAxis));
+    }else if (name == "LARM_JOINT5"){
+	i_humanoid->leftWrist(i_joint->jrlJoint());
+	vector3d center,okayAxis,showingAxis,palmAxis;
+	center[0] = 0;
+	center[1] = 0;
+	center[2] = 0.17;
+	okayAxis[0] = 0;
+	okayAxis[1] = 1;
+	okayAxis[2] = 0;
+	showingAxis[0] = 0;
+	showingAxis[1] = 0;
+	showingAxis[2] = 1;
+	palmAxis[0] = -1;
+	palmAxis[1] = 0;
+	palmAxis[2] = 0;
+	i_humanoid->leftHand(new CimplHand(i_humanoid->leftWrist(), center, 
+					   okayAxis, showingAxis, palmAxis));
+    }
+    for (unsigned int i=0; i<i_joint->countChildJoints(); i++){
+	setHRP2Specificities(i_humanoid, i_joint->childJoint(i));
+    }
+}
+
+void setHRP2OuterLists(ChppHumanoidRobotShPtr i_hrp2)
+{
+    ChppColPair hrpCP;
+    makeColPair(hrpCP);
+
+    std::vector<CkwsJointShPtr> jv;
+    i_hrp2->getJointVector(jv);
+
+    // adding outer objects
+    for(unsigned int iJoint=0; iJoint<jv.size(); iJoint++){
+	ChppBodyShPtr hppBody;
+	hppBody = KIT_DYNAMIC_PTR_CAST(ChppBody, jv[iJoint]->attachedBody());
+	
+	std::vector<CkcdObjectShPtr> mergedList ;
+	
+	//debug
+	//cout<<"joint "<<iJoint<<": adding in outerObjects: ";
+	
+	for(unsigned int jJoint=0; jJoint<jv.size(); jJoint++){
+	    ChppBodyShPtr hppOtherBody = KIT_DYNAMIC_PTR_CAST(ChppBody, jv[jJoint]->attachedBody());
+	    
+	    if(jJoint != iJoint && hrpCP.existPairNarrow(iJoint, jJoint) ){
+		
+		//debug
+		//cout<<jJoint<<" ";
+		
+		std::vector<CkcdObjectShPtr> clist;
+		clist = hppOtherBody->innerObjects();
+		
+		for(unsigned int k=0; k< clist.size(); k++){
+		    CkppKCDPolyhedronShPtr kppPolyhedron = KIT_DYNAMIC_PTR_CAST(CkppKCDPolyhedron, clist[k]);
+		    mergedList.push_back(kppPolyhedron);
+		}
+	    }
+	}
+	
+	//debug
+	//cout<<endl;
+	
+	// add to outerObject. 
+	hppBody->setOuterObjects(mergedList);      
+	
+	// debug
+	//cout<<"mergedlist "<<mergedList.size()<<" objects. "<<endl;
+	
+	// debug
+	//cout<<"has "<<hppBody->outerObjects().size()<<" outer objects "<<endl;
+    }
+}
+
+// ==============================================================================
 
 ktStatus ChppciOpenHrpClient::loadHrp2Model(ChppDeviceShPtr &HRP2Device)
 {
@@ -99,8 +456,13 @@ ktStatus ChppciOpenHrpClient::loadHrp2Model(ChppDeviceShPtr &HRP2Device)
   //
   // Build KineoHRP2 from OpenHRPModel
   //
-  CparserOpenHRPKineoHRP2 parserHRP2(privateCorbaObject->HRP2info) ;
-  HRP2Device=parserHRP2.parser() ;
+  CparserOpenHRPKineoDevice parser(privateCorbaObject->HRP2info) ;
+  ChppHumanoidRobotShPtr humanoid;
+#if 0
+  humanoid = ChppSpecificHumanoidRobot<Chrp2OptHumanoidDynamicRobot>::create(privateCorbaObject->HRP2info->getCharObject()->name());
+#endif
+  parser.parser(humanoid);
+  HRP2Device = humanoid;
   if (!HRP2Device) {
     cerr << " ERROR : ChppciOpenHrpClient::loadHrp2Model : Failed building Kineo HRP2 Model" << endl ;
     return KD_ERROR;
@@ -111,11 +473,17 @@ ktStatus ChppciOpenHrpClient::loadHrp2Model(ChppDeviceShPtr &HRP2Device)
   //
   HRP2Device->isVisible(false) ;
 
+  // set HRP2 specifities
+  setHRP2Specificities(humanoid, humanoid->getRootJoint());
+
+  // set Collision Check Pairs
+  setHRP2OuterLists(humanoid);
+
   //
   // set HRP2 in a default configuration (HALFSITTING) ;
   //
   CkwsConfig halfSittingConfig(HRP2Device);
-  double dInitPos[46] = HALFSITTINGPOSITION_RAD_KINEO ;
+  double dInitPos[] = HALFSITTINGPOSITION_RAD_KINEO ;
   std::vector<double>  halfSittingVector (dInitPos  , dInitPos + sizeof(dInitPos) / sizeof(double) );
   halfSittingConfig.setDofValues( halfSittingVector ) ; 
   HRP2Device->hppSetCurrentConfig(halfSittingConfig) ;
@@ -149,9 +517,11 @@ ktStatus ChppciOpenHrpClient::loadRobotModel(std::string inFilename, std::string
 
   try{
     CparserOpenHRPKineoDevice parser(privateCorbaObject->attLoader->loadURL(url.c_str())) ;
-    outDevice=parser.parser() ;
+    ChppHumanoidRobotShPtr humanoid;
+    parser.parser(humanoid) ;
+    outDevice = humanoid;
   } catch (CORBA::SystemException &ex) {
-    cerr << "System exception: " << ex._rep_id() << endl;
+    cerr << "System exception( " << ex._rep_id() << ") in ChppciOpenHrpClient::loadRobotModel()" << endl;
     return KD_ERROR;
   } catch (...){
     cerr << "Unknown exception" << endl;
@@ -211,7 +581,7 @@ ktStatus  ChppciOpenHrpClient::loadObstacleModel(std::string inFilename, std::st
 
   if (getObstacleURL(url)!= KD_OK) {
     privateCorbaObject->orb->destroy();
-    cerr << "ERROR : ChppciOpenHrpClient::loadObstacleModel: failed to load Hrp2 model" 
+    cerr << "ERROR : ChppciOpenHrpClient::loadObstacleModel: failed to load Obstacle model" 
 	 << endl;
     return KD_ERROR;
   }
@@ -230,7 +600,7 @@ ktStatus  ChppciOpenHrpClient::loadObstacleModel(std::string inFilename, std::st
     std::vector<CkppKCDPolyhedronShPtr> obstacleVector = parserObstacle.parser() ;
 
     if (obstacleVector.size() == 0) {
-      cerr << "ERROR ChppciOpenHrpClient::loadHrp2Model : Failed to parse the obstacle model " <<  endl;
+      cerr << "ERROR ChppciOpenHrpClient::loadObstacleModel : Failed to parse the obstacle model " <<  endl;
       return KD_ERROR;
     }
     outPolyhedron = obstacleVector[0];
@@ -290,11 +660,12 @@ ktStatus CinternalCorbaObject::getModelLoader()
     try {
       attLoader = ModelLoader::_narrow(cxt -> resolve(mFactory));
     } catch (const CosNaming::NamingContext::NotFound&){
-      cerr << "ERROR :  ChppciOpenHrpClient::getModelLoader : "<< modelLoaderString <<  "NOT FOUND" << endl;
+      cerr << "ERROR :  CinternalCorbaObject::getModelLoader : "<< modelLoaderString <<  "NOT FOUND" << endl;
       return KD_ERROR;
     }
   } catch (CORBA::SystemException &ex) {
-    cerr << "System exception: " << ex._rep_id() << endl;
+    cerr << "System exception(" << ex._rep_id() 
+	 << ") in CinternalCorbaObject::getModelLoader()" <<endl;
     return KD_ERROR;
   } catch (...){
     cerr << "Unknown exception" << endl;
