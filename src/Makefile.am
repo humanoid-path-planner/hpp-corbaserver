@@ -41,7 +41,8 @@ libhppCorbaServer_la_CPPFLAGS += \
 
 libhppCorbaServer_la_LIBADD = \
 	@HPPCORE_LIBS@ \
-	@OMNIORB4_LIBS@ 
+	@OMNIORB4_LIBS@ \
+	@HRP2DYNAMICS_LIBS@
 
 libhppCorbaServer_la_LDLAGS= \
 	-release $(PACKAGE_VERSION)

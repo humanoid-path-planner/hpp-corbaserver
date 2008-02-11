@@ -458,10 +458,11 @@ ktStatus ChppciOpenHrpClient::loadHrp2Model(ChppDeviceShPtr &HRP2Device)
   //
   CparserOpenHRPKineoDevice parser(privateCorbaObject->HRP2info) ;
   ChppHumanoidRobotShPtr humanoid;
-#if 0
   humanoid = ChppSpecificHumanoidRobot<Chrp2OptHumanoidDynamicRobot>::create(privateCorbaObject->HRP2info->getCharObject()->name());
-#endif
   parser.parser(humanoid);
+  Chrp2OptHumanoidDynamicRobot *hrp2;
+  hrp2 = dynamic_cast<Chrp2OptHumanoidDynamicRobot *>(humanoid.get());
+  hrp2->isKineoOrder(true);
   HRP2Device = humanoid;
   if (!HRP2Device) {
     cerr << " ERROR : ChppciOpenHrpClient::loadHrp2Model : Failed building Kineo HRP2 Model" << endl ;
