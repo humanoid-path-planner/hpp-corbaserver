@@ -344,7 +344,11 @@ void setHRP2Specificities(ChppHumanoidRobotShPtr i_humanoid,
     const std::string& name = i_joint->kppJoint()->name();
     if (name == "HEAD_JOINT1"){
 	i_humanoid->gazeJoint(i_joint->jrlJoint());
-	i_humanoid->gaze(vector3d(0,0,-1), vector3d(0,0.118,0));
+	vector3d dir,pos;
+	dir[0]=0; dir[1]=0; dir[2]=-1;
+	pos[0]=0; pos[1]=0.118; pos[2]=0;
+	i_humanoid->gaze(dir, pos);
+
     }else if (name == "RLEG_JOINT5"){
 	i_humanoid->rightFoot(i_joint->jrlJoint());
     }else if (name == "LLEG_JOINT5"){
@@ -608,7 +612,7 @@ ktStatus  ChppciOpenHrpClient::loadObstacleModel(std::string inFilename, std::st
     outPolyhedron->name(inObstacleName);
   }
 
-  privateCorbaObject->orb->destroy();
+  // privateCorbaObject->orb->destroy();
 
   return KD_OK;
 }
