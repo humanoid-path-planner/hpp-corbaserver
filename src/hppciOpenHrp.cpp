@@ -345,8 +345,8 @@ void setHRP2Specificities(ChppHumanoidRobotShPtr i_humanoid,
     if (name == "HEAD_JOINT1"){
 	i_humanoid->gazeJoint(i_joint->jrlJoint());
 	vector3d dir,pos;
-	dir[0]=0; dir[1]=0; dir[2]=-1;
-	pos[0]=0; pos[1]=0.118; pos[2]=0;
+	dir[0]=0; dir[1]=1; dir[2]=0;
+	pos[0]=0; pos[1]=0;  pos[2]=-0.118;
 	i_humanoid->gaze(dir, pos);
 
     }else if (name == "RLEG_JOINT5"){
