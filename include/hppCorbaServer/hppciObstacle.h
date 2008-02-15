@@ -14,6 +14,12 @@
 #include "KineoKCDModel/kppKCDPolyhedron.h"
 
 #include "hppCore/hppPlanner.h"
+
+#undef PACKAGE_BUGREPORT
+#undef PACKAGE_NAME
+#undef PACKAGE_STRING
+#undef PACKAGE_TARNAME
+#undef PACKAGE_VERSION
 #include "hppciObstacleServer.hh"
 
 class ChppciServer;

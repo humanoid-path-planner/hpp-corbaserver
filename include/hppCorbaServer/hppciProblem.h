@@ -9,6 +9,12 @@
 #define HPPCI_PROBLEM_H
 
 #include <vector>
+
+#undef PACKAGE_BUGREPORT
+#undef PACKAGE_NAME
+#undef PACKAGE_STRING
+#undef PACKAGE_TARNAME
+#undef PACKAGE_VERSION
 #include "hppciProblemServer.hh"
 
 class ChppciServer;
