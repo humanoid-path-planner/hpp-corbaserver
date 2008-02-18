@@ -44,7 +44,7 @@ libhppCorbaServer_la_LIBADD = \
 	@OMNIORB4_LIBS@ \
 	@HRP2DYNAMICS_LIBS@
 
-libhppCorbaServer_la_LDLAGS= \
+libhppCorbaServer_la_LDFLAGS= \
 	-release $(PACKAGE_VERSION)
 
 if OPENHRP
