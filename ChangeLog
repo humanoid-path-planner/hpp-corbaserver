@@ -1,58 +1,47 @@
-2008/01/31
-	Added two requests to make a joint visible or transparent.
-	Unsuccessfully tried to destroy correctly Corba objects in order to rebuild them but failed.
-	
-2008/01/10
-	Added recently developed roadmap builders in ChppciProblem::setRoadmapbuilder.
-2007/11/19
-	Remove reference to kwsPlusRoadmap.
-2007/11/14
-	Do not delete attribute attHppPlanner at destruction of ChppciServer.
-	Correction of documentation generation related to previous modification.
-	
-2007/11/07
-	Reorganization of header files to solve some compilation problems.
 
-2007/10/30
-	1. Adaptation to changes in hppCore.
+hpp-corbaserver 1.2 released February 18, 2008.
+
+	25. Added two requests to make a joint visible or transparent.
+	24. Unsuccessfully tried to destroy correctly Corba objects in
+	    order to rebuild them but failed.
+	23. Added recently developed roadmap builders in
+	    ChppciProblem::setRoadmapbuilder.
+	22. Remove reference to kwsPlusRoadmap.
+	21. Do not delete attribute attHppPlanner at destruction of
+	    ChppciServer.
+	20. Correction of documentation generation related to previous
+	    modification.
+	19. Reorganization of header files to solve some compilation
+	    problems.
+	18. Adaptation to changes in hppCore.
 	
 hpp-corbaserver 1.1 released October 10, 2007.
 
-2007/10/10
-	1. Added missing hppTools.h in EXTRA_DIST.
-	
-2007/09/29
-	1. Added CORBA requests to display a roadmap in the interface.
-	2. Added a CORBA request to optimize a path.
-	3. Renamed setJointLocked into setDofLocked.
-
-2007/09/27
-	hppCorbaServer can now run with KPP interface without crashing. The CORBA interface enables a user
+	17. Added missing hppTools.h in EXTRA_DIST.
+	16. Added CORBA requests to display a roadmap in the interface.
+	15. Added a CORBA request to optimize a path.
+	14. Renamed setJointLocked into setDofLocked.
+	13. hppCorbaServer can now run with KPP interface without
+	    crashing. The CORBA interface enables a user
 	  - to build a robot joint by joint and body by body,
 	  - to add and move obstacles
 	  - to define initial and goal configurations and
 	  - to solve a problem.
-	
-	2. Made corrections in interface implementation ChppciRobotServer.idl to take into account the new version of KineoPathPlanner. This had not been done.
-	1. Added Reeds and Shepp local steering method.
-	
-2007/09/26
-	Create POA with PortableServer::MAIN_THREAD_MODEL as thread policy in order to make main thread process corba requests.
-	
-2007/09/20
-	Requests of hppCorbaServer are treated sequentially in order to avoid concurrent access problems.
-	
-2007/09/18
-	Methods loadRobotModel and loadObstacleModel of ChppciOpenHrpClient now takes as optional input the prefix where OpenHRP wrl files are installed.
-	
-2007/09/12
-	Added request initializeProblem.
-	
-2007/09/10
-	Added a request to create a box in obstacle server.
-	
-2007/09/07
-	Correction of a bug in Corba request that adds a polyhedron to a list.
+	12. Made corrections in interface implementation
+	    ChppciRobotServer.idl to take into account the new version of
+	    KineoPathPlanner. This had not been done.
+	11. Added Reeds and Shepp local steering method.
+	10. Create POA with PortableServer::MAIN_THREAD_MODEL as thread
+	   policy in order to make main thread process corba requests.
+	9. Requests of hppCorbaServer are treated sequentially in order to
+	   avoid concurrent access problems.
+	8. Methods loadRobotModel and loadObstacleModel of
+	   ChppciOpenHrpClient now takes as optional input the prefix
+	   where OpenHRP wrl files are installed.
+	7. Added request initializeProblem.
+	6. Added a request to create a box in obstacle server.
+	5. Correction of a bug in Corba request that adds a polyhedron to
+	   a list.
 	
 hpp-corbaserver 1.0 released August 27th, 2007.
 	
