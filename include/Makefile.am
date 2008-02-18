@@ -20,5 +20,5 @@ hppciOpenHrp:
 endif
 
 EXTRA_DIST = \
-	hppciTools.h \
-	hppciServerPrivate.h 
+	hppCorbaServer/hppciTools.h \
+	hppCorbaServer/hppciServerPrivate.h 
