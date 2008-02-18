@@ -6,7 +6,7 @@ dnl
 dnl   Author: Florent Lamiraux and Mathieu Poirier LAAS-CNRS
 dnl
 
-AC_INIT([hppCorbaServer],[1.1],[openrobot@laas.fr])
+AC_INIT([hppCorbaServer],[1.2],[openrobot@laas.fr])
 AC_PREREQ(2.59)
 
 AM_INIT_AUTOMAKE([foreign no-define])
@@ -15,7 +15,7 @@ AC_PROG_LIBTOOL
 
 AC_PROG_CXX
 
-define(hppcore_reqd, [hppCore >= 1.2])
+define(hppcore_reqd, [hppCore >= 1.3])
 AC_SUBST(HPPCORE_REQD, "hppcore_reqd")
 PKG_CHECK_MODULES(HPPCORE, hppcore_reqd)
 HPPCORE_PREFIX=`$PKG_CONFIG hppCore --variable=prefix`
@@ -40,7 +40,7 @@ AM_CONDITIONAL(OPENHRP, test x$with_openhrp = xtrue)
 AC_SUBST(OPENHRP_DEPENDENCES, [])
 
 if test x$with_openhrp = xtrue; then
-	define(hppopenhrp_reqd, [hppOpenHRP >= 1.0])
+	define(hppopenhrp_reqd, [hppOpenHRP >= 1.1])
 	AC_SUBST(HPPOPENHRP_REQD, "hppopenhrp_reqd")
 	PKG_CHECK_MODULES(HPPOPENHRP, hppopenhrp_reqd)
 	HPPOPENHRP_PREFIX=`$PKG_CONFIG hppOpenHRP --variable=prefix`
@@ -48,7 +48,7 @@ if test x$with_openhrp = xtrue; then
 	AC_SUBST(HPPOPENHRP_PREFIX)
 	AC_SUBST(OPENHRP_PREFIX)
 	
-	define(jrlmodelloader_reqd, [jrl-modelloader >= 1.1])
+	define(jrlmodelloader_reqd, [jrl-modelloader >= 1.2])
 	AC_SUBST(JRLMODELLOADER_REQD, "jrlmodelloader_reqd")
 	PKG_CHECK_MODULES(MODELLOADERJRL, jrlmodelloader_reqd)
 	MODELLOADERJRL_IDL=`$PKG_CONFIG jrl-modelloader --variable=idldir`
