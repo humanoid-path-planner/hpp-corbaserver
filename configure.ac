@@ -6,7 +6,7 @@ dnl
 dnl   Author: Florent Lamiraux and Mathieu Poirier LAAS-CNRS
 dnl
 
-AC_INIT([hppCorbaServer],[1.2],[openrobot@laas.fr])
+AC_INIT([hppCorbaServer],[1.2.99],[openrobot@laas.fr])
 AC_PREREQ(2.59)
 
 AM_INIT_AUTOMAKE([foreign no-define])
