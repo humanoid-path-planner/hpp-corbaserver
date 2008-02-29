@@ -12,7 +12,7 @@ public:
   /**
      \brief Create and activate the Corba servers
   */
-  void createAndActivateServers(ChppciServer* inHppciServer);
+  ktStatus createAndActivateServers(ChppciServer* inHppciServer);
 
 private:
   CORBA::ORB_var orb;
@@ -45,10 +45,10 @@ private:
   CosNaming::NamingContext_var hppContext;
   // methods
   /// \brief Create context.
-  CORBA::Boolean createHppContext();
+  bool createHppContext();
   /// \brief Store objects in Corba name service.
-  CORBA::Boolean bindObjectToName(CORBA::Object_ptr objref,
-				  CosNaming::Name objectName);
+  bool bindObjectToName(CORBA::Object_ptr objref,
+			CosNaming::Name objectName);
 
 
   /**

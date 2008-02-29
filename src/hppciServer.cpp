@@ -10,9 +10,8 @@
 #include <iostream>
 #include "hppCorbaServer/hppciServer.h"
 #include "hppCorbaServer/hppciServerPrivate.h"
+#include "hppciExceptionHandlingMacros.h"
 
-
-	
 ChppciServer* ChppciServer::s_hppciServer;
 
 ChppciServer::ChppciServer(ChppPlanner *inHppPlanner, int argc, char *argv[]) : 
@@ -41,20 +40,54 @@ ChppciServer* ChppciServer::getInstance()
 
 ktStatus ChppciServer::initORBandServers(int argc, char *argv[])
 {
+  CORBA::Object_var obj;
+  PortableServer::ThreadPolicy_var singleThread;
+  PortableServer::POA_var rootPoa;
+
+  /* 
+     Fine granularity in exception handling
+  */
+
+  /*
+    ORB init
+  */
   try {
     attPrivate->orb = CORBA::ORB_init(argc, argv);
     if (CORBA::is_nil(attPrivate->orb)) {
-      std::cerr << "StartCorbaServer: failed to initialize ORB" << std::endl;
+      std::cerr << "hppCorbaServer: failed to initialize ORB" << std::endl;
       return KD_ERROR;
     }
-    CORBA::Object_var obj = attPrivate->orb->resolve_initial_references("RootPOA");
-    PortableServer::POA_var rootPoa = PortableServer::POA::_narrow(obj);
+  }
+  HPPCI_CATCH("failed to initialize ORB", KD_ERROR) /* see hppciExceptionHandlingMacros.h */
 
+  /*
+    ORB init
+  */
+
+  try {
+    obj = attPrivate->orb->resolve_initial_references("RootPOA");    
+  }
+  HPPCI_CATCH("failed to resolve initial references", KD_ERROR) /* see hppciExceptionHandlingMacros.h */
+  
+  /*
+    Create thread policy
+  */
+
+  try {
     //
     // Make the CORBA object single-threaded to avoid GUI krash
     //
     // Create a sigle threaded policy object
-    PortableServer::ThreadPolicy_var singleThread = rootPoa->create_thread_policy(PortableServer::MAIN_THREAD_MODEL);
+    rootPoa = PortableServer::POA::_narrow(obj);
+    singleThread = rootPoa->create_thread_policy(PortableServer::MAIN_THREAD_MODEL);
+  }
+  HPPCI_CATCH("failed to create thread policy", KD_ERROR) /* see hppciExceptionHandlingMacros.h */
+  
+  /*
+    Duplicate thread policy
+  */
+
+  try {
     CORBA::PolicyList policyList;
     policyList.length(1);
     policyList[0] = PortableServer::ThreadPolicy::_duplicate(singleThread);
@@ -62,31 +95,21 @@ ktStatus ChppciServer::initORBandServers(int argc, char *argv[])
     attPrivate->poa = rootPoa->create_POA("child", PortableServer::POAManager::_nil(),
 					  policyList);
 
+  }
+  HPPCI_CATCH("failed to duplicate thread policy", KD_ERROR) /* see hppciExceptionHandlingMacros.h */
+  
+  /*
+    Destroy thread policy
+  */
+
+  try {
     // Destroy policy object
     singleThread->destroy();
 
-    attPrivate->createAndActivateServers(this);
   }
-  catch(CORBA::SystemException&) {
-    cerr << "Caught CORBA::SystemException." << endl;
-    return KD_ERROR;
-  }
-  catch(CORBA::Exception&) {
-    cerr << "Caught CORBA::Exception." << endl;
-    return KD_ERROR;
-  }
-  catch(omniORB::fatalException& fe) {
-    cerr << "Caught omniORB::fatalException:" << endl;
-    cerr << "  file: " << fe.file() << endl;
-    cerr << "  line: " << fe.line() << endl;
-    cerr << "  mesg: " << fe.errmsg() << endl;
-    return KD_ERROR;
-  }
-  catch(...) {
-    cerr << "Caught unknown exception." << endl;
-    return KD_ERROR;
-  }
-  return KD_OK;
+  HPPCI_CATCH("failed to destroy thread policy", KD_ERROR); /* see hppciExceptionHandlingMacros.h */
+  
+  return attPrivate->createAndActivateServers(this);
 }
 
 int ChppciServer::startCorbaServer()
@@ -135,25 +158,7 @@ int ChppciServer::startCorbaServer()
     PortableServer::POAManager_var pman = attPrivate->poa->the_POAManager();
     pman->activate();
   }
-  catch(CORBA::SystemException&) {
-    cerr << "Caught CORBA::SystemException." << endl;
-    return KD_ERROR;
-  }
-  catch(CORBA::Exception&) {
-    cerr << "Caught CORBA::Exception." << endl;
-    return KD_ERROR;
-  }
-  catch(omniORB::fatalException& fe) {
-    cerr << "Caught omniORB::fatalException:" << endl;
-    cerr << "  file: " << fe.file() << endl;
-    cerr << "  line: " << fe.line() << endl;
-    cerr << "  mesg: " << fe.errmsg() << endl;
-    return KD_ERROR;
-  }
-  catch(...) {
-    cerr << "Caught unknown exception." << endl;
-    return KD_ERROR;
-  }
+  HPPCI_CATCH("failed to start CORBA server", KD_ERROR);
   return KD_OK;
 }
 

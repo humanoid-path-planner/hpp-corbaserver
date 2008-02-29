@@ -7,6 +7,9 @@
 
 lib_LTLIBRARIES = libhppCorbaServer.la
 
+EXTRA_DIST = \
+	hppciExceptionHandlingMacros.h
+
 BUILT_SOURCES = \
 	hppciCommonServerSK.cc		\
 	hppciObstacleServerSK.cc	\
