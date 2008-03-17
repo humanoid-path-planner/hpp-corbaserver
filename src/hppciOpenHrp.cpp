@@ -548,7 +548,7 @@ ktStatus ChppciOpenHrpClient::loadRobotModel(std::string inFilename, std::string
   outDevice->isVisible(false) ;
   outDevice->name(inDeviceName);
 
-  privateCorbaObject->orb->destroy();
+  // privateCorbaObject->orb->destroy();
 
   return KD_OK;
 }
