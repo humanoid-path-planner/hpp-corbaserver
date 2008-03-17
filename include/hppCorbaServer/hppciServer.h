@@ -58,8 +58,6 @@ public:
   /// \brief Shutdown CORBA server
   ~ChppciServer();
   /// \brief Initialize CORBA server to process requests from clients to hpp module
-  /// \param argc arguments for Corba server initialization.
-  /// \param argv arguments for Corba server initialization.
   /// \return 0 if success, -1 if failure.
   int startCorbaServer();
   /// \brief If ORB work is pending, process it

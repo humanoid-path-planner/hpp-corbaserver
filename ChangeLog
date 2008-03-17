@@ -1,4 +1,5 @@
-
+	26. Finer handling of exceptions in CORBA initialization. 
+	
 hpp-corbaserver 1.2 released February 18, 2008.
 
 	25. Added two requests to make a joint visible or transparent.
