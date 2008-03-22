@@ -1,3 +1,8 @@
+2008/03/22
+	27. ChppciServer object now builds a map of steering method factories referenced 
+	by names. New steering methods can thus be added and set by CORBA request setSteeringMethod.
+
+2008/02/29	
 	26. Finer handling of exceptions in CORBA initialization. 
 	
 hpp-corbaserver 1.2 released February 18, 2008.

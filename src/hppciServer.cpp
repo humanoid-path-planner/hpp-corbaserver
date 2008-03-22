@@ -12,6 +12,9 @@
 #include "hppCorbaServer/hppciServerPrivate.h"
 #include "hppciExceptionHandlingMacros.h"
 
+//#define ODEBUG(x) std::cerr << "hppciServer: " << x << std::endl;
+#define ODEBUG(x)
+
 ChppciServer* ChppciServer::s_hppciServer;
 
 ChppciServer::ChppciServer(ChppPlanner *inHppPlanner, int argc, char *argv[]) : 
@@ -21,6 +24,7 @@ ChppciServer::ChppciServer(ChppPlanner *inHppPlanner, int argc, char *argv[]) :
   attPrivate = new ChppciServerPrivate;
 
   initORBandServers(argc, argv);
+  initMapSteeringMethodFactory();
 }
 
 /// \brief Shutdown CORBA server
@@ -31,11 +35,34 @@ ChppciServer::~ChppciServer()
   delete attPrivate;
   attPrivate = NULL;
   s_hppciServer = NULL;
+  destroySteeringMethodFactories();
 }
 
 ChppciServer* ChppciServer::getInstance()
 {
   return s_hppciServer;
+}
+
+void ChppciServer::initMapSteeringMethodFactory()
+{
+  attMapSteeringMethodFactory["linear"] = new CkwsPlusLinearSteeringMethodFactory;
+  attMapSteeringMethodFactory["rs"] = new CkwsPlusRSSteeringMethodFactory(1.0);
+  attMapSteeringMethodFactory["flic"] = new CkwsPlusFlicSteeringMethodFactory();
+}
+
+void ChppciServer::destroySteeringMethodFactories()
+{
+  std::map<std::string, CkwsPlusSteeringMethodFactory*>::iterator start 
+    = attMapSteeringMethodFactory.begin();
+  std::map<std::string, CkwsPlusSteeringMethodFactory*>::iterator end
+    = attMapSteeringMethodFactory.end();
+
+  for (std::map<std::string, CkwsPlusSteeringMethodFactory*>::iterator it=start;
+       it != end; it++) {
+    CkwsPlusSteeringMethodFactory* factory = it->second;
+    ODEBUG("deleting steering method factory" << it->first);
+    delete factory;
+  }
 }
 
 ktStatus ChppciServer::initORBandServers(int argc, char *argv[])
@@ -182,5 +209,35 @@ int ChppciServer::processRequest(bool loop)
     }
   }
     return 0;
+}
+
+
+bool ChppciServer::steeringMethodFactoryAlreadySet(std::string inName)
+{
+  if (attMapSteeringMethodFactory.count(inName) == 1) {
+    return true;
+  }
+  return false;
+}
+
+
+bool ChppciServer::addSteeringMethodFactory(std::string inName, 
+					    CkwsPlusSteeringMethodFactory* inSteeringMethodFactory)
+{
+  if(steeringMethodFactoryAlreadySet(inName)) {
+    return false;
+  }
+  attMapSteeringMethodFactory[inName] = inSteeringMethodFactory;
+}
+
+CkwsSteeringMethodShPtr ChppciServer::createSteeringMethod(std::string inName,
+							   bool inOriented)
+{
+  CkwsSteeringMethodShPtr result;
+
+  if (steeringMethodFactoryAlreadySet(inName)) {
+    result = attMapSteeringMethodFactory[inName]->makeSteeringMethod(inOriented);
+  }
+  return result;
 }
 

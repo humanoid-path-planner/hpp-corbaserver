@@ -9,6 +9,7 @@
 #define HPPCI_SERVER_H
 
 #include "hppCore/hppPlanner.h"
+#include "kwsPlusSteeringMethodFactory.h"
 
 class ChppciServerPrivate;
 
@@ -71,9 +72,57 @@ public:
   // 
   static ChppciServer* getInstance();
 
+  /**
+     \name Steering method management
+     @{
+  */
+  
+  /**
+     \brief Indicates whether a name already corresponds to a steering method factory.
+     \param inName Name of the steering method
+     \return true if name already corresponds to a steering method factory.
+  */
+  bool steeringMethodFactoryAlreadySet(std::string inName);
+
+  /**
+     \brief Add a steering method factory
+     \param inName Name of the steering method built by factory.
+     \param inSteeringMethodFactory Steering method factory
+     \return true if success, false if name already used
+  */
+  bool addSteeringMethodFactory(std::string inName, 
+				CkwsPlusSteeringMethodFactory* inSteeringMethodFactory);
+
+  /**
+     \brief Get steering method from name.
+  */
+  CkwsSteeringMethodShPtr createSteeringMethod(std::string inName, bool inOriented);
+
+  /**
+     @}
+  */
+
 private:
 
+  /**
+     \brief Initialize ORB and CORBA servers.
+  */
   ktStatus initORBandServers(int argc, char *argv[]);
+
+  /**
+     \brief Initialize map of steering method factories.
+
+     Insert default factories: 
+     \li "linear" factory building linear steering methods
+     \li "rs" factory building Reeds and Shepp steering methods (radius = 1)
+     \li "flic" factory building flat interpolation based steering methods
+  */
+  void initMapSteeringMethodFactory();
+  
+  /**
+     \brief Destroy each steering method factory stored in the map.
+  */
+  void destroySteeringMethodFactories();
 
   ChppciServerPrivate* attPrivate;
   /// \brief static pointer to the only object of this class.
@@ -82,6 +131,11 @@ private:
   /// \brief pointer to ChppPlanner Object.
   /// At initialization, the constructor creates a ChppPlanner object and keeps a pointer to it. All Corba requests are processed by this object. Notice that this pointer is passed to each constructor of implementation classes of the server Corba interface.
   ChppPlanner *hppPlanner;
+
+  /**
+     \brief Associative array of Steering method factories.
+  */
+  std::map<std::string, CkwsPlusSteeringMethodFactory*> attMapSteeringMethodFactory;
 
 };
 

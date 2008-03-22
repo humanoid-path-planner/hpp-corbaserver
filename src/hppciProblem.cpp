@@ -13,6 +13,9 @@
 #include "hppVisRdmBuilder.h"
 #include "kwsPlusPCARdmBuilder.h"
 
+//#define ODEBUG(x) std::cerr << "hppciProblem: " << x << std::endl;
+#define ODEBUG(x)
+
 ChppciProblem_impl::ChppciProblem_impl(ChppciServer* inHppciServer) : 
   attHppciServer(inHppciServer), attHppPlanner(inHppciServer->getHppPlanner())
 {
@@ -33,20 +36,17 @@ CORBA::Short ChppciProblem_impl::setSteeringMethod(CORBA::Short inProblemId,
     // Get robot in hppPlanner object.
     CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppProblemId);
 
-    // Create steering method
-    if (steeringMethodName == "linear") {
-      CkwsSMLinearShPtr steeringMethod = CkwsSMLinear::create(inOriented);
-      hppRobot->steeringMethod(steeringMethod);
-
-    } else if (steeringMethodName == "flic") {
-      CflicSteeringMethodShPtr steeringMethod = CflicSteeringMethod::create(inOriented);
-      hppRobot->steeringMethod(steeringMethod);
-    } else if (steeringMethodName == "rs") {
-      CreedsSheppSteeringMethodShPtr steeringMethod = CreedsSheppSteeringMethod::create(1.0, inOriented);
-      hppRobot->steeringMethod(steeringMethod);
-    } else {
+    /* Check that name correspond to a steering method factory */
+    if (!attHppciServer->steeringMethodFactoryAlreadySet(steeringMethodName)) {
       cerr << "ChppciProblem_impl::setSteeringMethod: unknown steering method." << endl;
     }
+
+    // Create steering method
+    CkwsSteeringMethodShPtr steeringMethod = 
+      attHppciServer->createSteeringMethod(steeringMethodName, inOriented);
+
+    hppRobot->steeringMethod(steeringMethod);
+    ODEBUG("set steering method: " << steeringMethodName);
   }
   else {
     cerr << "ChppciProblem_impl::setSteeringMethod: wrong robot Id" << endl;
