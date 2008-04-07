@@ -1,3 +1,7 @@
+2008/04/07
+
+	28. Adaptation to KPP version 2.04.500.
+	
 2008/03/22
 	27. ChppciServer object now builds a map of steering method factories referenced 
 	by names. New steering methods can thus be added and set by CORBA request setSteeringMethod.

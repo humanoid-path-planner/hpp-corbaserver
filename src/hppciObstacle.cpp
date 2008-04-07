@@ -14,6 +14,7 @@
 #include "hppCorbaServer/hppciTools.h"
 
 #define VERBOSE
+#define ODEBUG(x) std::cerr << "hppciObstacle.cpp: " << x << std::endl
 
 // ==========================================================================
 
@@ -30,8 +31,7 @@ CORBA::Short ChppciObstacle_impl::setObstacles(const char* inListName)
 
   // Check that collision list exists.
   if (collisionListMap.count(listName) != 1) {
-    cerr << "ChppciObstacle_impl::setObstacles: collision list "
-	 << listName << " does not exist." << endl;
+    ODEBUG("collision list " << listName << " does not exist.");
     return -1;
   }
   std::string name(listName);
@@ -49,8 +49,7 @@ CORBA::Short ChppciObstacle_impl::addObstacle(const char* inPolyhedronName)
 
   // Check that polyhedron exists.
   if (polyhedronMap.count(polyhedronName) != 1) {
-    cerr << "ChppciObstacle_impl::addObstacle: polyhedron "
-	 << polyhedronName << " does not exist." << endl;
+    ODEBUG("polyhedron " << polyhedronName << " does not exist.");
     return -1;
   }
   CkppKCDPolyhedronShPtr hppPolyhedron = polyhedronMap[polyhedronName];
@@ -69,8 +68,7 @@ CORBA::Short ChppciObstacle_impl::addObstacleConfig(const char* inPolyName,
 
   // Check that polyhedron exists.
   if (polyhedronMap.count(polyhedronName) != 1) {
-    cerr << "ChppciObstacle_impl::addObstacle: polyhedron "
-	 << polyhedronName << " does not exist." << endl;
+    ODEBUG("polyhedron " << polyhedronName << " does not exist.");
     return -1;
   }
   CkppKCDPolyhedronShPtr polyhedron = polyhedronMap[polyhedronName];
@@ -109,7 +107,7 @@ CORBA::Short ChppciObstacle_impl::moveObstacleConfig(const char* inPolyName,
       }
     }
     else{
-      cerr<<" object CkppKCDPolyhedron, not supported. "<<endl;
+      ODEBUG("only  CkppKCDPolyhedron is supported.");
     }
   }
 
@@ -137,8 +135,7 @@ CORBA::Short ChppciObstacle_impl::createCollisionList(const char* inListName)
 
   // Check that collision list does not already exist.
   if (collisionListMap.count(listName) != 0) {
-    cerr << "ChppciObstacle_impl::createCollisionList: collision list "
-	 << listName << " already exists." << endl;
+    ODEBUG("collision list " << listName << " already exists.");
     return -1;
   }
   std::vector<CkcdObjectShPtr> collisionList ;
@@ -157,8 +154,7 @@ CORBA::Short ChppciObstacle_impl::addPolyToCollList(const char* inListName,
 
   // Check that collision list exists.
   if (collisionListMap.count(listName) != 1) {
-    cerr << "ChppciObstacle_impl::addPolyToCollList: collision list "
-	 << listName << " does not exist." << endl;
+    ODEBUG("collision list " << listName << " does not exist.");
     return -1;
   }
 #ifdef VERBOSE
@@ -171,8 +167,7 @@ CORBA::Short ChppciObstacle_impl::addPolyToCollList(const char* inListName,
 #endif
   // Check that polyhedron exists.
   if (polyhedronMap.count(polyhedronName) != 1) {
-    cerr << "ChppciObstacle_impl::addPolyToCollList: polyhedron "
-	 << polyhedronName << " does not exist." << endl;
+    ODEBUG("polyhedron " << polyhedronName << " does not exist.");
     return -1;
   }
   std::vector<CkcdObjectShPtr>& kcdCollisionList = collisionListMap[listName];
@@ -194,15 +189,13 @@ CORBA::Short ChppciObstacle_impl::createPolyhedron(const char* inPolyhedronName)
   std::string polyhedronName(inPolyhedronName);
   // Check that polyhedron does not already exist.
   if (polyhedronMap.count(polyhedronName) != 0) {
-    cerr << "ChppciObstacle_impl::createPolyhedron: polyhedron "
-	 << polyhedronName << " already exists." << endl;
+    ODEBUG("polyhedron " << polyhedronName << " already exists.");
     return -1;
   }
   CkppKCDPolyhedronShPtr hppPolyhedron = CkppKCDPolyhedron::create(polyhedronName);
 
   if (!hppPolyhedron) {
-    cerr << "ChppciObstacle_impl::createPolyhedron: failed to create polyhedron "
-	 << polyhedronName << endl;
+    ODEBUG("failed to create polyhedron " << polyhedronName);
     return -1;
   }
   polyhedronMap[polyhedronName] = hppPolyhedron;
@@ -221,15 +214,13 @@ CORBA::Short ChppciObstacle_impl::createBox(const char* inBoxName,
   std::string polyhedronName(inBoxName);
   // Check that polyhedron does not already exist.
   if (polyhedronMap.count(polyhedronName) != 0) {
-    cerr << "ChppciObstacle_impl::createPolyhedron: polyhedron "
-	 << polyhedronName << " already exists." << endl;
+    ODEBUG("polyhedron " << polyhedronName << " already exists.");
     return -1;
   }
   CkppKCDPolyhedronShPtr hppPolyhedron = CkppKCDBox::create(polyhedronName, x, y, z);
 
   if (!hppPolyhedron) {
-    cerr << "ChppciObstacle_impl::createPolyhedron: failed to create polyhedron "
-	 << polyhedronName << endl;
+    ODEBUG("failed to create polyhedron " << polyhedronName);
     return -1;
   }
   polyhedronMap[polyhedronName] = hppPolyhedron;
@@ -255,8 +246,7 @@ CORBA::Short ChppciObstacle_impl::addPoint(const char* inPolyhedronName,
 #endif
   // Check that polyhedron exists.
   if (polyhedronMap.count(polyhedronName) != 1) {
-    cerr << "ChppciObstacle_impl::addPoint: polyhedron " << polyhedronName
-	 << " does not exist." << endl;
+    ODEBUG("polyhedron " << polyhedronName << " does not exist.");
     return -1;
   }
   CkppKCDPolyhedronShPtr polyhedron = polyhedronMap[polyhedronName];
@@ -289,8 +279,7 @@ CORBA::Short ChppciObstacle_impl::addTriangle(const char* inPolyhedronName,
 #endif
 
   if (polyhedronMap.count(polyhedronName) != 1) {
-    cerr << "ChppciObstacle_impl::addTriangle: polyhedron " << polyhedronName
-	 << " does not exist." << endl;
+    ODEBUG("polyhedron " << polyhedronName << " does not exist.");
     return -1;
   }
   CkppKCDPolyhedronShPtr polyhedron = polyhedronMap[polyhedronName];

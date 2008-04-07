@@ -23,6 +23,8 @@
 
 #include "hppCorbaServer/hppciTools.h"
 
+#define ODEBUG(x) std::cerr << "hppciRobot.cpp: " << x << std::endl
+
 static ktStatus attachSolidComponentsToJoint(const CkppJointComponentShPtr& inKppJoint, 
 					     const ChppBodyShPtr& inHppBody)
 {
@@ -125,9 +127,9 @@ CORBA::Short ChppciRobot_impl::loadHrp2Model()
 {
   ChppciOpenHrpClient openHrpClient(attHppPlanner);
   if (openHrpClient.loadHrp2Model() != KD_OK) {
-    return KD_ERROR;
+    return -1;
   }
-  return KD_OK;
+  return 0;
 }
 #endif
 
@@ -354,7 +356,7 @@ CORBA::Short ChppciRobot_impl::setJointBounds(CORBA::Short inProblemId, CORBA::S
       else{
 	cout<<"ChppciRobotConfig_impl::setJointBounds: nbJointBounds "<<nbJointBounds
 	    <<" != kwsJointNbDofs "<<kwsJointNbDofs<<" x 2"<<endl;
-	return KD_ERROR;
+	return -1;
       }
 
     }
@@ -363,7 +365,7 @@ CORBA::Short ChppciRobot_impl::setJointBounds(CORBA::Short inProblemId, CORBA::S
 	   << jointId 
 	   << " should be smaller than number of joints="
 	   << jointVector.size() << endl;
-      return KD_ERROR;
+      return -1;
     }
   }
   else {
@@ -371,9 +373,9 @@ CORBA::Short ChppciRobot_impl::setJointBounds(CORBA::Short inProblemId, CORBA::S
 	 << hppProblemId 
 	 << " should be smaller than number of problems="
 	 << nbProblems << endl;
-    return KD_ERROR;
+    return -1;
   }
-  return KD_OK;
+  return 0;
 }
 
 // ==========================================================================
@@ -395,10 +397,10 @@ CORBA::Short ChppciRobot_impl::setJointVisible(CORBA::Short inProblemId, CORBA::
 
     if (kppJoint) {
       kppJoint->isVisible(inVisible);
-      return KD_OK;
+      return 0;
     }
   }
-  return KD_ERROR;
+  return -1;
 }
 
 // ==========================================================================
@@ -420,10 +422,10 @@ CORBA::Short ChppciRobot_impl::setJointTransparent(CORBA::Short inProblemId, COR
 
     if (kppJoint) {
       kppJoint->isTransparent(inTransparent);
-      return KD_OK;
+      return 0;
     }
   }
-  return KD_ERROR;
+  return -1;
 }
 
 // ==========================================================================
@@ -448,7 +450,7 @@ CORBA::Short ChppciRobot_impl::setDofLocked(CORBA::Short inProblemId, CORBA::Sho
     if(dofId >= (unsigned short) dofList.size()){
       cerr <<"ChppciRobot_impl::setJointBound: joint Id "<<dofId<<" is larger than total size"
 	   <<dofList.size();
-      return KD_ERROR;
+      return -1;
     }
 
     dofList[dofId]->isLocked(locked);
@@ -458,9 +460,9 @@ CORBA::Short ChppciRobot_impl::setDofLocked(CORBA::Short inProblemId, CORBA::Sho
   }
   else {
     cerr << "ChppciRobotConfig_impl::setJointBound: wrong robot Id" << endl;
-    return KD_ERROR;
+    return -1;
   }
-  return KD_OK;
+  return 0;
 }
 
 // ==========================================================================
@@ -495,7 +497,7 @@ CORBA::Short ChppciRobot_impl::setCurrentConfig(CORBA::Short inProblemId,
     cout<<"robot id "<<hppProblemId<<", configDim "<<configDim<<",  deviceDim "<<deviceDim<<endl;
     if(configDim != deviceDim){
       cerr << "ChppciRobotConfig_impl::setCurrentConfig: dofVector Does not match" << endl;
-      return KD_ERROR;
+      return -1;
 
       // dofVector.resize(deviceDim, 0);
     }
@@ -507,9 +509,9 @@ CORBA::Short ChppciRobot_impl::setCurrentConfig(CORBA::Short inProblemId,
   }
   else {
     cerr << "ChppciRobotConfig_impl::setCurrentConfig: wrong robot Id" << endl;
-    return KD_ERROR;
+    return -1;
   }
-  return KD_OK;
+  return 0;
 }
 
 // ==========================================================================
@@ -777,7 +779,7 @@ throw(CORBA::SystemException)
 
     if (hppJointId > deviceDim) {
       cerr << "ChppciRobot_impl::checkLinkCollision: wrong joint Id" << endl;
-      return KD_ERROR;
+      return -1;
     }
 
     // get joint
@@ -801,7 +803,11 @@ throw(CORBA::SystemException)
       CkitMat4 matJoint = jointList[i]->currentPosition();
       CkitVect3 trans = mat.translation();
       CkitVect3 transJoint = matJoint.translation();
-      double dist =  hppBody->estimatedDistance();
+      double dist=0;
+      if (hppBody->CkwsKCDBody::getEstimatedDistance(dist) == KD_ERROR) {
+	ODEBUG("Failure in getting estimated distance");
+	return -1;
+      }
       cout<<"for joint "<<hppBody->name()<<" body pos "<<trans[0]<<", "<<trans[1]<<", "<<trans[2]
 	  <<" distance "<<dist<<endl; 
       cout<<"for joint "<<hppBody->name()<<" joint pos "<<transJoint[0]<<", "<<transJoint[1]<<", "<<transJoint[2]<<endl;
@@ -828,10 +834,10 @@ throw(CORBA::SystemException)
   }
   else{
     cerr << "ChppciRobot_impl::checkLinkCollision: wrong robot Id" << endl;
-    return KD_ERROR;
+    return -1;
   }
 
-  return KD_OK;
+  return 0;
 }
  
 // ==========================================================================
@@ -948,9 +954,9 @@ throw(CORBA::SystemException)
   }
   else{
     cerr << "ChppciRobot_impl::setCurrentConfig: wrong robot Id" << endl;
-    return KD_ERROR;
+    return -1;
   }
-  return KD_OK;
+  return 0;
 }
 
 // ==========================================================================

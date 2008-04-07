@@ -13,8 +13,8 @@
 #include "hppVisRdmBuilder.h"
 #include "kwsPlusPCARdmBuilder.h"
 
-//#define ODEBUG(x) std::cerr << "hppciProblem: " << x << std::endl;
-#define ODEBUG(x)
+#define ODEBUG(x) std::cerr << "hppciProblem.cpp: " << x << std::endl
+//#define ODEBUG(x)
 
 ChppciProblem_impl::ChppciProblem_impl(ChppciServer* inHppciServer) : 
   attHppciServer(inHppciServer), attHppPlanner(inHppciServer->getHppPlanner())
@@ -38,7 +38,7 @@ CORBA::Short ChppciProblem_impl::setSteeringMethod(CORBA::Short inProblemId,
 
     /* Check that name correspond to a steering method factory */
     if (!attHppciServer->steeringMethodFactoryAlreadySet(steeringMethodName)) {
-      cerr << "ChppciProblem_impl::setSteeringMethod: unknown steering method." << endl;
+      ODEBUG("unknown steering method.");
     }
 
     // Create steering method
@@ -46,14 +46,13 @@ CORBA::Short ChppciProblem_impl::setSteeringMethod(CORBA::Short inProblemId,
       attHppciServer->createSteeringMethod(steeringMethodName, inOriented);
 
     hppRobot->steeringMethod(steeringMethod);
-    ODEBUG("set steering method: " << steeringMethodName);
   }
   else {
-    cerr << "ChppciProblem_impl::setSteeringMethod: wrong robot Id" << endl;
-    return KD_ERROR;
+    ODEBUG("setSteeringMethod: wrong robot Id");
+    return -1;
   }
 
-  return KD_OK;
+  return 0;
 }
 
 CORBA::Short ChppciProblem_impl::setRoadmapbuilder(CORBA::Short inProblemId, const char* inRoadmapBuilderName)
@@ -85,7 +84,7 @@ CORBA::Short ChppciProblem_impl::setRoadmapbuilder(CORBA::Short inProblemId, con
       return status;      
     } else if (roadmapBuilderName == "bi-diffusing") {
       CkwsDiffusingRdmBuilderShPtr roadmapBuilder = CkwsDiffusingRdmBuilder::create(roadmap, penetration);
-      roadmapBuilder->buildingStrategy(CkwsDiffusingRdmBuilder::BIDIFFUSE);
+      roadmapBuilder->diffuseFromProblemGoal(true);
       status = attHppPlanner->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder);
       return status;      
     } else if (roadmapBuilderName == "IPP") {
@@ -99,16 +98,16 @@ CORBA::Short ChppciProblem_impl::setRoadmapbuilder(CORBA::Short inProblemId, con
 	CkwsPlusPCARdmBuilder<CkwsDiffusingRdmBuilder>::create(roadmap, penetration);
       status = attHppPlanner->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder);
     } else {
-      cerr << "ChppciProblem_impl::setRoadmapbuilder: unknown roadmap builder" << endl;
-      return KD_ERROR;
+      ODEBUG("unknown roadmap builder");
+      return -1;
     }
   }
   else {
-    cerr << "ChppciProblem_impl::setRoadmapbuilder: wrong robot Id" << endl;
-    return KD_ERROR;
+    ODEBUG("setRoadmapbuilder: wrong robot Id");
+    return -1;
   }
 
-  return KD_OK;
+  return 0;
 }
 
 CORBA::Short ChppciProblem_impl::setPathOptimizer(CORBA::Short inProblemId, const char* inPathOptimizerName)
@@ -120,9 +119,9 @@ CORBA::Short ChppciProblem_impl::setPathOptimizer(CORBA::Short inProblemId, cons
 
   unsigned int nbProblems = attHppPlanner->getNbHppProblems();
 
-  cerr<<"ChppciProblem_impl::setPathOptimizer: nbProblems "<<nbProblems
-      <<"problem id "<<inProblemId<<", pathOptimizerName "
-      <<pathOptimizerName<<endl;
+#ifdef VERBOSE
+  std::cout << "hppciProblem.cpp: setPathOptimizer: nbProblems " << nbProblems <<"problem id " << inProblemId << ", pathOptimizerName " <<pathOptimizerName << std::endl;
+#endif
   // Test that rank is less than number of robots in vector.
   if (hppProblemId < nbProblems) {
     // Get robot in hppPlanner object.
@@ -130,34 +129,44 @@ CORBA::Short ChppciProblem_impl::setPathOptimizer(CORBA::Short inProblemId, cons
     if (pathOptimizerName == "clear") {
       CkwsClearOptimizerShPtr pathOptimizer = CkwsClearOptimizer::create();
       status = attHppPlanner->pathOptimizerIthProblem(hppProblemId, pathOptimizer);
-      cerr<<"ChppciProblem_impl::setPathOptimizer: clear path optimizer set."<<endl;
+#ifdef VERBOSE
+      std::cout << "ChppciProblem_impl::setPathOptimizer: clear path optimizer set."<<endl;
+#endif
       return (CORBA::Short)status;
     } else if (pathOptimizerName == "adaptiveShortcut") {
       CkwsAdaptiveShortcutOptimizerShPtr pathOptimizer = CkwsAdaptiveShortcutOptimizer::create();
       status = attHppPlanner->pathOptimizerIthProblem(hppProblemId, pathOptimizer);
-      cerr<<"ChppciProblem_impl::setPathOptimizer: adaptive shortcut path optimizer set."<<endl;
+#ifdef VERBOSE
+      std::cout << "ChppciProblem_impl::setPathOptimizer: adaptive shortcut path optimizer set."<<endl;
+#endif
       return (CORBA::Short)status;
     } else if (pathOptimizerName == "random") {
       CkwsRandomOptimizerShPtr pathOptimizer = CkwsRandomOptimizer::create();
       status = attHppPlanner->pathOptimizerIthProblem(hppProblemId, pathOptimizer);
-      cerr<<"ChppciProblem_impl::setPathOptimizer: random path optimizer set."<<endl;
+#ifdef VERBOSE
+      std::cout << "ChppciProblem_impl::setPathOptimizer: random path optimizer set."<<endl;
+#endif
       return (CORBA::Short)status;
     } else if (pathOptimizerName == "none") {
       CkwsPathOptimizerShPtr pathOptimizer;
       status = attHppPlanner->pathOptimizerIthProblem(hppProblemId, pathOptimizer);
-      cerr<<"ChppciProblem_impl::setPathOptimizer: no path optimizer set."<<endl;
+#ifdef VERBOSE
+      std::cout << "ChppciProblem_impl::setPathOptimizer: no path optimizer set."<<endl;
+#endif
       return (CORBA::Short)status;
     } else {
-      cerr << "ChppciProblem_impl::setPathOptimizer: unknown path optimizer" << endl;
-      return KD_ERROR;
+#ifdef VERBOSE
+      std::cout << "ChppciProblem_impl::setPathOptimizer: unknown path optimizer" << endl;
+#endif
+      return -1;
     }
   }
   else {
-    cerr << "ChppciProblem_impl::setPathOptimizer: wrong robot Id" << endl;
-    return KD_ERROR;
+    ODEBUG("setPathOptimizer: wrong robot Id");
+    return -1;
   }
 
-  return KD_OK;
+  return 0;
 }
 
 
@@ -180,17 +189,17 @@ CORBA::Short ChppciProblem_impl::setInitialConfig(CORBA::Short inProblemId, cons
     // Create a config for robot initialized with dof vector.
     CkwsConfigShPtr config = CkwsConfig::create(hppRobot, dofVector);
     if (!config) {
-      cerr << "ChppciProblem_impl::setInitialConfig: cannot create config. Check that robot nb dof is equal to config size" << endl;
-      return KD_ERROR;
+      ODEBUG("setInitialConfig: cannot create config. Check that robot nb dof is equal to config size");
+      return -1;
     }
     
     return (short)attHppPlanner->initConfIthProblem(hppProblemId, config);
   }
   else {
-    cerr << "ChppciProblem_impl::setInitialConfig: wrong robot Id" << endl;
-    return KD_ERROR;
+    ODEBUG("setInitialConfig: wrong robot Id");
+    return -1;
   }
-  return KD_OK;
+  return 0;
 }
 
 CORBA::Short ChppciProblem_impl::setGoalConfig(CORBA::Short inProblemId, const dofSeq& dofArray) 
@@ -212,17 +221,17 @@ CORBA::Short ChppciProblem_impl::setGoalConfig(CORBA::Short inProblemId, const d
     // Create a config for robot initialized with dof vector.
     CkwsConfigShPtr config = CkwsConfig::create(hppRobot, dofVector);
     if (!config) {
-      cerr << "ChppciProblem_impl::setGoalConfig: cannot create config. Check that robot nb dof is equal to config size" << endl;
-      return KD_ERROR;
+      ODEBUG("setGoalConfig: cannot create config. Check that robot nb dof is equal to config size");
+      return -1;
     }
     
     return (short)attHppPlanner->goalConfIthProblem(hppProblemId, config);
   }
   else {
-    cerr << "ChppciProblem_impl::setGoalConfig: wrong robot Id" << endl;
-    return KD_ERROR;
+    ODEBUG("setGoalConfig: wrong robot Id");
+    return -1;
   }
-  return KD_OK;
+  return 0;
 }
 
 CORBA::Short ChppciProblem_impl::initializeProblem()
@@ -253,8 +262,7 @@ CORBA::Short ChppciProblem_impl::solveOneProblem(CORBA::Short inProblemId, CORBA
     pathLength = attHppPlanner->getPath(hppProblemId, inLastPathId)->length();
   }
   else {
-    cerr << "ChppciProblem_impl::solveOneProblem: no path in hppProblem "
-	 << hppProblemId << endl;
+    ODEBUG("solveOneProblem: no path in hppProblem " << hppProblemId);
   }
 
   return (CORBA::Short)status;
@@ -291,8 +299,7 @@ dofSeq* ChppciProblem_impl::configAtDistance(CORBA::Short inProblemId, CORBA::Sh
   
   //get the config of the robot on the path
   if (atDistance > pathLength) {
-    cerr << "ChppciProblem_impl::ConfigAtParam: Param out of range (longer than path Length) "
-	 << "Param : "<< atDistance << " length : " << pathLength << endl;
+    ODEBUG("configAtParam: param out of range (longer than path Length) " << "Param : "<< atDistance << " length : " << pathLength);
    
   }
   else {
@@ -318,19 +325,18 @@ CORBA::Short ChppciProblem_impl::setObstacleTolerance(CORBA::Short inProblemId, 
   // get object hppPlanner of Corba server.
 
   if(!attHppPlanner){
-    cerr<<"problem "<<hppProblemId<<" not found"<<endl;
+    ODEBUG("problem " << hppProblemId << " not found");
     return -1;
   }
 
   std::vector<CkcdObjectShPtr> oList = attHppPlanner->obstacleList();
 
   if(oList.size() == 0)
-    cerr<<" there are no obstacle in problem "<<hppProblemId<<endl;
+    cerr << " there are no obstacle in problem " << hppProblemId << endl;
 
   for(unsigned int i =0; i<oList.size(); i++){
     oList[i]->tolerance(tolerance);
-    cerr<<"tolerance "<<tolerance<<" set to obstacle "<<i<<endl;
+    ODEBUG("tolerance " << tolerance << " set to obstacle " << i);
   }
-  
   return 0;
 }
