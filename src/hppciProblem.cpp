@@ -39,6 +39,7 @@ CORBA::Short ChppciProblem_impl::setSteeringMethod(CORBA::Short inProblemId,
     /* Check that name correspond to a steering method factory */
     if (!attHppciServer->steeringMethodFactoryAlreadySet(steeringMethodName)) {
       ODEBUG("unknown steering method.");
+      return -1;
     }
 
     // Create steering method
