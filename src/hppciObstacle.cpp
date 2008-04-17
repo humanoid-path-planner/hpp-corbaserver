@@ -19,7 +19,7 @@
 // ==========================================================================
 
 ChppciObstacle_impl::ChppciObstacle_impl(ChppciServer *inHppciServer) : 
-  attHppciServer(inHppciServer), attHppPlanner(inHppciServer->getHppPlanner())
+  attHppPlanner(inHppciServer->getHppPlanner()), attHppciServer(inHppciServer)
 {
 }
 

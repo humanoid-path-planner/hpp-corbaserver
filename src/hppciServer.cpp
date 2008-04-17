@@ -228,6 +228,7 @@ bool ChppciServer::addSteeringMethodFactory(std::string inName,
     return false;
   }
   attMapSteeringMethodFactory[inName] = inSteeringMethodFactory;
+  return true;
 }
 
 CkwsSteeringMethodShPtr ChppciServer::createSteeringMethod(std::string inName,
