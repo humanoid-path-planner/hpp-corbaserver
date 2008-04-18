@@ -86,7 +86,7 @@ public:
 
   /** 
       \brief Initialize Orb and load model of objects by sending a Corba request modelLoader to OpenHRP. 
-      \param inFilename Name of the wrl file containing the description of the robot.
+      \param inFilename Name of the wrl file containing the description of the obstacle.
       \param inObstacleName Name of the obstacle.
       \param inOpenHrpPrefix Prefix of OpenHRP installation. Default value is provided by hppOpenHRP package.
       \retval outPolyhedron shared pointer to the polyhedron.
