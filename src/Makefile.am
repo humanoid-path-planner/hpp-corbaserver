@@ -5,6 +5,22 @@
 # Author: Florent Lamiraux
 #
 
+#
+# Stand alone hppCorbaserver
+#
+
+bin_PROGRAMS = hppCorbaServer
+hppCorbaServer_SOURCES = hppCorbaServer.cpp 
+
+hppCorbaServer_CPPFLAGS = -I$(srcdir)/../include \
+	@HPPCORE_CFLAGS@ \
+	@OMNIORB4_CFLAGS@ 
+
+hppCorbaServer_LDFLAGS = ./.libs/libhppCorbaServer.a \
+	@HPPCORE_LIBS@ \
+	@OMNIORB4_LIBS@ \
+	@HRP2DYNAMICS_LIBS@
+
 lib_LTLIBRARIES = libhppCorbaServer.la
 
 EXTRA_DIST = \
@@ -67,6 +83,13 @@ libhppCorbaServer_la_CPPFLAGS += \
 
 libhppCorbaServer_la_LIBADD += \
 	@HPPOPENHRP_LIBS@
+
+hppCorbaServer_CPPFLAGS += \
+	@HPPOPENHRP_CFLAGS@ -DSTRING_OPENHRP_PREFIX='"@OPENHRP_PREFIX@"' 
+
+hppCorbaServer_LDFLAGS += \
+	@HPPOPENHRP_LIBS@
+
 endif
 
 clean-local:
@@ -77,3 +100,10 @@ clean-local:
 
 %SK.cc %.hh: @MODELLOADERJRL_IDL@/%.idl
 	@OMNIORB_PREFIX@/bin/omniidl -bcxx $<
+
+# --- Kineo license ----------------------------------------------------
+
+install-data-hook:
+	-KPP_INSTALL_DIR=$(KINEOCONTROLLER_PREFIX) \
+	LD_LIBRARY_PATH=$(KINEOCONTROLLER_PREFIX)/lib \
+	$(KINEO_ADDON_BUILD) -a $(bindir)/hppCorbaServer

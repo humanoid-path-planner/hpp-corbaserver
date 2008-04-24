@@ -719,7 +719,6 @@ ktStatus ChppciOpenHrpClient::getObstacleURL(std::string inFilename)
   if(privateCorbaObject->attLoader) {   
     try {
       privateCorbaObject->obstInfoVector.push_back(privateCorbaObject->attLoader->loadURL(inFilename.c_str()));
-      int sz_obst = privateCorbaObject->obstInfoVector.size();
 	                 
       // TO CHECK ON SCREEN
       cout << endl ;

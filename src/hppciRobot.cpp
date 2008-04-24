@@ -65,7 +65,7 @@ CORBA::Short ChppciRobot_impl::createRobot(const char* inRobotName)
   // Try to create a robot.
   CkppDeviceComponentShPtr hppDevice=CkppDeviceComponent::create(robotName);
   if (!hppDevice) {
-    cerr << "ChppciRobot_impl::createRobot: failed to create a robot.";
+    cerr << "ChppciRobot_impl::createRobot: failed to create a robot." << std::endl;
     return -1;
   }
   // Store robot in map.

@@ -32,6 +32,11 @@ if test "$setdefaultflags" = "yes"; then
   fi
 fi
 
+PKG_CHECK_MODULES(KINEOCONTROLLER, KineoController)
+KINEOCONTROLLER_PREFIX=`$PKG_CONFIG KineoPathPlanner --variable=prefix`
+AC_SUBST(KINEOCONTROLLER_PREFIX)
+AC_SUBST(KINEO_ADDON_BUILD,[${KINEOCONTROLLER_PREFIX}/bin/KineoAddonBuilder])
+
 define(hppcore_reqd, [hppCore >= 1.3])
 AC_SUBST(HPPCORE_REQD, "hppcore_reqd")
 PKG_CHECK_MODULES(HPPCORE, hppcore_reqd)
