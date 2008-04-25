@@ -34,6 +34,9 @@ public:
   /// \brief Comment in interface ChppciPRoblem::setPathOptimizer
   virtual CORBA::Short setPathOptimizer(CORBA::Short inProblemId, const char* inPathOptimizer);
 
+  /// \brief Comment in interface ChppciPRoblem::setDistanceFunction
+  virtual CORBA::Short setDistanceFunction(CORBA::Short inProblemId, const char* inDistanceName, CORBA::Boolean inOriented);
+
   /// \brief Comment in interface ChppciPRoblem::setInitialConfig
   virtual CORBA::Short setInitialConfig(CORBA::Short inProblemId, const dofSeq& dofArray);
 

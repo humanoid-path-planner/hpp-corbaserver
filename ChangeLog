@@ -1,3 +1,7 @@
+2008/04/25
+	32. in ChppciServer objects, new distance function factories can be added.
+	31. Added a CORBA request to set a distance function in a given roadmap builder.
+	
 2008/04/24
 	30. Added a standalone CORBA server running without the interface.
 	

@@ -10,6 +10,7 @@
 
 #include "hppCore/hppPlanner.h"
 #include "kwsPlusSteeringMethodFactory.h"
+#include "kwsPlusDistanceFactory.h"
 
 class ChppciServerPrivate;
 
@@ -79,7 +80,7 @@ public:
   
   /**
      \brief Indicates whether a name already corresponds to a steering method factory.
-     \param inName Name of the steering method
+     \param inName Name of the steering method factory.
      \return true if name already corresponds to a steering method factory.
   */
   bool steeringMethodFactoryAlreadySet(std::string inName);
@@ -102,7 +103,39 @@ public:
      @}
   */
 
+  /**
+     \name Distance function management
+  */
+  /**
+     \brief Indicates whether a name already corresponds to a distance factory.
+     \param inName Name of the distance function factory.
+     \return true if name already corresponds to a distance function factory.
+  */
+  bool distanceFactoryAlreadySet(std::string inName);
+
+  /**
+     \brief Add a distance function factory
+     \param inName Name of the distance function built by factory.
+     \param inDistanceFactory distance function factory
+     \return true if success, false if name already used
+  */
+  bool addDistanceFactory(std::string inName, 
+			  CkwsPlusDistanceFactory* inDistanceFactory);
+
+  /**
+     \brief Get distance function from name.
+  */
+  CkwsDistanceShPtr createDistanceFunction(std::string inName, bool inOriented);
+
+  /**
+     @}
+  */
+
 private:
+
+  /**
+     \name CORBA server initialization
+  */
 
   /**
      \brief Initialize ORB and CORBA servers.
@@ -110,12 +143,20 @@ private:
   ktStatus initORBandServers(int argc, char *argv[]);
 
   /**
+     @}
+  */
+
+  /**
+     \name Steering method factories
+     @{
+  */
+  /**
      \brief Initialize map of steering method factories.
 
      Insert default factories: 
-     \li "linear" factory building linear steering methods
-     \li "rs" factory building Reeds and Shepp steering methods (radius = 1)
-     \li "flic" factory building flat interpolation based steering methods
+     \li "linear" factory building linear steering methods,
+     \li "rs" factory building Reeds and Shepp steering methods (radius = 1),
+     \li "flic" factory building flat interpolation based steering methods.
   */
   void initMapSteeringMethodFactory();
   
@@ -123,6 +164,42 @@ private:
      \brief Destroy each steering method factory stored in the map.
   */
   void destroySteeringMethodFactories();
+
+  /**
+     \brief Associative array of Steering method factories.
+  */
+  std::map<std::string, CkwsPlusSteeringMethodFactory*> attMapSteeringMethodFactory;
+
+  /**
+     @}
+  */
+  /**
+     \name Distance function factories
+     @{
+  */
+  /**
+     \brief Initialize map of distance function factories.
+
+     Insert default factories: 
+     \li "linear" factory building linear distance functions,
+     \li "rs" factory building Reeds and Shepp distance functions (radius = 1),
+     \li "flic" factory building flat interpolation based distance functions.
+  */
+  void initMapDistanceFunctionFactory();
+  
+  /**
+     \brief Destroy each distance function factory stored in the map.
+  */
+  void destroyDistanceFunctionFactories();
+
+  /**
+     \brief Associative array of distance function factories.
+  */
+  std::map<std::string, CkwsPlusDistanceFactory*> attMapDistanceFunctionFactory;
+
+  /**
+     @}
+  */
 
   ChppciServerPrivate* attPrivate;
   /// \brief static pointer to the only object of this class.
@@ -132,10 +209,6 @@ private:
   /// At initialization, the constructor creates a ChppPlanner object and keeps a pointer to it. All Corba requests are processed by this object. Notice that this pointer is passed to each constructor of implementation classes of the server Corba interface.
   ChppPlanner *hppPlanner;
 
-  /**
-     \brief Associative array of Steering method factories.
-  */
-  std::map<std::string, CkwsPlusSteeringMethodFactory*> attMapSteeringMethodFactory;
 
 };
 
