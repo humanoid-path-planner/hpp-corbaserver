@@ -15,11 +15,11 @@
 
 // Select verbosity at configuration by setting CXXFLAGS="... -DDEBUG=[1 or 2]"
 #if DEBUG==2
-#define ODEBUG2(x) std::cout << "hppciProble.cpp:" << x << std::endl
-#define ODEBUG1(x) std::cerr << "hppciProble.cpp:" << x << std::endl
+#define ODEBUG2(x) std::cout << "hppciProblem:" << x << std::endl
+#define ODEBUG1(x) std::cerr << "hppciProblem:" << x << std::endl
 #elif DEBUG==1
 #define ODEBUG2(x)
-#define ODEBUG1(x) std::cerr << "hppciProble.cpp:" << x << std::endl
+#define ODEBUG1(x) std::cerr << "hppciProblem:" << x << std::endl
 #else
 #define ODEBUG2(x)
 #define ODEBUG1(x)
