@@ -15,11 +15,11 @@
 
 // Select verbosity at configuration by setting CXXFLAGS="... -DDEBUG=[1 or 2]"
 #if DEBUG==2
-#define ODEBUG2(x) std::cout << "hppciProblem:" << x << std::endl
-#define ODEBUG1(x) std::cerr << "hppciProblem:" << x << std::endl
+#define ODEBUG2(x) std::cout << "ChppciProblem:" << x << std::endl
+#define ODEBUG1(x) std::cerr << "ChppciProblem:" << x << std::endl
 #elif DEBUG==1
 #define ODEBUG2(x)
-#define ODEBUG1(x) std::cerr << "hppciProblem:" << x << std::endl
+#define ODEBUG1(x) std::cerr << "ChppciProblem:" << x << std::endl
 #else
 #define ODEBUG2(x)
 #define ODEBUG1(x)
@@ -65,7 +65,8 @@ CORBA::Short ChppciProblem_impl::setSteeringMethod(CORBA::Short inProblemId,
   return 0;
 }
 
-CORBA::Short ChppciProblem_impl::setRoadmapbuilder(CORBA::Short inProblemId, const char* inRoadmapBuilderName)
+CORBA::Short ChppciProblem_impl::setRoadmapbuilder(CORBA::Short inProblemId, const char* inRoadmapBuilderName,
+						   CORBA::Boolean inDisplay)
 {
   std::string roadmapBuilderName(inRoadmapBuilderName);
   unsigned int hppProblemId = (unsigned int)inProblemId;
@@ -86,27 +87,27 @@ CORBA::Short ChppciProblem_impl::setRoadmapbuilder(CORBA::Short inProblemId, con
     // Create roadmapBuilder
     if (roadmapBuilderName == "basic") {
       CkwsBasicRdmBuilderShPtr roadmapBuilder = CkwsBasicRdmBuilder::create(roadmap, penetration);
-      status = attHppPlanner->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder);
+      status = attHppPlanner->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder, inDisplay);
       return status;      
     } else if (roadmapBuilderName == "diffusing") {
       CkwsDiffusingRdmBuilderShPtr roadmapBuilder = CkwsDiffusingRdmBuilder::create(roadmap, penetration);
-      status = attHppPlanner->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder);
+      status = attHppPlanner->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder, inDisplay);
       return status;      
     } else if (roadmapBuilderName == "bi-diffusing") {
       CkwsDiffusingRdmBuilderShPtr roadmapBuilder = CkwsDiffusingRdmBuilder::create(roadmap, penetration);
       roadmapBuilder->diffuseFromProblemGoal(true);
-      status = attHppPlanner->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder);
+      status = attHppPlanner->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder, inDisplay);
       return status;      
     } else if (roadmapBuilderName == "IPP") {
       CkwsIPPRdmBuilderShPtr roadmapBuilder = CkwsIPPRdmBuilder::create(roadmap, penetration);
-      status = attHppPlanner->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder);
+      status = attHppPlanner->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder, inDisplay);
     } else if (roadmapBuilderName == "visibility") {
       ChppVisRdmBuilderShPtr roadmapBuilder = ChppVisRdmBuilder::create(roadmap, penetration);
-      status = attHppPlanner->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder);
+      status = attHppPlanner->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder, inDisplay);
     } else if (roadmapBuilderName == "PCA<diffusing>") {
       KIT_SHARED_PTR(CkwsPlusPCARdmBuilder<CkwsDiffusingRdmBuilder>) roadmapBuilder = 
 	CkwsPlusPCARdmBuilder<CkwsDiffusingRdmBuilder>::create(roadmap, penetration);
-      status = attHppPlanner->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder);
+      status = attHppPlanner->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder, inDisplay);
     } else {
       ODEBUG1("unknown roadmap builder");
       return -1;

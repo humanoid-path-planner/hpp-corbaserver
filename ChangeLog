@@ -1,3 +1,7 @@
+2008/05/01
+	33. Added boolean parameter in ChppciProblem::setRoadmapbuilder to select whether 
+	    roadmap developed by new roadmap builder should be displayed.
+	
 2008/04/25
 	32. in ChppciServer objects, new distance function factories can be added.
 	31. Added a CORBA request to set a distance function in a given roadmap builder.

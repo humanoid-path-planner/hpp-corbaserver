@@ -30,9 +30,10 @@ interface ChppciProblem {
   /** \brief Set roadmap builder of specified robot in ChppPlanner::robotVector.
       \param inProblemId rank of problem in vector of hppProblems.
       \param inRoadmapBuilderName name of the roadmap builder in {"basic", "diffusing", "bi-diffusing", "IPP", "visibility", "PCA<diffusing>"}.
+      \param inDisplay whether the roadmap should be displayed in the interface.
       \return 0 if success, -1 if failure.
   */
-  short setRoadmapbuilder(in short inProblemId, in string inRoadmapBuilderName);
+  short setRoadmapbuilder(in short inProblemId, in string inRoadmapBuilderName, in boolean inDisplay);
 
   /** \brief Set path optimizer of specified robot in ChppPlanner::robotVector.
    \param inProblemId rank of problem in vector of hppProblems.

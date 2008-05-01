@@ -29,7 +29,8 @@ public:
 					 const char* inSteeringMethod, CORBA::Boolean inOriented);
 
   /// \brief Comment in interface ChppciPRoblem::setRoadmapbuilder
-  virtual CORBA::Short setRoadmapbuilder(CORBA::Short inProblemId, const char* inRoadmapBuilder);
+  virtual CORBA::Short setRoadmapbuilder(CORBA::Short inProblemId, const char* inRoadmapBuilder,
+					 CORBA::Boolean inDisplay);
 
   /// \brief Comment in interface ChppciPRoblem::setPathOptimizer
   virtual CORBA::Short setPathOptimizer(CORBA::Short inProblemId, const char* inPathOptimizer);

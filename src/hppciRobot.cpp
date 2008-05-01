@@ -23,7 +23,16 @@
 
 #include "hppCorbaServer/hppciTools.h"
 
-#define ODEBUG(x) std::cerr << "hppciRobot.cpp: " << x << std::endl
+#if DEBUG==2
+#define ODEBUG2(x) std::cout << "ChppciRobot:" << x << std::endl
+#define ODEBUG1(x) std::cerr << "ChppciRobot:" << x << std::endl
+#elif DEBUG==1
+#define ODEBUG2(x)
+#define ODEBUG1(x) std::cerr << "ChppciRobot:" << x << std::endl
+#else
+#define ODEBUG2(x)
+#define ODEBUG1(x)
+#endif
 
 static ktStatus attachSolidComponentsToJoint(const CkppJointComponentShPtr& inKppJoint, 
 					     const ChppBodyShPtr& inHppBody)
@@ -36,7 +45,7 @@ static ktStatus attachSolidComponentsToJoint(const CkppJointComponentShPtr& inKp
 
     CkppKCDPolyhedronShPtr kppPoly = KIT_DYNAMIC_PTR_CAST(CkppKCDPolyhedron, object);
     if (!kppPoly) {
-      std::cerr << "attachSolidComponentsToJoint: Object is not a CkppKCDPolyhedron." << std::endl;
+      ODEBUG1(":attachSolidComponentsToJoint: Object is not a CkppKCDPolyhedron.");
       return KD_ERROR;
     }
     inKppJoint->addSolidComponentRef(CkppSolidComponentRef::create(kppPoly)); 
@@ -59,13 +68,13 @@ CORBA::Short ChppciRobot_impl::createRobot(const char* inRobotName)
   std::string robotName(inRobotName);
   // Check that no robot of this name already exists.
   if (robotMap.count(robotName) != 0) {
-    cerr << "ChppciRobot_impl::createRobot: robot " << robotName << " already exists." << endl;
+    ODEBUG1(":createRobot: robot " << robotName << " already exists.");
     return -1;
   }
   // Try to create a robot.
   CkppDeviceComponentShPtr hppDevice=CkppDeviceComponent::create(robotName);
   if (!hppDevice) {
-    cerr << "ChppciRobot_impl::createRobot: failed to create a robot." << std::endl;
+    ODEBUG1(":createRobot: failed to create a robot.");
     return -1;
   }
   // Store robot in map.
@@ -81,7 +90,7 @@ CORBA::Short ChppciRobot_impl::addHppProblem(const char* inRobotName)
   std::string robotName(inRobotName);
   // Check that robot of this name exists.
   if (robotMap.count(robotName) != 1) {
-    cerr << "ChppciRobot_impl::addHppProblem: robot " << robotName << " does not exist." << endl;
+    ODEBUG1(":addHppProblem: robot " << robotName << " does not exist.");
     return -1;
   }
   CkppDeviceComponentShPtr hppDevice = robotMap[robotName];
@@ -102,21 +111,20 @@ CORBA::Short ChppciRobot_impl::setRobotRootJoint(const char* inRobotName,
     
   // Check that robot of this name exists.
   if (robotMap.count(robotName) != 1) {
-    cerr << "ChppciRobot_impl::setRobotRootJoint: robot " << robotName << " does not exist." << endl;
+    ODEBUG1(":setRobotRootJoint: robot " << robotName << " does not exist.");
     return -1;
   }
   // Check that joint of this name exists.
   if (jointMap.count(jointName) != 1) {
-    cerr << "ChppciRobot_impl::setRobotRootJoint: joint " << jointName << " does not exist." << endl;
+    ODEBUG1(":setRobotRootJoint: joint " << jointName << " does not exist.");
     return -1;
   }
   CkppDeviceComponentShPtr hppDevice = robotMap[robotName];
   CkppJointComponentShPtr kppJoint = jointMap[jointName];
   
   if (hppDevice->rootJointComponent(kppJoint)!=KD_OK) {
-    cerr << "ChppciRobot_impl::setRobotRootJoint: failed to set joint "
-	 << jointName << " as root joint of robot " << robotName << "." 
-	 << endl;
+    ODEBUG1(":setRobotRootJoint: failed to set joint "
+	    << jointName << " as root joint of robot " << robotName << ".");
     return -1;
   }
   return 0;
@@ -142,15 +150,13 @@ CORBA::Short ChppciRobot_impl::createExtraDof(const char* inDofName, CORBA::Bool
   std::string dofName(inDofName);
   // Check that extra dof of this name does not already exist.
   if (extraDofMap.count(dofName) != 0) {
-    cerr << "ChppciRobot_impl::createExtraDof: extra degree of freedom " 
-	 << dofName << " already exists." << endl;
+    ODEBUG1(":createExtraDof: extra degree of freedom " << dofName << " already exists.");
     return -1;
   }
   CkppExtraDofComponentShPtr extraDof = CkppExtraDofComponent::create(inRevolute, dofName);
   // Check whether creation failed.
   if (!extraDof) {
-    cerr << "ChppciRobot_impl::createExtraDof: failed to create extra degree of freedom "
-	 << dofName << endl;
+    ODEBUG1(":createExtraDof: failed to create extra degree of freedom " << dofName);
     return -1;
   }
   if (inValueMin <= inValueMax) {
@@ -175,21 +181,20 @@ CORBA::Short ChppciRobot_impl::addExtraDofToRobot(const char* inRobotName, const
 
   // Check that robot of this name exists.
   if (robotMap.count(robotName) != 1) {
-    cerr << "ChppciRobot_impl::addExtraDofToRobot: robot " << robotName << " does not exist." << endl;
+    ODEBUG1(":addExtraDofToRobot: robot " << robotName << " does not exist.");
     return -1;
   }
   // Check that extra degree of freedom of this name exists.
   if (extraDofMap.count(dofName) != 1) {
-    cerr << "ChppciRobot_impl::addExtraDofToRobot: joint " << dofName << " does not exist." << endl;
+    ODEBUG1(":addExtraDofToRobot: joint " << dofName << " does not exist.");
     return -1;
   }
   CkppDeviceComponentShPtr hppDevice = robotMap[robotName];
   CkppExtraDofComponentShPtr kwsExtraDof = extraDofMap[dofName];
   
   if (hppDevice->addExtraDof(kwsExtraDof)!=KD_OK) {
-    cerr << "ChppciRobot_impl::addExtraDofToRobot: failed add extra degree of freedom "
-	 << dofName << " to robot " << robotName << "." 
-	 << endl;
+    ODEBUG1(":addExtraDofToRobot: failed add extra degree of freedom "	 
+	    << dofName << " to robot " << robotName << ".");
     return -1;
   }
   return 0;
@@ -208,8 +213,7 @@ CORBA::Short ChppciRobot_impl::createJoint(const char* inJointName,
 
   // Check that joint of this name does not already exist.
   if (jointMap.count(jointName) != 0) {
-    cerr << "ChppciRobot_impl::createJoint: joint " << jointName 
-	 << " already exists." << endl;
+    ODEBUG1(":createJoint: joint " << jointName  << " already exists.");
     return -1;
   }
 
@@ -219,10 +223,10 @@ CORBA::Short ChppciRobot_impl::createJoint(const char* inJointName,
   CkitMat4 posMatrix;
   ConfigurationToCkitMat4(pos, posMatrix);
 
-  //  cout << "Position matrix = (( " << posMatrix(0, 0) << ",\t " << posMatrix(0, 1) << ",\t " << posMatrix(0, 2) << ",\t " << posMatrix(0, 3) << " )" << endl;
-  //  cout << "                   ( " << posMatrix(1, 0) << ",\t " << posMatrix(1, 1) << ",\t " << posMatrix(1, 2) << ",\t " << posMatrix(1, 3) << " )" << endl;
-  //  cout << "                   ( " << posMatrix(2, 0) << ",\t " << posMatrix(2, 1) << ",\t " << posMatrix(2, 2) << ",\t " << posMatrix(2, 3) << " )" << endl;
-  //  cout << "                   ( " << posMatrix(3, 0) << ",\t " << posMatrix(3, 1) << ",\t " << posMatrix(3, 2) << ",\t " << posMatrix(3, 3) << " ))" << endl;
+  ODEBUG2("Position matrix = (( " << posMatrix(0, 0) << ",\t " << posMatrix(0, 1) << ",\t " << posMatrix(0, 2) << ",\t " << posMatrix(0, 3) << " )");
+  ODEBUG2("                   ( " << posMatrix(1, 0) << ",\t " << posMatrix(1, 1) << ",\t " << posMatrix(1, 2) << ",\t " << posMatrix(1, 3) << " )");
+  ODEBUG2("                   ( " << posMatrix(2, 0) << ",\t " << posMatrix(2, 1) << ",\t " << posMatrix(2, 2) << ",\t " << posMatrix(2, 3) << " )");
+  ODEBUG2("                   ( " << posMatrix(3, 0) << ",\t " << posMatrix(3, 1) << ",\t " << posMatrix(3, 2) << ",\t " << posMatrix(3, 3) << " ))");
 
   // Determine type of joint.
   if (jointType == "anchor") {
@@ -255,14 +259,12 @@ CORBA::Short ChppciRobot_impl::createJoint(const char* inJointName,
     kppJoint = kppTranslationJoint;
   }
   else {
-    cerr << "ChppciRobot_impl::createJoint: joint type " << jointType 
-	 << " does not exist." << endl;
+    ODEBUG1(":createJoint: joint type " << jointType  << " does not exist.");
     return -1;
   }
   // Check whether creation failed.
   if (!kppJoint) {
-    cerr << "ChppciRobot_impl::createJoint: failed to create joint "
-	 << jointName << endl;
+    ODEBUG1(":createJoint: failed to create joint " << jointName);
     return -1;
   } 
   // Bound joint if needed.
@@ -295,21 +297,18 @@ CORBA::Short ChppciRobot_impl::addJoint(const char* inParentName,
 {
   // Check that joint of this name exists.
   if (jointMap.count(inParentName) != 1) {
-    cerr << "ChppciRobot_impl::addJoint: joint " << inParentName 
-	 << " does not exist." << endl;
+    ODEBUG1(":addJoint: joint " << inParentName  << " does not exist.");
     return -1;
   }
   // Check that joint of this name does not already exist.
   if (jointMap.count(inChildName) != 1) {
-    cerr << "ChppciRobot_impl::addJoint: joint " << inChildName 
-	 << " does not exist." << endl;
+    ODEBUG1(":addJoint: joint " << inChildName  << " does not exist.");
     return -1;
   }
   CkppJointComponentShPtr parentJoint = jointMap[inParentName];
   CkppJointComponentShPtr childJoint = jointMap[inChildName];
   if (parentJoint->addChildJointComponent(childJoint) != KD_OK) {
-    cerr << "ChppciRobot_impl::addJoint: failed to attach joint "
-	 << inChildName << " to joint " << inParentName << endl;
+    ODEBUG1(":addJoint: failed to attach joint " << inChildName << " to joint " << inParentName);
     return -1;
   }
   return 0;
@@ -354,25 +353,22 @@ CORBA::Short ChppciRobot_impl::setJointBounds(CORBA::Short inProblemId, CORBA::S
 	}
       }
       else{
-	cout<<"ChppciRobotConfig_impl::setJointBounds: nbJointBounds "<<nbJointBounds
-	    <<" != kwsJointNbDofs "<<kwsJointNbDofs<<" x 2"<<endl;
+	ODEBUG1(":setJointBounds: nbJointBounds "<< nbJointBounds <<
+		" != kwsJointNbDofs "<<kwsJointNbDofs<<" x 2");
 	return -1;
       }
 
     }
     else {
-      cerr << "ChppciRobotConfig_impl::setJointBounds: jointId=" 
-	   << jointId 
-	   << " should be smaller than number of joints="
-	   << jointVector.size() << endl;
+      ODEBUG1(":setJointBounds: jointId="  << jointId  << 
+	      " should be smaller than number of joints=" << jointVector.size());
       return -1;
     }
   }
   else {
-    cerr << "ChppciRobotConfig_impl::setJointBounds: inProblemId=" 
-	 << hppProblemId 
-	 << " should be smaller than number of problems="
-	 << nbProblems << endl;
+    ODEBUG1(":setJointBounds: inProblemId="  << hppProblemId  << 
+	    " should be smaller than number of problems="
+	    << nbProblems);
     return -1;
   }
   return 0;
@@ -448,8 +444,7 @@ CORBA::Short ChppciRobot_impl::setDofLocked(CORBA::Short inProblemId, CORBA::Sho
     hppRobot->getDofVector(dofList);
 
     if(dofId >= (unsigned short) dofList.size()){
-      cerr <<"ChppciRobot_impl::setJointBound: joint Id "<<dofId<<" is larger than total size"
-	   <<dofList.size();
+      ODEBUG1(":setJointBound: joint Id " << dofId << " is larger than total size " << dofList.size());
       return -1;
     }
 
@@ -459,7 +454,7 @@ CORBA::Short ChppciRobot_impl::setDofLocked(CORBA::Short inProblemId, CORBA::Sho
       dofList[dofId]->lockedValue(lockedValue);
   }
   else {
-    cerr << "ChppciRobotConfig_impl::setJointBound: wrong robot Id" << endl;
+    ODEBUG1("ChppciRobotConfig_impl::setJointBound: wrong robot Id");
     return -1;
   }
   return 0;
@@ -494,9 +489,9 @@ CORBA::Short ChppciRobot_impl::setCurrentConfig(CORBA::Short inProblemId,
     
     // by Yoshida 06/08/25
     // fill the vector by zero
-    cout<<"robot id "<<hppProblemId<<", configDim "<<configDim<<",  deviceDim "<<deviceDim<<endl;
+    ODEBUG2("robot id "<<hppProblemId<<", configDim "<<configDim<<",  deviceDim "<<deviceDim);
     if(configDim != deviceDim){
-      cerr << "ChppciRobotConfig_impl::setCurrentConfig: dofVector Does not match" << endl;
+      ODEBUG1(":setCurrentConfig: dofVector Does not match");
       return -1;
 
       // dofVector.resize(deviceDim, 0);
@@ -508,7 +503,7 @@ CORBA::Short ChppciRobot_impl::setCurrentConfig(CORBA::Short inProblemId,
     return (short)attHppPlanner->robotCurrentConfIthProblem(hppProblemId, config);
   }
   else {
-    cerr << "ChppciRobotConfig_impl::setCurrentConfig: wrong robot Id" << endl;
+    ODEBUG1(":setCurrentConfig: wrong robot Id");
     return -1;
   }
   return 0;
@@ -597,7 +592,7 @@ dofSeq* ChppciRobot_impl::getCurrentConfig(CORBA::Short inProblemId)
   }
 
   else {
-    cerr << "ChppciRobotConfig_impl::CurrentConfig: wrong robot Id" << endl;
+    ODEBUG1(":CurrentConfig: wrong robot Id");
     dofArray = new dofSeq(1);
 
     return dofArray;
@@ -617,14 +612,12 @@ CORBA::Short ChppciRobot_impl::attachBodyToJoint(const char* inJointName,
 
   // Check that joint of this name exists.
   if (jointMap.count(jointName) != 1) {
-    cerr << "ChppciRobot_impl::addJoint: joint " << jointName 
-	 << " does not exist." << endl;
+    ODEBUG1(":addJoint: joint " << jointName 	 << " does not exist.");
     return -1;
   }
   // Check that body of this name exits.
   if (bodyMap.count(bodyName) != 1) {
-    cerr << "ChppciRobot_impl::attachBodyToJoint: body "
-	 << bodyName << " does not exist." << endl;
+    ODEBUG1(":attachBodyToJoint: body "	 << bodyName << " does not exist.");
     return -1;
   }
   CkppJointComponentShPtr kppJoint = jointMap[jointName];
@@ -632,8 +625,7 @@ CORBA::Short ChppciRobot_impl::attachBodyToJoint(const char* inJointName,
   ChppBodyShPtr hppBody = bodyMap[bodyName];
 
   if (kwsJoint->setAttachedBody(hppBody) != KD_OK) {
-    cerr << "ChppciRobot_impl::attachBodyToJoint: failed to attach body "
-	 << bodyName << " to joint " << jointName << endl;
+    ODEBUG1(":attachBodyToJoint: failed to attach body "	 << bodyName << " to joint " << jointName);
     return -1;
   }
   // If objects are attached to the body, the corresponding component need to
@@ -652,15 +644,13 @@ CORBA::Short ChppciRobot_impl::createBody(const char* inBodyName)
 
   // Check that body does not already exist.
   if (bodyMap.count(bodyName) != 0) {
-    cerr << "ChppciRobot_impl::createBody: body " << bodyName 
-	 << " already exists." << endl;
+    ODEBUG1(":createBody: body " << bodyName 	 << " already exists.");
     return -1;
   }
   ChppBodyShPtr hppBody = ChppBody::create(bodyName);
   
   if (!hppBody) {
-    cerr << "ChppciRobot_impl::createBody: failed to create body "
-	 << bodyName << "." << endl;
+    ODEBUG1(":createBody: failed to create body "	 << bodyName << ".");
     return -1;
   }
   // Attach an empty outer object list.
@@ -704,8 +694,7 @@ nameSeq* ChppciRobot_impl::getBodyInnerObject(const char* inBodyName)
       }
     }
   } else {
-    cerr << "ChppciRobot_impl::getBodyInnerObject: body of name " 
-	 << " not found." << endl;
+    ODEBUG1(":getBodyInnerObject: body of name " << " not found.");
   }
   if (!innerObjectSeq) {
     innerObjectSeq = new nameSeq(0);
@@ -745,8 +734,7 @@ nameSeq* ChppciRobot_impl::getBodyOuterObject(const char* inBodyName)
       }
     }
   } else {
-    cerr << "ChppciRobot_impl::getBodyInnerObject: body of name " 
-	 << " not found." << endl;
+    ODEBUG1(":getBodyInnerObject: body of name " << " not found.");
   }
   if (!outerObjectSeq) {
     outerObjectSeq = new nameSeq(0);
@@ -778,7 +766,7 @@ throw(CORBA::SystemException)
     unsigned int deviceDim = hppRobot->countDofs ();
 
     if (hppJointId > deviceDim) {
-      cerr << "ChppciRobot_impl::checkLinkCollision: wrong joint Id" << endl;
+      ODEBUG1(":checkLinkCollision: wrong joint Id");
       return -1;
     }
 
@@ -793,7 +781,7 @@ throw(CORBA::SystemException)
 
     // debug
     // cout<<"colliding bodies: ";
-    std::cout<<" =====================debugging collision detection ====================== "<<endl;
+    ODEBUG2(=====================debugging collision detection ======================);
 
     for(unsigned int i=0; i<jointList.size(); i++){
 
@@ -805,25 +793,27 @@ throw(CORBA::SystemException)
       CkitVect3 transJoint = matJoint.translation();
       double dist=0;
       if (hppBody->CkwsKCDBody::getEstimatedDistance(dist) == KD_ERROR) {
-	ODEBUG("Failure in getting estimated distance");
+	ODEBUG1(":checkLinkCollision: failure in getting estimated distance");
 	return -1;
       }
-      cout<<"for joint "<<hppBody->name()<<" body pos "<<trans[0]<<", "<<trans[1]<<", "<<trans[2]
-	  <<" distance "<<dist<<endl; 
-      cout<<"for joint "<<hppBody->name()<<" joint pos "<<transJoint[0]<<", "<<transJoint[1]<<", "<<transJoint[2]<<endl;
-      cout<<" joint config:";
+      ODEBUG2("for joint "<<hppBody->name()<<" body pos "<<trans[0]<<", "<<trans[1]<<", "<<trans[2]
+	      <<" distance "<<dist<<);
+      ODEBUG2("for joint "<<hppBody->name()<<" joint pos "<<transJoint[0]<<", "<<transJoint[1]<<", "<<transJoint[2]);
+#if DEBUG==2
+      std::cout << " joint config:";
       for(unsigned int j=0; j<3; j++){
 	for(unsigned int k=0; k<3; k++)
 	  cout<<matJoint(j,k)<<" ";
 	cout<<" ";
       }
       cout<<endl;
+#endif
       hppBody->printCollisionStatus();
       // hppBody->printCollisionStatusFast();
       short res = (CORBA::Short) hppBody->computeEstimatedDistance();
 
       if(res == 0){
-	cout<<"collision "<<endl;
+	ODEBUG2("Collision");
 
       }
     }
@@ -833,7 +823,7 @@ throw(CORBA::SystemException)
 
   }
   else{
-    cerr << "ChppciRobot_impl::checkLinkCollision: wrong robot Id" << endl;
+    ODEBUG1(":checkLinkCollision: wrong robot Id");
     return -1;
   }
 
@@ -849,15 +839,13 @@ CORBA::Short ChppciRobot_impl::createPolyhedron(const char* inPolyhedronName)
 
   // Check that polyhedron does not already exist.
   if (polyhedronMap.count(polyhedronName) != 0) {
-    cerr << "ChppciRobot_impl::createPolyhedron: polyhedron "
-	 << polyhedronName << " already exists." << endl;
+    ODEBUG1(":createPolyhedron: polyhedron "	 << polyhedronName << " already exists.");
     return -1;
   }
   CkppKCDPolyhedronShPtr kppPolyhedron = CkppKCDPolyhedron::create(polyhedronName);
 
   if (!kppPolyhedron) {
-    cerr << "ChppciRobot_impl::createPolyhedron: failed to create polyhedron "
-	 << polyhedronName << endl;
+    ODEBUG1(":createPolyhedron: failed to create polyhedron "	 << polyhedronName);
     return -1;
   }
   polyhedronMap[polyhedronName] = kppPolyhedron;
@@ -876,15 +864,13 @@ CORBA::Short ChppciRobot_impl::createBox(const char* inBoxName,
   std::string polyhedronName(inBoxName);
   // Check that polyhedron does not already exist.
   if (polyhedronMap.count(polyhedronName) != 0) {
-    cerr << "ChppciObstacle_impl::createPolyhedron: polyhedron "
-	 << polyhedronName << " already exists." << endl;
+    ODEBUG2("ChppciObstacle_impl::createPolyhedron: polyhedron "	 << polyhedronName << " already exists.");
     return -1;
   }
   CkppKCDPolyhedronShPtr kppPolyhedron = CkppKCDBox::create(polyhedronName, x, y, z);
 
   if (!kppPolyhedron) {
-    cerr << "ChppciObstacle_impl::createPolyhedron: failed to create polyhedron "
-	 << polyhedronName << endl;
+    ODEBUG2("ChppciObstacle_impl::createPolyhedron: failed to create polyhedron "	 << polyhedronName);
     return -1;
   }
   polyhedronMap[polyhedronName] = kppPolyhedron;
@@ -903,8 +889,7 @@ CORBA::Short ChppciRobot_impl::addPoint(const char* inPolyhedronName,
 
   // Check that polyhedron exists.
   if (polyhedronMap.count(polyhedronName) != 1) {
-    cerr << "ChppciRobot_impl::addPoint: polyhedron " << polyhedronName
-	 << " does not exist." << endl;
+    ODEBUG1(":addPoint: polyhedron " << polyhedronName	 << " does not exist.");
     return -1;
   }
   CkppKCDPolyhedronShPtr kppPolyhedron = polyhedronMap[polyhedronName];
@@ -924,8 +909,7 @@ CORBA::Short ChppciRobot_impl::addTriangle(const char* inPolyhedronName,
 
   // Check that polyhedron exists.
   if (polyhedronMap.count(polyhedronName) != 1) {
-    cerr << "ChppciRobot_impl::addTriangle: polyhedron " << polyhedronName
-	 << " does not exist." << endl;
+    ODEBUG1(":addTriangle: polyhedron " << polyhedronName	 << " does not exist.");
     return -1;
   }
   CkppKCDPolyhedronShPtr kppPolyhedron = polyhedronMap[polyhedronName];
@@ -953,7 +937,7 @@ throw(CORBA::SystemException)
     deviceDim = hppRobot->countDofs ();
   }
   else{
-    cerr << "ChppciRobot_impl::setCurrentConfig: wrong robot Id" << endl;
+    ODEBUG1(":setCurrentConfig: wrong robot Id");
     return -1;
   }
   return 0;
@@ -970,14 +954,12 @@ CORBA::Short ChppciRobot_impl::addPolyToBody(const char* inBodyName, const char*
 
   // Check that body of this name exits.
   if (bodyMap.count(bodyName) != 1) {
-    cerr << "ChppciRobot_impl::setBodyInnerObject: body "
-	 << bodyName << " does not exist." << endl;
+    ODEBUG1(":setBodyInnerObject: body "	 << bodyName << " does not exist.");
     return -1;
   }
   // Check that polyhedron exists.
   if (polyhedronMap.count(polyhedronName) != 1) {
-    cerr << "ChppciRobot_impl::addPolyToCollList: polyhedron "
-	 << polyhedronName << " does not exist." << endl;
+    ODEBUG1(":addPolyToCollList: polyhedron "	 << polyhedronName << " does not exist.");
     return -1;
   }
 
