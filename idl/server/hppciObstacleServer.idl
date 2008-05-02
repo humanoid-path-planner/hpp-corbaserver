@@ -62,8 +62,9 @@ interface ChppciObstacle {
    */
   short moveObstacleConfig(in string inPolyName, in Configuration cfg);
 
-  /* 
-   *   Lists of CkcdObject
+  /** 
+      \name Lists of CkcdObject
+   @{
    */
   
   /**
@@ -81,9 +82,12 @@ interface ChppciObstacle {
    */
   short addPolyToCollList(in string inListName, in string inPolyName);
 
-
-  /* 
-   *   Polyhedra
+  /**
+     @}
+  */
+  /** 
+      \name Polyhedra
+      @{  
    */
 
   /**
@@ -117,6 +121,38 @@ interface ChppciObstacle {
    */
   short addTriangle(in string inPolyName, in long pt1, in long pt2, in long pt3);
 
+  /**
+     @}
+  */
+  /**
+    \name Graphical properties
+    @{
+  */
+  /**
+     \brief Set whether an object is visible
+
+     \param inPolyname Name of the object.
+     \param inVisible whether it should be visible.
+     \return 0 if success, -1 if failure.
+
+     \note The object should have been created by this object.
+  */
+  short setVisible(in string inPolyname, in boolean inVisible);
+
+  /**
+     \brief Set whether an object is transparent
+
+     \param inPolyname Name of the object.
+     \param inTransparent whether it should be transparent.
+     \return 0 if success, -1 if failure.
+
+     \note The object should have been created by this object.
+  */
+  short setTransparent(in string inPolyname, in boolean inTransparent);
+
+  /**
+     @}
+  */
 };
 
 #endif

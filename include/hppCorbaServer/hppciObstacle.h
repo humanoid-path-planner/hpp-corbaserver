@@ -66,6 +66,14 @@ public:
   virtual CORBA::Short 
     addTriangle(const char* inPolyhedronName, long pt1, long pt2, long pt3)
     throw(CORBA::SystemException);
+  /// \brief Comment in interface ChppciObstacle::setVisible.
+  virtual CORBA::Short 
+    setVisible(const char* inPolyname, CORBA::Boolean inVisible)
+    throw(CORBA::SystemException);
+  /// \brief Comment in interface ChppciObstacle::setTransparent.
+  virtual CORBA::Short 
+    setTransparent(const char* inPolyname, CORBA::Boolean inTransparent)
+    throw(CORBA::SystemException);
 
 private:
   /// \brief map of collision lists in construction.

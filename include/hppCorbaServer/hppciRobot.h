@@ -115,6 +115,10 @@ public:
   virtual CORBA::Short setJointTransparent(CORBA::Short inProblemId, CORBA::Short inJointId, CORBA::Boolean isTransparent)
     throw(CORBA::SystemException);
 
+  /// \brief Comment in interface ChppciRobot::setJointTransparent.
+  virtual CORBA::Short setJointDisplayPath(CORBA::Short inProblemId, CORBA::Short inJointId, CORBA::Boolean inDisplayPath)
+    throw(CORBA::SystemException);
+
   /// \brief Comment in interface ChppciRobot::setDofLocked.
   virtual CORBA::Short setDofLocked(CORBA::Short inProblemId, CORBA::Short dofId, 
 				    CORBA::Boolean locked, CORBA::Double lockedValue)

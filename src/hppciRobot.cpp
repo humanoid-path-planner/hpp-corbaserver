@@ -275,13 +275,21 @@ CORBA::Short ChppciRobot_impl::createJoint(const char* inJointName,
     for (unsigned int iDof=0; iDof<kwsJointNbDofs; iDof++) {
       double vMin = inJointBound[2*iDof];
       double vMax = inJointBound[2*iDof+1];
+      CkwsJointDofShPtr dof = kwsJoint->dof(iDof);
       if (vMin <= vMax) {
-	kwsJoint->dof(iDof)->isBounded(true);
-	kwsJoint->dof(iDof)->bounds(vMin, vMax);
+	/* Dof is actually bounded */
+	dof->isBounded(true);
+	dof->bounds(vMin, vMax);
+      }
+      else {
+	/* Dof is not bounded */
+	dof->isBounded(false);
+	dof->bounds(vMax,vMin);
       }
     }
   }
   kppJoint->doesDisplayPath(inDisplay);
+  kppJoint->isVisible(false);
   // Store joint in jointMap.
   jointMap[jointName] = kppJoint;
 
@@ -418,6 +426,31 @@ CORBA::Short ChppciRobot_impl::setJointTransparent(CORBA::Short inProblemId, COR
 
     if (kppJoint) {
       kppJoint->isTransparent(inTransparent);
+      return 0;
+    }
+  }
+  return -1;
+}
+
+// ==========================================================================
+
+CORBA::Short ChppciRobot_impl::setJointDisplayPath(CORBA::Short inProblemId, CORBA::Short inJointId, 
+						   CORBA::Boolean inDisplayPath)
+  throw(CORBA::SystemException)
+{
+  unsigned int hppProblemId = (unsigned int)inProblemId;
+  unsigned int jointId = (unsigned int)inJointId;
+
+  unsigned int nbProblems = attHppPlanner->getNbHppProblems();
+  
+  // Test that rank is less than number of robots in vector.
+  if (hppProblemId < nbProblems) {
+    // Get robot in hppPlanner object.
+    CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppProblemId);
+    CkppJointComponentShPtr kppJoint = hppRobot->jointComponent(jointId);
+
+    if (kppJoint) {
+      kppJoint->doesDisplayPath(inDisplayPath);
       return 0;
     }
   }

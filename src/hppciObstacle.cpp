@@ -298,3 +298,37 @@ CORBA::Short ChppciObstacle_impl::addTriangle(const char* inPolyhedronName,
   return rank;
 }
 
+// ==========================================================================
+
+CORBA::Short ChppciObstacle_impl::setVisible(const char* inPolyname, 
+					     CORBA::Boolean inVisible)
+    throw(CORBA::SystemException)
+{
+  std::string polyhedronName(inPolyname);
+  if (polyhedronMap.count(polyhedronName) != 1) {
+    ODEBUG1("polyhedron " << polyhedronName << " does not exist.");
+    return -1;
+  }
+  CkppKCDPolyhedronShPtr polyhedron = polyhedronMap[polyhedronName];
+  polyhedron->isVisible(inVisible);
+
+  return 0;
+}
+
+// ==========================================================================
+
+CORBA::Short ChppciObstacle_impl::setTransparent(const char* inPolyname, 
+						 CORBA::Boolean inTransparent)
+  throw(CORBA::SystemException)
+{
+  std::string polyhedronName(inPolyname);
+  if (polyhedronMap.count(polyhedronName) != 1) {
+    ODEBUG1("polyhedron " << polyhedronName << " does not exist.");
+    return -1;
+  }
+  CkppKCDPolyhedronShPtr polyhedron = polyhedronMap[polyhedronName];
+  polyhedron->isTransparent(inTransparent);
+
+  return 0;
+}
+

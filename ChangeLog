@@ -1,3 +1,7 @@
+2008/05/02
+	35. Added requests in ChppciObstacleServer to control obstacles transparency and visibility.
+	34. Changed the way dof bounds are handled at creation of a joint.
+
 2008/05/01
 	33. Added boolean parameter in ChppciProblem::setRoadmapbuilder to select whether 
 	    roadmap developed by new roadmap builder should be displayed.
