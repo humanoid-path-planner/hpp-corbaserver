@@ -69,7 +69,7 @@ CORBA::Short ChppciObstacle_impl::addObstacle(const char* inPolyhedronName)
 }
 
 CORBA::Short ChppciObstacle_impl::addObstacleConfig(const char* inPolyName, 
-						    const Configuration& cfg)
+						    const hppCorbaServer::Configuration& cfg)
   throw(CORBA::SystemException)
 {
   std::string polyhedronName(inPolyName);
@@ -95,7 +95,7 @@ CORBA::Short ChppciObstacle_impl::addObstacleConfig(const char* inPolyName,
 // ==========================================================================
 
 CORBA::Short ChppciObstacle_impl::moveObstacleConfig(const char* inPolyName, 
-						    const Configuration& cfg)
+						    const hppCorbaServer::Configuration& cfg)
   throw(CORBA::SystemException)
 {
   std::string polyhedronName(inPolyName);

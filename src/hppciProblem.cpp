@@ -206,7 +206,7 @@ CORBA::Short ChppciProblem_impl::setDistanceFunction(CORBA::Short inProblemId, c
   return 0;
 }
 
-CORBA::Short ChppciProblem_impl::setInitialConfig(CORBA::Short inProblemId, const dofSeq& dofArray) 
+CORBA::Short ChppciProblem_impl::setInitialConfig(CORBA::Short inProblemId, const hppCorbaServer::dofSeq& dofArray) 
 {
   unsigned int hppProblemId = (unsigned int)inProblemId;
   unsigned int configDim = (unsigned int)dofArray.length();
@@ -238,7 +238,7 @@ CORBA::Short ChppciProblem_impl::setInitialConfig(CORBA::Short inProblemId, cons
   return 0;
 }
 
-CORBA::Short ChppciProblem_impl::setGoalConfig(CORBA::Short inProblemId, const dofSeq& dofArray) 
+CORBA::Short ChppciProblem_impl::setGoalConfig(CORBA::Short inProblemId, const hppCorbaServer::dofSeq& dofArray) 
 {
   unsigned int hppProblemId = (unsigned int)inProblemId;
   unsigned int configDim = (unsigned int)dofArray.length();
@@ -317,9 +317,9 @@ CORBA::Short ChppciProblem_impl::optimizePath(CORBA::Short inProblemId, CORBA::S
   return (CORBA::Short)status;
 }
 
-dofSeq* ChppciProblem_impl::configAtDistance(CORBA::Short inProblemId, CORBA::Short pathId, CORBA::Double pathLength, CORBA::Double atDistance) {
+hppCorbaServer::dofSeq* ChppciProblem_impl::configAtDistance(CORBA::Short inProblemId, CORBA::Short pathId, CORBA::Double pathLength, CORBA::Double atDistance) {
 
-  dofSeq* inDofSeq ;
+  hppCorbaServer::dofSeq* inDofSeq ;
 
   // get the planner  
   unsigned int hppProblemId = (unsigned int)inProblemId;
@@ -330,8 +330,8 @@ dofSeq* ChppciProblem_impl::configAtDistance(CORBA::Short inProblemId, CORBA::Sh
   //init the seqdof
   // Allocate result now that the size is known.
   CORBA::ULong size = (CORBA::ULong)nbDofRobot;
-  double* DofList = dofSeq::allocbuf(size);
-  inDofSeq = new dofSeq(size, size, DofList, true);
+  double* DofList = hppCorbaServer::dofSeq::allocbuf(size);
+  inDofSeq = new hppCorbaServer::dofSeq(size, size, DofList, true);
   
   //get the config of the robot on the path
   if (atDistance > pathLength) {

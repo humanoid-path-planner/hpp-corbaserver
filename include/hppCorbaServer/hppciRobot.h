@@ -1,7 +1,7 @@
 /*
-  Research carried out within the scope of the Associated International Laboratory: Joint Japanese-French Robotics Laboratory (JRL)
+  Copyright 2006 LAAS-CNRS
 
-  Developed by Florent Lamiraux (LAAS-CNRS)
+  Author: Florent Lamiraux
 
 */
 
@@ -64,7 +64,7 @@ private:
 
 The construction of a 
  */
-class ChppciRobot_impl : public virtual POA_ChppciRobot {
+class ChppciRobot_impl : public virtual POA_hppCorbaServer::ChppciRobot {
 public:
   /// \brief Store pointer to ChppPlanner object of hppciServer.
   ChppciRobot_impl(ChppciServer *inHppciServer);
@@ -95,8 +95,8 @@ public:
 
   /// \brief Comment in interface ChppciRobot::createJoint.
   virtual CORBA::Short 
-    createJoint(const char* inJointName, const char* inJointType, const  Configuration& pos,
-		const jointBoundSeq& jointBound, CORBA::Boolean inDisplay) throw(CORBA::SystemException);
+    createJoint(const char* inJointName, const char* inJointType, const  hppCorbaServer::Configuration& pos,
+		const hppCorbaServer::jointBoundSeq& jointBound, CORBA::Boolean inDisplay) throw(CORBA::SystemException);
   /// \brief Comment in interface ChppciRobot::addJoint.
   virtual CORBA::Short 
     addJoint(const char* inParentName, const char* inChildName)
@@ -104,7 +104,7 @@ public:
 
   /// \brief Comment in interface ChppciRobot::setJointBound.
   virtual CORBA::Short setJointBounds(CORBA::Short inProblemId, CORBA::Short inJointId, 
-				     const jointBoundSeq& jointBound)
+				     const hppCorbaServer::jointBoundSeq& jointBound)
     throw(CORBA::SystemException);
 
   /// \brief Comment in interface ChppciRobot::setJointVisible.
@@ -125,20 +125,20 @@ public:
     throw(CORBA::SystemException);
 
   /// \brief Comment in interface ChppciRobot::setCurrentConfig
-  virtual CORBA::Short setCurrentConfig(CORBA::Short inProblemId, const dofSeq& dofArray) 
+  virtual CORBA::Short setCurrentConfig(CORBA::Short inProblemId, const hppCorbaServer::dofSeq& dofArray) 
     throw(CORBA::SystemException);
 
 #if WITH_OPENHRP
   /// \brief Comment in interface ChppciRobot::setCurrentConfig in the order of joint of OpenHRP
-  virtual CORBA::Short setCurrentConfigOpenHRP(CORBA::Short inProblemId, const dofSeq& dofArray) 
+  virtual CORBA::Short setCurrentConfigOpenHRP(CORBA::Short inProblemId, const hppCorbaServer::dofSeq& dofArray) 
     throw(CORBA::SystemException);
 
   /// \brief Comment in interface ChppciRobot::getCurrentConfig in the order of joint of OpenHRP
-  virtual dofSeq* getCurrentConfigOpenHRP(CORBA::Short inProblemId)
+  virtual hppCorbaServer::dofSeq* getCurrentConfigOpenHRP(CORBA::Short inProblemId)
     throw(CORBA::SystemException);
 #endif
   /// \brief Comment in interface ChppciRobot::getCurrentConfig
-  virtual dofSeq* getCurrentConfig(CORBA::Short inProblemId)
+  virtual hppCorbaServer::dofSeq* getCurrentConfig(CORBA::Short inProblemId)
     throw(CORBA::SystemException);
 
   /// \brief Comment in interface ChppciRobot::getCurrentConfig
@@ -155,9 +155,9 @@ public:
   virtual CORBA::Short createBody(const char* inBodyName)
     throw(CORBA::SystemException);
   /// \brief Comment in interface ChppciRobot::getBodyInnerObject.
-  virtual nameSeq* getBodyInnerObject(const char* inBodyName);
+  virtual hppCorbaServer::nameSeq* getBodyInnerObject(const char* inBodyName);
   /// \brief Comment in interface ChppciRobot::getBodyOuterObject.
-  virtual nameSeq* getBodyOuterObject(const char* inBodyName);
+  virtual hppCorbaServer::nameSeq* getBodyOuterObject(const char* inBodyName);
 
   /// \brief Comment in interface ChppciRobot::checkLinkCollision.
   CORBA::Short checkLinkCollision(CORBA::Short inProblemId, CORBA::Short inJointId, CORBA::Short& result)
@@ -179,7 +179,7 @@ public:
     throw(CORBA::SystemException);
   /// \brief Comment in interface ChppciRobot::addPolyToBody.
   virtual CORBA::Short
-  addPolyToBody(const char* inBodyName, const char* inPolyhedronName, const Configuration& inConfig)
+  addPolyToBody(const char* inBodyName, const char* inPolyhedronName, const hppCorbaServer::Configuration& inConfig)
     throw(CORBA::SystemException);
 private:
   // Store devices, joints and bodies in construction.

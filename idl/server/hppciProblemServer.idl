@@ -10,6 +10,7 @@
 
 #include "hppciCommonServer.idl"
 
+module hppCorbaServer {
 /**
  * \brief To define and solve a path planning problem.
  */
@@ -115,5 +116,5 @@ interface ChppciProblem {
   short setObstacleTolerance(in short inProblemId, in double tolerance);
   
 };
-
+};
 #endif

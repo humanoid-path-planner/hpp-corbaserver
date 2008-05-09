@@ -7,7 +7,7 @@
 
 #include "hppCorbaServer/hppciTools.h"
 
-void ConfigurationToCkitMat4(const Configuration inConfig, CkitMat4& outMatrix4)
+void ConfigurationToCkitMat4(const hppCorbaServer::Configuration inConfig, CkitMat4& outMatrix4)
 {
   for(int i=0; i<3; i++){
     for(int j=0; j<3; j++)

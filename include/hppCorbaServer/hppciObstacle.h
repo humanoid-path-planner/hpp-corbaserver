@@ -1,10 +1,9 @@
 /*
-  Research carried out within the scope of the Associated International Laboratory: Joint Japanese-French Robotics Laboratory (JRL)
+  Copyright 2006 LAAS-CNRS
 
-  Developed by Florent Lamiraux (LAAS-CNRS)
+  Author: Florent Lamiraux
 
 */
-
 #ifndef HPPCI_OBSTACLE_H
 #define HPPCI_OBSTACLE_H
 
@@ -27,7 +26,7 @@ class ChppciServer;
 /**
  * \brief Implementation of corba interface ChppciObstacle.
  */
-class ChppciObstacle_impl : public virtual POA_ChppciObstacle {
+class ChppciObstacle_impl : public virtual POA_hppCorbaServer::ChppciObstacle {
 public:
   /// \brief store pointer to ChppPlanner object.
   ChppciObstacle_impl(ChppciServer *inHppciServer);
@@ -38,10 +37,10 @@ public:
 
   /// \brief add an obstacle at the given position.
  virtual CORBA::Short addObstacleConfig(const char* inPolyName, 
-					const Configuration& cfg)
+					const hppCorbaServer::Configuration& cfg)
    throw(CORBA::SystemException);
  virtual CORBA::Short moveObstacleConfig(const char* inPolyName, 
-					 const Configuration& cfg)
+					 const hppCorbaServer::Configuration& cfg)
    throw(CORBA::SystemException);
 
   /// \brief Comment in interface ChppciObstacle::createCollisionList.

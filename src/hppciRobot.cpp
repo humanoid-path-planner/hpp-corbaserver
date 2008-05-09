@@ -203,8 +203,8 @@ CORBA::Short ChppciRobot_impl::addExtraDofToRobot(const char* inRobotName, const
 // ==========================================================================
 
 CORBA::Short ChppciRobot_impl::createJoint(const char* inJointName, 
-					   const char* inJointType, const Configuration& pos, 
-					   const jointBoundSeq& inJointBound,
+					   const char* inJointType, const hppCorbaServer::Configuration& pos, 
+					   const hppCorbaServer::jointBoundSeq& inJointBound,
 					   CORBA::Boolean inDisplay) 
   throw(CORBA::SystemException)
 {
@@ -325,7 +325,7 @@ CORBA::Short ChppciRobot_impl::addJoint(const char* inParentName,
 // ==========================================================================
 
 CORBA::Short ChppciRobot_impl::setJointBounds(CORBA::Short inProblemId, CORBA::Short inJointId, 
-					      const jointBoundSeq& inJointBound)
+					      const hppCorbaServer::jointBoundSeq& inJointBound)
   throw(CORBA::SystemException)
 {
   unsigned int hppProblemId = (unsigned int)inProblemId;
@@ -496,7 +496,7 @@ CORBA::Short ChppciRobot_impl::setDofLocked(CORBA::Short inProblemId, CORBA::Sho
 // ==========================================================================
 
 CORBA::Short ChppciRobot_impl::setCurrentConfig(CORBA::Short inProblemId, 
-						const dofSeq& dofArray) 
+						const hppCorbaServer::dofSeq& dofArray) 
   throw(CORBA::SystemException)
 {
   unsigned int hppProblemId = (unsigned int)inProblemId;
@@ -552,10 +552,10 @@ CORBA::Short ChppciRobot_impl::setCurrentConfig(CORBA::Short inProblemId,
 #define RHAND_JOINT0_KINEO 29
 
 /// \brief the config is in the order of OpenHRP Joints  RARM, LARM, RHAND, LHAND
-CORBA::Short ChppciRobot_impl::setCurrentConfigOpenHRP(CORBA::Short inProblemId, const dofSeq& dofArray)
+CORBA::Short ChppciRobot_impl::setCurrentConfigOpenHRP(CORBA::Short inProblemId, const hppCorbaServer::dofSeq& dofArray)
     throw(CORBA::SystemException)
 {
-  dofSeq dofArrayKineo(dofArray);
+  hppCorbaServer::dofSeq dofArrayKineo(dofArray);
 
   // LARM
   for(unsigned int i=0; i<7; i++){
@@ -570,12 +570,12 @@ CORBA::Short ChppciRobot_impl::setCurrentConfigOpenHRP(CORBA::Short inProblemId,
 }
 
 /// \brief Comment in interface ChppciRobot::getCurrentConfig
-dofSeq* ChppciRobot_impl::getCurrentConfigOpenHRP(CORBA::Short inProblemId)
+hppCorbaServer::dofSeq* ChppciRobot_impl::getCurrentConfigOpenHRP(CORBA::Short inProblemId)
     throw(CORBA::SystemException)
 {
-  dofSeq *dofArray = getCurrentConfig(inProblemId);
+  hppCorbaServer::dofSeq *dofArray = getCurrentConfig(inProblemId);
   
-  dofSeq dofArrayKineo(*dofArray);
+  hppCorbaServer::dofSeq dofArrayKineo(*dofArray);
 
   // LARM
   for(unsigned int i=0; i<7; i++){
@@ -592,12 +592,12 @@ dofSeq* ChppciRobot_impl::getCurrentConfigOpenHRP(CORBA::Short inProblemId)
 #endif
 
 /// \brief Comment in interface ChppciRobot::getCurrentConfig
-dofSeq* ChppciRobot_impl::getCurrentConfig(CORBA::Short inProblemId)
+hppCorbaServer::dofSeq* ChppciRobot_impl::getCurrentConfig(CORBA::Short inProblemId)
     throw(CORBA::SystemException)
 {
   unsigned int hppProblemId = (unsigned int)inProblemId;
 
-  dofSeq *dofArray;
+  hppCorbaServer::dofSeq *dofArray;
 
   unsigned int nbProblems = attHppPlanner->getNbHppProblems();
 
@@ -612,7 +612,7 @@ dofSeq* ChppciRobot_impl::getCurrentConfig(CORBA::Short inProblemId)
     unsigned int deviceDim = hppRobot->countDofs ();
 
     // cerr<<"deviceDim "<<deviceDim<<" [ ";
-    dofArray = new dofSeq();
+    dofArray = new hppCorbaServer::dofSeq();
     dofArray->length(deviceDim);
 
     for(unsigned int i=0; i<deviceDim; i++){
@@ -626,12 +626,12 @@ dofSeq* ChppciRobot_impl::getCurrentConfig(CORBA::Short inProblemId)
 
   else {
     ODEBUG1(":CurrentConfig: wrong robot Id");
-    dofArray = new dofSeq(1);
+    dofArray = new hppCorbaServer::dofSeq(1);
 
     return dofArray;
   }
 
-  return new dofSeq(1);
+  return new hppCorbaServer::dofSeq(1);
 }
 
 // ==========================================================================
@@ -697,11 +697,11 @@ CORBA::Short ChppciRobot_impl::createBody(const char* inBodyName)
 
 // ==========================================================================
 
-nameSeq* ChppciRobot_impl::getBodyInnerObject(const char* inBodyName)
+hppCorbaServer::nameSeq* ChppciRobot_impl::getBodyInnerObject(const char* inBodyName)
 {
   std::string bodyName(inBodyName);
 
-  nameSeq *innerObjectSeq = NULL;
+  hppCorbaServer::nameSeq *innerObjectSeq = NULL;
   // Find the body corresponding to the name in ChppPlanner object.
   ChppBodyConstShPtr hppBody = attHppPlanner->findBodyByName(bodyName);
   CkwsKCDBodyConstShPtr kcdBody;
@@ -712,8 +712,8 @@ nameSeq* ChppciRobot_impl::getBodyInnerObject(const char* inBodyName)
       unsigned int nbObjects = innerObjectList.size();
       // Allocate result now that the size is known.
       CORBA::ULong size = (CORBA::ULong)nbObjects;
-      char** nameList = nameSeq::allocbuf(size);
-      innerObjectSeq = new nameSeq(size, size, nameList);
+      char** nameList = hppCorbaServer::nameSeq::allocbuf(size);
+      innerObjectSeq = new hppCorbaServer::nameSeq(size, size, nameList);
 
       for (unsigned int iObject=0; iObject < nbObjects; iObject++) {
 	CkcdObjectShPtr kcdObject = innerObjectList[iObject];
@@ -730,7 +730,7 @@ nameSeq* ChppciRobot_impl::getBodyInnerObject(const char* inBodyName)
     ODEBUG1(":getBodyInnerObject: body of name " << " not found.");
   }
   if (!innerObjectSeq) {
-    innerObjectSeq = new nameSeq(0);
+    innerObjectSeq = new hppCorbaServer::nameSeq(0);
   }
 
   return innerObjectSeq;
@@ -738,11 +738,11 @@ nameSeq* ChppciRobot_impl::getBodyInnerObject(const char* inBodyName)
 
 // ==========================================================================
 
-nameSeq* ChppciRobot_impl::getBodyOuterObject(const char* inBodyName)
+hppCorbaServer::nameSeq* ChppciRobot_impl::getBodyOuterObject(const char* inBodyName)
 {
   std::string bodyName(inBodyName);
 
-  nameSeq *outerObjectSeq = NULL;
+  hppCorbaServer::nameSeq *outerObjectSeq = NULL;
   // Find the body corresponding to the name in ChppPlanner object.
   ChppBodyConstShPtr hppBody = attHppPlanner->findBodyByName(bodyName);
   CkwsKCDBodyConstShPtr kcdBody;
@@ -753,8 +753,8 @@ nameSeq* ChppciRobot_impl::getBodyOuterObject(const char* inBodyName)
       unsigned int nbObjects = outerObjectList.size();
       // Allocate result now that the size is known.
       CORBA::ULong size = (CORBA::ULong)nbObjects;
-      char** nameList = nameSeq::allocbuf(size);
-      outerObjectSeq = new nameSeq(size, size, nameList);
+      char** nameList = hppCorbaServer::nameSeq::allocbuf(size);
+      outerObjectSeq = new hppCorbaServer::nameSeq(size, size, nameList);
       for (unsigned int iObject=0; iObject < nbObjects; iObject++) {
 	CkcdObjectShPtr kcdObject = outerObjectList[iObject];
 	// Cast object into CkppKCDPolyhedron.
@@ -770,7 +770,7 @@ nameSeq* ChppciRobot_impl::getBodyOuterObject(const char* inBodyName)
     ODEBUG1(":getBodyInnerObject: body of name " << " not found.");
   }
   if (!outerObjectSeq) {
-    outerObjectSeq = new nameSeq(0);
+    outerObjectSeq = new hppCorbaServer::nameSeq(0);
   }
 
   return outerObjectSeq;
@@ -979,7 +979,7 @@ throw(CORBA::SystemException)
 // ==========================================================================
 
 CORBA::Short ChppciRobot_impl::addPolyToBody(const char* inBodyName, const char* inPolyhedronName, 
-					     const Configuration& inConfig)
+					     const hppCorbaServer::Configuration& inConfig)
   throw(CORBA::SystemException)
 {
   std::string bodyName(inBodyName);

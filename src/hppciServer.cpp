@@ -261,8 +261,8 @@ int ChppciServer::startCorbaServer()
     // Bind robotObj with name Robot to the hppContext:
     CosNaming::Name objectName;
     objectName.length(1);
-    objectName[0].id   = (const char*) "Robot";   // string copied
-    objectName[0].kind = (const char*) "Object"; // string copied
+    objectName[0].id   = (const char*) "robots";   // string copied
+    objectName[0].kind = (const char*) "servant"; // string copied
 
     if(!attPrivate->bindObjectToName(robotObj, objectName)) {
       return KD_ERROR;
@@ -271,8 +271,8 @@ int ChppciServer::startCorbaServer()
 
     // Bind obstacleObj with name Obstacle to the hppContext:
     objectName.length(1);
-    objectName[0].id   = (const char*) "Obstacle";   // string copied
-    objectName[0].kind = (const char*) "Object"; // string copied
+    objectName[0].id   = (const char*) "obstacles";   // string copied
+    objectName[0].kind = (const char*) "servant"; // string copied
 
     if(!attPrivate->bindObjectToName(obstacleObj, objectName)) {
       return KD_ERROR;
@@ -281,8 +281,8 @@ int ChppciServer::startCorbaServer()
 
     // Bind problemObj with name Problem to the hppContext:
     objectName.length(1);
-    objectName[0].id   = (const char*) "Problem";   // string copied
-    objectName[0].kind = (const char*) "Object"; // string copied
+    objectName[0].id   = (const char*) "problems";   // string copied
+    objectName[0].kind = (const char*) "servant"; // string copied
 
     if(!attPrivate->bindObjectToName(problemObj, objectName)) {
       return KD_ERROR;

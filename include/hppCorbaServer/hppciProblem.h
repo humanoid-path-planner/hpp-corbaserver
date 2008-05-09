@@ -1,7 +1,7 @@
 /*
-  Research carried out within the scope of the Associated International Laboratory: Joint Japanese-French Robotics Laboratory (JRL)
+  Copyright 2006 LAAS-CNRS
 
-  Developed by Florent Lamiraux (LAAS-CNRS)
+  Author: Florent Lamiraux
 
 */
 
@@ -21,7 +21,7 @@ class ChppciServer;
 /**
  * \brief Implementation of corba interface ChppciProblem.
  */
-class ChppciProblem_impl : public virtual POA_ChppciProblem {
+class ChppciProblem_impl : public virtual POA_hppCorbaServer::ChppciProblem {
 public:
   ChppciProblem_impl(ChppciServer* inHppciServer);
   /// \brief Comment in interface ChppciPRoblem::setSteeringMethod.
@@ -39,10 +39,10 @@ public:
   virtual CORBA::Short setDistanceFunction(CORBA::Short inProblemId, const char* inDistanceName, CORBA::Boolean inOriented);
 
   /// \brief Comment in interface ChppciPRoblem::setInitialConfig
-  virtual CORBA::Short setInitialConfig(CORBA::Short inProblemId, const dofSeq& dofArray);
+  virtual CORBA::Short setInitialConfig(CORBA::Short inProblemId, const hppCorbaServer::dofSeq& dofArray);
 
   /// \brief Comment in interface ChppciPRoblem::setGoalConfig
-  virtual CORBA::Short setGoalConfig(CORBA::Short inProblemId, const dofSeq& dofArray);
+  virtual CORBA::Short setGoalConfig(CORBA::Short inProblemId, const hppCorbaServer::dofSeq& dofArray);
 
   /// \brief Comment in interface ChppciPRoblem::initializeProblem
   virtual CORBA::Short initializeProblem();
@@ -57,7 +57,7 @@ public:
   virtual CORBA::Short optimizePath(CORBA::Short inProblemId, CORBA::Short inPathId);
 
   /// \brief Comment in interface ChppciPRoblem::configAtDistance
-  virtual dofSeq* configAtDistance(CORBA::Short inProblemId, CORBA::Short pathId, CORBA::Double pathLength, CORBA::Double atDistance) ;
+  virtual hppCorbaServer::dofSeq* configAtDistance(CORBA::Short inProblemId, CORBA::Short pathId, CORBA::Double pathLength, CORBA::Double atDistance) ;
 
   /// \brief Comment in interface ChppciPRoblem::setObstacleTolerance
   virtual CORBA::Short setObstacleTolerance(CORBA::Short inProblemId, CORBA::Double tolerance)

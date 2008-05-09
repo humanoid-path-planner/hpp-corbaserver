@@ -10,6 +10,7 @@
 /** 
  * \brief KineoWorks configurations are defined by sequences of dof values.
  */
+module hppCorbaServer {
 
 typedef sequence<double> dofSeq;
 
@@ -19,5 +20,5 @@ struct Configuration {
   Translation trs;
   Rotation rot;
 };
-
+};
 #endif
