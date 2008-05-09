@@ -4,9 +4,9 @@
 
 This package implements a Corba interface with hppCore package. Corba requests can be sent to trigger actions in a ChppPlanner object. 
 Three main Corba interfaces are implemented:
-\li ChppciRobot: to build a ChppDevice and to insert it in a ChppPlanner object,
-\li ChppciObstacle: to build obstacles and insert them in a ChppPlanner object,
-\li ChppciProblem: to define a path planning problem and solve it.
+\li hppCorbaServer::ChppciRobot: to build a ChppDevice and to insert it in a ChppPlanner object,
+\li hppCorbaServer::ChppciObstacle: to build obstacles and insert them in a ChppPlanner object,
+\li hppCorbaServer::ChppciProblem: to define a path planning problem and solve it.
 
 However, the main interface classes for users of this package are
 \li ChppciServer that implements the above Corba interfaces

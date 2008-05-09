@@ -7,11 +7,15 @@
 
 #ifndef HPPCI_COMMON_SERVER_IDL
 #define HPPCI_COMMON_SERVER_IDL
+
+/**
+   \brief CORBA module hppCorbaServer.
+*/
+module hppCorbaServer {
+
 /** 
  * \brief KineoWorks configurations are defined by sequences of dof values.
  */
-module hppCorbaServer {
-
 typedef sequence<double> dofSeq;
 
 typedef double Translation[3];

@@ -48,6 +48,9 @@ interface ChppciProblem {
       \param inDistanceName Name of the distance function.
       \param inOriented whether distance corresponds to an oriented local method.
 
+      \note Distance function is stored in the roadmap builder. Resetting the roadmap builder 
+      will therefore discard the distance function.
+
       \return 0 if success, -1 if failure.
   */
   short setDistanceFunction(in short inProblemId, in string inDistanceName, in boolean inOriented);
