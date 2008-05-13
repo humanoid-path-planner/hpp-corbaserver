@@ -1,5 +1,7 @@
-2008/05/09
+hpp-corbaserver 1.3 released May 13, 2008.
+
 	37. idl interfaces are now wrapped into module hppCorbaServer. 
+
 	36. Changed the names of the Corba context and servants. Name of context is now
 	    hpp.plannerContext
 	    Names of servants are
@@ -7,33 +9,29 @@
 	    ChppciObstacle: obstacles.servant
 	    ChppciProblem: problems.servant
 	
-2008/05/02
-	35. Added requests in ChppciObstacleServer to control obstacles transparency and visibility.
+	35. Added requests in ChppciObstacleServer to control obstacles 
+	    transparency and visibility.
+
 	34. Changed the way dof bounds are handled at creation of a joint.
 
-2008/05/01
 	33. Added boolean parameter in ChppciProblem::setRoadmapbuilder to select whether 
 	    roadmap developed by new roadmap builder should be displayed.
 	
-2008/04/25
 	32. in ChppciServer objects, new distance function factories can be added.
+
 	31. Added a CORBA request to set a distance function in a given roadmap builder.
 	
-2008/04/24
 	30. Added a standalone CORBA server running without the interface.
 	
-2008/04/17
 	29. If CXXFLAGS and CFLAGS are not defined at configuration, they are set to "-Wall".
 	
-2008/04/07
 
 	28. Adaptation to KPP version 2.04.500.
 	
-2008/03/22
 	27. ChppciServer object now builds a map of steering method factories referenced 
-	by names. New steering methods can thus be added and set by CORBA request setSteeringMethod.
+	    by names. New steering methods can thus be added and set by CORBA request 
+	    setSteeringMethod.
 
-2008/02/29	
 	26. Finer handling of exceptions in CORBA initialization. 
 	
 hpp-corbaserver 1.2 released February 18, 2008.

@@ -124,10 +124,13 @@ module hppCorbaServer {
     short addJoint(in string inParentName, in string inChildName);
 
     /**
-     * \brief set a bound for the joint
-     * \param jointId index of the joint in the robot.
-     * \param inJointBound sequence of joint dof bounds in order [v0_min,v0_max,v1_min,v1_max,...]. If vi_min > vi_max, dof of rank i is not bounded. If size of sequence is different from twice the number of dofs, no dof is bounded.
-     * \param problemId Id of the problem containing the robot.
+       \brief set a bound for the joint
+
+       \param jointId index of the joint in the robot.
+       \param inJointBound sequence of joint dof bounds in order [v0_min,v0_max,v1_min,v1_max,...]. 
+       \li If vi_min > vi_max, dof of rank i is not bounded and bounds (for random sampling) are set to [v_max, v_min].
+       \li If size of sequence is different from twice the number of dofs, no dof is bounded.
+       \param problemId Id of the problem containing the robot.
      */
     short setJointBounds(in short problemId, in short jointId, in jointBoundSeq inJointBound);
 

@@ -55,6 +55,32 @@ static ktStatus attachSolidComponentsToJoint(const CkppJointComponentShPtr& inKp
 
 // ==========================================================================
 
+static void localSetJointBounds(const CkwsJointShPtr& inKwsJoint,
+				const hppCorbaServer::jointBoundSeq& inJointBound)
+{
+  unsigned int nbJointBounds = (unsigned int)inJointBound.length();
+  unsigned int kwsJointNbDofs = inKwsJoint->countDofs(); 
+  if (nbJointBounds == 2*kwsJointNbDofs) {
+    for (unsigned int iDof=0; iDof<kwsJointNbDofs; iDof++) {
+      double vMin = inJointBound[2*iDof];
+      double vMax = inJointBound[2*iDof+1];
+      CkwsJointDofShPtr dof = inKwsJoint->dof(iDof);
+      if (vMin <= vMax) {
+	/* Dof is actually bounded */
+	dof->isBounded(true);
+	dof->bounds(vMin, vMax);
+      }
+      else {
+	/* Dof is not bounded */
+	dof->isBounded(false);
+	dof->bounds(vMax,vMin);
+      }
+    }
+  }
+}
+
+// ==========================================================================
+
 ChppciRobot_impl::ChppciRobot_impl(ChppciServer *inHppciServer) : 
   attHppciServer(inHppciServer), attHppPlanner(inHppciServer->getHppPlanner())
 {
@@ -267,27 +293,12 @@ CORBA::Short ChppciRobot_impl::createJoint(const char* inJointName,
     ODEBUG1(":createJoint: failed to create joint " << jointName);
     return -1;
   } 
+
+  // Set the bounds of the joint
   // Bound joint if needed.
   CkwsJointShPtr kwsJoint = KIT_DYNAMIC_PTR_CAST(CkwsJoint, kppJoint);
-  unsigned int nbJointBounds = (unsigned int)inJointBound.length();
-  unsigned int kwsJointNbDofs = kwsJoint->countDofs(); 
-  if (nbJointBounds == 2*kwsJointNbDofs) {
-    for (unsigned int iDof=0; iDof<kwsJointNbDofs; iDof++) {
-      double vMin = inJointBound[2*iDof];
-      double vMax = inJointBound[2*iDof+1];
-      CkwsJointDofShPtr dof = kwsJoint->dof(iDof);
-      if (vMin <= vMax) {
-	/* Dof is actually bounded */
-	dof->isBounded(true);
-	dof->bounds(vMin, vMax);
-      }
-      else {
-	/* Dof is not bounded */
-	dof->isBounded(false);
-	dof->bounds(vMax,vMin);
-      }
-    }
-  }
+  localSetJointBounds(kwsJoint, inJointBound);
+
   kppJoint->doesDisplayPath(inDisplay);
   kppJoint->isVisible(false);
   // Store joint in jointMap.
@@ -343,29 +354,7 @@ CORBA::Short ChppciRobot_impl::setJointBounds(CORBA::Short inProblemId, CORBA::S
     hppRobot->getJointVector (jointVector);
     if (jointId < jointVector.size()) {
       CkwsJointShPtr kwsJoint = jointVector[jointId];
-      
-      // Bound dofs if needed.
-      unsigned int nbJointBounds = (unsigned int)inJointBound.length();
-      unsigned int kwsJointNbDofs = kwsJoint->countDofs(); 
-      if (nbJointBounds == 2*kwsJointNbDofs) {
-	for (unsigned int iDof=0; iDof<kwsJointNbDofs; iDof++) {
-	  double vMin = inJointBound[2*iDof];
-	  double vMax = inJointBound[2*iDof+1];
-	  if (vMin <= vMax) {
-	    kwsJoint->dof(iDof)->isBounded(true);
-	    kwsJoint->dof(iDof)->bounds(vMin, vMax);
-	  }
-	  else {
-	    kwsJoint->dof(iDof)->isBounded(false);
-	  }
-	}
-      }
-      else{
-	ODEBUG1(":setJointBounds: nbJointBounds "<< nbJointBounds <<
-		" != kwsJointNbDofs "<<kwsJointNbDofs<<" x 2");
-	return -1;
-      }
-
+      localSetJointBounds(kwsJoint, inJointBound);
     }
     else {
       ODEBUG1(":setJointBounds: jointId="  << jointId  << 
