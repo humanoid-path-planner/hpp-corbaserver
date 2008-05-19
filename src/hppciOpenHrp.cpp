@@ -450,7 +450,7 @@ void setHRP2OuterLists(ChppHumanoidRobotShPtr i_hrp2)
 
 // ==============================================================================
 
-ktStatus ChppciOpenHrpClient::loadHrp2Model(ChppDeviceShPtr &HRP2Device)
+ktStatus ChppciOpenHrpClient::loadHrp2Model(ChppHumanoidRobotShPtr &HRP2Device)
 {
   // 
   // Get Corba objects containing model of HRP2 and Obstacles.
@@ -558,7 +558,7 @@ ktStatus ChppciOpenHrpClient::loadRobotModel(std::string inFilename, std::string
 
 ktStatus  ChppciOpenHrpClient::loadHrp2Model()
 {
-  ChppDeviceShPtr HRP2Device;
+  ChppHumanoidRobotShPtr HRP2Device;
   if (loadHrp2Model(HRP2Device) != KD_OK){
     return KD_ERROR;
   }

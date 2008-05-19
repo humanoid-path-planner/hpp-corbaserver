@@ -20,7 +20,7 @@ INCLUDE
 #include <string>
 #include "hppCore/hppPlanner.h"
 
-#include "hppModel/hppDevice.h"
+#include "hppModel/hppHumanoidRobot.h"
 
 KIT_PREDEF_CLASS(CkppKCDPolyhedron);
 
@@ -69,7 +69,7 @@ public:
 
       Note that the robot is set into half-sitting configuration.
   */
-  ktStatus loadHrp2Model(ChppDeviceShPtr &outDevice);
+  ktStatus loadHrp2Model(ChppHumanoidRobotShPtr &outDevice);
 
   /**
      \brief  Initialize Orb and load model of a robot by sending a Corba request modelLoader to OpenHRP.
