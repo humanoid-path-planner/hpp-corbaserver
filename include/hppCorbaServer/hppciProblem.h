@@ -42,6 +42,11 @@ public:
   virtual CORBA::Short setDiffusionNodePicker(CORBA::Short inProblemId, 
 					      const char* inDiffusionNodePickerName);
 
+  /// \brief Comment in interface ChppciPRoblem::setDiffusionShooter
+  virtual CORBA::Short setDiffusionShooter(CORBA::Short inProblemId, 
+					   const char* inDiffusionShooterName,
+					   CORBA::Double inStandardDeviation);
+
   /// \brief Comment in interface ChppciPRoblem::setInitialConfig
   virtual CORBA::Short setInitialConfig(CORBA::Short inProblemId, const hppCorbaServer::dofSeq& dofArray);
 

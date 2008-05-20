@@ -25,12 +25,9 @@
 #endif
 
 
-ChppciServer* ChppciServer::s_hppciServer;
-
 ChppciServer::ChppciServer(ChppPlanner *inHppPlanner, int argc, char *argv[]) : 
   hppPlanner(inHppPlanner)
 {
-  s_hppciServer = this, 
   attPrivate = new ChppciServerPrivate;
 
   initORBandServers(argc, argv);
@@ -45,13 +42,7 @@ ChppciServer::~ChppciServer()
   attPrivate->orb->shutdown(0);
   delete attPrivate;
   attPrivate = NULL;
-  s_hppciServer = NULL;
   destroySteeringMethodFactory();
-}
-
-ChppciServer* ChppciServer::getInstance()
-{
-  return s_hppciServer;
 }
 
 /*
@@ -188,7 +179,7 @@ void ChppciServer::destroyDiffusionNodePickerFactory()
   for (std::map<std::string, CkwsPlusDiffusionNodePickerFactory*>::iterator it=start;
        it != end; it++) {
     CkwsPlusDiffusionNodePickerFactory* factory = it->second;
-    ODEBUG2(" deleting diffusion node picker function factory" << it->first);
+    ODEBUG2(" deleting diffusion node picker factory" << it->first);
     delete factory;
   }
 }
@@ -203,7 +194,7 @@ bool ChppciServer::diffusionNodePickerFactoryAlreadySet(std::string inName)
 
 
 bool ChppciServer::addDiffusionNodePickerFactory(std::string inName, 
-				      CkwsPlusDiffusionNodePickerFactory* inDiffusionNodePickerFactory)
+						 CkwsPlusDiffusionNodePickerFactory* inDiffusionNodePickerFactory)
 {
   if(diffusionNodePickerFactoryAlreadySet(inName)) {
     return false;
@@ -218,6 +209,62 @@ CkwsDiffusionNodePickerShPtr ChppciServer::createDiffusionNodePicker(std::string
 
   if (diffusionNodePickerFactoryAlreadySet(inName)) {
     result = attMapDiffusionNodePickerFactory[inName]->makeDiffusionNodePicker();
+  }
+  return result;
+}
+
+/*
+            DIFFUSION SHOOTER FACTORIES
+*/
+
+void ChppciServer::initMapDiffusionShooterFactory()
+{
+  attMapDiffusionShooterFactory["config space"] = new CkwsPlusShooterConfigSpaceFactory;
+  attMapDiffusionShooterFactory["roadmap box"] = new CkwsPlusShooterRoadmapBoxFactory;
+  attMapDiffusionShooterFactory["roadmap node"] = new CkwsPlusShooterRoadmapNodesFactory;
+}
+
+void ChppciServer::destroyDiffusionShooterFactory()
+{
+  std::map<std::string, CkwsPlusDiffusionShooterFactory*>::iterator start 
+    = attMapDiffusionShooterFactory.begin();
+  std::map<std::string, CkwsPlusDiffusionShooterFactory*>::iterator end
+    = attMapDiffusionShooterFactory.end();
+
+  for (std::map<std::string, CkwsPlusDiffusionShooterFactory*>::iterator it=start;
+       it != end; it++) {
+    CkwsPlusDiffusionShooterFactory* factory = it->second;
+    ODEBUG2(" deleting diffusion shooter factory" << it->first);
+    delete factory;
+  }
+}
+
+bool ChppciServer::diffusionShooterFactoryAlreadySet(std::string inName)
+{
+  if (attMapDiffusionShooterFactory.count(inName) == 1) {
+    return true;
+  }
+  return false;
+}
+
+
+bool ChppciServer::addDiffusionShooterFactory(std::string inName, 
+					      CkwsPlusDiffusionShooterFactory* inDiffusionShooterFactory)
+{
+  if(diffusionShooterFactoryAlreadySet(inName)) {
+    return false;
+  }
+  attMapDiffusionShooterFactory[inName] = inDiffusionShooterFactory;
+  return true;
+}
+
+CkwsDiffusionShooterShPtr ChppciServer::createDiffusionShooter(std::string inName,
+							       double inStandardDeviation)
+{
+  CkwsDiffusionShooterShPtr result;
+
+  if (diffusionShooterFactoryAlreadySet(inName)) {
+    result = attMapDiffusionShooterFactory[inName]->makeDiffusionShooter(inStandardDeviation);
   }
   return result;
 }

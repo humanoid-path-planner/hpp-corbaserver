@@ -12,6 +12,7 @@
 #include "kwsPlusSteeringMethodFactory.h"
 #include "kwsPlusDistanceFactory.h"
 #include "kwsPlusDiffusionNodePickerFactory.h"
+#include "kwsPlusDiffusionShooterFactory.h"
 
 class ChppciServerPrivate;
 
@@ -68,11 +69,6 @@ public:
   int processRequest(bool loop);
   /// \brief return a pointer to object ChppciServer::hppPlanner.
   ChppPlanner *getHppPlanner();
-
-  // 
-  // Static public
-  // 
-  static ChppciServer* getInstance();
 
   /**
      \name Steering method management
@@ -152,9 +148,41 @@ public:
 				     CkwsPlusDiffusionNodePickerFactory* inDiffusionNodePickerFactory);
 
   /**
-     \brief Get diffusion node picker from name.
+     \brief Get an instance of diffusion node picker from name.
+     \param inName name of the diffusion node picker.
   */
   CkwsDiffusionNodePickerShPtr createDiffusionNodePicker(std::string inName);
+
+  /**
+     @}
+  */
+
+  /**
+     \name diffusion shooter management
+  */
+  /**
+     \brief Indicates whether a name already corresponds to a diffusion shooter factory.
+     \param inName Name of the diffusion shooter factory.
+     \return true if name already corresponds to a diffusion shooter factory.
+  */
+  bool diffusionShooterFactoryAlreadySet(std::string inName);
+
+  /**
+     \brief Add a diffusion shooter factory
+     \param inName Name of the distance function built by factory.
+     \param inDiffusionShooterFactory diffusion shooter factory
+     \return true if success, false if name already used
+  */
+  bool addDiffusionShooterFactory(std::string inName, 
+				  CkwsPlusDiffusionShooterFactory* inDiffusionShooterFactory);
+
+  /**
+     \brief Get an instance of diffusion shooter from name.
+     \param inName name of the diffusion shooter.
+     \param inStandardDeviation standard deviation of Gaussian sampling
+  */
+  CkwsDiffusionShooterShPtr createDiffusionShooter(std::string inName, 
+						   double inStandardDeviation);
 
   /**
      @}
@@ -195,6 +223,14 @@ private:
   void destroySteeringMethodFactory();
 
   /**
+     @}
+  */
+
+  /**
+     \name Steering method factories
+     @{
+  */
+  /**
      \brief Associative array of Steering method factories.
   */
   std::map<std::string, CkwsPlusSteeringMethodFactory*> attMapSteeringMethodFactory;
@@ -222,6 +258,13 @@ private:
   void destroyDistanceFunctionFactory();
 
   /**
+     @}
+  */
+  /**
+     \name Distance function factories
+     @{
+  */
+  /**
      \brief Associative array of distance function factories.
   */
   std::map<std::string, CkwsPlusDistanceFactory*> attMapDistanceFunctionFactory;
@@ -248,6 +291,13 @@ private:
   void destroyDiffusionNodePickerFactory();
 
   /**
+     @}
+  */
+  /**
+     \name Diffusion node picker factories
+     @{
+  */
+  /**
      \brief Associative array of diffusion node picker factories.
   */
   std::map<std::string, CkwsPlusDiffusionNodePickerFactory*> attMapDiffusionNodePickerFactory;
@@ -255,10 +305,41 @@ private:
   /**
      @}
   */
+  /**
+     \name diffusion shooter factories
+     @{
+  */
+  /**
+     \brief Initialize map of diffusion shooter factories.
+
+     Insert default factories: 
+     \li "basic" factory building basic diffusion shooters,
+     \li "smallestTree" factory building smallest tree diffusion shooters,
+  */
+  void initMapDiffusionShooterFactory();
+
+  /**
+     \brief Destroy each diffusion shooter factory stored in the map.
+  */
+  void destroyDiffusionShooterFactory();
+
+  /**
+     @}
+  */
+  /**
+     \name diffusion shooter factories
+     @{
+  */
+  /**
+     \brief Associative array of diffusion shooter factories.
+  */
+  std::map<std::string, CkwsPlusDiffusionShooterFactory*> attMapDiffusionShooterFactory;
+
+  /**
+     @}
+  */
 
   ChppciServerPrivate* attPrivate;
-  /// \brief static pointer to the only object of this class.
-  static ChppciServer* s_hppciServer;
 
   /// \brief pointer to ChppPlanner Object.
   /// At initialization, the constructor creates a ChppPlanner object and keeps a pointer to it. All Corba requests are processed by this object. Notice that this pointer is passed to each constructor of implementation classes of the server Corba interface.

@@ -11,98 +11,127 @@
 #include "hppciCommonServer.idl"
 
 module hppCorbaServer {
-/**
- * \brief To define and solve a path planning problem.
- */
-interface ChppciProblem {
-  /** \brief Set steering method of specified robot in ChppPlanner::robotVector.
-   \param inProblemId rank of problem in vector of hppProblems.
-   \param inSteeringMethodName name of the steering method in {"linear", "flic", "rs"}.
-   \param inOriented whether local method is oriented or not.
-   \return 0 if success, -1 if failure.
+  /**
+   * \brief To define and solve a path planning problem.
+   */
+  interface ChppciProblem {
+    /** \brief Set steering method of specified robot in ChppPlanner::robotVector.
+	\param inProblemId rank of problem in vector of hppProblems.
+	\param inSteeringMethodName name of the steering method in {"linear", "flic", "rs"}.
+	\param inOriented whether local method is oriented or not.
+	\return 0 if success, -1 if failure.
 
-   The steering method implemented are
-   \li "linear": linear interpolation in configuration parameter space,
-   \li "flic": flat interpolation for cart-like robot
-   \li "rs": Reeds and Shepp optimal curves
-  */
-  short setSteeringMethod(in short inProblemId, in string inSteeringMethodName, in boolean inOriented);
+	The steering methods implemented by ChppciServer are
+	\li "linear": linear interpolation in configuration parameter space,
+	\li "flic": flat interpolation for cart-like robot
+	\li "rs": Reeds and Shepp optimal curves (radius = 1).
+	Other steering methods can be added using function ChppciServer::addSteeringMethodFactory.
+    */
+    short setSteeringMethod(in short inProblemId, in string inSteeringMethodName, in boolean inOriented);
 
-  /** \brief Set roadmap builder of specified robot in ChppPlanner::robotVector.
-      \param inProblemId rank of problem in vector of hppProblems.
-      \param inRoadmapBuilderName name of the roadmap builder in {"basic", "diffusing", "bi-diffusing", "IPP", "visibility", "PCA<diffusing>"}.
-      \param inDisplay whether the roadmap should be displayed in the interface.
-      \return 0 if success, -1 if failure.
-  */
-  short setRoadmapbuilder(in short inProblemId, in string inRoadmapBuilderName, in boolean inDisplay);
+    /** \brief Set roadmap builder of specified robot in ChppPlanner::robotVector.
+	\param inProblemId rank of problem in vector of hppProblems.
+	\param inRoadmapBuilderName name of the roadmap builder in {"basic", "diffusing", "bi-diffusing", "IPP", "visibility", "PCA<diffusing>"}.
+	\param inDisplay whether the roadmap should be displayed in the interface.
+	\return 0 if success, -1 if failure.
+    */
+    short setRoadmapbuilder(in short inProblemId, in string inRoadmapBuilderName, in boolean inDisplay);
 
-  /** \brief Set path optimizer of specified robot in ChppPlanner::robotVector.
-   \param inProblemId rank of problem in vector of hppProblems.
-   \param inPathOptimizerName name of the steering method in {"clear", "adaptiveShortcut", "random", "none"}.
-   \return 0 if success, -1 if failure.
-  */
-  short setPathOptimizer(in short inProblemId, in string inPathOptimizerName);
+    /** \brief Set path optimizer of specified robot in ChppPlanner::robotVector.
+	\param inProblemId rank of problem in vector of hppProblems.
+	\param inPathOptimizerName name of the path optimizer in {"clear", "adaptiveShortcut", "random", "none"}.
+	\return 0 if success, -1 if failure.
+    */
+    short setPathOptimizer(in short inProblemId, in string inPathOptimizerName);
   
-  /** \brief Set distance function used by roadmap builder
-      \param inProblemId Rank of problem in vector of hppProblems.
-      \param inDistanceName Name of the distance function.
-      \param inOriented whether distance corresponds to an oriented local method.
+    /** \brief Set distance function used by roadmap builder
+	\param inProblemId Rank of problem in vector of hppProblems.
+	\param inDistanceName Name of the distance function.
+	\param inOriented whether distance corresponds to an oriented local method.
 
-      \note Distance function is stored in the roadmap builder. Resetting the roadmap builder 
-      will therefore discard the distance function.
+	\note Distance function is stored in the roadmap builder. Resetting the roadmap builder 
+	will therefore discard the distance function.
 
-      \return 0 if success, -1 if failure.
-  */
-  short setDistanceFunction(in short inProblemId, in string inDistanceName, in boolean inOriented);
+	\return 0 if success, -1 if failure.
 
-  /** \brief Set diffusion node picker used by roadmap builder
-      \param inProblemId Rank of problem in vector of hppProblems.
-      \param inDiffusionNodePickerName Name of the diffusion node picker.
+	The distance functions implemented by ChppciServer are
+	\li "linear": distance related to linear steering method.
+	\li "flic": Approximation of length of direct path CflicDirectPath between two configurations.
+	\li "rs": Length of Reeds and Shepp optimal curves (radius = 1) between two configurations.
+	Other distance functions can be added using function ChppciServer::addDistanceFactory.
+    */
+    short setDistanceFunction(in short inProblemId, in string inDistanceName, in boolean inOriented);
 
-      \note diffusion node picker is stored in the roadmap builder. Resetting the roadmap builder 
-      will therefore discard the diffusion node picker.
+    /** \brief Set diffusion node picker used by roadmap builder
+	\param inProblemId Rank of problem in vector of hppProblems.
+	\param inDiffusionNodePickerName Name of the diffusion node picker.
 
-      \return 0 if success, -1 if failure. Roadmap builder should be of type diffusing.
-  */
-  short setDiffusionNodePicker(in short inProblemId, in string inDiffusionNodePickerName);
+	\note diffusion node picker is stored in the roadmap builder. Resetting the roadmap builder 
+	will therefore discard the diffusion node picker.
 
-  /** \brief Set initial configuration of specified robot in ChppPlanner::robotVector.
-   \param inProblemId rank of robot in vector of robots.
-   \param dofArray Array of degrees of freedom 
-   \return 0 if success, -1 if failure.
-  */
-  short setInitialConfig(in short inProblemId, in dofSeq dofArray);
+	\return 0 if success, -1 if failure. Roadmap builder should be of type diffusing.
 
-  /** \brief Set goal configuration of specified robot in ChppPlanner::robotVector.
-   \param inProblemId rank of robot in vector of robots.
-   \param dofArray Array of degrees of freedom 
-   \return 0 if success, -1 if failure.
-  */
-  short setGoalConfig(in short inProblemId, in dofSeq dofArray);
+	The diffusion node pickers implemented by ChppciServer are
+	\li "basic": CkwsPickerBasic (see KineoWorks documentation)
+	\li "smallestTree": CkwsPickerSmallestTree (see KineoWorks documentation)
+	Other diffusion node pickers can be added using function ChppciServer::addDiffusionNodePickerFactory.
+    */
+    short setDiffusionNodePicker(in short inProblemId, in string inDiffusionNodePickerName);
 
-  /** \brief Solve specified problem in ChppPlanner::robotVector.
-      \param inProblemId rank of robot in vector of robots.
-      \param outLastPathId rank of the last path created
-      \param pathLength : length of inLastPathId
-      \return 0 if success, -1 if failure.
-      \note  HOW TO USE IN PYTHON SCRIPT :
-             the python script doesn't allow you to call the function by the following prototype :
-             short solveOneProblem(in short inProblemId, out short inLastPathId, out double pathLength)
-             in python script the function is use as follow :
-             (short, short inLastPathId, double pathLength ) = solveOneProblem(in short inProblemId)
-             which return a list of all the return parameter
-  */
-  short solveOneProblem(in short inProblemId, out short outLastPathId, out double pathLength);
-  /**
-     \brief Initialize the path planning problem
-     \return 0 if success, -1 if failure.
-  */
-  short initializeProblem();
-  /**
-     \brief Solve the problem of corresponding ChppPlanner object
-     \return 0 if success, -1 if failure.
-  */
-  short solve();
+    /** \brief Set diffusion shooter used by roadmap builder
+	\param inProblemId Rank of problem in vector of hppProblems.
+	\param inDiffusionShooterName Name of the diffusion shooter.
+	\param inStandardDeviation standard deviation of Gaussian sampling.
+
+	\note diffusion shooter is stored in the roadmap builder. Resetting the roadmap builder 
+	will therefore discard the diffusion shooter.
+
+	\return 0 if success, -1 if failure. Roadmap builder should be of type diffusing.
+	The diffusion shooters implemented by ChppciServer are
+	\li "config space": CkwsShooterConfigSpace (see KineoWorks documentation)
+	\li "roadmap box": CkwsShooterRoadmapBox (see KineoWorks documentation)
+	\li "roadmap node": CkwsShooterRoadmapNodes (see KineoWorks documentation)
+	Other diffusion shooters can be added using function ChppciServer::addDiffusionShooterFactory.
+    */
+    short setDiffusionShooter(in short inProblemId, in string inDiffusionShooterName, in double inStandardDeviation);
+
+    /** \brief Set initial configuration of specified robot in ChppPlanner::robotVector.
+	\param inProblemId rank of robot in vector of robots.
+	\param dofArray Array of degrees of freedom 
+	\return 0 if success, -1 if failure.
+    */
+    short setInitialConfig(in short inProblemId, in dofSeq dofArray);
+
+    /** \brief Set goal configuration of specified robot in ChppPlanner::robotVector.
+	\param inProblemId rank of robot in vector of robots.
+	\param dofArray Array of degrees of freedom 
+	\return 0 if success, -1 if failure.
+    */
+    short setGoalConfig(in short inProblemId, in dofSeq dofArray);
+
+    /** \brief Solve specified problem in ChppPlanner::robotVector.
+	\param inProblemId rank of robot in vector of robots.
+	\param outLastPathId rank of the last path created
+	\param pathLength : length of inLastPathId
+	\return 0 if success, -1 if failure.
+	\note  HOW TO USE IN PYTHON SCRIPT :
+	the python script doesn't allow you to call the function by the following prototype :
+	short solveOneProblem(in short inProblemId, out short inLastPathId, out double pathLength)
+	in python script the function is use as follow :
+	(short, short inLastPathId, double pathLength ) = solveOneProblem(in short inProblemId)
+	which return a list of all the return parameter
+    */
+    short solveOneProblem(in short inProblemId, out short outLastPathId, out double pathLength);
+    /**
+       \brief Initialize the path planning problem
+       \return 0 if success, -1 if failure.
+    */
+    short initializeProblem();
+    /**
+       \brief Solve the problem of corresponding ChppPlanner object
+       \return 0 if success, -1 if failure.
+    */
+    short solve();
 
     /**
        \brief Optimize a given path
@@ -110,25 +139,25 @@ interface ChppciProblem {
        \param inPathId Id of the path in this problem.
        \return 0 if success, -1 if failure.
     */
-  short optimizePath(in short inProblemId, in short inPathId);
+    short optimizePath(in short inProblemId, in short inPathId);
 
-  /** \brief get the robot's config at param on the a path 
-      \param inProblemId rank of robot in vector of robots.
-      \param pathId rank of the path in the problem
-      \param pathLength : length of the path
-      \param atDistance : the user parameter choice
-      \return dofseq : the config at param
-  */
-  dofSeq configAtDistance(in short inProblemId, in short pathId, in double pathLength, in double atDistance);
+    /** \brief get the robot's config at param on the a path 
+	\param inProblemId rank of robot in vector of robots.
+	\param pathId rank of the path in the problem
+	\param pathLength : length of the path
+	\param atDistance : the user parameter choice
+	\return dofseq : the config at param
+    */
+    dofSeq configAtDistance(in short inProblemId, in short pathId, in double pathLength, in double atDistance);
 
-  /** \brief set tolerance of the obstacles registered in the planner
-      \param inProblemId: rank of robot in vector of robots.
-      \param tolerance: tolerance set to the obstacles
-             if there are no obstacles nothing is done.
-       \return 0 if success, -1 if failure.
-  */
-  short setObstacleTolerance(in short inProblemId, in double tolerance);
+    /** \brief set tolerance of the obstacles registered in the planner
+	\param inProblemId: rank of robot in vector of robots.
+	\param tolerance: tolerance set to the obstacles
+	if there are no obstacles nothing is done.
+	\return 0 if success, -1 if failure.
+    */
+    short setObstacleTolerance(in short inProblemId, in double tolerance);
   
-};
+  };
 };
 #endif

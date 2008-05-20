@@ -1,4 +1,9 @@
 2008/05/20
+	
+	42. Added CORBA request to set diffusion shooter of a given problem.
+	41. Removed ChppciServer::getInstance() since there is no strong reason
+	    to impose to this object to be a singleton.
+	40. Added explicit dependence to kwsPlus for documentation.
 	39. Added CORBA request to set diffusion node picker of a given problem.
 	
 	38. ChppciOpenHrpClient::loadHrp2Model() now takes a shared pointer to

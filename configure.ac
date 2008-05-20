@@ -37,6 +37,12 @@ KINEOCONTROLLER_PREFIX=`$PKG_CONFIG KineoPathPlanner --variable=prefix`
 AC_SUBST(KINEOCONTROLLER_PREFIX)
 AC_SUBST(KINEO_ADDON_BUILD,[${KINEOCONTROLLER_PREFIX}/bin/KineoAddonBuilder])
 
+define(kwsPlus_reqd, [kwsPlus])
+AC_SUBST(KWSPLUS_REQD, "kwsPlus_reqd")
+PKG_CHECK_MODULES(KWSPLUS, kwsPlus_reqd)
+KWSPLUS_PREFIX=`$PKG_CONFIG kwsPlus --variable=prefix`
+AC_SUBST(KWSPLUS_PREFIX)
+
 define(hppcore_reqd, [hppCore >= 1.4])
 AC_SUBST(HPPCORE_REQD, "hppcore_reqd")
 PKG_CHECK_MODULES(HPPCORE, hppcore_reqd)
