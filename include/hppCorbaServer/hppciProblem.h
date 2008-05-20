@@ -24,51 +24,54 @@ class ChppciServer;
 class ChppciProblem_impl : public virtual POA_hppCorbaServer::ChppciProblem {
 public:
   ChppciProblem_impl(ChppciServer* inHppciServer);
-  /// \brief Comment in interface ChppciPRoblem::setSteeringMethod.
+  /// \brief Comment in interface ChppciProblem::setSteeringMethod.
   virtual CORBA::Short setSteeringMethod(CORBA::Short inProblemId, 
 					 const char* inSteeringMethod, CORBA::Boolean inOriented);
 
-  /// \brief Comment in interface ChppciPRoblem::setRoadmapbuilder
+  /// \brief Comment in interface ChppciProblem::setRoadmapbuilder
   virtual CORBA::Short setRoadmapbuilder(CORBA::Short inProblemId, const char* inRoadmapBuilder,
 					 CORBA::Boolean inDisplay);
 
-  /// \brief Comment in interface ChppciPRoblem::setPathOptimizer
+  /// \brief Comment in interface ChppciProblem::setDiffusingNode.
+  virtual CORBA::Short setDiffusingNode(CORBA::Short inProblemId, const char* inDiffusingNode);
+
+  /// \brief Comment in interface ChppciProblem::setPathOptimizer
   virtual CORBA::Short setPathOptimizer(CORBA::Short inProblemId, const char* inPathOptimizer);
 
-  /// \brief Comment in interface ChppciPRoblem::setDistanceFunction
+  /// \brief Comment in interface ChppciProblem::setDistanceFunction
   virtual CORBA::Short setDistanceFunction(CORBA::Short inProblemId, const char* inDistanceName, CORBA::Boolean inOriented);
 
-  /// \brief Comment in interface ChppciPRoblem::setDiffusionNodePicker
+  /// \brief Comment in interface ChppciProblem::setDiffusionNodePicker
   virtual CORBA::Short setDiffusionNodePicker(CORBA::Short inProblemId, 
 					      const char* inDiffusionNodePickerName);
 
-  /// \brief Comment in interface ChppciPRoblem::setDiffusionShooter
+  /// \brief Comment in interface ChppciProblem::setDiffusionShooter
   virtual CORBA::Short setDiffusionShooter(CORBA::Short inProblemId, 
 					   const char* inDiffusionShooterName,
 					   CORBA::Double inStandardDeviation);
 
-  /// \brief Comment in interface ChppciPRoblem::setInitialConfig
+  /// \brief Comment in interface ChppciProblem::setInitialConfig
   virtual CORBA::Short setInitialConfig(CORBA::Short inProblemId, const hppCorbaServer::dofSeq& dofArray);
 
-  /// \brief Comment in interface ChppciPRoblem::setGoalConfig
+  /// \brief Comment in interface ChppciProblem::setGoalConfig
   virtual CORBA::Short setGoalConfig(CORBA::Short inProblemId, const hppCorbaServer::dofSeq& dofArray);
 
-  /// \brief Comment in interface ChppciPRoblem::initializeProblem
+  /// \brief Comment in interface ChppciProblem::initializeProblem
   virtual CORBA::Short initializeProblem();
 
-  /// \brief Comment in interface ChppciPRoblem::solveOneProblem
+  /// \brief Comment in interface ChppciProblem::solveOneProblem
   virtual CORBA::Short solveOneProblem(CORBA::Short inProblemId, CORBA::Short& inLastPathId, CORBA::Double& pathLength) ;
 
-  /// \brief Comment in interface ChppciPRoblem::solve
+  /// \brief Comment in interface ChppciProblem::solve
   virtual CORBA::Short solve();
 
-  /// \brief Comment in interface ChppciPRoblem::optimizePath
+  /// \brief Comment in interface ChppciProblem::optimizePath
   virtual CORBA::Short optimizePath(CORBA::Short inProblemId, CORBA::Short inPathId);
 
-  /// \brief Comment in interface ChppciPRoblem::configAtDistance
+  /// \brief Comment in interface ChppciProblem::configAtDistance
   virtual hppCorbaServer::dofSeq* configAtDistance(CORBA::Short inProblemId, CORBA::Short pathId, CORBA::Double pathLength, CORBA::Double atDistance) ;
 
-  /// \brief Comment in interface ChppciPRoblem::setObstacleTolerance
+  /// \brief Comment in interface ChppciProblem::setObstacleTolerance
   virtual CORBA::Short setObstacleTolerance(CORBA::Short inProblemId, CORBA::Double tolerance)
     throw(CORBA::SystemException);
 

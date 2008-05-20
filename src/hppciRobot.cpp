@@ -803,7 +803,7 @@ throw(CORBA::SystemException)
 
     // debug
     // cout<<"colliding bodies: ";
-    ODEBUG2(=====================debugging collision detection ======================);
+    ODEBUG2("=====================debugging collision detection ======================");
 
     for(unsigned int i=0; i<jointList.size(); i++){
 
@@ -818,9 +818,10 @@ throw(CORBA::SystemException)
 	ODEBUG1(":checkLinkCollision: failure in getting estimated distance");
 	return -1;
       }
-      ODEBUG2("for joint "<<hppBody->name()<<" body pos "<<trans[0]<<", "<<trans[1]<<", "<<trans[2]
-	      <<" distance "<<dist<<);
-      ODEBUG2("for joint "<<hppBody->name()<<" joint pos "<<transJoint[0]<<", "<<transJoint[1]<<", "<<transJoint[2]);
+      ODEBUG2("for joint " << hppBody->name() << " body pos " << trans[0]
+	      << ", " << trans[1] << ", " << trans[2] <<" distance "<<dist);
+      ODEBUG2("for joint " << hppBody->name() << " joint pos " << transJoint[0]
+	      << ", " << transJoint[1] << ", " << transJoint[2]);
 #if DEBUG==2
       std::cout << " joint config:";
       for(unsigned int j=0; j<3; j++){

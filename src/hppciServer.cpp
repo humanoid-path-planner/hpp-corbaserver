@@ -33,6 +33,8 @@ ChppciServer::ChppciServer(ChppPlanner *inHppPlanner, int argc, char *argv[]) :
   initORBandServers(argc, argv);
   initMapSteeringMethodFactory();
   initMapDistanceFunctionFactory();
+  initMapDiffusionNodePickerFactory();
+  initMapDiffusionShooterFactory();
 }
 
 /// \brief Shutdown CORBA server
@@ -43,6 +45,9 @@ ChppciServer::~ChppciServer()
   delete attPrivate;
   attPrivate = NULL;
   destroySteeringMethodFactory();
+  destroyDistanceFunctionFactory();
+  destroyDiffusionNodePickerFactory();
+  destroyDiffusionShooterFactory();
 }
 
 /*

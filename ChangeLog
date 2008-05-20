@@ -1,5 +1,6 @@
 2008/05/20
-	
+
+	43. Added CORBA request to select diffusion from start or goal of both.
 	42. Added CORBA request to set diffusion shooter of a given problem.
 	41. Removed ChppciServer::getInstance() since there is no strong reason
 	    to impose to this object to be a singleton.
