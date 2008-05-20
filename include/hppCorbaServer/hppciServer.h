@@ -11,6 +11,7 @@
 #include "hppCore/hppPlanner.h"
 #include "kwsPlusSteeringMethodFactory.h"
 #include "kwsPlusDistanceFactory.h"
+#include "kwsPlusDiffusionNodePickerFactory.h"
 
 class ChppciServerPrivate;
 
@@ -131,6 +132,34 @@ public:
      @}
   */
 
+  /**
+     \name Diffusion node picker management
+  */
+  /**
+     \brief Indicates whether a name already corresponds to a diffusion node picker factory.
+     \param inName Name of the diffusion node picker factory.
+     \return true if name already corresponds to a diffusion node picker factory.
+  */
+  bool diffusionNodePickerFactoryAlreadySet(std::string inName);
+
+  /**
+     \brief Add a diffusion node picker factory
+     \param inName Name of the distance function built by factory.
+     \param inDiffusionNodePickerFactory diffusion node picker factory
+     \return true if success, false if name already used
+  */
+  bool addDiffusionNodePickerFactory(std::string inName, 
+				     CkwsPlusDiffusionNodePickerFactory* inDiffusionNodePickerFactory);
+
+  /**
+     \brief Get diffusion node picker from name.
+  */
+  CkwsDiffusionNodePickerShPtr createDiffusionNodePicker(std::string inName);
+
+  /**
+     @}
+  */
+
 private:
 
   /**
@@ -163,7 +192,7 @@ private:
   /**
      \brief Destroy each steering method factory stored in the map.
   */
-  void destroySteeringMethodFactories();
+  void destroySteeringMethodFactory();
 
   /**
      \brief Associative array of Steering method factories.
@@ -190,12 +219,38 @@ private:
   /**
      \brief Destroy each distance function factory stored in the map.
   */
-  void destroyDistanceFunctionFactories();
+  void destroyDistanceFunctionFactory();
 
   /**
      \brief Associative array of distance function factories.
   */
   std::map<std::string, CkwsPlusDistanceFactory*> attMapDistanceFunctionFactory;
+
+  /**
+     @}
+  */
+  /**
+     \name Diffusion node picker factories
+     @{
+  */
+  /**
+     \brief Initialize map of diffusion node picker factories.
+
+     Insert default factories: 
+     \li "basic" factory building basic diffusion node pickers,
+     \li "smallestTree" factory building smallest tree diffusion node pickers,
+  */
+  void initMapDiffusionNodePickerFactory();
+
+  /**
+     \brief Destroy each diffusion node picker factory stored in the map.
+  */
+  void destroyDiffusionNodePickerFactory();
+
+  /**
+     \brief Associative array of diffusion node picker factories.
+  */
+  std::map<std::string, CkwsPlusDiffusionNodePickerFactory*> attMapDiffusionNodePickerFactory;
 
   /**
      @}

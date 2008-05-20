@@ -206,6 +206,46 @@ CORBA::Short ChppciProblem_impl::setDistanceFunction(CORBA::Short inProblemId, c
   return 0;
 }
 
+CORBA::Short ChppciProblem_impl::setDiffusionNodePicker(CORBA::Short inProblemId, 
+							const char* inDiffusionNodePickerName)
+{
+  std::string diffusionNodePickerName(inDiffusionNodePickerName);
+  unsigned int hppProblemId = (unsigned int)inProblemId;
+
+  unsigned int nbProblems = attHppPlanner->getNbHppProblems();
+
+  // Test that rank is less than number of robots in vector.
+  if (hppProblemId < nbProblems) {
+    // Get roadmap builder in hppPlanner object.
+    CkwsDiffusingRdmBuilderShPtr roadmapBuilder = 
+      KIT_DYNAMIC_PTR_CAST(CkwsDiffusingRdmBuilder, 
+			   attHppPlanner->roadmapBuilderIthProblem(hppProblemId));
+    // Check that diffusion roadmap builder is set
+    if (!roadmapBuilder) {
+      ODEBUG1(" setDiffusionNodePicker: roadmap builder is not set or not of type diffusion");
+      return -1;
+    }
+    /* Check that name corresponds to a diffusion node picker factory */
+    if (!attHppciServer->diffusionNodePickerFactoryAlreadySet(diffusionNodePickerName)) {
+      ODEBUG1(" unknown diffusion node picker.");
+      return -1;
+    }
+
+    // Create diffusion node picker
+    CkwsDiffusionNodePickerShPtr diffusionNodePicker = 
+      attHppciServer->createDiffusionNodePicker(diffusionNodePickerName);
+
+    ODEBUG2(" set roadmap builder diffusion node picker to " << diffusionNodePickerName);
+    roadmapBuilder->diffusionNodePicker(diffusionNodePicker);
+  }
+  else {
+    ODEBUG1(" setDiffusionNodePicker: wrong robot Id");
+    return -1;
+  }
+
+  return 0;
+}
+
 CORBA::Short ChppciProblem_impl::setInitialConfig(CORBA::Short inProblemId, const hppCorbaServer::dofSeq& dofArray) 
 {
   unsigned int hppProblemId = (unsigned int)inProblemId;

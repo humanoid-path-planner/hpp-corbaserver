@@ -38,6 +38,10 @@ public:
   /// \brief Comment in interface ChppciPRoblem::setDistanceFunction
   virtual CORBA::Short setDistanceFunction(CORBA::Short inProblemId, const char* inDistanceName, CORBA::Boolean inOriented);
 
+  /// \brief Comment in interface ChppciPRoblem::setDiffusionNodePicker
+  virtual CORBA::Short setDiffusionNodePicker(CORBA::Short inProblemId, 
+					      const char* inDiffusionNodePickerName);
+
   /// \brief Comment in interface ChppciPRoblem::setInitialConfig
   virtual CORBA::Short setInitialConfig(CORBA::Short inProblemId, const hppCorbaServer::dofSeq& dofArray);
 

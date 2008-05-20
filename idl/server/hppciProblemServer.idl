@@ -55,6 +55,17 @@ interface ChppciProblem {
   */
   short setDistanceFunction(in short inProblemId, in string inDistanceName, in boolean inOriented);
 
+  /** \brief Set diffusion node picker used by roadmap builder
+      \param inProblemId Rank of problem in vector of hppProblems.
+      \param inDiffusionNodePickerName Name of the diffusion node picker.
+
+      \note diffusion node picker is stored in the roadmap builder. Resetting the roadmap builder 
+      will therefore discard the diffusion node picker.
+
+      \return 0 if success, -1 if failure. Roadmap builder should be of type diffusing.
+  */
+  short setDiffusionNodePicker(in short inProblemId, in string inDiffusionNodePickerName);
+
   /** \brief Set initial configuration of specified robot in ChppPlanner::robotVector.
    \param inProblemId rank of robot in vector of robots.
    \param dofArray Array of degrees of freedom 

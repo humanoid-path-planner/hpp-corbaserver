@@ -46,7 +46,7 @@ ChppciServer::~ChppciServer()
   delete attPrivate;
   attPrivate = NULL;
   s_hppciServer = NULL;
-  destroySteeringMethodFactories();
+  destroySteeringMethodFactory();
 }
 
 ChppciServer* ChppciServer::getInstance()
@@ -65,7 +65,7 @@ void ChppciServer::initMapSteeringMethodFactory()
   attMapSteeringMethodFactory["flic"] = new CkwsPlusFlicSteeringMethodFactory();
 }
 
-void ChppciServer::destroySteeringMethodFactories()
+void ChppciServer::destroySteeringMethodFactory()
 {
   std::map<std::string, CkwsPlusSteeringMethodFactory*>::iterator start 
     = attMapSteeringMethodFactory.begin();
@@ -121,7 +121,7 @@ void ChppciServer::initMapDistanceFunctionFactory()
   attMapDistanceFunctionFactory["flic"] = new CkwsPlusApproxFlicDistanceFactory;
 }
 
-void ChppciServer::destroyDistanceFunctionFactories()
+void ChppciServer::destroyDistanceFunctionFactory()
 {
   std::map<std::string, CkwsPlusDistanceFactory*>::iterator start 
     = attMapDistanceFunctionFactory.begin();
@@ -162,6 +162,62 @@ CkwsDistanceShPtr ChppciServer::createDistanceFunction(std::string inName,
 
   if (distanceFactoryAlreadySet(inName)) {
     result = attMapDistanceFunctionFactory[inName]->makeDistance(inOriented);
+  }
+  return result;
+}
+
+
+/*
+            DIFFUSION NODE PICKER FACTORIES
+*/
+
+void ChppciServer::initMapDiffusionNodePickerFactory()
+{
+  attMapDiffusionNodePickerFactory["basic"] = new CkwsPlusBasicDiffusionNodePickerFactory;
+  attMapDiffusionNodePickerFactory["smallestTree"] = 
+    new CkwsPlusSmallestTreeDiffusionNodePickerFactory;
+}
+
+void ChppciServer::destroyDiffusionNodePickerFactory()
+{
+  std::map<std::string, CkwsPlusDiffusionNodePickerFactory*>::iterator start 
+    = attMapDiffusionNodePickerFactory.begin();
+  std::map<std::string, CkwsPlusDiffusionNodePickerFactory*>::iterator end
+    = attMapDiffusionNodePickerFactory.end();
+
+  for (std::map<std::string, CkwsPlusDiffusionNodePickerFactory*>::iterator it=start;
+       it != end; it++) {
+    CkwsPlusDiffusionNodePickerFactory* factory = it->second;
+    ODEBUG2(" deleting diffusion node picker function factory" << it->first);
+    delete factory;
+  }
+}
+
+bool ChppciServer::diffusionNodePickerFactoryAlreadySet(std::string inName)
+{
+  if (attMapDiffusionNodePickerFactory.count(inName) == 1) {
+    return true;
+  }
+  return false;
+}
+
+
+bool ChppciServer::addDiffusionNodePickerFactory(std::string inName, 
+				      CkwsPlusDiffusionNodePickerFactory* inDiffusionNodePickerFactory)
+{
+  if(diffusionNodePickerFactoryAlreadySet(inName)) {
+    return false;
+  }
+  attMapDiffusionNodePickerFactory[inName] = inDiffusionNodePickerFactory;
+  return true;
+}
+
+CkwsDiffusionNodePickerShPtr ChppciServer::createDiffusionNodePicker(std::string inName)
+{
+  CkwsDiffusionNodePickerShPtr result;
+
+  if (diffusionNodePickerFactoryAlreadySet(inName)) {
+    result = attMapDiffusionNodePickerFactory[inName]->makeDiffusionNodePicker();
   }
   return result;
 }
