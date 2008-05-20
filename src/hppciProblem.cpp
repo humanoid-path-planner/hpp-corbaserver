@@ -162,15 +162,15 @@ CORBA::Short ChppciProblem_impl::setDiffusingNode(CORBA::Short inProblemId,
   return 0;
 }
 
-CORBA::Short ChppciProblem_impl::setPathOptimizer(CORBA::Short inProblemId, const char* inPathOptimizerName)
+CORBA::Short ChppciProblem_impl::setPathOptimizer(CORBA::Short inProblemId, 
+						  const char* inPathOptimizerName,
+						  CORBA::Short inMaxNumberLoop)
 {
   std::string pathOptimizerName(inPathOptimizerName);
 
   ktStatus status;
   unsigned int hppProblemId = (unsigned int)inProblemId;
   unsigned int nbProblems = attHppPlanner->getNbHppProblems();
-
-  CkwsPathOptimizerShPtr pathOptimizer;
 
   ODEBUG2(":setPathOptimizer: nbProblems " << nbProblems << "problem id " 
 	  << inProblemId << ", pathOptimizerName " <<pathOptimizerName);
@@ -188,7 +188,7 @@ CORBA::Short ChppciProblem_impl::setPathOptimizer(CORBA::Short inProblemId, cons
     }
 
     if (pathOptimizerName == "clear") {
-      pathOptimizer = CkwsClearOptimizer::create();
+      CkwsPathOptimizerShPtr pathOptimizer = CkwsClearOptimizer::create();
       pathOptimizer->distance(distance);
       pathOptimizer->shortcutMethod(CkwsShortcutDirect::create());
 
@@ -197,24 +197,27 @@ CORBA::Short ChppciProblem_impl::setPathOptimizer(CORBA::Short inProblemId, cons
       return (CORBA::Short)status;
     } 
     else if (pathOptimizerName == "adaptiveShortcut") {
-      pathOptimizer = CkwsAdaptiveShortcutOptimizer::create();
+      CkwsLoopOptimizerShPtr pathOptimizer = CkwsAdaptiveShortcutOptimizer::create();
       pathOptimizer->distance(distance);
       pathOptimizer->shortcutMethod(CkwsShortcutDirect::create());
+      pathOptimizer->maxNbLoop(inMaxNumberLoop);
 
       status = attHppPlanner->pathOptimizerIthProblem(hppProblemId, pathOptimizer);
       ODEBUG2(":setPathOptimizer: adaptive shortcut path optimizer set");
       return (CORBA::Short)status;
     } 
     else if (pathOptimizerName == "random") {
-      pathOptimizer = CkwsRandomOptimizer::create();
+      CkwsLoopOptimizerShPtr pathOptimizer = CkwsRandomOptimizer::create();
       pathOptimizer->distance(distance);
       pathOptimizer->shortcutMethod(CkwsShortcutDirect::create());
+      pathOptimizer->maxNbLoop(inMaxNumberLoop);
 
       status = attHppPlanner->pathOptimizerIthProblem(hppProblemId, pathOptimizer);
       ODEBUG2(":setPathOptimizer: random path optimizer set");
       return (CORBA::Short)status;
     } 
     else if (pathOptimizerName == "none") {
+      CkwsPathOptimizerShPtr pathOptimizer;
       status = attHppPlanner->pathOptimizerIthProblem(hppProblemId, pathOptimizer);
       ODEBUG2(":setPathOptimizer: no path optimizer set");
       return (CORBA::Short)status;

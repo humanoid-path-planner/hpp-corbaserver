@@ -36,7 +36,8 @@ public:
   virtual CORBA::Short setDiffusingNode(CORBA::Short inProblemId, const char* inDiffusingNode);
 
   /// \brief Comment in interface ChppciProblem::setPathOptimizer
-  virtual CORBA::Short setPathOptimizer(CORBA::Short inProblemId, const char* inPathOptimizer);
+  virtual CORBA::Short setPathOptimizer(CORBA::Short inProblemId, const char* inPathOptimizer,
+					CORBA::Short inMaxNumberLoop);
 
   /// \brief Comment in interface ChppciProblem::setDistanceFunction
   virtual CORBA::Short setDistanceFunction(CORBA::Short inProblemId, const char* inDistanceName, CORBA::Boolean inOriented);

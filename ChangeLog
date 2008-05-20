@@ -1,6 +1,6 @@
 2008/05/20
 
-	44. Slight modification in ChppciProblem::setPathOptimizer.
+	44. Slight modifications in ChppciProblem::setPathOptimizer.
 	43. Added CORBA request to select diffusion from start or goal of both.
 	42. Added CORBA request to set diffusion shooter of a given problem.
 	41. Removed ChppciServer::getInstance() since there is no strong reason

@@ -49,9 +49,11 @@ module hppCorbaServer {
     /** \brief Set path optimizer of specified robot in ChppPlanner::robotVector.
 	\param inProblemId rank of problem in vector of hppProblems.
 	\param inPathOptimizerName name of the path optimizer in {"clear", "adaptiveShortcut", "random", "none"}.
+	\param inMaxNumberLoop maximal number of loop for loop optimizers.
 	\return 0 if success, -1 if failure.
     */
-    short setPathOptimizer(in short inProblemId, in string inPathOptimizerName);
+    short setPathOptimizer(in short inProblemId, in string inPathOptimizerName,
+			   in short inMaxNumberLoop);
   
     /** \brief Set distance function used by roadmap builder
 	\param inProblemId Rank of problem in vector of hppProblems.
