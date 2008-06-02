@@ -51,7 +51,7 @@ module hppCorbaServer {
      */
     short setRobotRootJoint(in string inRobotName, in string inJointName);
 
-#if WITH_OPENHRP
+#if @OPENHRP@
 
     /**
      * \brief Load HRP2 model by sending a Corba request to OpenHRP

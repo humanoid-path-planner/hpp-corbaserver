@@ -68,116 +68,116 @@ class ChppciRobot_impl : public virtual POA_hppCorbaServer::ChppciRobot {
 public:
   /// \brief Store pointer to ChppPlanner object of hppciServer.
   ChppciRobot_impl(ChppciServer *inHppciServer);
-  /// \brief Comment in interface ChppciRobot::createRobot.
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::createRobot.
   virtual CORBA::Short createRobot(const char* inRobotName) 
     throw(CORBA::SystemException);
-  /// \brief Comment in interface ChppciRobot::addHppProblem.
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::addHppProblem.
   virtual CORBA::Short addHppProblem(const char* inRobotName)
     throw(CORBA::SystemException);
-  /// \brief Comment in interface ChppciRobot::setRobotRootJoint.
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::setRobotRootJoint.
   virtual CORBA::Short 
     setRobotRootJoint(const char* inRobotName, const char* inJointName)
     throw(CORBA::SystemException);
 #if WITH_OPENHRP
-  /// \brief Comment in interface ChppciRobot::loadHrp2Model.
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::loadHrp2Model.
   virtual CORBA::Short loadHrp2Model();
 #endif
-  /// \brief Comment in interface ChppciRobot::createExtraDof.
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::createExtraDof.
   virtual CORBA::Short createExtraDof(const char* inDofName, CORBA::Boolean inRevolute, 
 				      CORBA::Double inValueMin, CORBA::Double inValueMax)
     throw(CORBA::SystemException);
-  /// \brief Comment in interface ChppciRobot::addExtraDofToRobot.
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::addExtraDofToRobot.
   virtual CORBA::Short addExtraDofToRobot(const char* inRobotName, const char* inDofName)
     throw(CORBA::SystemException);
-  /// \brief Comment in interface ChppciRobot::getDeviceDim.
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::getDeviceDim.
   virtual CORBA::Short getDeviceDim(CORBA::Short inProblemId, CORBA::Short& deviceDim)
     throw(CORBA::SystemException);
 
-  /// \brief Comment in interface ChppciRobot::createJoint.
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::createJoint.
   virtual CORBA::Short 
     createJoint(const char* inJointName, const char* inJointType, const  hppCorbaServer::Configuration& pos,
 		const hppCorbaServer::jointBoundSeq& jointBound, CORBA::Boolean inDisplay) throw(CORBA::SystemException);
-  /// \brief Comment in interface ChppciRobot::addJoint.
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::addJoint.
   virtual CORBA::Short 
     addJoint(const char* inParentName, const char* inChildName)
     throw(CORBA::SystemException);
 
-  /// \brief Comment in interface ChppciRobot::setJointBound.
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::setJointBound.
   virtual CORBA::Short setJointBounds(CORBA::Short inProblemId, CORBA::Short inJointId, 
 				     const hppCorbaServer::jointBoundSeq& jointBound)
     throw(CORBA::SystemException);
 
-  /// \brief Comment in interface ChppciRobot::setJointVisible.
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::setJointVisible.
   virtual CORBA::Short setJointVisible(CORBA::Short inProblemId, CORBA::Short inJointId, CORBA::Boolean inVisible)
     throw(CORBA::SystemException);
 
-  /// \brief Comment in interface ChppciRobot::setJointTransparent.
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::setJointTransparent.
   virtual CORBA::Short setJointTransparent(CORBA::Short inProblemId, CORBA::Short inJointId, CORBA::Boolean isTransparent)
     throw(CORBA::SystemException);
 
-  /// \brief Comment in interface ChppciRobot::setJointTransparent.
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::setJointTransparent.
   virtual CORBA::Short setJointDisplayPath(CORBA::Short inProblemId, CORBA::Short inJointId, CORBA::Boolean inDisplayPath)
     throw(CORBA::SystemException);
 
-  /// \brief Comment in interface ChppciRobot::setDofLocked.
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::setDofLocked.
   virtual CORBA::Short setDofLocked(CORBA::Short inProblemId, CORBA::Short dofId, 
 				    CORBA::Boolean locked, CORBA::Double lockedValue)
     throw(CORBA::SystemException);
 
-  /// \brief Comment in interface ChppciRobot::setCurrentConfig
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::setCurrentConfig
   virtual CORBA::Short setCurrentConfig(CORBA::Short inProblemId, const hppCorbaServer::dofSeq& dofArray) 
     throw(CORBA::SystemException);
 
 #if WITH_OPENHRP
-  /// \brief Comment in interface ChppciRobot::setCurrentConfig in the order of joint of OpenHRP
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::setCurrentConfig in the order of joint of OpenHRP
   virtual CORBA::Short setCurrentConfigOpenHRP(CORBA::Short inProblemId, const hppCorbaServer::dofSeq& dofArray) 
     throw(CORBA::SystemException);
 
-  /// \brief Comment in interface ChppciRobot::getCurrentConfig in the order of joint of OpenHRP
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::getCurrentConfig in the order of joint of OpenHRP
   virtual hppCorbaServer::dofSeq* getCurrentConfigOpenHRP(CORBA::Short inProblemId)
     throw(CORBA::SystemException);
 #endif
-  /// \brief Comment in interface ChppciRobot::getCurrentConfig
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::getCurrentConfig
   virtual hppCorbaServer::dofSeq* getCurrentConfig(CORBA::Short inProblemId)
     throw(CORBA::SystemException);
 
-  /// \brief Comment in interface ChppciRobot::getCurrentConfig
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::getCurrentConfig
     /*
   virtual CORBA::Short Test(CORBA::Short inProblemId)
     throw(CORBA::SystemException);
     */
 
-  /// \brief Comment in interface ChppciRobot::attachBodyToJoint.
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::attachBodyToJoint.
   virtual CORBA::Short 
     attachBodyToJoint(const char* inJointName, const char* inBodyName)
     throw(CORBA::SystemException);
-  /// \brief Comment in interface ChppciRobot::createBody.
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::createBody.
   virtual CORBA::Short createBody(const char* inBodyName)
     throw(CORBA::SystemException);
-  /// \brief Comment in interface ChppciRobot::getBodyInnerObject.
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::getBodyInnerObject.
   virtual hppCorbaServer::nameSeq* getBodyInnerObject(const char* inBodyName);
-  /// \brief Comment in interface ChppciRobot::getBodyOuterObject.
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::getBodyOuterObject.
   virtual hppCorbaServer::nameSeq* getBodyOuterObject(const char* inBodyName);
 
-  /// \brief Comment in interface ChppciRobot::checkLinkCollision.
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::checkLinkCollision.
   CORBA::Short checkLinkCollision(CORBA::Short inProblemId, CORBA::Short inJointId, CORBA::Short& result)
     throw(CORBA::SystemException);
-  /// \brief Comment in interface ChppciRobot::createPolyhedron.
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::createPolyhedron.
   virtual CORBA::Short createPolyhedron(const char* inPolyhedronName)
     throw(CORBA::SystemException);
   /// \brief Comment in ChppciObstacle::createBox.
   virtual CORBA::Short createBox(const char* inBoxName, CORBA::Double x, 
 	     CORBA::Double y, CORBA::Double z)
     throw(CORBA::SystemException);
-  /// \brief Comment in interface ChppciRobot::addPoint.
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::addPoint.
   virtual CORBA::Short 
     addPoint(const char* inPolyhedronName, CORBA::Double x, 
 	     CORBA::Double y, CORBA::Double z) throw(CORBA::SystemException);
-  /// \brief Comment in interface ChppciRobot::addTriangle.
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::addTriangle.
   virtual CORBA::Short 
     addTriangle(const char* inPolyhedronName, long pt1, long pt2, long pt3)
     throw(CORBA::SystemException);
-  /// \brief Comment in interface ChppciRobot::addPolyToBody.
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::addPolyToBody.
   virtual CORBA::Short
   addPolyToBody(const char* inBodyName, const char* inPolyhedronName, const hppCorbaServer::Configuration& inConfig)
     throw(CORBA::SystemException);

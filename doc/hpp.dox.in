@@ -211,6 +211,7 @@ EXCLUDE_PATTERNS       =
 INPUT                  = @top_srcdir@/include/hppCorbaServer \
 			 @top_builddir@/include/hppCorbaServer \
 			 @top_srcdir@/idl/server \
+			 @top_builddir@/idl/server \
                          @srcdir@/additionalDoc
 
 #---------------------------------------------------------------------------

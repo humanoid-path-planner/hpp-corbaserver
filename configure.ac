@@ -95,6 +95,8 @@ fi
 
 AC_OUTPUT(Makefile
 	idl/server/Makefile
+	idl/server/hppciRobotServer.idl
+	idl/server/hppciObstacleServer.idl
 	src/Makefile
 	include/Makefile
 	include/hppCorbaServer/hppciOpenHrp.h

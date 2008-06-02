@@ -26,7 +26,8 @@ module hppCorbaServer {
    and repeat these operation for each polyhedron obstacle.
    \li the second way consists in building polyhedra one by one as described above and to insert them in the collision list (addObstacle).
 
-   \note Polyhedra and lists of CkcdObject in construction are stored in local std::map of object ChppciObstacle_impl. Therefore once a list of CkcdObject has been stored in object ChppPlanner through function ChppciObstacle_impl::setObstacles or a polyhedron has been added to list of CkcdObject ChppPlanner through function ChppciObstacle_impl::addObstacle, they should not be modified.
+   \note Polyhedra and lists of CkcdObject in construction are stored in local 
+   std::map of objects in ChppciObstacle_impl. 
   */
   interface ChppciObstacle {
     /**
@@ -122,6 +123,23 @@ module hppCorbaServer {
      * \return rank of triangle in polyhedron or -1 if failure.
      */
     short addTriangle(in string inPolyName, in long pt1, in long pt2, in long pt3);
+
+#if @OPENHRP@
+    /**
+       \brief Load a polyhedron from Modelloader.
+
+       Once loaded, the obstacle is added to the list of obstacles.
+
+       \param inPolyName Name of the polyhedron.
+       \param inFilename Name of file in ModelLoader
+       \param inOpenHrpPrefix Prefix of installation in ModelLoader
+
+       \return 0 if success, -1 if failure.
+
+     */
+    short loadModelLoaderObstacle(in string inPolyName, in string inFilename,
+				  in string inOpenHrpPrefix);
+#endif
 
     /**
        @}

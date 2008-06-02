@@ -24,55 +24,55 @@ class ChppciServer;
 class ChppciProblem_impl : public virtual POA_hppCorbaServer::ChppciProblem {
 public:
   ChppciProblem_impl(ChppciServer* inHppciServer);
-  /// \brief Comment in interface ChppciProblem::setSteeringMethod.
+  /// \brief Comment in interface hppCorbaServer::ChppciProblem::setSteeringMethod.
   virtual CORBA::Short setSteeringMethod(CORBA::Short inProblemId, 
 					 const char* inSteeringMethod, CORBA::Boolean inOriented);
 
-  /// \brief Comment in interface ChppciProblem::setRoadmapbuilder
+  /// \brief Comment in interface hppCorbaServer::ChppciProblem::setRoadmapbuilder
   virtual CORBA::Short setRoadmapbuilder(CORBA::Short inProblemId, const char* inRoadmapBuilder,
 					 CORBA::Boolean inDisplay);
 
-  /// \brief Comment in interface ChppciProblem::setDiffusingNode.
+  /// \brief Comment in interface hppCorbaServer::ChppciProblem::setDiffusingNode.
   virtual CORBA::Short setDiffusingNode(CORBA::Short inProblemId, const char* inDiffusingNode);
 
-  /// \brief Comment in interface ChppciProblem::setPathOptimizer
+  /// \brief Comment in interface hppCorbaServer::ChppciProblem::setPathOptimizer
   virtual CORBA::Short setPathOptimizer(CORBA::Short inProblemId, const char* inPathOptimizer,
 					CORBA::Short inMaxNumberLoop);
 
-  /// \brief Comment in interface ChppciProblem::setDistanceFunction
+  /// \brief Comment in interface hppCorbaServer::ChppciProblem::setDistanceFunction
   virtual CORBA::Short setDistanceFunction(CORBA::Short inProblemId, const char* inDistanceName, CORBA::Boolean inOriented);
 
-  /// \brief Comment in interface ChppciProblem::setDiffusionNodePicker
+  /// \brief Comment in interface hppCorbaServer::ChppciProblem::setDiffusionNodePicker
   virtual CORBA::Short setDiffusionNodePicker(CORBA::Short inProblemId, 
 					      const char* inDiffusionNodePickerName);
 
-  /// \brief Comment in interface ChppciProblem::setDiffusionShooter
+  /// \brief Comment in interface hppCorbaServer::ChppciProblem::setDiffusionShooter
   virtual CORBA::Short setDiffusionShooter(CORBA::Short inProblemId, 
 					   const char* inDiffusionShooterName,
 					   CORBA::Double inStandardDeviation);
 
-  /// \brief Comment in interface ChppciProblem::setInitialConfig
+  /// \brief Comment in interface hppCorbaServer::ChppciProblem::setInitialConfig
   virtual CORBA::Short setInitialConfig(CORBA::Short inProblemId, const hppCorbaServer::dofSeq& dofArray);
 
-  /// \brief Comment in interface ChppciProblem::setGoalConfig
+  /// \brief Comment in interface hppCorbaServer::ChppciProblem::setGoalConfig
   virtual CORBA::Short setGoalConfig(CORBA::Short inProblemId, const hppCorbaServer::dofSeq& dofArray);
 
-  /// \brief Comment in interface ChppciProblem::initializeProblem
+  /// \brief Comment in interface hppCorbaServer::ChppciProblem::initializeProblem
   virtual CORBA::Short initializeProblem();
 
-  /// \brief Comment in interface ChppciProblem::solveOneProblem
+  /// \brief Comment in interface hppCorbaServer::ChppciProblem::solveOneProblem
   virtual CORBA::Short solveOneProblem(CORBA::Short inProblemId, CORBA::Short& inLastPathId, CORBA::Double& pathLength) ;
 
-  /// \brief Comment in interface ChppciProblem::solve
+  /// \brief Comment in interface hppCorbaServer::ChppciProblem::solve
   virtual CORBA::Short solve();
 
-  /// \brief Comment in interface ChppciProblem::optimizePath
+  /// \brief Comment in interface hppCorbaServer::ChppciProblem::optimizePath
   virtual CORBA::Short optimizePath(CORBA::Short inProblemId, CORBA::Short inPathId);
 
-  /// \brief Comment in interface ChppciProblem::configAtDistance
+  /// \brief Comment in interface hppCorbaServer::ChppciProblem::configAtDistance
   virtual hppCorbaServer::dofSeq* configAtDistance(CORBA::Short inProblemId, CORBA::Short pathId, CORBA::Double pathLength, CORBA::Double atDistance) ;
 
-  /// \brief Comment in interface ChppciProblem::setObstacleTolerance
+  /// \brief Comment in interface hppCorbaServer::ChppciProblem::setObstacleTolerance
   virtual CORBA::Short setObstacleTolerance(CORBA::Short inProblemId, CORBA::Double tolerance)
     throw(CORBA::SystemException);
 

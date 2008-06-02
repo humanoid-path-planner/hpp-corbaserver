@@ -30,9 +30,9 @@ class ChppciObstacle_impl : public virtual POA_hppCorbaServer::ChppciObstacle {
 public:
   /// \brief store pointer to ChppPlanner object.
   ChppciObstacle_impl(ChppciServer *inHppciServer);
-  /// \brief Comment in interface ChppciObstacle::setObstacles
+  /// \brief Comment in interface hppCorbaServer::ChppciObstacle::setObstacles
   CORBA::Short setObstacles(const char* inListName);
-  /// \brief Comment in interface ChppciObstacle::addObstacle
+  /// \brief Comment in interface hppCorbaServer::ChppciObstacle::addObstacle
   CORBA::Short addObstacle(const char* inPolyhedronName);
 
   /// \brief add an obstacle at the given position.
@@ -43,33 +43,42 @@ public:
 					 const hppCorbaServer::Configuration& cfg)
    throw(CORBA::SystemException);
 
-  /// \brief Comment in interface ChppciObstacle::createCollisionList.
+  /// \brief Comment in interface hppCorbaServer::ChppciObstacle::createCollisionList.
   virtual CORBA::Short createCollisionList(const char* inListName)
     throw(CORBA::SystemException);
-  /// \brief Comment in interface ChppciObstacle::addPolyToCollList.
+  /// \brief Comment in interface hppCorbaServer::ChppciObstacle::addPolyToCollList.
   virtual CORBA::Short 
     addPolyToCollList(const char* inListName, const char* inPolyhedronName)
     throw(CORBA::SystemException);
-  /// \brief Comment in interface ChppciObstacle::createPolyhedron.
+  /// \brief Comment in interface hppCorbaServer::ChppciObstacle::createPolyhedron.
   virtual CORBA::Short createPolyhedron(const char* inPolyhedronName)
     throw(CORBA::SystemException);
   /// \brief Comment in ChppciObstacle::createBox.
   virtual CORBA::Short createBox(const char* inBoxName, CORBA::Double x, 
 	     CORBA::Double y, CORBA::Double z)
     throw(CORBA::SystemException);
-  /// \brief Comment in interface ChppciObstacle::addPoint.
+  /// \brief Comment in interface hppCorbaServer::ChppciObstacle::addPoint.
   virtual CORBA::Short 
     addPoint(const char* inPolyhedronName, CORBA::Double x, 
 	     CORBA::Double y, CORBA::Double z) throw(CORBA::SystemException);
-  /// \brief Comment in interface ChppciObstacle::addTriangle.
+  /// \brief Comment in interface hppCorbaServer::ChppciObstacle::addTriangle.
   virtual CORBA::Short 
     addTriangle(const char* inPolyhedronName, long pt1, long pt2, long pt3)
     throw(CORBA::SystemException);
-  /// \brief Comment in interface ChppciObstacle::setVisible.
+
+#if WITH_OPENHRP
+  /// \brief Comment in interface hppCorbaServer::ChppciObstacle::loadModelLoaderObstacle.
+  virtual CORBA::Short 
+    loadModelLoaderObstacle(const char* inPolyName, const char* inFilename,
+			    const char* inOpenHrpPrefix)
+    throw(CORBA::SystemException);
+#endif
+
+  /// \brief Comment in interface hppCorbaServer::ChppciObstacle::setVisible.
   virtual CORBA::Short 
     setVisible(const char* inPolyname, CORBA::Boolean inVisible)
     throw(CORBA::SystemException);
-  /// \brief Comment in interface ChppciObstacle::setTransparent.
+  /// \brief Comment in interface hppCorbaServer::ChppciObstacle::setTransparent.
   virtual CORBA::Short 
     setTransparent(const char* inPolyname, CORBA::Boolean inTransparent)
     throw(CORBA::SystemException);

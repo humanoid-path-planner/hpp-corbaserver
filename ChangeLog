@@ -1,3 +1,8 @@
+2008/06/02
+
+	45. Added request ChppciObstacle::loadModelLoaderObstacle to load
+	obstacle through modelloader. 
+	
 2008/05/20
 
 	44. Slight modifications in ChppciProblem::setPathOptimizer.

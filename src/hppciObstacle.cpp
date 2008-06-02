@@ -12,6 +12,9 @@
 #include "hppCorbaServer/hppciObstacle.h"
 
 #include "hppCorbaServer/hppciTools.h"
+#if WITH_OPENHRP
+#include "hppCorbaServer/hppciOpenHrp.h"
+#endif
 
 #if DEBUG==2
 #define ODEBUG2(x) std::cout << "ChppciRobot:" << x << std::endl
@@ -297,6 +300,54 @@ CORBA::Short ChppciObstacle_impl::addTriangle(const char* inPolyhedronName,
 
   return rank;
 }
+
+#if WITH_OPENHRP
+/// \brief Comment in interface hppCorbaServer::ChppciObstacle::loadModelLoaderObstacle.
+CORBA::Short 
+ChppciObstacle_impl::loadModelLoaderObstacle(const char* inPolyName, 
+					     const char* inFilename,
+					     const char* inOpenHrpPrefix)
+    throw(CORBA::SystemException)
+{
+  std::string polyName(inPolyName);
+  std::string filename(inFilename);
+  std::string openHrpPrefix(inOpenHrpPrefix);
+
+  ChppciOpenHrpClient openHrpClient(attHppPlanner);
+
+  /*
+    Create empty polyhedron
+  */
+  CkppKCDPolyhedronShPtr polyhedron = CkppKCDPolyhedron::create(polyName);
+  /*
+    Test whether openHrpPrefix is provided.
+    If not take default argument 
+  */
+  if (openHrpPrefix != "") {
+    if (openHrpClient.loadObstacleModel(filename, polyName, polyhedron, 
+					openHrpPrefix) != KD_OK) {
+      ODEBUG1(":loadModelLoaderObstacle: failed to load obstacle from Modelloader.");
+      ODEBUG1(":loadModelLoaderObstacle:   openHrp prefix=" << openHrpPrefix);
+      return -1;
+    }
+  } else {
+    if (openHrpClient.loadObstacleModel(filename, polyName, polyhedron) != KD_OK) {
+      ODEBUG1(":loadModelLoaderObstacle: failed to load obstacle from Modelloader.");
+      ODEBUG1(":loadModelLoaderObstacle:   openHrp prefix not specified.");
+      return -1;
+    }
+  }
+  if (attHppPlanner->addObstacle(polyhedron) != KD_OK) {
+    ODEBUG1(":loadModelLoaderObstacle: failed to add obstacle");
+    return -1;
+  }
+  ODEBUG2(":loadModelLoaderObstacle: successfully loaded obstacle " 
+	  << inPolyName);
+
+  return 0;
+}
+
+#endif
 
 // ==========================================================================
 

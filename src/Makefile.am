@@ -95,8 +95,11 @@ endif
 clean-local:
 	rm -f *SK.cc *.hh
 
-%SK.cc %.hh: ../idl/server/%.idl
-	@OMNIORB_PREFIX@/bin/omniidl -bcxx @WITH_OPENHRP@ $<
+%SK.cc %.hh: $(top_srcdir)/idl/server/%.idl
+	@OMNIORB_PREFIX@/bin/omniidl -bcxx $<
+
+%SK.cc %.hh: $(top_builddir)/idl/server/%.idl
+	@OMNIORB_PREFIX@/bin/omniidl -bcxx -I$(top_srcdir)/idl/server $<
 
 %SK.cc %.hh: @MODELLOADERJRL_IDL@/%.idl
 	@OMNIORB_PREFIX@/bin/omniidl -bcxx $<
