@@ -98,6 +98,7 @@ module hppCorbaServer {
 	will therefore discard the diffusion shooter.
 
 	\return 0 if success, -1 if failure. Roadmap builder should be of type diffusing.
+
 	The diffusion shooters implemented by ChppciServer are
 	\li "config space": CkwsShooterConfigSpace (see KineoWorks documentation)
 	\li "roadmap box": CkwsShooterRoadmapBox (see KineoWorks documentation)
