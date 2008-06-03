@@ -60,8 +60,8 @@ module hppCorbaServer {
 	\param inDistanceName Name of the distance function.
 	\param inOriented whether distance corresponds to an oriented local method.
 
-	\note Distance function is stored in the roadmap builder. Resetting the roadmap builder 
-	will therefore discard the distance function.
+	\note Distance function is given to the device, to the roadmap builder, 
+	and path optimizer if any.
 
 	\return 0 if success, -1 if failure.
 

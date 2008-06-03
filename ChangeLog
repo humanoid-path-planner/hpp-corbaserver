@@ -1,5 +1,9 @@
+2008/06/03
+	
+	46. In ChppciProblem::setDistanceFunction, distance function is passed to 
+	    device, roadmap builder if any and path optimizer if any.
 2008/06/02
-
+	
 	45. Added request ChppciObstacle::loadModelLoaderObstacle to load
 	obstacle through modelloader. 
 	

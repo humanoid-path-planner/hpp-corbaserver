@@ -244,13 +244,7 @@ CORBA::Short ChppciProblem_impl::setDistanceFunction(CORBA::Short inProblemId, c
 
   // Test that rank is less than number of robots in vector.
   if (hppProblemId < nbProblems) {
-    // Get roadmap builder in hppPlanner object.
-    CkwsRoadmapBuilderShPtr roadmapBuilder = attHppPlanner->roadmapBuilderIthProblem(hppProblemId);
-    // Check that roadmap builder is set
-    if (!roadmapBuilder) {
-      ODEBUG1(":setDistanceFunction: roadmap builder is not set");
-      return -1;
-    }
+
     /* Check that name corresponds to a distance function factory */
     if (!attHppciServer->distanceFactoryAlreadySet(distanceName)) {
       ODEBUG1(" unknown distance function.");
@@ -262,7 +256,32 @@ CORBA::Short ChppciProblem_impl::setDistanceFunction(CORBA::Short inProblemId, c
       attHppciServer->createDistanceFunction(distanceName, inOriented);
 
     ODEBUG2(":setDistanceFunction: set roadmap builder distance function to " << distanceName);
-    roadmapBuilder->distance(distance);
+    //
+    // Set distance function in 
+    //   - device
+    //   - roadmap builder if any
+    //   - path optimizer if any
+
+    // Device
+    CkppDeviceComponentShPtr robot = attHppPlanner->robotIthProblem(hppProblemId);
+    if (!robot) {
+      ODEBUG1(":setDistanceFunction: no robot in problem " << hppProblemId);
+      return -1;
+    }
+    robot->distance(distance);
+
+    // Roadmap builder
+    CkwsRoadmapBuilderShPtr roadmapBuilder = attHppPlanner->roadmapBuilderIthProblem(hppProblemId);
+    if (roadmapBuilder) {
+      roadmapBuilder->distance(distance);
+    }
+
+    // path optimizer
+    CkwsPathOptimizerShPtr pathOptimizer = 
+      attHppPlanner->pathOptimizerIthProblem(hppProblemId);
+    if (pathOptimizer) {
+      pathOptimizer->distance(distance);
+    }
   }
   else {
     ODEBUG1(":setDistanceFunction: wrong robot Id");
