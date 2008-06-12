@@ -1,24 +1,24 @@
-2008/06/03
+hpp-corbaserver 1.4 released June 12, 2008
 	
 	46. In ChppciProblem::setDistanceFunction, distance function is passed to 
 	    device, roadmap builder if any and path optimizer if any.
-2008/06/02
-	
+
 	45. Added request ChppciObstacle::loadModelLoaderObstacle to load
 	obstacle through modelloader. 
-	
-2008/05/20
 
 	44. Slight modifications in ChppciProblem::setPathOptimizer.
+
 	43. Added CORBA request to select diffusion from start or goal of both.
+
 	42. Added CORBA request to set diffusion shooter of a given problem.
+
 	41. Removed ChppciServer::getInstance() since there is no strong reason
 	    to impose to this object to be a singleton.
+
 	40. Added explicit dependence to kwsPlus for documentation.
+
 	39. Added CORBA request to set diffusion node picker of a given problem.
 	
-2008/05/19
-
 	38. ChppciOpenHrpClient::loadHrp2Model() now takes a shared pointer to
 	    a humanoid robot.
 	
