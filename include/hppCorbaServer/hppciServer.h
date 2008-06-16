@@ -27,17 +27,21 @@ The Corba interfaces trigger actions processed by ChppPlanner object. More infor
 /** \brief Implementation of Hpp module Corba server.
  *
 This class initializes the Corba server and starts the following Corba interface implementations.
-\li ChppciServer::robotServant,
-\li ChppciServer::obstacleServant,
-\li ChppciServer::problemServant.
+\li hppCorbaServer::ChppciRobot: to build a ChppDevice and to insert it in a ChppPlanner object,
+\li hppCorbaServer::ChppciObstacle: to build obstacles and insert them in a ChppPlanner object,
+\li hppCorbaServer::ChppciProblem: to define a path planning problem and solve it.
 
 To use this object, call the constructor
+
 \code
 int argc=1;
 char *argv[1] = {"program"};
 ChppPlanner* hppPlanner = new ChppPlanner;
-ChppciServer server(ChppPlanner* hppPlanner, argc, argv);
+ChppciServer server(ChppPlanner* hppPlanner, argc, argv, isMultiThread);
 \endcode
+where \c isMultiThread specifies whether the server should process
+requests using multi-thread policy of not.
+
 After starting a name server and configuring your Corba implementation, start the servers.
 \code
 server.startCorbaServer();
@@ -62,6 +66,9 @@ public:
 
       \note It is highly recommended not to enable multi-thread policy in CORBA request processing when using 
       hppCorbaServer with KPP interface, since OpenGL is not compatible with multi-threading.
+
+      \note If multi-thread policy is not selected, request hppCorbaServer::ChppciProblem::interruptPathPlanning
+      will have no effect.
   */
   ChppciServer(ChppPlanner* inHppPlanner, int argc, char *argv[], bool inMultiThread=false);
   /// \brief Shutdown CORBA server
