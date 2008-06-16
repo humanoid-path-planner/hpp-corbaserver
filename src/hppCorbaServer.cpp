@@ -19,7 +19,7 @@ int main(int argc, char** argv)
     exit(-1);
   }
   ChppPlanner* hppPlanner = new ChppPlanner;
-  ChppciServer server(hppPlanner, argc, argv);
+  ChppciServer server(hppPlanner, argc, argv, true);
 
   if (server.startCorbaServer() == -1){
     ODEBUG1(" failed to start CORBA server.");

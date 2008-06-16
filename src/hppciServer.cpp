@@ -25,12 +25,12 @@
 #endif
 
 
-ChppciServer::ChppciServer(ChppPlanner *inHppPlanner, int argc, char *argv[]) : 
+ChppciServer::ChppciServer(ChppPlanner *inHppPlanner, int argc, char *argv[], bool inMultiThread) : 
   hppPlanner(inHppPlanner)
 {
   attPrivate = new ChppciServerPrivate;
 
-  initORBandServers(argc, argv);
+  initORBandServers(argc, argv, inMultiThread);
   initMapSteeringMethodFactory();
   initMapDistanceFunctionFactory();
   initMapDiffusionNodePickerFactory();
@@ -280,10 +280,10 @@ CkwsDiffusionShooterShPtr ChppciServer::createDiffusionShooter(std::string inNam
             CORBA SERVER INITIALIZATION
 */
 
-ktStatus ChppciServer::initORBandServers(int argc, char *argv[])
+ktStatus ChppciServer::initORBandServers(int argc, char *argv[], bool inMultiThread)
 {
   CORBA::Object_var obj;
-  PortableServer::ThreadPolicy_var singleThread;
+  PortableServer::ThreadPolicy_var threadPolicy;
   PortableServer::POA_var rootPoa;
 
   /* 
@@ -321,7 +321,13 @@ ktStatus ChppciServer::initORBandServers(int argc, char *argv[])
     //
     // Create a sigle threaded policy object
     rootPoa = PortableServer::POA::_narrow(obj);
-    singleThread = rootPoa->create_thread_policy(PortableServer::MAIN_THREAD_MODEL);
+    
+    if (inMultiThread) {
+      threadPolicy = rootPoa->create_thread_policy(PortableServer::ORB_CTRL_MODEL);
+    }
+    else {
+      threadPolicy = rootPoa->create_thread_policy(PortableServer::MAIN_THREAD_MODEL);
+    }
   }
   HPPCI_CATCH("failed to create thread policy", KD_ERROR) /* see hppciExceptionHandlingMacros.h */
   
@@ -332,7 +338,7 @@ ktStatus ChppciServer::initORBandServers(int argc, char *argv[])
   try {
     CORBA::PolicyList policyList;
     policyList.length(1);
-    policyList[0] = PortableServer::ThreadPolicy::_duplicate(singleThread);
+    policyList[0] = PortableServer::ThreadPolicy::_duplicate(threadPolicy);
 
     attPrivate->poa = rootPoa->create_POA("child", PortableServer::POAManager::_nil(),
 					  policyList);
@@ -346,7 +352,7 @@ ktStatus ChppciServer::initORBandServers(int argc, char *argv[])
 
   try {
     // Destroy policy object
-    singleThread->destroy();
+    threadPolicy->destroy();
 
   }
   HPPCI_CATCH("failed to destroy thread policy", KD_ERROR); /* see hppciExceptionHandlingMacros.h */

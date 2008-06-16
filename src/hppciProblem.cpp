@@ -85,28 +85,25 @@ CORBA::Short ChppciProblem_impl::setRoadmapbuilder(CORBA::Short inProblemId, con
     double penetration = 0.05;
 
     // Create roadmapBuilder
+    CkwsRoadmapBuilderShPtr roadmapBuilder;
     if (roadmapBuilderName == "basic") {
-      CkwsBasicRdmBuilderShPtr roadmapBuilder = CkwsBasicRdmBuilder::create(roadmap, penetration);
-      status = attHppPlanner->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder, inDisplay);
-      return status;      
+      roadmapBuilder = CkwsBasicRdmBuilder::create(roadmap, penetration);
     } else if (roadmapBuilderName == "diffusing") {
-      CkwsDiffusingRdmBuilderShPtr roadmapBuilder = CkwsDiffusingRdmBuilder::create(roadmap, penetration);
-      status = attHppPlanner->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder, inDisplay);
-      return status;      
+      roadmapBuilder = CkwsDiffusingRdmBuilder::create(roadmap, penetration);
     } else if (roadmapBuilderName == "IPP") {
-      CkwsIPPRdmBuilderShPtr roadmapBuilder = CkwsIPPRdmBuilder::create(roadmap, penetration);
-      status = attHppPlanner->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder, inDisplay);
+      roadmapBuilder = CkwsIPPRdmBuilder::create(roadmap, penetration);
     } else if (roadmapBuilderName == "visibility") {
-      ChppVisRdmBuilderShPtr roadmapBuilder = ChppVisRdmBuilder::create(roadmap, penetration);
-      status = attHppPlanner->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder, inDisplay);
+      roadmapBuilder = ChppVisRdmBuilder::create(roadmap, penetration);
     } else if (roadmapBuilderName == "PCA<diffusing>") {
-      KIT_SHARED_PTR(CkwsPlusPCARdmBuilder<CkwsDiffusingRdmBuilder>) roadmapBuilder = 
+      roadmapBuilder = 
 	CkwsPlusPCARdmBuilder<CkwsDiffusingRdmBuilder>::create(roadmap, penetration);
-      status = attHppPlanner->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder, inDisplay);
     } else {
       ODEBUG1(":setRoadmapbuilder: unknown roadmap builder");
       return -1;
     }
+    status = attHppPlanner->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder, inDisplay);
+    return status;      
+    
   }
   else {
     ODEBUG1(":setRoadmapbuilder: wrong robot Id");
@@ -476,6 +473,12 @@ CORBA::Short ChppciProblem_impl::solve()
 {
   ktStatus status  = attHppPlanner->solve();
   return (CORBA::Short)status;
+}
+
+CORBA::Short ChppciProblem_impl::interruptPathPlanning()
+{
+  attHppPlanner->interruptPathPlanning();
+  return 0;
 }
 
 CORBA::Short ChppciProblem_impl::optimizePath(CORBA::Short inProblemId, CORBA::Short inPathId)

@@ -1,3 +1,5 @@
+	47. Added a request to interrupt motion planning process in ChppciProblem.
+
 hpp-corbaserver 1.4 released June 12, 2008
 	
 	46. In ChppciProblem::setDistanceFunction, distance function is passed to 

@@ -146,6 +146,14 @@ module hppCorbaServer {
     short solve();
 
     /**
+       \brief Interrupt path planning activity
+       
+       \note this request is effective only when multi-thread policy is used by CORBA server.
+       See constructor ChppciServer::ChppciServer for details.
+    */
+    short interruptPathPlanning();
+
+    /**
        \brief Optimize a given path
        \param inProblemId Id of the problem owning the path.
        \param inPathId Id of the path in this problem.

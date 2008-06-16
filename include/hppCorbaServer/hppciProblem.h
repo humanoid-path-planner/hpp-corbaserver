@@ -66,6 +66,9 @@ public:
   /// \brief Comment in interface hppCorbaServer::ChppciProblem::solve
   virtual CORBA::Short solve();
 
+  /// \brief Comment in interface hppCorbaServer::ChppciProblem::interruptPathPlanning
+  virtual CORBA::Short interruptPathPlanning();
+
   /// \brief Comment in interface hppCorbaServer::ChppciProblem::optimizePath
   virtual CORBA::Short optimizePath(CORBA::Short inProblemId, CORBA::Short inPathId);
 

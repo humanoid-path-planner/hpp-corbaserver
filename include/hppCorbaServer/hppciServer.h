@@ -55,10 +55,15 @@ public:
       \brief Constructor 
       \param inHppPlanner the object that will handle Corba requests.
       \param argc, argv parameter to feed ORB initialization. 
-      
-      \note It is recommended to configure your Corba implementation through environment variables and to set argc to 1 and argv to any string.
+      \param inMultiThread whether the server may process request using multithred policy.
+
+      \note It is recommended to configure your Corba implementation through environment 
+      variables and to set argc to 1 and argv to any string.
+
+      \note It is highly recommended not to enable multi-thread policy in CORBA request processing when using 
+      hppCorbaServer with KPP interface, since OpenGL is not compatible with multi-threading.
   */
-  ChppciServer(ChppPlanner* inHppPlanner, int argc, char *argv[]);
+  ChppciServer(ChppPlanner* inHppPlanner, int argc, char *argv[], bool inMultiThread=false);
   /// \brief Shutdown CORBA server
   ~ChppciServer();
   /// \brief Initialize CORBA server to process requests from clients to hpp module
@@ -196,8 +201,11 @@ private:
 
   /**
      \brief Initialize ORB and CORBA servers.
+
+     \param argc, argv parameter to feed ORB initialization. 
+     \param inMultiThread whether the server may process request using multithred policy.
   */
-  ktStatus initORBandServers(int argc, char *argv[]);
+  ktStatus initORBandServers(int argc, char *argv[], bool inMultiThread);
 
   /**
      @}
@@ -345,7 +353,7 @@ private:
   /// At initialization, the constructor creates a ChppPlanner object and keeps a pointer to it. All Corba requests are processed by this object. Notice that this pointer is passed to each constructor of implementation classes of the server Corba interface.
   ChppPlanner *hppPlanner;
 
-
+  
 };
 
 #endif
