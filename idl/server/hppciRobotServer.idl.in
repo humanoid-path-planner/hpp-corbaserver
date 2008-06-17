@@ -55,7 +55,9 @@ module hppCorbaServer {
 
     /**
      * \brief Load HRP2 model by sending a Corba request to OpenHRP
-     *
+
+     Send ChppciOpenHrpClient::loadHrp2Model() request to Modelloader.
+
      */
     short loadHrp2Model();
 #endif

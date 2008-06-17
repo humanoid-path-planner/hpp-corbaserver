@@ -58,7 +58,8 @@ public:
   /** 
       \brief Initialize Orb and load model of HRP2 by sending a Corba request modelLoader to OpenHRP. 
 
-      This function gets the model of HRP2 from a CORBA request and initializes a ChppProblem with this robot.
+      This function gets the model of HRP2 from a CORBA request and initializes a ChppProblem 
+      with this robot by calling ChppPlanner::addHppProblem(CkppDeviceComponentShPtr robot).
       Note that the robot is set into half-sitting configuration.
   */
   ktStatus loadHrp2Model();
