@@ -921,7 +921,14 @@ CORBA::Short ChppciRobot_impl::setDofBounds(CORBA::UShort inProblemId, CORBA::US
 
     unsigned int deviceDim = hppRobot->countDofs();
     if (dofId < deviceDim) {
-      hppRobot->dof(dofId)->bounds(inMinValue, inMaxValue);
+      if (inMinValue <= inMaxValue) {
+	hppRobot->dof(dofId)->isBounded(true);
+	hppRobot->dof(dofId)->bounds(inMinValue, inMaxValue);
+      }
+      else {
+	hppRobot->dof(dofId)->isBounded(false);
+	hppRobot->dof(dofId)->bounds(inMaxValue, inMinValue);
+      }	
     }
     else {
       ODEBUG1(":setDofBounds: dofId=" << dofId 

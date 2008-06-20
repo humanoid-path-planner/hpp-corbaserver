@@ -93,7 +93,10 @@ module hppCorbaServer {
        
        \param inProblemId rank of robot in vector of robots. 
      * \param inDofId id of the degree of freedom.
-       \param inMinValue, inWalueMax values of degree of freedom bounds
+       \param inMinValue, inMaxValue values of degree of freedom bounds
+
+       \note If inMinValue > inMaxValue, dof is not bounded and bounds (for random sampling) are set to [inMaxValue, inMinValue].
+
     */
     short setDofBounds(in unsigned short inProblemId, in unsigned short inDofId, in double inMinValue, in double inMaxValue);
 
@@ -278,7 +281,8 @@ module hppCorbaServer {
 	\param inProblemId TODO
 	\param result TODO
     */
-    short checkLinkCollision(in unsigned short inProblemId, in unsigned short inJointId, out unsigned short outResult);
+    short checkLinkCollision(in unsigned short inProblemId, in unsigned short inJointId, 
+			     out unsigned short outResult);
 
     /** 
      *@}
