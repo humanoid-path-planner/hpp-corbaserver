@@ -335,7 +335,7 @@ CORBA::Short ChppciRobot_impl::addJoint(const char* inParentName,
 
 // ==========================================================================
 
-CORBA::Short ChppciRobot_impl::setJointBounds(CORBA::Short inProblemId, CORBA::Short inJointId, 
+CORBA::Short ChppciRobot_impl::setJointBounds(CORBA::UShort inProblemId, CORBA::UShort inJointId, 
 					      const hppCorbaServer::jointBoundSeq& inJointBound)
   throw(CORBA::SystemException)
 {
@@ -373,7 +373,7 @@ CORBA::Short ChppciRobot_impl::setJointBounds(CORBA::Short inProblemId, CORBA::S
 
 // ==========================================================================
 
-CORBA::Short ChppciRobot_impl::setJointVisible(CORBA::Short inProblemId, CORBA::Short inJointId, 
+CORBA::Short ChppciRobot_impl::setJointVisible(CORBA::UShort inProblemId, CORBA::UShort inJointId, 
 					       CORBA::Boolean inVisible)
   throw(CORBA::SystemException)
 {
@@ -398,7 +398,7 @@ CORBA::Short ChppciRobot_impl::setJointVisible(CORBA::Short inProblemId, CORBA::
 
 // ==========================================================================
 
-CORBA::Short ChppciRobot_impl::setJointTransparent(CORBA::Short inProblemId, CORBA::Short inJointId, 
+CORBA::Short ChppciRobot_impl::setJointTransparent(CORBA::UShort inProblemId, CORBA::UShort inJointId, 
 						   CORBA::Boolean inTransparent)
   throw(CORBA::SystemException)
 {
@@ -423,7 +423,7 @@ CORBA::Short ChppciRobot_impl::setJointTransparent(CORBA::Short inProblemId, COR
 
 // ==========================================================================
 
-CORBA::Short ChppciRobot_impl::setJointDisplayPath(CORBA::Short inProblemId, CORBA::Short inJointId, 
+CORBA::Short ChppciRobot_impl::setJointDisplayPath(CORBA::UShort inProblemId, CORBA::UShort inJointId, 
 						   CORBA::Boolean inDisplayPath)
   throw(CORBA::SystemException)
 {
@@ -446,7 +446,7 @@ CORBA::Short ChppciRobot_impl::setJointDisplayPath(CORBA::Short inProblemId, COR
   return -1;
 }
 
-CORBA::Short ChppciRobot_impl::setCurrentConfig(CORBA::Short inProblemId, 
+CORBA::Short ChppciRobot_impl::setCurrentConfig(CORBA::UShort inProblemId, 
 						const hppCorbaServer::dofSeq& dofArray) 
   throw(CORBA::SystemException)
 {
@@ -503,7 +503,7 @@ CORBA::Short ChppciRobot_impl::setCurrentConfig(CORBA::Short inProblemId,
 #define RHAND_JOINT0_KINEO 29
 
 /// \brief the config is in the order of OpenHRP Joints  RARM, LARM, RHAND, LHAND
-CORBA::Short ChppciRobot_impl::setCurrentConfigOpenHRP(CORBA::Short inProblemId, const hppCorbaServer::dofSeq& dofArray)
+CORBA::Short ChppciRobot_impl::setCurrentConfigOpenHRP(CORBA::UShort inProblemId, const hppCorbaServer::dofSeq& dofArray)
     throw(CORBA::SystemException)
 {
   hppCorbaServer::dofSeq dofArrayKineo(dofArray);
@@ -521,7 +521,7 @@ CORBA::Short ChppciRobot_impl::setCurrentConfigOpenHRP(CORBA::Short inProblemId,
 }
 
 /// \brief Comment in interface ChppciRobot::getCurrentConfig
-hppCorbaServer::dofSeq* ChppciRobot_impl::getCurrentConfigOpenHRP(CORBA::Short inProblemId)
+hppCorbaServer::dofSeq* ChppciRobot_impl::getCurrentConfigOpenHRP(CORBA::UShort inProblemId)
     throw(CORBA::SystemException)
 {
   hppCorbaServer::dofSeq *dofArray = getCurrentConfig(inProblemId);
@@ -543,7 +543,7 @@ hppCorbaServer::dofSeq* ChppciRobot_impl::getCurrentConfigOpenHRP(CORBA::Short i
 #endif
 
 /// \brief Comment in interface ChppciRobot::getCurrentConfig
-hppCorbaServer::dofSeq* ChppciRobot_impl::getCurrentConfig(CORBA::Short inProblemId)
+hppCorbaServer::dofSeq* ChppciRobot_impl::getCurrentConfig(CORBA::UShort inProblemId)
     throw(CORBA::SystemException)
 {
   unsigned int hppProblemId = (unsigned int)inProblemId;
@@ -732,8 +732,8 @@ hppCorbaServer::nameSeq* ChppciRobot_impl::getBodyOuterObject(const char* inBody
 // ==========================================================================
 
 CORBA::Short 
-ChppciRobot_impl::checkLinkCollision(CORBA::Short inProblemId, CORBA::Short jointId, 
-				     CORBA::Short& result) 
+ChppciRobot_impl::checkLinkCollision(CORBA::UShort inProblemId, CORBA::UShort jointId, 
+				     CORBA::UShort& outResult) 
 throw(CORBA::SystemException)
 {
   unsigned int hppProblemId = (unsigned int)inProblemId;
@@ -761,7 +761,7 @@ throw(CORBA::SystemException)
     ChppBodyShPtr hppBody = KIT_DYNAMIC_PTR_CAST(ChppBody, jointList[hppJointId]->attachedBody());
 
     // get result
-    result = (CORBA::Short) hppBody->computeEstimatedDistance();
+    outResult = (CORBA::UShort) hppBody->computeEstimatedDistance();
 
     // debug
     // cout<<"colliding bodies: ";
@@ -906,7 +906,7 @@ CORBA::Short ChppciRobot_impl::addTriangle(const char* inPolyhedronName,
 
 // ==========================================================================
 
-CORBA::Short ChppciRobot_impl::setDofBounds(CORBA::Short inProblemId, CORBA::Short inDofId, 
+CORBA::Short ChppciRobot_impl::setDofBounds(CORBA::UShort inProblemId, CORBA::UShort inDofId, 
 					    CORBA::Double inMinValue, CORBA::Double inMaxValue)
   throw(CORBA::SystemException)
 {
@@ -939,7 +939,7 @@ CORBA::Short ChppciRobot_impl::setDofBounds(CORBA::Short inProblemId, CORBA::Sho
 
 // ==========================================================================
 
-CORBA::Short ChppciRobot_impl::setDofLocked(CORBA::Short inProblemId, CORBA::Short inDofId, 
+CORBA::Short ChppciRobot_impl::setDofLocked(CORBA::UShort inProblemId, CORBA::UShort inDofId, 
 					    CORBA::Boolean locked, CORBA::Double lockedValue)
   throw(CORBA::SystemException)
 {
@@ -975,7 +975,7 @@ CORBA::Short ChppciRobot_impl::setDofLocked(CORBA::Short inProblemId, CORBA::Sho
 
 // ==========================================================================
 
-CORBA::Short ChppciRobot_impl::getDeviceDim(CORBA::Short inProblemId, CORBA::Short& outDeviceDim)
+CORBA::Short ChppciRobot_impl::getDeviceDim(CORBA::UShort inProblemId, CORBA::UShort& outDeviceDim)
 throw(CORBA::SystemException)
 {
   unsigned int hppProblemId = (unsigned int)inProblemId;

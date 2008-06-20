@@ -91,17 +91,17 @@ public:
     throw(CORBA::SystemException);
 
   /// \brief Comment in interface hppCorbaServer::ChppciRobot::setDofBound.
-  virtual CORBA::Short setDofBounds(CORBA::Short inProblemId, CORBA::Short inDofId, 
+  virtual CORBA::Short setDofBounds(CORBA::UShort inProblemId, CORBA::UShort inDofId, 
 				    CORBA::Double inMinValue, CORBA::Double inMaxValue)
     throw(CORBA::SystemException);
 
   /// \brief Comment in interface hppCorbaServer::ChppciRobot::setDofLocked.
-  virtual CORBA::Short setDofLocked(CORBA::Short inProblemId, CORBA::Short inDofId, 
+  virtual CORBA::Short setDofLocked(CORBA::UShort inProblemId, CORBA::UShort inDofId, 
 				    CORBA::Boolean locked, CORBA::Double lockedValue)
     throw(CORBA::SystemException);
 
   /// \brief Comment in interface hppCorbaServer::ChppciRobot::getDeviceDim.
-  virtual CORBA::Short getDeviceDim(CORBA::Short inProblemId, CORBA::Short& outDeviceDim)
+  virtual CORBA::Short getDeviceDim(CORBA::UShort inProblemId, CORBA::UShort& outDeviceDim)
     throw(CORBA::SystemException);
 
   /// \brief Comment in interface hppCorbaServer::ChppciRobot::createJoint.
@@ -114,37 +114,37 @@ public:
     throw(CORBA::SystemException);
 
   /// \brief Comment in interface hppCorbaServer::ChppciRobot::setJointBound.
-  virtual CORBA::Short setJointBounds(CORBA::Short inProblemId, CORBA::Short inJointId, 
+  virtual CORBA::Short setJointBounds(CORBA::UShort inProblemId, CORBA::UShort inJointId, 
 				     const hppCorbaServer::jointBoundSeq& jointBound)
     throw(CORBA::SystemException);
 
   /// \brief Comment in interface hppCorbaServer::ChppciRobot::setJointVisible.
-  virtual CORBA::Short setJointVisible(CORBA::Short inProblemId, CORBA::Short inJointId, CORBA::Boolean inVisible)
+  virtual CORBA::Short setJointVisible(CORBA::UShort inProblemId, CORBA::UShort inJointId, CORBA::Boolean inVisible)
     throw(CORBA::SystemException);
 
   /// \brief Comment in interface hppCorbaServer::ChppciRobot::setJointTransparent.
-  virtual CORBA::Short setJointTransparent(CORBA::Short inProblemId, CORBA::Short inJointId, CORBA::Boolean isTransparent)
+  virtual CORBA::Short setJointTransparent(CORBA::UShort inProblemId, CORBA::UShort inJointId, CORBA::Boolean isTransparent)
     throw(CORBA::SystemException);
 
   /// \brief Comment in interface hppCorbaServer::ChppciRobot::setJointTransparent.
-  virtual CORBA::Short setJointDisplayPath(CORBA::Short inProblemId, CORBA::Short inJointId, CORBA::Boolean inDisplayPath)
+  virtual CORBA::Short setJointDisplayPath(CORBA::UShort inProblemId, CORBA::UShort inJointId, CORBA::Boolean inDisplayPath)
     throw(CORBA::SystemException);
 
   /// \brief Comment in interface hppCorbaServer::ChppciRobot::setCurrentConfig
-  virtual CORBA::Short setCurrentConfig(CORBA::Short inProblemId, const hppCorbaServer::dofSeq& dofArray) 
+  virtual CORBA::Short setCurrentConfig(CORBA::UShort inProblemId, const hppCorbaServer::dofSeq& dofArray) 
     throw(CORBA::SystemException);
 
 #if WITH_OPENHRP
   /// \brief Comment in interface hppCorbaServer::ChppciRobot::setCurrentConfig in the order of joint of OpenHRP
-  virtual CORBA::Short setCurrentConfigOpenHRP(CORBA::Short inProblemId, const hppCorbaServer::dofSeq& dofArray) 
+  virtual CORBA::Short setCurrentConfigOpenHRP(CORBA::UShort inProblemId, const hppCorbaServer::dofSeq& dofArray) 
     throw(CORBA::SystemException);
 
   /// \brief Comment in interface hppCorbaServer::ChppciRobot::getCurrentConfig in the order of joint of OpenHRP
-  virtual hppCorbaServer::dofSeq* getCurrentConfigOpenHRP(CORBA::Short inProblemId)
+  virtual hppCorbaServer::dofSeq* getCurrentConfigOpenHRP(CORBA::UShort inProblemId)
     throw(CORBA::SystemException);
 #endif
   /// \brief Comment in interface hppCorbaServer::ChppciRobot::getCurrentConfig
-  virtual hppCorbaServer::dofSeq* getCurrentConfig(CORBA::Short inProblemId)
+  virtual hppCorbaServer::dofSeq* getCurrentConfig(CORBA::UShort inProblemId)
     throw(CORBA::SystemException);
 
   /// \brief Comment in interface hppCorbaServer::ChppciRobot::getCurrentConfig
@@ -166,7 +166,8 @@ public:
   virtual hppCorbaServer::nameSeq* getBodyOuterObject(const char* inBodyName);
 
   /// \brief Comment in interface hppCorbaServer::ChppciRobot::checkLinkCollision.
-  CORBA::Short checkLinkCollision(CORBA::Short inProblemId, CORBA::Short inJointId, CORBA::Short& result)
+  virtual CORBA::Short checkLinkCollision(CORBA::UShort inProblemId, 
+					  CORBA::UShort inJointId, CORBA::UShort& outResult)
     throw(CORBA::SystemException);
   /// \brief Comment in interface hppCorbaServer::ChppciRobot::createPolyhedron.
   virtual CORBA::Short createPolyhedron(const char* inPolyhedronName)

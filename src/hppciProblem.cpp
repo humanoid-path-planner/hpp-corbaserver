@@ -31,7 +31,7 @@ ChppciProblem_impl::ChppciProblem_impl(ChppciServer* inHppciServer) :
 }
 
 
-CORBA::Short ChppciProblem_impl::setSteeringMethod(CORBA::Short inProblemId, 
+CORBA::Short ChppciProblem_impl::setSteeringMethod(CORBA::UShort inProblemId, 
 						   const char* inSteeringMethod, CORBA::Boolean inOriented)
 {
   std::string steeringMethodName(inSteeringMethod);
@@ -65,7 +65,7 @@ CORBA::Short ChppciProblem_impl::setSteeringMethod(CORBA::Short inProblemId,
   return 0;
 }
 
-CORBA::Short ChppciProblem_impl::setRoadmapbuilder(CORBA::Short inProblemId, const char* inRoadmapBuilderName,
+CORBA::Short ChppciProblem_impl::setRoadmapbuilder(CORBA::UShort inProblemId, const char* inRoadmapBuilderName,
 						   CORBA::Boolean inDisplay)
 {
   std::string roadmapBuilderName(inRoadmapBuilderName);
@@ -113,7 +113,7 @@ CORBA::Short ChppciProblem_impl::setRoadmapbuilder(CORBA::Short inProblemId, con
   return 0;
 }
 
-CORBA::Short ChppciProblem_impl::setDiffusingNode(CORBA::Short inProblemId, 
+CORBA::Short ChppciProblem_impl::setDiffusingNode(CORBA::UShort inProblemId, 
 						  const char* inDiffusingNode)
 {
   std::string diffusingNode(inDiffusingNode);
@@ -159,9 +159,9 @@ CORBA::Short ChppciProblem_impl::setDiffusingNode(CORBA::Short inProblemId,
   return 0;
 }
 
-CORBA::Short ChppciProblem_impl::setPathOptimizer(CORBA::Short inProblemId, 
+CORBA::Short ChppciProblem_impl::setPathOptimizer(CORBA::UShort inProblemId, 
 						  const char* inPathOptimizerName,
-						  CORBA::Short inMaxNumberLoop)
+						  CORBA::UShort inMaxNumberLoop)
 {
   std::string pathOptimizerName(inPathOptimizerName);
 
@@ -232,7 +232,7 @@ CORBA::Short ChppciProblem_impl::setPathOptimizer(CORBA::Short inProblemId,
   return 0;
 }
 
-CORBA::Short ChppciProblem_impl::setDistanceFunction(CORBA::Short inProblemId, const char* inDistanceName, CORBA::Boolean inOriented)
+CORBA::Short ChppciProblem_impl::setDistanceFunction(CORBA::UShort inProblemId, const char* inDistanceName, CORBA::Boolean inOriented)
 {
   std::string distanceName(inDistanceName);
   unsigned int hppProblemId = (unsigned int)inProblemId;
@@ -288,7 +288,7 @@ CORBA::Short ChppciProblem_impl::setDistanceFunction(CORBA::Short inProblemId, c
   return 0;
 }
 
-CORBA::Short ChppciProblem_impl::setDiffusionNodePicker(CORBA::Short inProblemId, 
+CORBA::Short ChppciProblem_impl::setDiffusionNodePicker(CORBA::UShort inProblemId, 
 							const char* inDiffusionNodePickerName)
 {
   std::string diffusionNodePickerName(inDiffusionNodePickerName);
@@ -328,7 +328,7 @@ CORBA::Short ChppciProblem_impl::setDiffusionNodePicker(CORBA::Short inProblemId
   return 0;
 }
 
-CORBA::Short ChppciProblem_impl::setDiffusionShooter(CORBA::Short inProblemId, 
+CORBA::Short ChppciProblem_impl::setDiffusionShooter(CORBA::UShort inProblemId, 
 						     const char* inDiffusionShooterName,
 						     CORBA::Double inStandardDeviation)
 {
@@ -370,7 +370,7 @@ CORBA::Short ChppciProblem_impl::setDiffusionShooter(CORBA::Short inProblemId,
   return 0;
 }
 
-CORBA::Short ChppciProblem_impl::setInitialConfig(CORBA::Short inProblemId, const hppCorbaServer::dofSeq& dofArray) 
+CORBA::Short ChppciProblem_impl::setInitialConfig(CORBA::UShort inProblemId, const hppCorbaServer::dofSeq& dofArray) 
 {
   unsigned int hppProblemId = (unsigned int)inProblemId;
   unsigned int configDim = (unsigned int)dofArray.length();
@@ -402,7 +402,7 @@ CORBA::Short ChppciProblem_impl::setInitialConfig(CORBA::Short inProblemId, cons
   return 0;
 }
 
-CORBA::Short ChppciProblem_impl::setGoalConfig(CORBA::Short inProblemId, const hppCorbaServer::dofSeq& dofArray) 
+CORBA::Short ChppciProblem_impl::setGoalConfig(CORBA::UShort inProblemId, const hppCorbaServer::dofSeq& dofArray) 
 {
   unsigned int hppProblemId = (unsigned int)inProblemId;
   unsigned int configDim = (unsigned int)dofArray.length();
@@ -441,7 +441,7 @@ CORBA::Short ChppciProblem_impl::initializeProblem()
 }
 
 
-CORBA::Short ChppciProblem_impl::solveOneProblem(CORBA::Short inProblemId, CORBA::Short& inLastPathId, CORBA::Double& pathLength)
+CORBA::Short ChppciProblem_impl::solveOneProblem(CORBA::UShort inProblemId, CORBA::Short& inLastPathId, CORBA::Double& pathLength)
 {
   
   ktStatus status = KD_ERROR;
@@ -481,13 +481,13 @@ CORBA::Short ChppciProblem_impl::interruptPathPlanning()
   return 0;
 }
 
-CORBA::Short ChppciProblem_impl::optimizePath(CORBA::Short inProblemId, CORBA::Short inPathId)
+CORBA::Short ChppciProblem_impl::optimizePath(CORBA::UShort inProblemId, CORBA::UShort inPathId)
 {
   ktStatus status  = attHppPlanner->optimizePath((unsigned int) inProblemId, (unsigned int) inPathId);
   return (CORBA::Short)status;
 }
 
-hppCorbaServer::dofSeq* ChppciProblem_impl::configAtDistance(CORBA::Short inProblemId, CORBA::Short pathId, CORBA::Double pathLength, CORBA::Double atDistance) {
+hppCorbaServer::dofSeq* ChppciProblem_impl::configAtDistance(CORBA::UShort inProblemId, CORBA::UShort pathId, CORBA::Double pathLength, CORBA::Double atDistance) {
 
   hppCorbaServer::dofSeq* inDofSeq ;
 
@@ -523,7 +523,7 @@ hppCorbaServer::dofSeq* ChppciProblem_impl::configAtDistance(CORBA::Short inProb
 }
 
 /// \brief set tolerance to the objects in the planner
-CORBA::Short ChppciProblem_impl::setObstacleTolerance(CORBA::Short inProblemId, CORBA::Double tolerance)
+CORBA::Short ChppciProblem_impl::setObstacleTolerance(CORBA::UShort inProblemId, CORBA::Double tolerance)
     throw(CORBA::SystemException)
 {
   // get the planner  
