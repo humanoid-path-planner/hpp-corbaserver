@@ -89,8 +89,19 @@ public:
   /// \brief Comment in interface hppCorbaServer::ChppciRobot::addExtraDofToRobot.
   virtual CORBA::Short addExtraDofToRobot(const char* inRobotName, const char* inDofName)
     throw(CORBA::SystemException);
+
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::setDofBound.
+  virtual CORBA::Short setDofBounds(CORBA::Short inProblemId, CORBA::Short inDofId, 
+				    CORBA::Double inMinValue, CORBA::Double inMaxValue)
+    throw(CORBA::SystemException);
+
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::setDofLocked.
+  virtual CORBA::Short setDofLocked(CORBA::Short inProblemId, CORBA::Short inDofId, 
+				    CORBA::Boolean locked, CORBA::Double lockedValue)
+    throw(CORBA::SystemException);
+
   /// \brief Comment in interface hppCorbaServer::ChppciRobot::getDeviceDim.
-  virtual CORBA::Short getDeviceDim(CORBA::Short inProblemId, CORBA::Short& deviceDim)
+  virtual CORBA::Short getDeviceDim(CORBA::Short inProblemId, CORBA::Short& outDeviceDim)
     throw(CORBA::SystemException);
 
   /// \brief Comment in interface hppCorbaServer::ChppciRobot::createJoint.
@@ -117,11 +128,6 @@ public:
 
   /// \brief Comment in interface hppCorbaServer::ChppciRobot::setJointTransparent.
   virtual CORBA::Short setJointDisplayPath(CORBA::Short inProblemId, CORBA::Short inJointId, CORBA::Boolean inDisplayPath)
-    throw(CORBA::SystemException);
-
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::setDofLocked.
-  virtual CORBA::Short setDofLocked(CORBA::Short inProblemId, CORBA::Short dofId, 
-				    CORBA::Boolean locked, CORBA::Double lockedValue)
     throw(CORBA::SystemException);
 
   /// \brief Comment in interface hppCorbaServer::ChppciRobot::setCurrentConfig

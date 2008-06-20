@@ -88,11 +88,29 @@ module hppCorbaServer {
     */
     short addExtraDofToRobot(in string inRobotName, in string inDofName);
 
-    /** \brief Get number of dof of robot in ProblemId 
-	\param problemId rank of robot in vector of robots. 
-	\param deviceDim TODO
+    /**
+       \brief Set bound of degree of freedom
+       
+       \param inProblemId rank of robot in vector of robots. 
+     * \param inDofId id of the degree of freedom.
+       \param inMinValue, inWalueMax values of degree of freedom bounds
     */
-    short getDeviceDim(in short problemId, out short deviceDim);
+    short setDofBounds(in short inProblemId, in short inDofId, in double inMinValue, in double inMaxValue);
+
+    /**
+     * \brief set locking/unlocking  for the joint
+     * \param inProblemId id of the problem containing the robot.
+     * \param inDofId id of the degree of freedom.
+     * \param locked true (locked)  false (unlocked)
+     * \param lockedValue (if locked) give the value
+     */
+    short setDofLocked(in short inProblemId, in short inDofId, in boolean locked, in double lockedValue);
+
+    /** \brief Get number of dof of robot in ProblemId 
+	\param inProblemId rank of robot in vector of robots. 
+	\param outDeviceDim TODO
+    */
+    short getDeviceDim(in short inProblemId, out short outDeviceDim);
 
     /** 
      *@}
@@ -132,52 +150,42 @@ module hppCorbaServer {
        \param inJointBound sequence of joint dof bounds in order [v0_min,v0_max,v1_min,v1_max,...]. 
        \li If vi_min > vi_max, dof of rank i is not bounded and bounds (for random sampling) are set to [v_max, v_min].
        \li If size of sequence is different from twice the number of dofs, no dof is bounded.
-       \param problemId Id of the problem containing the robot.
+       \param inProblemId Id of the problem containing the robot.
      */
-    short setJointBounds(in short problemId, in short jointId, in jointBoundSeq inJointBound);
+    short setJointBounds(in short inProblemId, in short jointId, in jointBoundSeq inJointBound);
 
     /**
      * \brief Set whether a joint is visible.
 
-     * \param problemId Id of the problem containing the robot.
+     * \param inProblemId Id of the problem containing the robot.
      * \param jointId index of the joint in the robot.
      * \param inVisible wether the joint should be visible in the interface.
      *
      * \note When running without interface, this request has no effect.
      */
-    short setJointVisible(in short problemId, in short jointId, in boolean inVisible);
+    short setJointVisible(in short inProblemId, in short jointId, in boolean inVisible);
 
     /**
      * \brief Set whether a joint is transparent.
 
-     * \param problemId Id of the problem containing the robot.
+     * \param inProblemId Id of the problem containing the robot.
      * \param jointId index of the joint in the robot.
      * \param inTransparent wether the joint should be transparent in the interface.
      *
      * \note When running without interface, this request has no effect.
      */
-    short setJointTransparent(in short problemId, in short jointId, in boolean inTransparent);
+    short setJointTransparent(in short inProblemId, in short jointId, in boolean inTransparent);
 
     /**
      * \brief Set whether paths of a joint should be displayed.
 
-     * \param problemId Id of the problem containing the robot.
+     * \param inProblemId Id of the problem containing the robot.
      * \param jointId index of the joint in the robot.
      * \param inDisplayPath wether paths of the joint should be displayed in the interface.
      *
      * \note When running without interface, this request has no effect.
      */
-    short setJointDisplayPath(in short problemId, in short jointId, in boolean inDisplayPath);
-
-    /**
-     * \brief set locking/unlocking  for the joint
-     * \param problemId id of the problem containing the robot.
-     * \param dofId id of the degree of freedom.
-     * \param locked true (locked)  false (unlocked)
-     * \param lockedValue (if locked) give the value
-     */
-    short setDofLocked(in short problemId, in short dofId, in boolean locked, in double lockedValue);
-
+    short setJointDisplayPath(in short inProblemId, in short jointId, in boolean inDisplayPath);
 
     /** 
      *@}
@@ -206,17 +214,17 @@ module hppCorbaServer {
 
     /** \brief set current configuration of specified robot in ChppPlanner::robotVector
 	\brief in the order of the joints in OpenHRP.
-	\param problemId rank of problem in vector of hppProblems.
+	\param inProblemId rank of problem in vector of hppProblems.
 	\param dofArray Array of degrees of freedom in the order of joints in OpenHRP (RARM, LARM, RHAND, LHAND)
     */
-    short setCurrentConfigOpenHRP(in short problemId, in dofSeq dofArray);
+    short setCurrentConfigOpenHRP(in short inProblemId, in dofSeq dofArray);
 
 #endif
 
     /** \brief set current configuration of specified robot in ChppPlanner::robotVector.
-	\param problemId rank of problem in vector of hppProblems.
+	\param inProblemId rank of problem in vector of hppProblems.
 	\param dofArray Array of degrees of freedom */
-    short setCurrentConfig(in short problemId, in dofSeq dofArray);
+    short setCurrentConfig(in short inProblemId, in dofSeq dofArray);
 
     /** 
      *@}
@@ -267,10 +275,10 @@ module hppCorbaServer {
   
     /** \brief see if the link is colliding.
 	\param jointId index of the joint in robot
-	\param problemId TODO
+	\param inProblemId TODO
 	\param result TODO
     */
-    short checkLinkCollision(in short problemId, in short jointId, out short result);
+    short checkLinkCollision(in short inProblemId, in short jointId, out short result);
 
     /** 
      *@}

@@ -446,44 +446,6 @@ CORBA::Short ChppciRobot_impl::setJointDisplayPath(CORBA::Short inProblemId, COR
   return -1;
 }
 
-// ==========================================================================
-
-CORBA::Short ChppciRobot_impl::setDofLocked(CORBA::Short inProblemId, CORBA::Short dofId, 
-					    CORBA::Boolean locked, CORBA::Double lockedValue)
-  throw(CORBA::SystemException)
-{
-  unsigned int hppRobotId = (unsigned int)inProblemId;
-
-  unsigned int nbRobots = attHppPlanner->getNbHppProblems();
-  
-  // Test that rank is less than number of robots in vector.
-  if (hppRobotId < nbRobots) {
-    // Get robot in hppPlanner object.
-    CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppRobotId);
-
-    // get joint
-    CkwsDevice::TDofVector dofList;
-    hppRobot->getDofVector(dofList);
-
-    if(dofId >= (unsigned short) dofList.size()){
-      ODEBUG1(":setJointBound: joint Id " << dofId << " is larger than total size " << dofList.size());
-      return -1;
-    }
-
-    dofList[dofId]->isLocked(locked);
-
-    if(locked)
-      dofList[dofId]->lockedValue(lockedValue);
-  }
-  else {
-    ODEBUG1("ChppciRobotConfig_impl::setJointBound: wrong robot Id");
-    return -1;
-  }
-  return 0;
-}
-
-// ==========================================================================
-
 CORBA::Short ChppciRobot_impl::setCurrentConfig(CORBA::Short inProblemId, 
 						const hppCorbaServer::dofSeq& dofArray) 
   throw(CORBA::SystemException)
@@ -944,7 +906,76 @@ CORBA::Short ChppciRobot_impl::addTriangle(const char* inPolyhedronName,
 
 // ==========================================================================
 
-CORBA::Short ChppciRobot_impl::getDeviceDim(CORBA::Short inProblemId, CORBA::Short& deviceDim)
+CORBA::Short ChppciRobot_impl::setDofBounds(CORBA::Short inProblemId, CORBA::Short inDofId, 
+					    CORBA::Double inMinValue, CORBA::Double inMaxValue)
+  throw(CORBA::SystemException)
+{
+  unsigned int hppProblemId = (unsigned int)inProblemId;
+  unsigned int nbProblems = attHppPlanner->getNbHppProblems();
+  unsigned int dofId = (unsigned int) inDofId;
+
+  // Test that rank is less than number of robots in vector.
+  if (hppProblemId < nbProblems) {
+    // Get robot in hppPlanner object.
+    CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppProblemId);
+
+    unsigned int deviceDim = hppRobot->countDofs();
+    if (dofId < deviceDim) {
+      hppRobot->dof(dofId)->bounds(inMinValue, inMaxValue);
+    }
+    else {
+      ODEBUG1(":setDofBounds: dofId=" << dofId 
+	      << "should be smaller than device dim="
+	      << deviceDim);
+      return -1;
+    }
+  }
+  else{
+    ODEBUG1(":setDofBounds: wrong robot Id");
+    return -1;
+  }
+  return 0;
+}
+
+// ==========================================================================
+
+CORBA::Short ChppciRobot_impl::setDofLocked(CORBA::Short inProblemId, CORBA::Short inDofId, 
+					    CORBA::Boolean locked, CORBA::Double lockedValue)
+  throw(CORBA::SystemException)
+{
+  unsigned int hppRobotId = (unsigned int)inProblemId;
+  unsigned int nbRobots = attHppPlanner->getNbHppProblems();
+  unsigned int dofId = (unsigned int) inDofId;
+  
+  // Test that rank is less than number of robots in vector.
+  if (hppRobotId < nbRobots) {
+    // Get robot in hppPlanner object.
+    CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppRobotId);
+
+    // get joint
+    CkwsDevice::TDofVector dofList;
+    hppRobot->getDofVector(dofList);
+
+    if(dofId >= (unsigned short) dofList.size()){
+      ODEBUG1(":setJointBound: joint Id " << dofId << " is larger than total size " << dofList.size());
+      return -1;
+    }
+
+    dofList[dofId]->isLocked(locked);
+
+    if(locked)
+      dofList[dofId]->lockedValue(lockedValue);
+  }
+  else {
+    ODEBUG1("ChppciRobotConfig_impl::setJointBound: wrong robot Id");
+    return -1;
+  }
+  return 0;
+}
+
+// ==========================================================================
+
+CORBA::Short ChppciRobot_impl::getDeviceDim(CORBA::Short inProblemId, CORBA::Short& outDeviceDim)
 throw(CORBA::SystemException)
 {
   unsigned int hppProblemId = (unsigned int)inProblemId;
@@ -957,7 +988,7 @@ throw(CORBA::SystemException)
     CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppProblemId);
 
    
-    deviceDim = hppRobot->countDofs ();
+    outDeviceDim = hppRobot->countDofs ();
   }
   else{
     ODEBUG1(":setCurrentConfig: wrong robot Id");
