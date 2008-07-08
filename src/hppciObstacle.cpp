@@ -276,7 +276,7 @@ CORBA::Short ChppciObstacle_impl::addPoint(const char* inPolyhedronName,
 // ==========================================================================
 
 CORBA::Short ChppciObstacle_impl::addTriangle(const char* inPolyhedronName, 
-					      long pt1, long pt2, long pt3)
+					      CORBA::ULong pt1, CORBA::ULong pt2, CORBA::ULong pt3)
   throw(CORBA::SystemException)
 {
   std::string polyhedronName(inPolyhedronName);
@@ -295,6 +295,17 @@ CORBA::Short ChppciObstacle_impl::addTriangle(const char* inPolyhedronName,
   }
   CkppKCDPolyhedronShPtr polyhedron = polyhedronMap[polyhedronName];
   unsigned int rank;
+
+  /*
+    Test Kineo preconditions
+  */
+  if (pt1==pt2 || pt1==pt3 || pt2==pt3 ||
+      pt1 >= polyhedron->countPoints() ||
+      pt2 >= polyhedron->countPoints() ||
+      pt3 >= polyhedron->countPoints()) {
+    ODEBUG1(":addTriangle: wrong triangle");
+    return -1;
+  }
 
   polyhedron->addTriangle(pt1, pt2, pt3, rank);
 

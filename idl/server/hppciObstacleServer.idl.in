@@ -122,7 +122,8 @@ module hppCorbaServer {
      * \param pt3 rank of third point in polyhedron. 
      * \return rank of triangle in polyhedron or -1 if failure.
      */
-    short addTriangle(in string inPolyName, in long pt1, in long pt2, in long pt3);
+    short addTriangle(in string inPolyName, in unsigned long pt1, 
+	in unsigned long pt2, in unsigned long pt3);
 
 #if @OPENHRP@
     /**

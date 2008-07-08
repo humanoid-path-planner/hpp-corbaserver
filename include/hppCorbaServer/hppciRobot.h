@@ -182,7 +182,7 @@ public:
 	     CORBA::Double y, CORBA::Double z) throw(CORBA::SystemException);
   /// \brief Comment in interface hppCorbaServer::ChppciRobot::addTriangle.
   virtual CORBA::Short 
-    addTriangle(const char* inPolyhedronName, long pt1, long pt2, long pt3)
+    addTriangle(const char* inPolyhedronName, CORBA::ULong pt1, CORBA::ULong pt2, CORBA::ULong pt3)
     throw(CORBA::SystemException);
   /// \brief Comment in interface hppCorbaServer::ChppciRobot::addPolyToBody.
   virtual CORBA::Short
