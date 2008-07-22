@@ -57,6 +57,15 @@ public:
   /// \brief Comment in interface hppCorbaServer::ChppciProblem::setGoalConfig
   virtual CORBA::Short setGoalConfig(CORBA::UShort inProblemId, const hppCorbaServer::dofSeq& dofArray);
 
+  /// \brief Comment in interface hppCorbaServer::ChppciProblem::getInitialConfig
+  virtual hppCorbaServer::dofSeq* getInitialConfig(CORBA::UShort inProblemId)
+    throw(CORBA::SystemException);
+
+  /// \brief Comment in interface hppCorbaServer::ChppciProblem::getGoalConfig
+  virtual hppCorbaServer::dofSeq* getGoalConfig(CORBA::UShort inProblemId)
+    throw(CORBA::SystemException);
+
+
   /// \brief Comment in interface hppCorbaServer::ChppciProblem::initializeProblem
   virtual CORBA::Short initializeProblem();
 

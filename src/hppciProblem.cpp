@@ -12,6 +12,7 @@
 #include "reedsSheppSteeringMethod.h"
 #include "hppVisRdmBuilder.h"
 #include "kwsPlusPCARdmBuilder.h"
+#include "kwsIPPRdmBuilder2.h"
 
 // Select verbosity at configuration by setting CXXFLAGS="... -DDEBUG=[1 or 2]"
 #if DEBUG==2
@@ -91,7 +92,7 @@ CORBA::Short ChppciProblem_impl::setRoadmapbuilder(CORBA::UShort inProblemId, co
     } else if (roadmapBuilderName == "diffusing") {
       roadmapBuilder = CkwsDiffusingRdmBuilder::create(roadmap, penetration);
     } else if (roadmapBuilderName == "IPP") {
-      roadmapBuilder = CkwsIPPRdmBuilder::create(roadmap, penetration);
+      roadmapBuilder = CkwsIPPRdmBuilder2::create(roadmap, penetration);
     } else if (roadmapBuilderName == "visibility") {
       roadmapBuilder = ChppVisRdmBuilder::create(roadmap, penetration);
     } else if (roadmapBuilderName == "PCA<diffusing>") {
@@ -433,6 +434,98 @@ CORBA::Short ChppciProblem_impl::setGoalConfig(CORBA::UShort inProblemId, const 
   }
   return 0;
 }
+
+hppCorbaServer::dofSeq* ChppciProblem_impl::getInitialConfig(CORBA::UShort inProblemId)
+  throw(CORBA::SystemException)
+{
+  unsigned int hppProblemId = (unsigned int)inProblemId;
+
+  hppCorbaServer::dofSeq *dofArray;
+
+  unsigned int nbProblems = attHppPlanner->getNbHppProblems();
+
+  if (hppProblemId < nbProblems) {
+    // Get robot in hppPlanner object.
+    CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppProblemId);
+
+    std::vector<double> dofVector;
+    CkwsConfigShPtr config = attHppPlanner->initConfIthProblem(hppProblemId);
+
+    if (config) {
+      // by Yoshida 06/08/25
+      unsigned int deviceDim = config->size();
+
+      // cerr<<"deviceDim "<<deviceDim<<" [ ";
+      dofArray = new hppCorbaServer::dofSeq();
+      dofArray->length(deviceDim);
+
+      for(unsigned int i=0; i<deviceDim; i++){
+	(*dofArray)[i] = config->dofValue(i);
+      }
+      return dofArray;
+    }
+    else {
+      ODEBUG1(":getInitialConfig: no initial configuration defined");
+      dofArray = new hppCorbaServer::dofSeq(1);
+      return dofArray;
+    }
+  }
+
+  else {
+    ODEBUG1(":getInitialConfig: wrong robot Id");
+    dofArray = new hppCorbaServer::dofSeq(1);
+    return dofArray;
+  }
+
+  return new hppCorbaServer::dofSeq(1);
+}
+
+
+hppCorbaServer::dofSeq* ChppciProblem_impl::getGoalConfig(CORBA::UShort inProblemId)
+  throw(CORBA::SystemException)
+{
+  unsigned int hppProblemId = (unsigned int)inProblemId;
+
+  hppCorbaServer::dofSeq *dofArray;
+
+  unsigned int nbProblems = attHppPlanner->getNbHppProblems();
+
+  if (hppProblemId < nbProblems) {
+    // Get robot in hppPlanner object.
+    CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppProblemId);
+
+    std::vector<double> dofVector;
+    CkwsConfigShPtr config = attHppPlanner->goalConfIthProblem(hppProblemId);
+
+    if (config) {
+      // by Yoshida 06/08/25
+      unsigned int deviceDim = config->size();
+
+      // cerr<<"deviceDim "<<deviceDim<<" [ ";
+      dofArray = new hppCorbaServer::dofSeq();
+      dofArray->length(deviceDim);
+
+      for(unsigned int i=0; i<deviceDim; i++){
+	(*dofArray)[i] = config->dofValue(i);
+      }
+      return dofArray;
+    }
+    else {
+      ODEBUG1(":getInitialConfig: no initial configuration defined");
+      dofArray = new hppCorbaServer::dofSeq(1);
+      return dofArray;
+    }
+  }
+
+  else {
+    ODEBUG1(":getInitialConfig: wrong robot Id");
+    dofArray = new hppCorbaServer::dofSeq(1);
+    return dofArray;
+  }
+
+  return new hppCorbaServer::dofSeq(1);
+}
+
 
 CORBA::Short ChppciProblem_impl::initializeProblem()
 {

@@ -121,6 +121,18 @@ module hppCorbaServer {
     */
     short setGoalConfig(in unsigned short inProblemId, in dofSeq dofArray);
 
+    /** \brief Get initial configuration of specified robot in ChppPlanner::robotVector.
+	\param inProblemId rank of robot in vector of robots.
+	\return Array of degrees of freedom 
+    */
+     dofSeq getInitialConfig(in unsigned short inProblemId);
+
+    /** \brief Set goal configuration of specified robot in ChppPlanner::robotVector.
+	\param inProblemId rank of robot in vector of robots.
+	\return Array of degrees of freedom 
+    */
+    dofSeq getGoalConfig(in unsigned short inProblemId);
+
     /** \brief Solve specified problem in ChppPlanner::robotVector.
 	\param inProblemId rank of robot in vector of robots.
 	\param outLastPathId rank of the last path created
