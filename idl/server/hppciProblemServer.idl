@@ -189,7 +189,13 @@ module hppCorbaServer {
 	\return 0 if success, -1 if failure.
     */
     short setObstacleTolerance(in unsigned short inProblemId, in double tolerance);
-  
+
+    /** \brief parse file
+	\param inFileName: name of the file.
+	\return 0 if success, -1 if failure.
+    */
+    short parseFile(in string inFileName);
+    
   };
 };
 #endif
