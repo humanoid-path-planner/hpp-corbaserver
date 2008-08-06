@@ -639,13 +639,3 @@ CORBA::Short ChppciProblem_impl::setObstacleTolerance(CORBA::UShort inProblemId,
   }
   return 0;
 }
-
-CORBA::Short ChppciProblem_impl::parseFile(const char* inFileName)
-{
-  std::string fileName(inFileName);
-
-  ktStatus status=attHppPlanner->parseFile(fileName);
-
-  return (CORBA::Short)status;
-  
-}

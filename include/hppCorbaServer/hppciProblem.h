@@ -87,9 +87,6 @@ public:
   /// \brief Comment in interface hppCorbaServer::ChppciProblem::setObstacleTolerance
   virtual CORBA::Short setObstacleTolerance(CORBA::UShort inProblemId, CORBA::Double tolerance)
     throw(CORBA::SystemException);
-  
-  /// \brief Comment in interface hppCorbaServer::ChppciProblem::parseFile
-  virtual CORBA::Short parseFile(const char* inFileName);
 
 private:
   /// \brief Pointer to the ChppciServer owning this object
