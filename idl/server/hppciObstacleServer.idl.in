@@ -56,12 +56,12 @@ module hppCorbaServer {
     short addObstacleConfig(in string inPolyName, in Configuration cfg);
 
     /**
-     * \brief Move an obstacle to a given configuration.
-     * \param inPolyName name of the polyhedron.
-     * \param cfg the configuration of the obstacle.
-     * \return 0 if success, -1 if failure.
-     * \note The obstacle is not added to local map ChppciObstacle_impl::collisionListMap.
-     * \note Build the collision entity of polyhedron for KCD.
+      \brief Move an obstacle to a given configuration.
+      \param inPolyName name of the polyhedron.
+      \param cfg the configuration of the obstacle.
+      \return 0 if success, -1 if failure.
+      \note The obstacle is not added to local map ChppciObstacle_impl::collisionListMap.
+      \note Build the collision entity of polyhedron for KCD.
      */
     short moveObstacleConfig(in string inPolyName, in Configuration cfg);
 
