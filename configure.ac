@@ -6,7 +6,7 @@ dnl
 dnl   Author: Florent Lamiraux and Mathieu Poirier LAAS-CNRS
 dnl
 
-AC_INIT([hppCorbaServer],[1.4.99],[openrobot@laas.fr])
+AC_INIT([hppCorbaServer],[1.5],[openrobot@laas.fr])
 AC_PREREQ(2.59)
 
 if test "$CFLAGS$CXXFLAGS" = ""; then
@@ -37,13 +37,13 @@ KINEOCONTROLLER_PREFIX=`$PKG_CONFIG KineoPathPlanner --variable=prefix`
 AC_SUBST(KINEOCONTROLLER_PREFIX)
 AC_SUBST(KINEO_ADDON_BUILD,[${KINEOCONTROLLER_PREFIX}/bin/KineoAddonBuilder])
 
-define(kwsPlus_reqd, [kwsPlus >= 1.4.1])
+define(kwsPlus_reqd, [kwsPlus >= 1.5])
 AC_SUBST(KWSPLUS_REQD, "kwsPlus_reqd")
 PKG_CHECK_MODULES(KWSPLUS, kwsPlus_reqd)
 KWSPLUS_PREFIX=`$PKG_CONFIG kwsPlus --variable=prefix`
 AC_SUBST(KWSPLUS_PREFIX)
 
-define(hppcore_reqd, [hppCore >= 1.4])
+define(hppcore_reqd, [hppCore >= 1.5])
 AC_SUBST(HPPCORE_REQD, "hppcore_reqd")
 PKG_CHECK_MODULES(HPPCORE, hppcore_reqd)
 HPPCORE_PREFIX=`$PKG_CONFIG hppCore --variable=prefix`

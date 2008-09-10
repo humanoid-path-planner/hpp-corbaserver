@@ -1,3 +1,5 @@
+hpp-corbaserver 1.5 released Sep 10, 2008
+
 	50. Test index of vertices in ChppciRobot::addTriangle and ChppciObstacle::addTriangle
 	49. Changed non negative parameters from short to unsigned short in idl.
 	48. Added request hppciRobot::setDofBounds.
