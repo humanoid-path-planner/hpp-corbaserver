@@ -54,6 +54,22 @@ module hppCorbaServer {
     */
     short setPathOptimizer(in unsigned short inProblemId, in string inPathOptimizerName,
 			   in unsigned short inMaxNumberLoop);
+
+    /**
+       \brief Set configuration extractor
+
+       \param inProblemId Rank of problem in vector of hppProblems.
+       \param inMinRadius Initial size of the neighborhood to explore
+       \param inmaxRadius Maximum size of the neighborhood to explore
+       \param inScaleFactor Growth rate of the neighborhood size
+       
+       If inMinRadius = 0 remove configuration extractor from problem.
+
+       \return 0 if success, -1 if failure.
+    */
+    short setConfigExtractor(in unsigned short inProblemId, in double inMinRadius,
+			     in double inMaxRadius, in double inScaleFactor);
+       
   
     /** \brief Set distance function used by roadmap builder
 	\param inProblemId Rank of problem in vector of hppProblems.

@@ -39,6 +39,11 @@ public:
   virtual CORBA::Short setPathOptimizer(CORBA::UShort inProblemId, const char* inPathOptimizer,
 					CORBA::UShort inMaxNumberLoop);
 
+  /// \brief Comment in interface hppCorbaServer::ChppciProblem::setConfigExtractor
+  virtual CORBA::Short setConfigExtractor(CORBA::UShort inProblemId, CORBA::Double inMinRadius,
+					  CORBA::Double inMaxRadius, CORBA::Double inScaleFactor);
+
+
   /// \brief Comment in interface hppCorbaServer::ChppciProblem::setDistanceFunction
   virtual CORBA::Short setDistanceFunction(CORBA::UShort inProblemId, const char* inDistanceName, CORBA::Boolean inOriented);
 

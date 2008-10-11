@@ -59,7 +59,7 @@ CORBA::Short ChppciProblem_impl::setSteeringMethod(CORBA::UShort inProblemId,
     hppRobot->steeringMethod(steeringMethod);
   }
   else {
-    ODEBUG1(":setSteeringMethod: wrong robot Id");
+    ODEBUG1(":setSteeringMethod: wrong problem Id");
     return -1;
   }
 
@@ -107,7 +107,7 @@ CORBA::Short ChppciProblem_impl::setRoadmapbuilder(CORBA::UShort inProblemId, co
     
   }
   else {
-    ODEBUG1(":setRoadmapbuilder: wrong robot Id");
+    ODEBUG1(":setRoadmapbuilder: wrong problem Id");
     return -1;
   }
 
@@ -153,7 +153,7 @@ CORBA::Short ChppciProblem_impl::setDiffusingNode(CORBA::UShort inProblemId,
     }
   }
   else {
-    ODEBUG1(":setDiffusingNode: wrong robot Id");
+    ODEBUG1(":setDiffusingNode: wrong problem Id");
     return -1;
   }
 
@@ -226,12 +226,51 @@ CORBA::Short ChppciProblem_impl::setPathOptimizer(CORBA::UShort inProblemId,
     }
   }
   else {
-    ODEBUG1(":setPathOptimizer: wrong robot Id");
+    ODEBUG1(":setPathOptimizer: wrong problem Id");
     return -1;
   }
 
   return 0;
 }
+
+CORBA::Short ChppciProblem_impl::setConfigExtractor(CORBA::UShort inProblemId, CORBA::Double inMinRadius,
+						    CORBA::Double inMaxRadius, CORBA::Double inScaleFactor)
+{
+  unsigned int hppProblemId = (unsigned int)inProblemId;
+
+  unsigned int nbProblems = attHppPlanner->getNbHppProblems();
+
+  // Test that rank is less than number of robots in vector.
+  if (hppProblemId < nbProblems) {
+    /*
+      If inMinRadius = 0 remove configuration extractor from problem.
+    */
+    CkwsConfigExtractorShPtr configExtractor;
+    if (inMinRadius == 0) {
+      if (attHppPlanner->configExtractorIthProblem(hppProblemId, configExtractor) == KD_ERROR) {
+	ODEBUG1(":setConfigExtractor: failed to delete configuration extractor.");
+	return -1;
+      } 
+    } else {
+      configExtractor = CkwsConfigExtractor::create(inMinRadius, inMaxRadius, inScaleFactor);
+      if (!configExtractor) {
+	ODEBUG1(":setConfigExtractor: failed at creating a configuration extractor.");
+	return -1;
+      }
+      if (attHppPlanner->configExtractorIthProblem(hppProblemId, configExtractor) != KD_OK) {
+	ODEBUG1(":setConfigExtractor: failed at setting configuration extractor.");
+	return -1;
+      }
+    }
+  }  
+  else {
+    ODEBUG1(":setConfigExtractor: wrong problem Id");
+    return -1;
+  }
+
+  return 0;
+}
+
 
 CORBA::Short ChppciProblem_impl::setDistanceFunction(CORBA::UShort inProblemId, const char* inDistanceName, CORBA::Boolean inOriented)
 {
@@ -282,7 +321,7 @@ CORBA::Short ChppciProblem_impl::setDistanceFunction(CORBA::UShort inProblemId, 
     }
   }
   else {
-    ODEBUG1(":setDistanceFunction: wrong robot Id");
+    ODEBUG1(":setDistanceFunction: wrong problem Id");
     return -1;
   }
 
@@ -322,7 +361,7 @@ CORBA::Short ChppciProblem_impl::setDiffusionNodePicker(CORBA::UShort inProblemI
     roadmapBuilder->diffusionNodePicker(diffusionNodePicker);
   }
   else {
-    ODEBUG1(":setDiffusionNodePicker: wrong robot Id");
+    ODEBUG1(":setDiffusionNodePicker: wrong problem Id");
     return -1;
   }
 
@@ -364,7 +403,7 @@ CORBA::Short ChppciProblem_impl::setDiffusionShooter(CORBA::UShort inProblemId,
     roadmapBuilder->diffusionShooter(diffusionShooter);
   }
   else {
-    ODEBUG1(":setDiffusionShooter: wrong robot Id");
+    ODEBUG1(":setDiffusionShooter: wrong problem Id");
     return -1;
   }
 
@@ -397,7 +436,7 @@ CORBA::Short ChppciProblem_impl::setInitialConfig(CORBA::UShort inProblemId, con
     return (short)attHppPlanner->initConfIthProblem(hppProblemId, config);
   }
   else {
-    ODEBUG1(":setInitialConfig: wrong robot Id");
+    ODEBUG1(":setInitialConfig: wrong problem Id");
     return -1;
   }
   return 0;
@@ -429,7 +468,7 @@ CORBA::Short ChppciProblem_impl::setGoalConfig(CORBA::UShort inProblemId, const 
     return (short)attHppPlanner->goalConfIthProblem(hppProblemId, config);
   }
   else {
-    ODEBUG1(":setGoalConfig: wrong robot Id");
+    ODEBUG1(":setGoalConfig: wrong problem Id");
     return -1;
   }
   return 0;
@@ -472,7 +511,7 @@ hppCorbaServer::dofSeq* ChppciProblem_impl::getInitialConfig(CORBA::UShort inPro
   }
 
   else {
-    ODEBUG1(":getInitialConfig: wrong robot Id");
+    ODEBUG1(":getInitialConfig: wrong problem Id");
     dofArray = new hppCorbaServer::dofSeq(1);
     return dofArray;
   }
@@ -518,7 +557,7 @@ hppCorbaServer::dofSeq* ChppciProblem_impl::getGoalConfig(CORBA::UShort inProble
   }
 
   else {
-    ODEBUG1(":getInitialConfig: wrong robot Id");
+    ODEBUG1(":getInitialConfig: wrong problem Id");
     dofArray = new hppCorbaServer::dofSeq(1);
     return dofArray;
   }
