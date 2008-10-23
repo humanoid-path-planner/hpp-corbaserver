@@ -92,7 +92,7 @@ CORBA::Short ChppciProblem_impl::setRoadmapbuilder(CORBA::UShort inProblemId, co
     } else if (roadmapBuilderName == "diffusing") {
       roadmapBuilder = CkwsDiffusingRdmBuilder::create(roadmap, penetration);
     } else if (roadmapBuilderName == "IPP") {
-      roadmapBuilder = CkwsIPPRdmBuilder2::create(roadmap, penetration);
+      roadmapBuilder = CkwsIPPRdmBuilder::create(roadmap, penetration);
     } else if (roadmapBuilderName == "visibility") {
       roadmapBuilder = ChppVisRdmBuilder::create(roadmap, penetration);
     } else if (roadmapBuilderName == "PCA<diffusing>") {
