@@ -422,6 +422,12 @@ CORBA::Short ChppciProblem_impl::setInitialConfig(CORBA::UShort inProblemId, con
   if (hppProblemId < nbProblems) {
     // Get robot in hppPlanner object.
     CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppProblemId);
+
+    // Compare size of input array with number of degrees of freedom of robot.
+    if (configDim != hppRobot->countDofs()) {
+      ODEBUG1(":setInitialConfig: robot nb dof is different from config size");
+      return -1;
+    }
     // Fill dof vector with dof array.
     for (unsigned int iDof=0; iDof<configDim; iDof++) {
       dofVector.push_back(dofArray[iDof]);
@@ -454,6 +460,13 @@ CORBA::Short ChppciProblem_impl::setGoalConfig(CORBA::UShort inProblemId, const 
   if (hppProblemId < nbProblems) {
     // Get robot in hppPlanner object.
     CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppProblemId);
+
+    // Compare size of input array with number of degrees of freedom of robot.
+    if (configDim != hppRobot->countDofs()) {
+      ODEBUG1(":setInitialConfig: robot nb dof is different from config size");
+      return -1;
+    }
+
     // Fill dof vector with dof array.
     for (unsigned int iDof=0; iDof<configDim; iDof++) {
       dofVector.push_back(dofArray[iDof]);
@@ -464,7 +477,6 @@ CORBA::Short ChppciProblem_impl::setGoalConfig(CORBA::UShort inProblemId, const 
       ODEBUG1(":setGoalConfig: cannot create config. Check that robot nb dof is equal to config size");
       return -1;
     }
-    
     return (short)attHppPlanner->goalConfIthProblem(hppProblemId, config);
   }
   else {
