@@ -60,7 +60,7 @@ module hppCorbaServer {
 
        \param inProblemId Rank of problem in vector of hppProblems.
        \param inMinRadius Initial size of the neighborhood to explore
-       \param inmaxRadius Maximum size of the neighborhood to explore
+       \param inMaxRadius Maximum size of the neighborhood to explore
        \param inScaleFactor Growth rate of the neighborhood size
        
        If inMinRadius = 0 remove configuration extractor from problem.
@@ -189,14 +189,23 @@ module hppCorbaServer {
     */
     short optimizePath(in unsigned short inProblemId, in unsigned short inPathId);
 
+    /**
+       \brief Get length of path
+
+       \param inProblemId rank of robot in vector of robots.
+       \param inPathId rank of the path in the problem
+       \return length of path if path exists, -1 otherwise
+    */
+    double pathLength(in unsigned short inProblemId, in unsigned short inPathId); 
+       
     /** \brief get the robot's config at param on the a path 
+
 	\param inProblemId rank of robot in vector of robots.
 	\param inPathId rank of the path in the problem
-	\param pathLength : length of the path
 	\param atDistance : the user parameter choice
 	\return dofseq : the config at param
     */
-    dofSeq configAtDistance(in unsigned short inProblemId, in unsigned short inPathId, in double pathLength, in double atDistance);
+    dofSeq configAtDistance(in unsigned short inProblemId, in unsigned short inPathId, in double atDistance);
 
     /** \brief set tolerance of the obstacles registered in the planner
 	\param inProblemId: rank of robot in vector of robots.
