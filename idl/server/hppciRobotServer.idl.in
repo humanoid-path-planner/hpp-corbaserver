@@ -40,9 +40,11 @@ module hppCorbaServer {
     /** 
      * \brief Once a robot is built, add it in object ChppciServer::hppPlanner.
      * \param inRobotName name of the robot.
+     * \param inPenetration dynamic penetration allowed to validate direct paths.
+
      * \return 0 if success, -1 if failure.
      */
-    short addHppProblem(in string inRobotName);
+    short addHppProblem(in string inRobotName, in double inPenetration);
 
     /**
      * \brief Set a joint as root joint to a robot.
@@ -56,10 +58,12 @@ module hppCorbaServer {
     /**
      * \brief Load HRP2 model by sending a Corba request to OpenHRP
 
+     * \param inPenetration dynamic penetration allowed to validate direct paths.
+
      Send ChppciOpenHrpClient::loadHrp2Model() request to Modelloader.
 
      */
-    short loadHrp2Model();
+    short loadHrp2Model(in double inPenetration);
 #endif
 
     /** 
@@ -276,10 +280,12 @@ module hppCorbaServer {
        @{
     */
   
-    /** \brief see if the link is colliding.
+    /** 
+	\brief Check whether the link is colliding.
+
+	\param inProblemId index of problem owning the robot
 	\param inJointId index of the joint in robot
-	\param inProblemId TODO
-	\param result TODO
+	\retval outResult -1
     */
     short checkLinkCollision(in unsigned short inProblemId, in unsigned short inJointId, 
 			     out unsigned short outResult);

@@ -38,7 +38,6 @@ CORBA::Short ChppciProblem_impl::setSteeringMethod(CORBA::UShort inProblemId,
   std::string steeringMethodName(inSteeringMethod);
 
   unsigned int hppProblemId = (unsigned int)inProblemId;
-
   unsigned int nbProblems = attHppPlanner->getNbHppProblems();
 
   // Test that rank is less than number of robots in vector.
@@ -119,7 +118,6 @@ CORBA::Short ChppciProblem_impl::setDiffusingNode(CORBA::UShort inProblemId,
 {
   std::string diffusingNode(inDiffusingNode);
   unsigned int hppProblemId = (unsigned int)inProblemId;
-
   unsigned int nbProblems = attHppPlanner->getNbHppProblems();
 
   // Test that rank is less than number of robots in vector.
@@ -237,7 +235,6 @@ CORBA::Short ChppciProblem_impl::setConfigExtractor(CORBA::UShort inProblemId, C
 						    CORBA::Double inMaxRadius, CORBA::Double inScaleFactor)
 {
   unsigned int hppProblemId = (unsigned int)inProblemId;
-
   unsigned int nbProblems = attHppPlanner->getNbHppProblems();
 
   // Test that rank is less than number of robots in vector.
@@ -276,7 +273,6 @@ CORBA::Short ChppciProblem_impl::setDistanceFunction(CORBA::UShort inProblemId, 
 {
   std::string distanceName(inDistanceName);
   unsigned int hppProblemId = (unsigned int)inProblemId;
-
   unsigned int nbProblems = attHppPlanner->getNbHppProblems();
 
   // Test that rank is less than number of robots in vector.
@@ -333,7 +329,6 @@ CORBA::Short ChppciProblem_impl::setDiffusionNodePicker(CORBA::UShort inProblemI
 {
   std::string diffusionNodePickerName(inDiffusionNodePickerName);
   unsigned int hppProblemId = (unsigned int)inProblemId;
-
   unsigned int nbProblems = attHppPlanner->getNbHppProblems();
 
   // Test that rank is less than number of robots in vector.
@@ -374,7 +369,6 @@ CORBA::Short ChppciProblem_impl::setDiffusionShooter(CORBA::UShort inProblemId,
 {
   std::string diffusionShooterName(inDiffusionShooterName);
   unsigned int hppProblemId = (unsigned int)inProblemId;
-
   unsigned int nbProblems = attHppPlanner->getNbHppProblems();
 
   // Test that rank is less than number of robots in vector.
@@ -415,7 +409,6 @@ CORBA::Short ChppciProblem_impl::setInitialConfig(CORBA::UShort inProblemId, con
   unsigned int hppProblemId = (unsigned int)inProblemId;
   unsigned int configDim = (unsigned int)dofArray.length();
   std::vector<double> dofVector;
-
   unsigned int nbProblems = attHppPlanner->getNbHppProblems();
   
   // Test that rank is less than nulber of robots in vector.
@@ -453,7 +446,6 @@ CORBA::Short ChppciProblem_impl::setGoalConfig(CORBA::UShort inProblemId, const 
   unsigned int hppProblemId = (unsigned int)inProblemId;
   unsigned int configDim = (unsigned int)dofArray.length();
   std::vector<double> dofVector;
-
   unsigned int nbProblems = attHppPlanner->getNbHppProblems();
   
   // Test that rank is less than nulber of robots in vector.
@@ -489,10 +481,8 @@ CORBA::Short ChppciProblem_impl::setGoalConfig(CORBA::UShort inProblemId, const 
 hppCorbaServer::dofSeq* ChppciProblem_impl::getInitialConfig(CORBA::UShort inProblemId)
   throw(CORBA::SystemException)
 {
-  unsigned int hppProblemId = (unsigned int)inProblemId;
-
   hppCorbaServer::dofSeq *dofArray;
-
+  unsigned int hppProblemId = (unsigned int)inProblemId;
   unsigned int nbProblems = attHppPlanner->getNbHppProblems();
 
   if (hppProblemId < nbProblems) {
@@ -535,10 +525,8 @@ hppCorbaServer::dofSeq* ChppciProblem_impl::getInitialConfig(CORBA::UShort inPro
 hppCorbaServer::dofSeq* ChppciProblem_impl::getGoalConfig(CORBA::UShort inProblemId)
   throw(CORBA::SystemException)
 {
-  unsigned int hppProblemId = (unsigned int)inProblemId;
-
   hppCorbaServer::dofSeq *dofArray;
-
+  unsigned int hppProblemId = (unsigned int)inProblemId;
   unsigned int nbProblems = attHppPlanner->getNbHppProblems();
 
   if (hppProblemId < nbProblems) {
@@ -595,7 +583,7 @@ CORBA::Short ChppciProblem_impl::solveOneProblem(CORBA::UShort inProblemId, CORB
   unsigned int hppProblemId = (unsigned int)inProblemId;
   unsigned int nbProblems = attHppPlanner->getNbHppProblems();
   
-  // Test that rank is less than nulber of robots in vector.
+  // Test that rank is less than number of robots in vector.
   if (hppProblemId < nbProblems) {
     status = attHppPlanner->solveOneProblem(hppProblemId);
   }
@@ -627,16 +615,60 @@ CORBA::Short ChppciProblem_impl::interruptPathPlanning()
 
 CORBA::Short ChppciProblem_impl::optimizePath(CORBA::UShort inProblemId, CORBA::UShort inPathId)
 {
+  unsigned int hppProblemId = (unsigned int)inProblemId;
+  unsigned int pathId = (unsigned int)inPathId;
+  
+  if (hppProblemId > attHppPlanner->getNbHppProblems() - 1) {
+    ODEBUG1(":optimizePath: wrong problem id");
+    return -1;
+  }
+  
+  if (pathId > attHppPlanner->getNbPaths(hppProblemId) - 1) {
+    ODEBUG1(":optimizePath: wrong path id");
+    return -1;
+  }
+
   ktStatus status  = attHppPlanner->optimizePath((unsigned int) inProblemId, (unsigned int) inPathId);
   return (CORBA::Short)status;
 }
 
-hppCorbaServer::dofSeq* ChppciProblem_impl::configAtDistance(CORBA::UShort inProblemId, CORBA::UShort pathId, CORBA::Double pathLength, CORBA::Double atDistance) {
+CORBA::Double ChppciProblem_impl::pathLength(CORBA::UShort inProblemId, CORBA::UShort inPathId)
+{
+  double length = -1.0;
 
-  hppCorbaServer::dofSeq* inDofSeq ;
-
-  // get the planner  
   unsigned int hppProblemId = (unsigned int)inProblemId;
+  unsigned int pathId = (unsigned int)inPathId;
+  
+  if (hppProblemId > attHppPlanner->getNbHppProblems() - 1) {
+    ODEBUG1(":pathLength: wrong problem id");
+    return -1.0;
+  }
+  
+  if (pathId > attHppPlanner->getNbPaths(hppProblemId) - 1) {
+    ODEBUG1(":pathLength: wrong path id");
+    return -1.0;
+  }
+
+  length = attHppPlanner->getPath(hppProblemId, pathId)->length();
+  return length;
+}
+
+hppCorbaServer::dofSeq* ChppciProblem_impl::configAtDistance(CORBA::UShort inProblemId, CORBA::UShort inPathId, CORBA::Double atDistance) 
+{
+  unsigned int hppProblemId = (unsigned int)inProblemId;
+  unsigned int pathId = (unsigned int)inPathId;
+
+  if (hppProblemId > attHppPlanner->getNbHppProblems() - 1) {
+    ODEBUG1(":configAtDistance: wrong problem id");
+    return new hppCorbaServer::dofSeq(0, 0, NULL, true);
+  }
+
+  if (pathId > attHppPlanner->getNbPaths(hppProblemId) - 1) {
+    ODEBUG1(":configAtDistance: wrong path id");
+    return new hppCorbaServer::dofSeq(0, 0, NULL, true);
+  }
+
+  double length = attHppPlanner->getPath(hppProblemId, pathId)->length();
 
   //get the nb of dof of the robot in the problem
   unsigned int nbDofRobot = attHppPlanner->robotIthProblem(inProblemId)->countDofs();
@@ -645,11 +677,11 @@ hppCorbaServer::dofSeq* ChppciProblem_impl::configAtDistance(CORBA::UShort inPro
   // Allocate result now that the size is known.
   CORBA::ULong size = (CORBA::ULong)nbDofRobot;
   double* DofList = hppCorbaServer::dofSeq::allocbuf(size);
-  inDofSeq = new hppCorbaServer::dofSeq(size, size, DofList, true);
+  hppCorbaServer::dofSeq* dofSeq = new hppCorbaServer::dofSeq(size, size, DofList, true);
   
   //get the config of the robot on the path
-  if (atDistance > pathLength) {
-    ODEBUG1(":configAtParam: param out of range (longer than path Length) " << "Param : "<< atDistance << " length : " << pathLength);
+  if (atDistance > length) {
+    ODEBUG1(":configAtParam: param out of range (longer than path Length) " << "Param : "<< atDistance << " length : " << length);
    
   }
   else {
@@ -663,7 +695,7 @@ hppCorbaServer::dofSeq* ChppciProblem_impl::configAtDistance(CORBA::UShort inPro
 
   
 
-  return inDofSeq;
+  return dofSeq;
 }
 
 /// \brief set tolerance to the objects in the planner

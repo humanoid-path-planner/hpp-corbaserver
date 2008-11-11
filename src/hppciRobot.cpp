@@ -110,7 +110,7 @@ CORBA::Short ChppciRobot_impl::createRobot(const char* inRobotName)
 
 // ==========================================================================
 
-CORBA::Short ChppciRobot_impl::addHppProblem(const char* inRobotName)
+CORBA::Short ChppciRobot_impl::addHppProblem(const char* inRobotName, double inPenetration)
   throw(CORBA::SystemException)
 {
   std::string robotName(inRobotName);
@@ -121,7 +121,7 @@ CORBA::Short ChppciRobot_impl::addHppProblem(const char* inRobotName)
   }
   CkppDeviceComponentShPtr hppDevice = robotMap[robotName];
   // Create a new problem with this robot.
-  attHppPlanner->addHppProblem(hppDevice);
+  attHppPlanner->addHppProblem(hppDevice, inPenetration);
   
   return 0;
 }
@@ -157,10 +157,10 @@ CORBA::Short ChppciRobot_impl::setRobotRootJoint(const char* inRobotName,
 }
 
 #if WITH_OPENHRP
-CORBA::Short ChppciRobot_impl::loadHrp2Model()
+CORBA::Short ChppciRobot_impl::loadHrp2Model(double inPenetration)
 {
   ChppciOpenHrpClient openHrpClient(attHppPlanner);
-  if (openHrpClient.loadHrp2Model() != KD_OK) {
+  if (openHrpClient.loadHrp2Model(inPenetration) != KD_OK) {
     return -1;
   }
   return 0;

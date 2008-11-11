@@ -553,8 +553,7 @@ ktStatus ChppciOpenHrpClient::loadRobotModel(std::string inFilename, std::string
   return KD_OK;
 }
 
-
-
+// ==============================================================================
 
 ktStatus  ChppciOpenHrpClient::loadHrp2Model()
 {
@@ -566,7 +565,28 @@ ktStatus  ChppciOpenHrpClient::loadHrp2Model()
   //
   // ADD HRP2 to the planner
   // 
-  if (hppPlanner->addHppProblem(HRP2Device) != KD_OK) {
+  if (hppPlanner->addHppProblem(HRP2Device, 0.05) != KD_OK) {
+    cerr << "ChppciOpenHrpClient::loadHrp2Model: Failed to add robot" << endl;
+    return KD_ERROR;
+  }
+
+  return KD_OK;
+ 
+}
+
+// ==============================================================================
+
+ktStatus  ChppciOpenHrpClient::loadHrp2Model(double inPenetration)
+{
+  ChppHumanoidRobotShPtr HRP2Device;
+  if (loadHrp2Model(HRP2Device) != KD_OK){
+    return KD_ERROR;
+  }
+  
+  //
+  // ADD HRP2 to the planner
+  // 
+  if (hppPlanner->addHppProblem(HRP2Device, inPenetration) != KD_OK) {
     cerr << "ChppciOpenHrpClient::loadHrp2Model: Failed to add robot" << endl;
     return KD_ERROR;
   }

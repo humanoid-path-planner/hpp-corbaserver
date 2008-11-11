@@ -86,8 +86,11 @@ public:
   /// \brief Comment in interface hppCorbaServer::ChppciProblem::optimizePath
   virtual CORBA::Short optimizePath(CORBA::UShort inProblemId, CORBA::UShort inPathId);
 
+  /// \brief Comment in interface hppCorbaServer::ChppciProblem::pathLength
+  virtual CORBA::Double pathLength(CORBA::UShort inProblemId, CORBA::UShort inPathId); 
+
   /// \brief Comment in interface hppCorbaServer::ChppciProblem::configAtDistance
-  virtual hppCorbaServer::dofSeq* configAtDistance(CORBA::UShort inProblemId, CORBA::UShort pathId, CORBA::Double pathLength, CORBA::Double atDistance) ;
+  virtual hppCorbaServer::dofSeq* configAtDistance(CORBA::UShort inProblemId, CORBA::UShort pathId, CORBA::Double atDistance) ;
 
   /// \brief Comment in interface hppCorbaServer::ChppciProblem::setObstacleTolerance
   virtual CORBA::Short setObstacleTolerance(CORBA::UShort inProblemId, CORBA::Double tolerance)

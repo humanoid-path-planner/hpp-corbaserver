@@ -72,7 +72,7 @@ public:
   virtual CORBA::Short createRobot(const char* inRobotName) 
     throw(CORBA::SystemException);
   /// \brief Comment in interface hppCorbaServer::ChppciRobot::addHppProblem.
-  virtual CORBA::Short addHppProblem(const char* inRobotName)
+  virtual CORBA::Short addHppProblem(const char* inRobotName, double inPenetration)
     throw(CORBA::SystemException);
   /// \brief Comment in interface hppCorbaServer::ChppciRobot::setRobotRootJoint.
   virtual CORBA::Short 
@@ -80,7 +80,7 @@ public:
     throw(CORBA::SystemException);
 #if WITH_OPENHRP
   /// \brief Comment in interface hppCorbaServer::ChppciRobot::loadHrp2Model.
-  virtual CORBA::Short loadHrp2Model();
+  virtual CORBA::Short loadHrp2Model(double inPenetration);
 #endif
   /// \brief Comment in interface hppCorbaServer::ChppciRobot::createExtraDof.
   virtual CORBA::Short createExtraDof(const char* inDofName, CORBA::Boolean inRevolute, 

@@ -58,11 +58,24 @@ public:
   /** 
       \brief Initialize Orb and load model of HRP2 by sending a Corba request modelLoader to OpenHRP. 
 
+      \deprecated This function is deprecated. Call loadHrp2Model(double inPenetration) instead.
+
       This function gets the model of HRP2 from a CORBA request and initializes a ChppProblem 
       with this robot by calling ChppPlanner::addHppProblem(CkppDeviceComponentShPtr robot).
       Note that the robot is set into half-sitting configuration.
   */
-  ktStatus loadHrp2Model();
+  ktStatus loadHrp2Model() __attribute__ ((deprecated));
+
+  /** 
+      \brief Initialize Orb and load model of HRP2 by sending a Corba request modelLoader to OpenHRP. 
+
+      \param inPenetration Dynamic penetration allowed for validating direct paths of the robot.
+
+      This function gets the model of HRP2 from a CORBA request and initializes a ChppProblem 
+      with this robot by calling ChppPlanner::addHppProblem(CkppDeviceComponentShPtr robot).
+      Note that the robot is set into half-sitting configuration.
+  */
+  ktStatus loadHrp2Model(double inPenetration);
 
   /**
      \brief  Initialize Orb and load model of HRP2 by sending a Corba request modelLoader to OpenHRP.
