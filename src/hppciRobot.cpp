@@ -731,6 +731,46 @@ hppCorbaServer::nameSeq* ChppciRobot_impl::getBodyOuterObject(const char* inBody
 
 // ==========================================================================
 
+CORBA::Short ChppciRobot_impl::setPenetration(CORBA::UShort inProblemId, 
+					      CORBA::Double inPenetration)
+{
+  unsigned int hppProblemId = (unsigned int)inProblemId;
+  unsigned int nbProblems = attHppPlanner->getNbHppProblems();
+  
+  if (hppProblemId < nbProblems) {
+    attHppPlanner->penetration(inProblemId, inPenetration);
+  }
+  else{
+    ODEBUG1(":setPenetration: wrong robot Id");
+    return -1;
+  }
+
+  return 0;
+}
+
+
+// ==========================================================================
+
+CORBA::Short ChppciRobot_impl::getPenetration(CORBA::UShort inProblemId, 
+					      CORBA::Double& outPenetration)
+{
+  unsigned int hppProblemId = (unsigned int)inProblemId;
+  unsigned int nbProblems = attHppPlanner->getNbHppProblems();
+  
+  if (hppProblemId < nbProblems) {
+    outPenetration = attHppPlanner->penetration(inProblemId);
+  }
+  else{
+    ODEBUG1(":getPenetration: wrong robot Id");
+    return -1;
+  }
+
+  return 0;
+}
+
+
+// ==========================================================================
+
 CORBA::Short 
 ChppciRobot_impl::checkLinkCollision(CORBA::UShort inProblemId, CORBA::UShort jointId, 
 				     CORBA::UShort& outResult) 

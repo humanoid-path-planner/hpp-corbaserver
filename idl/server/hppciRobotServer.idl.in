@@ -279,7 +279,39 @@ module hppCorbaServer {
        \name Collision checking
        @{
     */
-  
+
+    /**
+       \brief Set dynamic penetration of robot
+
+       \param inProblemId index of problem owning the robot
+       \param inPenetration dynamic penetration
+       \return 0 is success, -1 if error.
+
+       Dynamic penetration is the penetration allowed when checking a
+       path for collision.
+
+       \note setting this parameter equal to the \link
+       hppCorbaServer::ChppciProblem::setObstacleTolerance tolerance\endlink of
+       obstacles ensures that paths will be collision-free.
+    */
+    short setPenetration(in unsigned short inProblemId, in double inPenetration);
+
+    /**
+       \brief Set dynamic penetration of robot
+
+       \param inProblemId index of problem owning the robot.
+       \retval outPenetration dynamic penetration.
+       \return 0 is success, -1 if error.
+
+       Dynamic penetration is the penetration allowed when checking a
+       path for collision.
+
+       \note setting this parameter equal to the \link
+       hppCorbaServer::ChppciProblem::setObstacleTolerance tolerance\endlink of
+       obstacles ensures that paths will be collision-free.
+    */
+    short getPenetration(in unsigned short inProblemId, out double outPenetration);
+
     /** 
 	\brief Check whether the link is colliding.
 

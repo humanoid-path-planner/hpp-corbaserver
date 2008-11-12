@@ -165,6 +165,12 @@ public:
   /// \brief Comment in interface hppCorbaServer::ChppciRobot::getBodyOuterObject.
   virtual hppCorbaServer::nameSeq* getBodyOuterObject(const char* inBodyName);
 
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::setPenetration.
+  virtual CORBA::Short setPenetration(CORBA::UShort inProblemId, CORBA::Double inPenetration);
+
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::getPenetration.
+  virtual CORBA::Short getPenetration(CORBA::UShort inProblemId, CORBA::Double& outPenetration);
+
   /// \brief Comment in interface hppCorbaServer::ChppciRobot::checkLinkCollision.
   virtual CORBA::Short checkLinkCollision(CORBA::UShort inProblemId, 
 					  CORBA::UShort inJointId, CORBA::UShort& outResult)

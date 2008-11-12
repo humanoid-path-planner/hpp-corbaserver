@@ -1,3 +1,16 @@
+2008/11/12
+	55. Added requests to set and get dynamic penetration.
+	54. Specify penetration when inserting a new robot in ChppPlanner object.
+	
+2008/11/11
+	53. Added method to get length of path and corrected prototype of configAtDistance.
+	
+2008/11/08
+	52. Test size of config in ChppciProblem_impl::setInitialConfig and setGoalConfig.
+	
+2008/10/11
+	51. Added interface function to insert a configuration extractor.
+
 hpp-corbaserver 1.5 released Sep 10, 2008
 
 	50. Test index of vertices in ChppciRobot::addTriangle and ChppciObstacle::addTriangle
