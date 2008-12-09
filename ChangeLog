@@ -1,30 +1,30 @@
-2008/11/12
+hpp-corbaserver 1.6 released Dec  9, 2008
+
+	56. Added optional robot model path to loadHrp2Model(). 
 	55. Added requests to set and get dynamic penetration.
-	54. Specify penetration when inserting a new robot in ChppPlanner object.
-	
-2008/11/11
-	53. Added method to get length of path and corrected prototype of configAtDistance.
-	
-2008/11/08
-	52. Test size of config in ChppciProblem_impl::setInitialConfig and setGoalConfig.
-	
-2008/10/11
+	54. Specify penetration when inserting a new robot in ChppPlanner
+	    object.
+	53. Added method to get length of path and corrected prototype of
+	    configAtDistance.
+	52. Test size of config in ChppciProblem_impl::setInitialConfig and
+	    setGoalConfig.
 	51. Added interface function to insert a configuration extractor.
 
 hpp-corbaserver 1.5 released Sep 10, 2008
 
-	50. Test index of vertices in ChppciRobot::addTriangle and ChppciObstacle::addTriangle
+	50. Test index of vertices in ChppciRobot::addTriangle and
+	    ChppciObstacle::addTriangle
 	49. Changed non negative parameters from short to unsigned short in idl.
 	48. Added request hppciRobot::setDofBounds.
 	47. Added a request to interrupt motion planning process in ChppciProblem.
 
 hpp-corbaserver 1.4 released June 12, 2008
-	
-	46. In ChppciProblem::setDistanceFunction, distance function is passed to 
+
+	46. In ChppciProblem::setDistanceFunction, distance function is passed to
 	    device, roadmap builder if any and path optimizer if any.
 
 	45. Added request ChppciObstacle::loadModelLoaderObstacle to load
-	obstacle through modelloader. 
+	obstacle through modelloader.
 
 	44. Slight modifications in ChppciProblem::setPathOptimizer.
 
@@ -38,13 +38,13 @@ hpp-corbaserver 1.4 released June 12, 2008
 	40. Added explicit dependence to kwsPlus for documentation.
 
 	39. Added CORBA request to set diffusion node picker of a given problem.
-	
+
 	38. ChppciOpenHrpClient::loadHrp2Model() now takes a shared pointer to
 	    a humanoid robot.
-	
+
 hpp-corbaserver 1.3 released May 13, 2008.
 
-	37. idl interfaces are now wrapped into module hppCorbaServer. 
+	37. idl interfaces are now wrapped into module hppCorbaServer.
 
 	36. Changed the names of the Corba context and servants. Name of context is now
 	    hpp.plannerContext
@@ -52,32 +52,32 @@ hpp-corbaserver 1.3 released May 13, 2008.
 	    ChppciRobot: robots.servant
 	    ChppciObstacle: obstacles.servant
 	    ChppciProblem: problems.servant
-	
-	35. Added requests in ChppciObstacleServer to control obstacles 
+
+	35. Added requests in ChppciObstacleServer to control obstacles
 	    transparency and visibility.
 
 	34. Changed the way dof bounds are handled at creation of a joint.
 
-	33. Added boolean parameter in ChppciProblem::setRoadmapbuilder to select whether 
+	33. Added boolean parameter in ChppciProblem::setRoadmapbuilder to select whether
 	    roadmap developed by new roadmap builder should be displayed.
-	
+
 	32. in ChppciServer objects, new distance function factories can be added.
 
 	31. Added a CORBA request to set a distance function in a given roadmap builder.
-	
+
 	30. Added a standalone CORBA server running without the interface.
-	
+
 	29. If CXXFLAGS and CFLAGS are not defined at configuration, they are set to "-Wall".
-	
+
 
 	28. Adaptation to KPP version 2.04.500.
-	
-	27. ChppciServer object now builds a map of steering method factories referenced 
-	    by names. New steering methods can thus be added and set by CORBA request 
+
+	27. ChppciServer object now builds a map of steering method factories referenced
+	    by names. New steering methods can thus be added and set by CORBA request
 	    setSteeringMethod.
 
-	26. Finer handling of exceptions in CORBA initialization. 
-	
+	26. Finer handling of exceptions in CORBA initialization.
+
 hpp-corbaserver 1.2 released February 18, 2008.
 
 	25. Added two requests to make a joint visible or transparent.
@@ -93,7 +93,7 @@ hpp-corbaserver 1.2 released February 18, 2008.
 	19. Reorganization of header files to solve some compilation
 	    problems.
 	18. Adaptation to changes in hppCore.
-	
+
 hpp-corbaserver 1.1 released October 10, 2007.
 
 	17. Added missing hppTools.h in EXTRA_DIST.
@@ -121,9 +121,9 @@ hpp-corbaserver 1.1 released October 10, 2007.
 	6. Added a request to create a box in obstacle server.
 	5. Correction of a bug in Corba request that adds a polyhedron to
 	   a list.
-	
+
 hpp-corbaserver 1.0 released August 27th, 2007.
-	
+
 	4. Replaced ChppPolyhedron by CkppKCDPolyhedron since they are the same.
 	3. Replaced ChppDevice by CkppDeviceComponent since
 	  1 ChppDevice derives from CkppDeviceComponent and
