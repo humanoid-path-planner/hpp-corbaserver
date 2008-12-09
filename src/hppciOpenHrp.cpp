@@ -450,12 +450,13 @@ void setHRP2OuterLists(ChppHumanoidRobotShPtr i_hrp2)
 
 // ==============================================================================
 
-ktStatus ChppciOpenHrpClient::loadHrp2Model(ChppHumanoidRobotShPtr &HRP2Device)
+ktStatus ChppciOpenHrpClient::loadHrp2Model(ChppHumanoidRobotShPtr &HRP2Device,
+					    const char *model)
 {
   // 
   // Get Corba objects containing model of HRP2 and Obstacles.
   //
-  if (getRobotURL()!= KD_OK) {
+  if (getRobotURL(model)!= KD_OK) {
     privateCorbaObject->orb->destroy();
     cerr << "ERROR : ChppciOpenHrpClient::loadHrp2Model::Failed to load Hrp2 model" 
 	 << endl;
@@ -555,10 +556,10 @@ ktStatus ChppciOpenHrpClient::loadRobotModel(std::string inFilename, std::string
 
 // ==============================================================================
 
-ktStatus  ChppciOpenHrpClient::loadHrp2Model()
+ktStatus  ChppciOpenHrpClient::loadHrp2Model(const char *model)
 {
   ChppHumanoidRobotShPtr HRP2Device;
-  if (loadHrp2Model(HRP2Device) != KD_OK){
+  if (loadHrp2Model(HRP2Device, model) != KD_OK){
     return KD_ERROR;
   }
   
@@ -576,10 +577,10 @@ ktStatus  ChppciOpenHrpClient::loadHrp2Model()
 
 // ==============================================================================
 
-ktStatus  ChppciOpenHrpClient::loadHrp2Model(double inPenetration)
+ktStatus  ChppciOpenHrpClient::loadHrp2Model(double inPenetration, const char *model)
 {
   ChppHumanoidRobotShPtr HRP2Device;
-  if (loadHrp2Model(HRP2Device) != KD_OK){
+  if (loadHrp2Model(HRP2Device, model) != KD_OK){
     return KD_ERROR;
   }
   
@@ -705,7 +706,7 @@ ktStatus CinternalCorbaObject::getModelLoader()
 }
 
 
-ktStatus ChppciOpenHrpClient::getRobotURL()
+ktStatus ChppciOpenHrpClient::getRobotURL(const char *model)
 {
   if (privateCorbaObject->getModelLoader() != KD_OK){
       return KD_ERROR;
@@ -714,8 +715,13 @@ ktStatus ChppciOpenHrpClient::getRobotURL()
   if(privateCorbaObject->attLoader) {
     //Get HRP2 Information 
     std::string url("file://");
-    url += std::string(STRING_OPENHRP_PREFIX);
-    url += std::string("/etc/HRP2JRL/HRP2JRLmain.wrl");
+
+    if (model)
+      url += model;
+    else {
+      url += std::string(STRING_OPENHRP_PREFIX);
+      url += std::string("/etc/HRP2JRL/HRP2JRLmain.wrl");
+    }
 
     privateCorbaObject->HRP2info = privateCorbaObject->attLoader->loadURL(url.c_str());
     

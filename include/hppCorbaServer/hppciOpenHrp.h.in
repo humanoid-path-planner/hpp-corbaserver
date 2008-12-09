@@ -64,7 +64,7 @@ public:
       with this robot by calling ChppPlanner::addHppProblem(CkppDeviceComponentShPtr robot).
       Note that the robot is set into half-sitting configuration.
   */
-  ktStatus loadHrp2Model() __attribute__ ((deprecated));
+  ktStatus loadHrp2Model(const char *model = NULL) __attribute__ ((deprecated));
 
   /** 
       \brief Initialize Orb and load model of HRP2 by sending a Corba request modelLoader to OpenHRP. 
@@ -75,7 +75,7 @@ public:
       with this robot by calling ChppPlanner::addHppProblem(CkppDeviceComponentShPtr robot).
       Note that the robot is set into half-sitting configuration.
   */
-  ktStatus loadHrp2Model(double inPenetration);
+  ktStatus loadHrp2Model(double inPenetration, const char *model = NULL);
 
   /**
      \brief  Initialize Orb and load model of HRP2 by sending a Corba request modelLoader to OpenHRP.
@@ -83,7 +83,7 @@ public:
 
       Note that the robot is set into half-sitting configuration.
   */
-  ktStatus loadHrp2Model(ChppHumanoidRobotShPtr &outDevice);
+  ktStatus loadHrp2Model(ChppHumanoidRobotShPtr &outDevice, const char *model = NULL);
 
   /**
      \brief  Initialize Orb and load model of a robot by sending a Corba request modelLoader to OpenHRP.
@@ -129,7 +129,7 @@ private :
   /**
      \brief Get URL of robot for loadRobotModel function.
   */
-  ktStatus getRobotURL();
+  ktStatus getRobotURL(const char *model = NULL);
 
   /**
      \brief Get URL of obstacle for loadObstacleModel function.
