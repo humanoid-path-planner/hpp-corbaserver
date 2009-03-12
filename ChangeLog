@@ -1,3 +1,5 @@
+	57. Update default path to HRP2 VRML file to OpenHRP-3 location.
+	
 hpp-corbaserver 1.6 released Dec  9, 2008
 
 	56. Added optional robot model path to loadHrp2Model(). 

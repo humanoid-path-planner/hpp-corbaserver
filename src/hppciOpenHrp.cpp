@@ -720,7 +720,7 @@ ktStatus ChppciOpenHrpClient::getRobotURL(const char *model)
       url += model;
     else {
       url += std::string(STRING_OPENHRP_PREFIX);
-      url += std::string("/etc/HRP2JRL/HRP2JRLmain.wrl");
+      url += std::string("/Controller/IOserver/robot/HRP2JRL/model/HRP2JRLmain.wrl");
     }
 
     privateCorbaObject->HRP2info = privateCorbaObject->attLoader->loadURL(url.c_str());
