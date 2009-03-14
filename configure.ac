@@ -6,7 +6,7 @@ dnl
 dnl   Author: Florent Lamiraux and Mathieu Poirier LAAS-CNRS
 dnl
 
-AC_INIT([hppCorbaServer],[1.6.1.99],[openrobot@laas.fr])
+AC_INIT([hppCorbaServer],[1.7],[openrobot@laas.fr])
 AC_PREREQ(2.59)
 
 if test "$CFLAGS$CXXFLAGS" = ""; then
@@ -43,11 +43,11 @@ PKG_CHECK_MODULES(KWSPLUS, kwsPlus_reqd)
 KWSPLUS_PREFIX=`$PKG_CONFIG kwsPlus --variable=prefix`
 AC_SUBST(KWSPLUS_PREFIX)
 
-define(hppcore_reqd, [hppCore >= 1.6])
+define(hppcore_reqd, [hppCore >= 1.7])
 AC_SUBST(HPPCORE_REQD, "hppcore_reqd")
 PKG_CHECK_MODULES(HPPCORE, hppcore_reqd)
-HPPCORE_PREFIX=`$PKG_CONFIG hppCore --variable=prefix`
-AC_SUBST(HPPCORE_PREFIX)
+HPPCORE_DOCDIR=`$PKG_CONFIG hppCore --variable=docdir`
+AC_SUBST(HPPCORE_DOCDIR)
 
 PKG_CHECK_MODULES(OMNIORB4, omniORB4)
 OMNIORB_PREFIX=`$PKG_CONFIG omniORB4 --variable=prefix`
@@ -68,7 +68,7 @@ AM_CONDITIONAL(OPENHRP, test x$with_openhrp = xtrue)
 AC_SUBST(OPENHRP_DEPENDENCES, [])
 
 if test x$with_openhrp = xtrue; then
-	define(hppopenhrp_reqd, [hppOpenHRP >= 1.2])
+	define(hppopenhrp_reqd, [hppOpenHRP >= 1.4])
 	AC_SUBST(HPPOPENHRP_REQD, "hppopenhrp_reqd")
 	PKG_CHECK_MODULES(HPPOPENHRP, hppopenhrp_reqd)
 	HPPOPENHRP_PREFIX=`$PKG_CONFIG hppOpenHRP --variable=prefix`
@@ -76,17 +76,17 @@ if test x$with_openhrp = xtrue; then
 	AC_SUBST(HPPOPENHRP_PREFIX)
 	AC_SUBST(OPENHRP_PREFIX)
 	
-	define(jrlmodelloader_reqd, [jrl-modelloader >= 1.2])
+	define(jrlmodelloader_reqd, [jrl-modelloader >= 1.4])
 	AC_SUBST(JRLMODELLOADER_REQD, "jrlmodelloader_reqd")
 	PKG_CHECK_MODULES(MODELLOADERJRL, jrlmodelloader_reqd)
 	MODELLOADERJRL_IDL=`$PKG_CONFIG jrl-modelloader --variable=idldir`
 	AC_SUBST(MODELLOADERJRL_IDL)
 
-	define(hrp2dynamics_reqd, [hrp2Dynamics >= 1.0])
+	define(hrp2dynamics_reqd, [hrp2Dynamics >= 1.1])
 	AC_SUBST(HRP2DYNAMICS_REQD, "hrp2dynamics_reqd")
 	PKG_CHECK_MODULES(HRP2DYNAMICS, hrp2dynamics_reqd)
 
-	define(hrp2_14_reqd, [hrp2_14 >= 1.0])
+	define(hrp2_14_reqd, [hrp2_14 >= 1.6])
 	AC_SUBST(HRP2_14_REQD, "hrp2_14_reqd")
 	PKG_CHECK_MODULES(HRP2_14, hrp2_14_reqd)
 
