@@ -5,7 +5,7 @@
 # Author: Florent Lamiraux
 #
 
-hppCoredir = $(datadir)/doc/hppCorbaServer
+hppCorbaServerdir = $(datadir)/doc/hppCorbaServer/html
 
 EXTRA_DIST = \
 	header.html \
@@ -16,12 +16,11 @@ EXTRA_DIST = \
 
 
 install: html-doc
-	mkdir -p $(hppCoredir)
-	$(INSTALL_DATA) html/* $(hppCoredir)
-	mkdir -p $(hppCoredir)/pictures
-	$(INSTALL_DATA) $(srcdir)/pictures/* $(hppCoredir)/pictures
-	mkdir -p $(datadir)/doc/doxytag
-	$(INSTALL_DATA) hppCorbaServer.doxytag $(datadir)/doc/doxytag
+	mkdir -p $(hppCorbaServerdir)
+	$(INSTALL_DATA) html/* $(hppCorbaServerdir)
+	mkdir -p $(hppCorbaServerdir)/pictures
+	$(INSTALL_DATA) $(srcdir)/pictures/* $(hppCorbaServerdir)/pictures
+	$(INSTALL_DATA) hppCorbaServer.doxytag $(hppCorbaServerdir)
 
 html-doc: hpp.dox
 	doxygen $<
