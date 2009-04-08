@@ -1,3 +1,7 @@
+hpp-corbaserver 1.7.1 released April 8, 2009
+
+	59. Call function not specific to HRP2 when constructing another robot
+	
 hpp-corbaserver 1.7 released March 14, 2009
 
 	58. Update documentation build and install

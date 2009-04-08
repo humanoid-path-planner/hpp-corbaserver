@@ -6,7 +6,7 @@ dnl
 dnl   Author: Florent Lamiraux and Mathieu Poirier LAAS-CNRS
 dnl
 
-AC_INIT([hppCorbaServer],[1.7.99],[openrobot@laas.fr])
+AC_INIT([hppCorbaServer],[1.7.1],[openrobot@laas.fr])
 AC_PREREQ(2.59)
 
 if test "$CFLAGS$CXXFLAGS" = ""; then
@@ -68,7 +68,7 @@ AM_CONDITIONAL(OPENHRP, test x$with_openhrp = xtrue)
 AC_SUBST(OPENHRP_DEPENDENCES, [])
 
 if test x$with_openhrp = xtrue; then
-	define(hppopenhrp_reqd, [hppOpenHRP >= 1.4])
+	define(hppopenhrp_reqd, [hppOpenHRP >= 1.6.0])
 	AC_SUBST(HPPOPENHRP_REQD, "hppopenhrp_reqd")
 	PKG_CHECK_MODULES(HPPOPENHRP, hppopenhrp_reqd)
 	HPPOPENHRP_PREFIX=`$PKG_CONFIG hppOpenHRP --variable=prefix`
