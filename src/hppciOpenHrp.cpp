@@ -16,6 +16,7 @@ INCLUDE
 #include "jrl-modelloader.hh"
 
 #include "hppOpenHRP/parserOpenHRPKineoDevice.h"
+#include "hppOpenHRP/parserOpenHRPKineoDeviceHrp2.h"
 #include "hppOpenHRP/parserOpenHRPKineoObstacle.h"
 
 #include "hppModel/hppJoint.h"
@@ -466,7 +467,7 @@ ktStatus ChppciOpenHrpClient::loadHrp2Model(ChppHumanoidRobotShPtr &HRP2Device,
   //
   // Build KineoHRP2 from OpenHRPModel
   //
-  CparserOpenHRPKineoDevice parser(privateCorbaObject->HRP2info) ;
+  CparserOpenHRPKineoDeviceHrp2 parser(privateCorbaObject->HRP2info) ;
   ChppHumanoidRobotShPtr humanoid;
   humanoid = ChppSpecificHumanoidRobot<Chrp2OptHumanoidDynamicRobot>::create(privateCorbaObject->HRP2info->getCharObject()->name());
   parser.parser(humanoid);

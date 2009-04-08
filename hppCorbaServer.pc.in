@@ -9,7 +9,7 @@ Name: @PACKAGE@
 Description: Corba server of humanoid path planner
 Version: @VERSION@
 Requires: @HPPCORE_REQD@, omniORB4 >= 4.0.7@OPENHRP_DEPENDENCES@
-Libs: -L${libdir} -lhppCorbaServer
+Libs: -Wl,-R${libdir} -L${libdir} -lhppCorbaServer
 Cflags: -I${includedir}
 
 openhrp_flag=@WITH_OPENHRP@
