@@ -1,3 +1,7 @@
+hpp-corbaserver 1.7.2 released April 17, 2009
+
+	60. Adaptation to modifications in kwsPlus.
+	
 hpp-corbaserver 1.7.1 released April 8, 2009
 
 	59. Call function not specific to HRP2 when constructing another robot
