@@ -8,11 +8,11 @@
 #include <iostream>
 #include "hppCorbaServer/hppciServer.h"
 #include "hppCorbaServer/hppciProblem.h"
-#include "flicSteeringMethod.h"
-#include "reedsSheppSteeringMethod.h"
-#include "hppVisRdmBuilder.h"
-#include "kwsPlusPCARdmBuilder.h"
-#include "kwsIPPRdmBuilder2.h"
+#include "kwsPlus/directPath/flicSteeringMethod.h"
+#include "kwsPlus/directPath/reedsSheppSteeringMethod.h"
+#include "kwsPlus/roadmap/hppVisRdmBuilder.h"
+#include "kwsPlus/roadmap/kwsPlusPCARdmBuilder.h"
+#include "KineoWorks2/kwsIPPRdmBuilder.h"
 
 // Select verbosity at configuration by setting CXXFLAGS="... -DDEBUG=[1 or 2]"
 #if DEBUG==2

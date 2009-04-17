@@ -9,10 +9,14 @@
 #define HPPCI_SERVER_H
 
 #include "hppCore/hppPlanner.h"
-#include "kwsPlusSteeringMethodFactory.h"
-#include "kwsPlusDistanceFactory.h"
-#include "kwsPlusDiffusionNodePickerFactory.h"
-#include "kwsPlusDiffusionShooterFactory.h"
+
+KIT_PREDEF_CLASS(CkwsDiffusionNodePicker);
+KIT_PREDEF_CLASS(CkwsDiffusionShooter);
+
+class CkwsPlusSteeringMethodFactory;
+class CkwsPlusDistanceFactory;
+class CkwsPlusDiffusionNodePickerFactory;
+class CkwsPlusDiffusionShooterFactory;
 
 class ChppciServerPrivate;
 

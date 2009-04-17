@@ -12,6 +12,11 @@
 #include "hppCorbaServer/hppciServerPrivate.h"
 #include "hppciExceptionHandlingMacros.h"
 
+#include "kwsPlus/directPath/kwsPlusSteeringMethodFactory.h"
+#include "kwsPlus/directPath/kwsPlusDistanceFactory.h"
+#include "kwsPlus/roadmap/kwsPlusDiffusionNodePickerFactory.h"
+#include "kwsPlus/roadmap/kwsPlusDiffusionShooterFactory.h"
+
 // Select verbosity at configuration by setting CXXFLAGS="... -DDEBUG=[1 or 2]"
 #if DEBUG==2
 #define ODEBUG2(x) std::cout << "hppciServer.cpp:" << x << std::endl
