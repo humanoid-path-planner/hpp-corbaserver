@@ -6,7 +6,7 @@ dnl
 dnl   Author: Florent Lamiraux and Mathieu Poirier LAAS-CNRS
 dnl
 
-AC_INIT([hppCorbaServer],[1.7.2],[openrobot@laas.fr])
+AC_INIT([hppCorbaServer],[1.7.3],[openrobot@laas.fr])
 AC_PREREQ(2.59)
 
 if test "$CFLAGS$CXXFLAGS" = ""; then
