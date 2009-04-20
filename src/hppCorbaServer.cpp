@@ -1,3 +1,4 @@
+#include <iostream>
 #include "hppCorbaServer/hppciServer.h"
 #include "KineoModel/kppLicense.h"
 

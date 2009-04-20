@@ -1,3 +1,6 @@
+
+	61. Added missing #include <iostream>
+	
 hpp-corbaserver 1.7.2 released April 17, 2009
 
 	60. Adaptation to modifications in kwsPlus.
