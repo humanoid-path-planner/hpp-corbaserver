@@ -1,3 +1,9 @@
+2009-05-01  Florent Lamiraux  <florent@laas.fr>
+
+	Remove automatically generated files.
+	* depcomp: Remove.
+	* missing: Remove.
+
 hpp-corbaserver 1.7.3 released April 20, 2009
 
 	61. Added missing #include <iostream>
