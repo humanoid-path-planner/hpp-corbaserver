@@ -1,5 +1,12 @@
 2009-05-01  Florent Lamiraux  <florent@laas.fr>
 
+	Put #undef toto between #ifdef toto and #endif.
+	* include/hppCorbaServer/hppciObstacle.h: .
+	* include/hppCorbaServer/hppciProblem.h: .
+	* include/hppCorbaServer/hppciRobot.h: .
+
+2009-05-01  Florent Lamiraux  <florent@laas.fr>
+
 	Add NEWS files to explain modifications.
 	* NEWS: New.
 
