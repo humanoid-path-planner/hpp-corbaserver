@@ -1,5 +1,10 @@
 2009-05-01  Florent Lamiraux  <florent@laas.fr>
 
+	Add NEWS files to explain modifications.
+	* NEWS: New.
+
+2009-05-01  Florent Lamiraux  <florent@laas.fr>
+
 	Homogeneize interface in ChppciOpenHrpClient class.
 	* idl/server/hppciObstacleServer.idl.in: 
 	* include/hppCorbaServer/hppciOpenHrp.h.in: 

@@ -1,0 +1,65 @@
+Interface to ModelLoader implemented by class ChppciOpenHrpClient have been 
+homogeneized:
+
+  1. deprecated functions have been removed,
+
+  2. ktStatus loadHrp2Model(double inPenetration, const char *model=NULL)
+
+     has been replaced by
+
+     ktStatus 
+     loadHrp2Model(double inPenetration, 
+                   const std::string &inModel=
+                   std::string("OPENHRP_PREFIX/Controller/IOserver/robot/HRP2JRL/model/HRP2JRLmain.wrl"))
+
+     where OPENHRP_PREFIX is the installation prefix of OpenHRP resolved at
+     configuration.
+
+  3. ktStatus loadHrp2Model(ChppHumanoidRobotShPtr &outDevice, 
+                            const char *model=NULL)
+     has been replaced by
+
+     ktStatus 
+     loadHrp2Model(ChppHumanoidRobotShPtr &outDevice, 
+                   const std::string &inModel=
+                   std::string("OPENHRP_PREFIX/Controller/IOserver/robot/HRP2JRL/model/HRP2JRLmain.wrl"))
+
+     where OPENHRP_PREFIX is the installation prefix of OpenHRP resolved at
+     configuration.
+
+  4. ktStatus 
+     loadRobotModel(std::string inFilename, std::string inDeviceName, 
+                    ChppDeviceShPtr &outDevice, 
+                    std::string inOpenHrpPrefix=
+                    std::string("OPENHRP_PREFIX"))
+
+     has been replaced by
+
+     ktStatus 
+     loadRobotModel(std::string inFilename, std::string inDeviceName, 
+                    ChppDeviceShPtr &outDevice, 
+                    std::string inDirectory=
+                    std::string("OPENHRP_PREFIX")+std::string("/etc"))
+     where OPENHRP_PREFIX is the installation prefix of OpenHRP resolved at
+     configuration.
+
+  5. ktStatus
+     loadObstacleModel(std::string inFilename, std::string inObstacleName, 
+                       CkppKCDPolyhedronShPtr &outPolyhedron, 
+                       std::string inOpenHrpPrefix=
+                       std::string("OPENHRP_PREFIX"))
+
+     has been replaced by
+
+     ktStatus 
+     loadObstacleModel(std::string inFilename, std::string inObstacleName, 
+                       CkppKCDPolyhedronShPtr& outPolyhedron,
+                       std::string inDirectory=
+                       std::string("@OPENHRP_PREFIX@")+std::string("/etc/"));
+
+     where OPENHRP_PREFIX is the installation prefix of OpenHRP resolved at
+     configuration.
+
+
+     In Changes 2, 3, 4, and 5, using the default argument to specify paths
+     yields the same behavior as formerly.
