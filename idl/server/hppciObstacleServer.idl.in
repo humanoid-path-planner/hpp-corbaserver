@@ -133,13 +133,14 @@ module hppCorbaServer {
 
        \param inPolyName Name of the polyhedron.
        \param inFilename Name of file in ModelLoader
-       \param inOpenHrpPrefix Prefix of installation in ModelLoader
+       \param inDirectory Directory containing the file 
+       (if "", ModelLoader default location is used).
 
        \return 0 if success, -1 if failure.
 
      */
     short loadModelLoaderObstacle(in string inPolyName, in string inFilename,
-				  in string inOpenHrpPrefix);
+				  in string inDirectory);
 #endif
 
     /**

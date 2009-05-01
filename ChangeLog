@@ -1,5 +1,16 @@
 2009-05-01  Florent Lamiraux  <florent@laas.fr>
 
+	Homogeneize interface in ChppciOpenHrpClient class.
+	* idl/server/hppciObstacleServer.idl.in: 
+	* include/hppCorbaServer/hppciOpenHrp.h.in: 
+	* src/hppciObstacle.cpp: 
+	* src/hppciOpenHrp.cpp: 
+	Replace const char* by std::string in interface,
+	pass directory instead of OpenHrp prefix in some
+ 	functions.
+
+2009-05-01  Florent Lamiraux  <florent@laas.fr>
+
 	Remove automatically generated files.
 	* depcomp: Remove.
 	* missing: Remove.

@@ -317,12 +317,12 @@ CORBA::Short ChppciObstacle_impl::addTriangle(const char* inPolyhedronName,
 CORBA::Short 
 ChppciObstacle_impl::loadModelLoaderObstacle(const char* inPolyName, 
 					     const char* inFilename,
-					     const char* inOpenHrpPrefix)
+					     const char* inDirectory)
     throw(CORBA::SystemException)
 {
   std::string polyName(inPolyName);
   std::string filename(inFilename);
-  std::string openHrpPrefix(inOpenHrpPrefix);
+  std::string directory(inDirectory);
 
   ChppciOpenHrpClient openHrpClient(attHppPlanner);
 
@@ -331,14 +331,14 @@ ChppciObstacle_impl::loadModelLoaderObstacle(const char* inPolyName,
   */
   CkppKCDPolyhedronShPtr polyhedron = CkppKCDPolyhedron::create(polyName);
   /*
-    Test whether openHrpPrefix is provided.
+    Test whether directory is provided.
     If not take default argument 
   */
-  if (openHrpPrefix != "") {
+  if (directory != "") {
     if (openHrpClient.loadObstacleModel(filename, polyName, polyhedron, 
-					openHrpPrefix) != KD_OK) {
+					directory) != KD_OK) {
       ODEBUG1(":loadModelLoaderObstacle: failed to load obstacle from Modelloader.");
-      ODEBUG1(":loadModelLoaderObstacle:   openHrp prefix=" << openHrpPrefix);
+      ODEBUG1(":loadModelLoaderObstacle:   openHrp prefix=" << directory);
       return -1;
     }
   } else {

@@ -451,13 +451,35 @@ void setHRP2OuterLists(ChppHumanoidRobotShPtr i_hrp2)
 
 // ==============================================================================
 
-ktStatus ChppciOpenHrpClient::loadHrp2Model(ChppHumanoidRobotShPtr &HRP2Device,
-					    const char *model)
+ktStatus  ChppciOpenHrpClient::loadHrp2Model(double inPenetration, 
+					     const std::string& inModel)
+{
+  ChppHumanoidRobotShPtr HRP2Device;
+  if (loadHrp2Model(HRP2Device, inModel) != KD_OK){
+    return KD_ERROR;
+  }
+  
+  //
+  // ADD HRP2 to the planner
+  // 
+  if (hppPlanner->addHppProblem(HRP2Device, inPenetration) != KD_OK) {
+    cerr << "ChppciOpenHrpClient::loadHrp2Model: Failed to add robot" << endl;
+    return KD_ERROR;
+  }
+
+  return KD_OK;
+ 
+}
+
+// ==============================================================================
+
+ktStatus ChppciOpenHrpClient::loadHrp2Model(ChppHumanoidRobotShPtr& HRP2Device,
+					    const std::string& inModel)
 {
   // 
   // Get Corba objects containing model of HRP2 and Obstacles.
   //
-  if (getRobotURL(model)!= KD_OK) {
+  if (getRobotURL(inModel)!= KD_OK) {
     privateCorbaObject->orb->destroy();
     cerr << "ERROR : ChppciOpenHrpClient::loadHrp2Model::Failed to load Hrp2 model" 
 	 << endl;
@@ -503,12 +525,13 @@ ktStatus ChppciOpenHrpClient::loadHrp2Model(ChppHumanoidRobotShPtr &HRP2Device,
   return KD_OK;
 }
 
+// ==============================================================================
 
-
-
-ktStatus ChppciOpenHrpClient::loadRobotModel(std::string inFilename, std::string inDeviceName, 
-					     ChppDeviceShPtr &outDevice, 
-					     std::string inOpenHrpPrefix)
+ktStatus 
+ChppciOpenHrpClient::loadRobotModel(const std::string& inFilename, 
+				    const std::string& inDeviceName, 
+				    ChppDeviceShPtr &outDevice, 
+				    const std::string& inDirectory)
 {
   ModelLoader_var loader;
   if (privateCorbaObject->getModelLoader() != KD_OK){
@@ -521,8 +544,8 @@ ktStatus ChppciOpenHrpClient::loadRobotModel(std::string inFilename, std::string
   // Build hppDevice from OpenHRPModel
   //
   std::string url("file://");
-  url += inOpenHrpPrefix;
-  url += std::string("/etc/");
+  url += inDirectory;
+  url += std::string("/");
   url += inFilename;
     
   std:: cout << "ChppciOpenHrpClient::loadRobotModel: reading " << url << std::endl;
@@ -557,58 +580,18 @@ ktStatus ChppciOpenHrpClient::loadRobotModel(std::string inFilename, std::string
 
 // ==============================================================================
 
-ktStatus  ChppciOpenHrpClient::loadHrp2Model(const char *model)
-{
-  ChppHumanoidRobotShPtr HRP2Device;
-  if (loadHrp2Model(HRP2Device, model) != KD_OK){
-    return KD_ERROR;
-  }
-  
-  //
-  // ADD HRP2 to the planner
-  // 
-  if (hppPlanner->addHppProblem(HRP2Device, 0.05) != KD_OK) {
-    cerr << "ChppciOpenHrpClient::loadHrp2Model: Failed to add robot" << endl;
-    return KD_ERROR;
-  }
-
-  return KD_OK;
- 
-}
-
-// ==============================================================================
-
-ktStatus  ChppciOpenHrpClient::loadHrp2Model(double inPenetration, const char *model)
-{
-  ChppHumanoidRobotShPtr HRP2Device;
-  if (loadHrp2Model(HRP2Device, model) != KD_OK){
-    return KD_ERROR;
-  }
-  
-  //
-  // ADD HRP2 to the planner
-  // 
-  if (hppPlanner->addHppProblem(HRP2Device, inPenetration) != KD_OK) {
-    cerr << "ChppciOpenHrpClient::loadHrp2Model: Failed to add robot" << endl;
-    return KD_ERROR;
-  }
-
-  return KD_OK;
- 
-}
-
-// ==============================================================================
-
-ktStatus  ChppciOpenHrpClient::loadObstacleModel(std::string inFilename, std::string inObstacleName, 
-						 CkppKCDPolyhedronShPtr& outPolyhedron,
-						 std::string inOpenHrpPrefix)
+ktStatus 
+ChppciOpenHrpClient::loadObstacleModel(const std::string& inFilename, 
+				       const std::string& inObstacleName, 
+				       CkppKCDPolyhedronShPtr& outPolyhedron,
+				       const std::string& inDirectory)
 {
   // 
   // Get Corba objects containing model of Obstacles.
   //
   std::string url("file://");
-  url += inOpenHrpPrefix;
-  url += std::string("/etc/");
+  url += inDirectory;
+  url += std::string("/");
   url += inFilename;
 
   if (getObstacleURL(url)!= KD_OK) {
@@ -707,7 +690,9 @@ ktStatus CinternalCorbaObject::getModelLoader()
 }
 
 
-ktStatus ChppciOpenHrpClient::getRobotURL(const char *model)
+// ==============================================================================
+
+ktStatus ChppciOpenHrpClient::getRobotURL(const std::string& inModel)
 {
   if (privateCorbaObject->getModelLoader() != KD_OK){
       return KD_ERROR;
@@ -717,12 +702,7 @@ ktStatus ChppciOpenHrpClient::getRobotURL(const char *model)
     //Get HRP2 Information 
     std::string url("file://");
 
-    if (model)
-      url += model;
-    else {
-      url += std::string(STRING_OPENHRP_PREFIX);
-      url += std::string("/Controller/IOserver/robot/HRP2JRL/model/HRP2JRLmain.wrl");
-    }
+    url += inModel;
 
     privateCorbaObject->HRP2info = privateCorbaObject->attLoader->loadURL(url.c_str());
     
@@ -737,7 +717,7 @@ ktStatus ChppciOpenHrpClient::getRobotURL(const char *model)
 
 // ==============================================================================
 
-ktStatus ChppciOpenHrpClient::getObstacleURL(std::string inFilename)
+ktStatus ChppciOpenHrpClient::getObstacleURL(const std::string& inFilename)
 {
   if (privateCorbaObject->getModelLoader() != KD_OK){
       return KD_ERROR;
