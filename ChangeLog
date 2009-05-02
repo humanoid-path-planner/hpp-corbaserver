@@ -1,5 +1,13 @@
 2009-05-02  Florent Lamiraux  <florent@laas.fr>
 
+	Cast into CkppGeometryComponent instead of CkppKCDPolyhedron.
+	* src/hppciRobot.cpp: 
+	In getJointInnerObject and getJointOuterObject
+	dynamic cast CkcdObject into CkppGeometry to retrieve
+	the name of the object.
+
+2009-05-02  Florent Lamiraux  <florent@laas.fr>
+
 	Replace getBody[inner|outer]Object by getJoint...
 	* idl/server/hppciRobotServer.idl.in,
 	* include/hppCorbaServer/hppciRobot.h,

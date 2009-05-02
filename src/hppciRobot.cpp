@@ -668,11 +668,13 @@ hppCorbaServer::nameSeq* ChppciRobot_impl::getJointInnerObject(const char* inBod
       for (unsigned int iObject=0; iObject < nbObjects; iObject++) {
 	CkcdObjectShPtr kcdObject = innerObjectList[iObject];
 	// Cast object into CkppKCDPolyhedron.
-	if (CkppKCDPolyhedronShPtr kppPolyhedron = boost::dynamic_pointer_cast<CkppKCDPolyhedron>(kcdObject)) {
-	  // Get name of polyhedron and add it into the list.
-	  std::string polyhedronName = kppPolyhedron->name();
-	  nameList[iObject] = (char*)malloc(sizeof(char)*(polyhedronName.length()+1));
-	  strcpy(nameList[iObject], polyhedronName.c_str());
+	if (CkppGeometryComponentShPtr kppGeometry = 
+	    KIT_DYNAMIC_PTR_CAST(CkppGeometryComponent, kcdObject)) {
+	  // Get name of geometry and add it into the list.
+	  std::string geometryName = kppGeometry->name();
+	  nameList[iObject] = 
+	    (char*)malloc(sizeof(char)*(geometryName.length()+1));
+	  strcpy(nameList[iObject], geometryName.c_str());
 	}
       }
     }
@@ -707,11 +709,12 @@ hppCorbaServer::nameSeq* ChppciRobot_impl::getJointOuterObject(const char* inBod
       for (unsigned int iObject=0; iObject < nbObjects; iObject++) {
 	CkcdObjectShPtr kcdObject = outerObjectList[iObject];
 	// Cast object into CkppKCDPolyhedron.
-	if (CkppKCDPolyhedronShPtr kppPolyhedron = boost::dynamic_pointer_cast<CkppKCDPolyhedron>(kcdObject)) {
-	  // Get name of polyhedron and add it into the list.
-	  std::string polyhedronName = kppPolyhedron->name();
-	  nameList[iObject] = (char*)malloc(sizeof(char)*(polyhedronName.length()+1));
-	  strcpy(nameList[iObject], polyhedronName.c_str());
+	if (CkppGeometryComponentShPtr kppGeometry = 
+	    KIT_DYNAMIC_PTR_CAST(CkppGeometryComponent, kcdObject)) {
+	  // Get name of geometry and add it into the list.
+	  std::string geometryName = kppGeometry->name();
+	  nameList[iObject] = (char*)malloc(sizeof(char)*(geometryName.length()+1));
+	  strcpy(nameList[iObject], geometryName.c_str());
 	}
       }
     }
