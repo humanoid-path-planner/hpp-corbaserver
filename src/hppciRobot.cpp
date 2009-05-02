@@ -648,17 +648,16 @@ CORBA::Short ChppciRobot_impl::createBody(const char* inBodyName)
 
 // ==========================================================================
 
-hppCorbaServer::nameSeq* ChppciRobot_impl::getBodyInnerObject(const char* inBodyName)
+hppCorbaServer::nameSeq* ChppciRobot_impl::getJointInnerObject(const char* inBodyName)
 {
   std::string bodyName(inBodyName);
 
   hppCorbaServer::nameSeq *innerObjectSeq = NULL;
   // Find the body corresponding to the name in ChppPlanner object.
-  ChppBodyConstShPtr hppBody = attHppPlanner->findBodyByName(bodyName);
-  CkwsKCDBodyConstShPtr kcdBody;
+  CkwsKCDBodyConstShPtr kcdBody = attHppPlanner->findBodyByJointName(bodyName);;
 
-  if (hppBody) {
-    std::vector<CkcdObjectShPtr> innerObjectList = hppBody->innerObjects();
+  if (kcdBody) {
+    std::vector<CkcdObjectShPtr> innerObjectList = kcdBody->innerObjects();
     if (innerObjectList.size() > 0) {
       unsigned int nbObjects = innerObjectList.size();
       // Allocate result now that the size is known.
@@ -689,17 +688,16 @@ hppCorbaServer::nameSeq* ChppciRobot_impl::getBodyInnerObject(const char* inBody
 
 // ==========================================================================
 
-hppCorbaServer::nameSeq* ChppciRobot_impl::getBodyOuterObject(const char* inBodyName)
+hppCorbaServer::nameSeq* ChppciRobot_impl::getJointOuterObject(const char* inBodyName)
 {
   std::string bodyName(inBodyName);
 
   hppCorbaServer::nameSeq *outerObjectSeq = NULL;
   // Find the body corresponding to the name in ChppPlanner object.
-  ChppBodyConstShPtr hppBody = attHppPlanner->findBodyByName(bodyName);
-  CkwsKCDBodyConstShPtr kcdBody;
+  CkwsKCDBodyConstShPtr kcdBody = attHppPlanner->findBodyByJointName(bodyName);
 
-  if (hppBody) {
-    std::vector<CkcdObjectShPtr> outerObjectList = hppBody->outerObjects();
+  if (kcdBody) {
+    std::vector<CkcdObjectShPtr> outerObjectList = kcdBody->outerObjects();
     if (outerObjectList.size() > 0) {
       unsigned int nbObjects = outerObjectList.size();
       // Allocate result now that the size is known.
@@ -718,7 +716,7 @@ hppCorbaServer::nameSeq* ChppciRobot_impl::getBodyOuterObject(const char* inBody
       }
     }
   } else {
-    ODEBUG1(":getBodyInnerObject: body of name " << " not found.");
+    ODEBUG1(":getBodyOuterObject: body of name " << " not found.");
   }
   if (!outerObjectSeq) {
     outerObjectSeq = new hppCorbaServer::nameSeq(0);

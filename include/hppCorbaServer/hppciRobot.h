@@ -174,10 +174,10 @@ public:
   /// \brief Comment in interface hppCorbaServer::ChppciRobot::createBody.
   virtual CORBA::Short createBody(const char* inBodyName)
     throw(CORBA::SystemException);
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::getBodyInnerObject.
-  virtual hppCorbaServer::nameSeq* getBodyInnerObject(const char* inBodyName);
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::getBodyOuterObject.
-  virtual hppCorbaServer::nameSeq* getBodyOuterObject(const char* inBodyName);
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::getJointInnerObject.
+  virtual hppCorbaServer::nameSeq* getJointInnerObject(const char* inBodyName);
+  /// \brief Comment in interface hppCorbaServer::ChppciRobot::getJointOuterObject.
+  virtual hppCorbaServer::nameSeq* getJointOuterObject(const char* inBodyName);
 
   /// \brief Comment in interface hppCorbaServer::ChppciRobot::setPenetration.
   virtual CORBA::Short setPenetration(CORBA::UShort inProblemId, CORBA::Double inPenetration);

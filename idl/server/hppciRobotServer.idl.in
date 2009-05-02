@@ -258,18 +258,19 @@ module hppCorbaServer {
     short createBody(in string inBodyName);
 
     /**
-       \brief Get the list of object attached to a body.
-       \param inBodyName name of the body.
+       \brief Get the list of objects attached to a joint.
+       \param inJointName name of the joint.
        \return list of names of KCDobject attached to the body.
     */
-    nameSeq getBodyInnerObject(in string inBodyName);
+    nameSeq getJointInnerObject(in string inJointName);
 
     /**
-       \brief Get the list of object tested for collision with a body.
-       \param inBodyName name of the body.
+       \brief Get the list of objects tested for collision with the body 
+	attached to a joint
+       \param inJointName name of the joint.
        \return list of names of KCDobject that are tested for collision with the body.
     */
-    nameSeq getBodyOuterObject(in string inBodyName);
+    nameSeq getJointOuterObject(in string inJointName);
 
     /** 
      *@}

@@ -1,3 +1,13 @@
+2009-05-02  Florent Lamiraux  <florent@laas.fr>
+
+	Replace getBody[inner|outer]Object by getJoint...
+	* idl/server/hppciRobotServer.idl.in,
+	* include/hppCorbaServer/hppciRobot.h,
+	* src/hppciRobot.cpp: In case the bodies of a
+        device are not of type ChppBody, they do not have
+        a name. It is therefore better to retrieve bodies
+        by the name of the joint they are attached to.
+
 2009-05-01  Florent Lamiraux  <florent@laas.fr>
 
 	Put #undef toto between #ifdef toto and #endif.
