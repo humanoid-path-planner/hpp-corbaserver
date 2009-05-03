@@ -637,9 +637,6 @@ CORBA::Short ChppciRobot_impl::createBody(const char* inBodyName)
     ODEBUG1(":createBody: failed to create body "	 << bodyName << ".");
     return -1;
   }
-  // Attach an empty outer object list.
-  std::vector<CkcdObjectShPtr> emptyObjectList ;
-  hppBody->setOuterObjects(emptyObjectList);
   // Store body in map.
   bodyMap[bodyName] = hppBody;
 
@@ -728,8 +725,6 @@ hppCorbaServer::nameSeq* ChppciRobot_impl::getJointOuterObject(const char* inBod
   return outerObjectSeq;
 }
 
-#define DOF_SHIFT 7 // DOF shift. extraDof + 6 dof of the free-flying base.
-
 // ==========================================================================
 
 CORBA::Short ChppciRobot_impl::setPenetration(CORBA::UShort inProblemId, 
@@ -778,7 +773,7 @@ ChppciRobot_impl::checkLinkCollision(CORBA::UShort inProblemId, CORBA::UShort jo
 throw(CORBA::SystemException)
 {
   unsigned int hppProblemId = (unsigned int)inProblemId;
-  unsigned int hppJointId = (unsigned int)jointId; // +DOF_SHIFT;
+  unsigned int hppJointId = (unsigned int)jointId; 
   
   unsigned int nbProblems = attHppPlanner->getNbHppProblems();
 
@@ -834,7 +829,6 @@ throw(CORBA::SystemException)
       }
       cout<<endl;
 #endif
-      hppBody->printCollisionStatus();
       // hppBody->printCollisionStatusFast();
       short res = (CORBA::Short) hppBody->computeEstimatedDistance();
 
@@ -1079,26 +1073,13 @@ CORBA::Short ChppciRobot_impl::addPolyToBody(const char* inBodyName, const char*
   ChppBodyShPtr hppBody = bodyMap[bodyName];
   CkppKCDPolyhedronShPtr kppPolyhedron = polyhedronMap[polyhedronName];
 
-#if 0
-  std::vector<CkcdObjectShPtr> innerObjectVector;
-  hppBody->innerObjects(innerObjectVector);
-  innerObjectVector.push_back(kppPolyhedron);
-  hppBody->setInnerObjects(innerObjectVector);
-
-  // If body is already attached to a joint, add polyhedron to the corresponding joint component.
-  CkwsJointShPtr kwsJoint = hppBody->joint();
-  if (CkppJointComponentShPtr kppJoint = KIT_DYNAMIC_PTR_CAST(CkppJointComponent, kwsJoint)) {
-    kppJoint->addSolidComponentRef(CkppSolidComponentRef::create(kppPolyhedron)); 
-  }  
-#else
   // Set polyhedron in given configuration.
   CkitMat4 pos;
   ConfigurationToCkitMat4(inConfig, pos);
   
-  if (!hppBody->addSolidComponent(CkppSolidComponentRef::create(kppPolyhedron), pos)) {
+  if (!hppBody->addInnerObject(CkppSolidComponentRef::create(kppPolyhedron), pos)) {
     return -1;
   }
-#endif
   return 0;
 
 }

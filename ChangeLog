@@ -1,3 +1,9 @@
+2009-05-03  Florent Lamiraux  <florent@laas.fr>
+
+	Replace call to deprecated functions.
+	* src/hppciOpenHrp.cpp: 
+	* src/hppciRobot.cpp: 
+
 2009-05-02  Florent Lamiraux  <florent@laas.fr>
 
 	Cast into CkppGeometryComponent instead of CkppKCDPolyhedron.

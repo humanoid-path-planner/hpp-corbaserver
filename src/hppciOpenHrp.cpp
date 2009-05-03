@@ -439,13 +439,11 @@ void setHRP2OuterLists(ChppHumanoidRobotShPtr i_hrp2)
 	//cout<<endl;
 	
 	// add to outerObject. 
-	hppBody->setOuterObjects(mergedList);      
-	
-	// debug
-	//cout<<"mergedlist "<<mergedList.size()<<" objects. "<<endl;
-	
-	// debug
-	//cout<<"has "<<hppBody->outerObjects().size()<<" outer objects "<<endl;
+	for (std::vector<CkcdObjectShPtr>::iterator it = mergedList.begin();
+	     it < mergedList.end();
+	     it++) {
+	  hppBody->addOuterObject(*it);
+	}
     }
 }
 
