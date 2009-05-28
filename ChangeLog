@@ -1,3 +1,8 @@
+2009-05-28  Florent Lamiraux  <florent@laas.fr>
+
+	Use stricter autoconf syntax.
+	* configure.ac: put macro arguments between brackets
+
 2009-05-03  Florent Lamiraux  <florent@laas.fr>
 
 	Replace call to deprecated functions.
