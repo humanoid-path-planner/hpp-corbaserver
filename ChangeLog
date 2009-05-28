@@ -1,3 +1,5 @@
+hpp-corbaserver 1.7.4 released May 25, 2009
+
 2009-05-28  Florent Lamiraux  <florent@laas.fr>
 
 	Use stricter autoconf syntax.
