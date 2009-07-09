@@ -1,5 +1,10 @@
 2009-07-09  Thomas Moulard  <thomas.moulard@gmail.com>
 
+	Remove buggy conflict flag.
+	* configure.ac: Remove pkg-config conflict keyword content.
+
+2009-07-09  Thomas Moulard  <thomas.moulard@gmail.com>
+
 	Fix pkg-config file.
 	* configure.ac: Fix error in libs.
 
