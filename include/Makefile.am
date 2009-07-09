@@ -1,24 +1,17 @@
-# Research carried out within the scope of the Associated
-# International Laboratory: Joint Japanese-French Robotics Laboratory
-# (JRL)
-#
-# Author: Florent Lamiraux
-#
+include $(top_srcdir)/build-aux/init.mk
 
-hppCorbaServerdir = @includedir@/hppCorbaServer
-hppCorbaServer_HEADERS = \
-	hppCorbaServer/hppciServer.h		\
-	hppCorbaServer/hppciObstacle.h		\
-	hppCorbaServer/hppciProblem.h		\
+# --- Distribute and install headers.
+nobase_include_HEADERS =			 	\
+	hppCorbaServer/hppciServer.h			\
+	hppCorbaServer/hppciObstacle.h			\
+	hppCorbaServer/hppciProblem.h			\
 	hppCorbaServer/hppciRobot.h
 
 if OPENHRP
-install-data-hook: hppciOpenHrp
-
-hppciOpenHrp:
-	$(INSTALL_DATA) hppCorbaServer/hppciOpenHrp.h @includedir@/hppCorbaServer
+ nobase_include_HEADERS +=			 	\
+	hppCorbaServer/hppciOpenHrp.h
 endif
 
-EXTRA_DIST = \
-	hppCorbaServer/hppciTools.h \
-	hppCorbaServer/hppciServerPrivate.h 
+EXTRA_DIST += 						\
+	hppCorbaServer/hppciTools.h 			\
+	hppCorbaServer/hppciServerPrivate.h

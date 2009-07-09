@@ -1,41 +1,73 @@
-dnl autoconf script for hppCorbaServer libs
-dnl
-dnl   Research carried out within the scope of the Associated International 
-dnl   Laboratory: Joint Japanese-French Robotics Laboratory (JRL)
-dnl
-dnl   Author: Florent Lamiraux and Mathieu Poirier LAAS-CNRS
-dnl
+# Don't expend macros beginning by JRL_.
+m4_pattern_forbid([^JRL_])
+AC_PREREQ([2.59])
 
-AC_INIT([hppCorbaServer],[1.7.4.99],[openrobot@laas.fr])
-AC_PREREQ(2.59)
+## --------------------- ##
+## Package configuration ##
+## --------------------- ##
+AC_INIT([hppCorbaServer],[1.7.4.99],[openrobot@laas.fr], [hppCorbaServer])
 
-if test "$CFLAGS$CXXFLAGS" = ""; then
-  setdefaultflags=yes
-else
-  setdefaultflags=no
-fi
+# Auxiliary files.
+AC_CONFIG_AUX_DIR([build-aux])
 
-AM_INIT_AUTOMAKE([foreign no-define])
-AC_PROG_INSTALL
-AC_PROG_LIBTOOL
+# Automake.
+AM_INIT_AUTOMAKE([1.9.6 dist-bzip2 -Wall nostdinc])
 
+## ------------- ##
+## C++ compiler  ##
+## ------------- ##
+
+# Search for a C++ compiler.
+AC_LANG([C++])
 AC_PROG_CXX
 
-if test "$setdefaultflags" = "yes"; then
-  if test "$GCC" = "yes"; then
-    CFLAGS="$CFLAGS -Wall"
-    AC_MSG_NOTICE([adding default "-Wall" c flags])
-  fi
-  if test "$GXX" = "yes"; then
-    CXXFLAGS="$CXXFLAGS -Wall"
-    AC_MSG_NOTICE([adding default "-Wall" c++ flags])
-  fi
+# Speed-up compilation.
+if test "$GXX" = yes; then
+  CXXFLAGS="$CXXFLAGS -pipe"
 fi
+
+# Macros are stored in build-aux.
+AC_CONFIG_MACRO_DIR([build-aux])
+
+## ------------------- ##
+## Additionnal tools.  ##
+## ------------------- ##
+
+# Search for misc. common tools.
+AC_PROG_MKDIR_P
+AC_PROG_SED
+AC_PROG_INSTALL
+
+# Customize warnings.
+JRL_CXX_WARNINGS([[-Wall],
+                   [-Wcast-align],
+                   [-Wcast-qual],
+                   [-Wformat],
+                   [-Wmissing-prototypes],
+                   [-Wstrict-prototypes],
+                   [-Wwrite-strings],
+                   [-Wbad-function-cast],
+                   [-Wmissing-declarations],
+                   [-Wnested-externs]])
+
+# Search for Libtool.
+LT_INIT([dlopen])
+
+# Search for Doxygen.
+JRL_PROG_DOXYGEN
+
+## ------------------------- ##
+## Search for dependencies.  ##
+## ------------------------- ##
 
 PKG_CHECK_MODULES([KINEOCONTROLLER], [KineoController])
 KINEOCONTROLLER_PREFIX=`$PKG_CONFIG KineoPathPlanner --variable=prefix`
+
 AC_SUBST([KINEOCONTROLLER_PREFIX])
-AC_SUBST([KINEO_ADDON_BUILD],[${KINEOCONTROLLER_PREFIX}/bin/KineoAddonBuilder])
+AC_SUBST([KINEO_ADDON_BUILDER],
+[${KINEOCONTROLLER_PREFIX}/bin/KineoAddonBuilder])
+AC_SUBST([KINEO_PREFIX], [${KINEOCONTROLLER_PREFIX}])
+AC_SUBST([KINEO_LIBDIR], [${KINEOCONTROLLER_PREFIX}/lib])
 
 define(kwsPlus_reqd, [kwsPlus >= 1.7])
 AC_SUBST([KWSPLUS_REQD], ["kwsPlus_reqd"])
@@ -75,7 +107,7 @@ if test x$with_openhrp = xtrue; then
 	OPENHRP_PREFIX=`$PKG_CONFIG hppOpenHRP --variable=OpenHRP_prefix`
 	AC_SUBST([HPPOPENHRP_PREFIX])
 	AC_SUBST([OPENHRP_PREFIX])
-	
+
 	define(jrlmodelloader_reqd, [jrl-modelloader >= 1.4])
 	AC_SUBST([JRLMODELLOADER_REQD], ["jrlmodelloader_reqd"])
 	PKG_CHECK_MODULES([MODELLOADERJRL], [jrlmodelloader_reqd])
@@ -90,19 +122,40 @@ if test x$with_openhrp = xtrue; then
 	AC_SUBST([HRP2_14_REQD], ["hrp2_14_reqd"])
 	PKG_CHECK_MODULES([HRP2_14], [hrp2_14_reqd])
 
-	OPENHRP_DEPENDENCES=", hppopenhrp_reqd, jrlmodelloader_reqd, hrp2dynamics_reqd, hrp2_14_reqd"
+	OPENHRP_DEPENDENCES="hppopenhrp_reqd, jrlmodelloader_reqd, hrp2dynamics_reqd, hrp2_14_reqd"
+
+	AC_SUBST([DISTCHECK_CONFIGURE_FLAGS], [--with-openhrp])
 fi
 
-AC_CONFIG_FILES([Makefile
-	idl/server/Makefile
-	idl/server/hppciRobotServer.idl
-	idl/server/hppciObstacleServer.idl
-	src/Makefile
-	include/Makefile
-	include/hppCorbaServer/hppciOpenHrp.h
-	doc/Makefile
-	doc/hpp.dox
-	hppCorbaServer.pc]
-)
-AC_OUTPUT
 
+## ------------ ##
+## Pkg-config.  ##
+## ------------ ##
+
+AC_SUBST([PKGCONFIG_DESCRIPTION], ['Corba server of humanoid path planner'])
+AC_SUBST([PKGCONFIG_URL], [])
+AC_SUBST([PKGCONFIG_REQUIRES],
+	 ["${HPPCORE_REQD}, omniORB4 >= 4.0.7, ${OPENHRP_DEPENDENCES}"])
+AC_SUBST([PKGCONFIG_CONFLICTS], [-lhppCorbaServer])
+AC_SUBST([PKGCONFIG_LIBS], [-lhppCore])
+AC_SUBST([PKGCONFIG_CFLAGS], [])
+AC_SUBST([PKGCONFIG_EXTRA], [openhrp_flag=${WITH_OPENHRP}])
+
+## -------------- ##
+## Write output.  ##
+## -------------- ##
+
+# Create config.h
+AC_CONFIG_HEADERS([config.h])
+
+# Creating Makefiles.
+AC_OUTPUT([
+	Makefile
+	 idl/server/Makefile
+	 idl/server/hppciRobotServer.idl
+	 idl/server/hppciObstacleServer.idl
+	include/Makefile
+	 include/hppCorbaServer/hppciOpenHrp.h
+	src/Makefile
+	doc/Makefile
+])
