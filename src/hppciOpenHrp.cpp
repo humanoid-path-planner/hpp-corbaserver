@@ -355,8 +355,9 @@ void setHRP2Specificities(ChppHumanoidRobotShPtr i_humanoid,
 	pos[0]=0; pos[1]=0;  pos[2]=-0.118;
 	i_humanoid->gaze(dir, pos);
 
-    }else if (name == "RLEG_JOINT5"){
-      CjrlFoot *aFoot = new dynamicsJRLJapan::Foo)();
+   }else if (name == "RLEG_JOINT5"){
+      dynamicsJRLJapan::ObjectFactory aOF;
+      CjrlFoot *aFoot = aOF.createFoot(i_joint->jrlJoint());
 	 
       aFoot->setAssociatedAnkle(i_joint->jrlJoint());
       double Width=0.2172,Height=0.138;
@@ -373,14 +374,15 @@ void setHRP2Specificities(ChppHumanoidRobotShPtr i_humanoid,
       SoleCenterILF(0)=0.0;
       SoleCenterILF(1)=0.0;
       SoleCenterILF(2)=-0.105;      
-      aFoot->setCenterInLocalReferenceFrame(AnklePositionILF);
-      SoleCenterILF(2)=0,0;      
-      aFoot->setProjectionCenterInLocalReferenceFrame(AnklePositionILF);
+      aFoot->setSoleCenterInLocalFrame(AnklePositionILF);
+      SoleCenterILF(2)=0.0;      
+      aFoot->setProjectionCenterLocalFrameInSole(AnklePositionILF);
       i_humanoid->leftFoot(aFoot);
       
     }else if (name == "LLEG_JOINT5"){
-      CjrlFoot *aFoot = new CimplFoot();
-	 
+      dynamicsJRLJapan::ObjectFactory aOF;
+      CjrlFoot *aFoot = aOF.createFoot(i_joint->jrlJoint());
+
       aFoot->setAssociatedAnkle(i_joint->jrlJoint());
       double Width=0.2172,Height=0.138;
 
@@ -396,14 +398,16 @@ void setHRP2Specificities(ChppHumanoidRobotShPtr i_humanoid,
       SoleCenterILF(0)=0.0;
       SoleCenterILF(1)=0.0;
       SoleCenterILF(2)=-0.105;      
-      aFoot->setCenterInLocalReferenceFrame(AnklePositionILF);
-      SoleCenterILF(2)=0,0;      
-      aFoot->setProjectionCenterInLocalReferenceFrame(AnklePositionILF);
+      aFoot->setSoleCenterInLocalFrame(AnklePositionILF);
+      SoleCenterILF(2)=0.0;      
+      aFoot->setProjectionCenterLocalFrameInSole(AnklePositionILF);
       i_humanoid->leftFoot(aFoot);
 
 
     }else if (name == "RARM_JOINT5"){
-      CjrlHand * aHand = new Foot();
+      dynamicsJRLJapan::ObjectFactory aOF;
+      
+      CjrlHand * aHand = aOF.createHand(i_joint->jrlJoint());
       vector3d center,okayAxis,showingAxis,palmAxis;
       center[0] = 0;
       center[1] = 0;
@@ -420,28 +424,34 @@ void setHRP2Specificities(ChppHumanoidRobotShPtr i_humanoid,
       palmAxis[0] = 1;
       palmAxis[1] = 0;
       palmAxis[2] = 0;
-      aHand->setPalmAxis(palmAxis);
+      aHand->setPalmNormal(palmAxis);
       aHand->setAssociatedWrist(i_joint->jrlJoint());
       i_humanoid->rightHand(aHand);
     }else if (name == "LARM_JOINT5"){
-      //i_humanoid->leftWrist(i_joint->jrlJoint());
-	vector3d center,okayAxis,showingAxis,palmAxis;
-	center[0] = 0;
-	center[1] = 0;
-	center[2] = 0.17;
-	okayAxis[0] = 0;
-	okayAxis[1] = 1;
-	okayAxis[2] = 0;
-	showingAxis[0] = 0;
-	showingAxis[1] = 0;
-	showingAxis[2] = 1;
-	palmAxis[0] = -1;
-	palmAxis[1] = 0;
-	palmAxis[2] = 0;
-	i_humanoid->leftHand(new CimplHand(i_humanoid->leftWrist(), center, 
-					   okayAxis, showingAxis, palmAxis));
-    }
-    for (unsigned int i=0; i<i_joint->countChildJoints(); i++){
+      dynamicsJRLJapan::ObjectFactory aOF;
+      
+      CjrlHand * aHand = aOF.createHand(i_joint->jrlJoint());
+      vector3d center,okayAxis,showingAxis,palmAxis;
+      center[0] = 0;
+      center[1] = 0;
+      center[2] = 0.17;
+      aHand->setCenter(center);
+      okayAxis[0] = 0;
+      okayAxis[1] = 1;
+      okayAxis[2] = 0;
+      aHand->setThumbAxis(okayAxis);
+      showingAxis[0] = 0;
+      showingAxis[1] = 0;
+      showingAxis[2] = 1;
+      aHand->setForeFingerAxis(showingAxis);
+      palmAxis[0] = -1;
+      palmAxis[1] = 0;
+      palmAxis[2] = 0;
+      aHand->setPalmNormal(palmAxis);
+      aHand->setAssociatedWrist(i_joint->jrlJoint());
+      i_humanoid->rightHand(aHand);
+
+    }     for (unsigned int i=0; i<i_joint->countChildJoints(); i++){
 	setHRP2Specificities(i_humanoid, i_joint->childJoint(i));
     }
 }
