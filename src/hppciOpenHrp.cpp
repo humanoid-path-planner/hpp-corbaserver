@@ -403,22 +403,26 @@ void setHRP2Specificities(ChppHumanoidRobotShPtr i_humanoid,
 
 
     }else if (name == "RARM_JOINT5"){
-      //	i_humanoid->rightWrist()i_joint->jrlJoint());
-	vector3d center,okayAxis,showingAxis,palmAxis;
-	center[0] = 0;
-	center[1] = 0;
-	center[2] = 0.17;
-	okayAxis[0] = 0;
-	okayAxis[1] = 1;
-	okayAxis[2] = 0;
-	showingAxis[0] = 0;
-	showingAxis[1] = 0;
-	showingAxis[2] = 1;
-	palmAxis[0] = 1;
-	palmAxis[1] = 0;
-	palmAxis[2] = 0;
-	i_humanoid->rightHand(new CimplHand(i_humanoid->rightWrist(), center, 
-					    okayAxis, showingAxis, palmAxis));
+      CjrlHand * aHand = new CimplHand();
+      vector3d center,okayAxis,showingAxis,palmAxis;
+      center[0] = 0;
+      center[1] = 0;
+      center[2] = 0.17;
+      aHand->setCenter(center);
+      okayAxis[0] = 0;
+      okayAxis[1] = 1;
+      okayAxis[2] = 0;
+      aHand->setThumbAxis(okayAxis);
+      showingAxis[0] = 0;
+      showingAxis[1] = 0;
+      showingAxis[2] = 1;
+      aHand->setForeFingerAxis(showingAxis);
+      palmAxis[0] = 1;
+      palmAxis[1] = 0;
+      palmAxis[2] = 0;
+      aHand->setPalmAxis(palmAxis);
+      aHand->setAssociatedWrist(i_joint->jrlJoint());
+      i_humanoid->rightHand(aHand);
     }else if (name == "LARM_JOINT5"){
       //i_humanoid->leftWrist(i_joint->jrlJoint());
 	vector3d center,okayAxis,showingAxis,palmAxis;
