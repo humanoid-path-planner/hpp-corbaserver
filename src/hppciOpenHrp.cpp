@@ -356,11 +356,54 @@ void setHRP2Specificities(ChppHumanoidRobotShPtr i_humanoid,
 	i_humanoid->gaze(dir, pos);
 
     }else if (name == "RLEG_JOINT5"){
-	i_humanoid->rightFoot(i_joint->jrlJoint());
+      CjrlFoot *aFoot = new CimplFoot();
+	 
+      aFoot->setAssociatedAnkle(i_joint->jrlJoint());
+      double Width=0.2172,Height=0.138;
+
+      aFoot->setSoleSize(Width,Height);
+      vector3d AnklePositionILF;
+      AnklePositionILF(0)=0.0;
+      AnklePositionILF(1)=0.0;
+      AnklePositionILF(2)=0.0;
+
+      aFoot->setAnklePositionInLocalFrame(AnklePositionILF);
+
+      vector3d SoleCenterILF;
+      SoleCenterILF(0)=0.0;
+      SoleCenterILF(1)=0.0;
+      SoleCenterILF(2)=-0.105;      
+      aFoot->setCenterInLocalReferenceFrame(AnklePositionILF);
+      SoleCenterILF(2)=0,0;      
+      aFoot->setProjectionCenterInLocalReferenceFrame(AnklePositionILF);
+      i_humanoid->leftFoot(aFoot);
+      
     }else if (name == "LLEG_JOINT5"){
-	i_humanoid->leftFoot(i_joint->jrlJoint());
+      CjrlFoot *aFoot = new CimplFoot();
+	 
+      aFoot->setAssociatedAnkle(i_joint->jrlJoint());
+      double Width=0.2172,Height=0.138;
+
+      aFoot->setSoleSize(Width,Height);
+      vector3d AnklePositionILF;
+      AnklePositionILF(0)=0.0;
+      AnklePositionILF(1)=0.0;
+      AnklePositionILF(2)=0.0;
+
+      aFoot->setAnklePositionInLocalFrame(AnklePositionILF);
+
+      vector3d SoleCenterILF;
+      SoleCenterILF(0)=0.0;
+      SoleCenterILF(1)=0.0;
+      SoleCenterILF(2)=-0.105;      
+      aFoot->setCenterInLocalReferenceFrame(AnklePositionILF);
+      SoleCenterILF(2)=0,0;      
+      aFoot->setProjectionCenterInLocalReferenceFrame(AnklePositionILF);
+      i_humanoid->leftFoot(aFoot);
+
+
     }else if (name == "RARM_JOINT5"){
-	i_humanoid->rightWrist(i_joint->jrlJoint());
+      //	i_humanoid->rightWrist()i_joint->jrlJoint());
 	vector3d center,okayAxis,showingAxis,palmAxis;
 	center[0] = 0;
 	center[1] = 0;
@@ -377,7 +420,7 @@ void setHRP2Specificities(ChppHumanoidRobotShPtr i_humanoid,
 	i_humanoid->rightHand(new CimplHand(i_humanoid->rightWrist(), center, 
 					    okayAxis, showingAxis, palmAxis));
     }else if (name == "LARM_JOINT5"){
-	i_humanoid->leftWrist(i_joint->jrlJoint());
+      //i_humanoid->leftWrist(i_joint->jrlJoint());
 	vector3d center,okayAxis,showingAxis,palmAxis;
 	center[0] = 0;
 	center[1] = 0;
