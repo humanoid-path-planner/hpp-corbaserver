@@ -356,7 +356,7 @@ void setHRP2Specificities(ChppHumanoidRobotShPtr i_humanoid,
 	i_humanoid->gaze(dir, pos);
 
     }else if (name == "RLEG_JOINT5"){
-      CjrlFoot *aFoot = new CimplFoot();
+      CjrlFoot *aFoot = new dynamicsJRLJapan::Foo)();
 	 
       aFoot->setAssociatedAnkle(i_joint->jrlJoint());
       double Width=0.2172,Height=0.138;
@@ -403,7 +403,7 @@ void setHRP2Specificities(ChppHumanoidRobotShPtr i_humanoid,
 
 
     }else if (name == "RARM_JOINT5"){
-      CjrlHand * aHand = new CimplHand();
+      CjrlHand * aHand = new Foot();
       vector3d center,okayAxis,showingAxis,palmAxis;
       center[0] = 0;
       center[1] = 0;
