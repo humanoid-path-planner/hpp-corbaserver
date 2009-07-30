@@ -449,7 +449,7 @@ void setHRP2Specificities(ChppHumanoidRobotShPtr i_humanoid,
       palmAxis[2] = 0;
       aHand->setPalmNormal(palmAxis);
       aHand->setAssociatedWrist(i_joint->jrlJoint());
-      i_humanoid->rightHand(aHand);
+      i_humanoid->leftHand(aHand);
 
     }     for (unsigned int i=0; i<i_joint->countChildJoints(); i++){
 	setHRP2Specificities(i_humanoid, i_joint->childJoint(i));
