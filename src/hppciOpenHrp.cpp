@@ -377,7 +377,7 @@ void setHRP2Specificities(ChppHumanoidRobotShPtr i_humanoid,
       aFoot->setSoleCenterInLocalFrame(AnklePositionILF);
       SoleCenterILF(2)=0.0;      
       aFoot->setProjectionCenterLocalFrameInSole(AnklePositionILF);
-      i_humanoid->leftFoot(aFoot);
+      i_humanoid->rightFoot(aFoot);
       
     }else if (name == "LLEG_JOINT5"){
       dynamicsJRLJapan::ObjectFactory aOF;
