@@ -122,7 +122,7 @@ if test x$with_openhrp = xtrue; then
 	AC_SUBST([HRP2_14_REQD], ["hrp2_14_reqd"])
 	PKG_CHECK_MODULES([HRP2_14], [hrp2_14_reqd])
 
-	OPENHRP_DEPENDENCES="hppopenhrp_reqd, jrlmodelloader_reqd, hrp2dynamics_reqd, hrp2_14_reqd"
+	OPENHRP_DEPENDENCES=", hppopenhrp_reqd, jrlmodelloader_reqd, hrp2dynamics_reqd, hrp2_14_reqd"
 
 	AC_SUBST([DISTCHECK_CONFIGURE_FLAGS], [--with-openhrp])
 fi
@@ -135,7 +135,7 @@ fi
 AC_SUBST([PKGCONFIG_DESCRIPTION], ['Corba server of humanoid path planner'])
 AC_SUBST([PKGCONFIG_URL], [])
 AC_SUBST([PKGCONFIG_REQUIRES],
-	 ["${HPPCORE_REQD}, omniORB4 >= 4.0.7, ${OPENHRP_DEPENDENCES}"])
+	 ["${HPPCORE_REQD}, omniORB4 >= 4.0.7${OPENHRP_DEPENDENCES}"])
 AC_SUBST([PKGCONFIG_CONFLICTS], [])
 AC_SUBST([PKGCONFIG_LIBS], [-lhppCorbaServer])
 AC_SUBST([PKGCONFIG_CFLAGS], [])
