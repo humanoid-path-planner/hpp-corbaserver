@@ -15,13 +15,15 @@ INCLUDE
 #include "common-modelloader.hh"
 #include "jrl-modelloader.hh"
 
-#include "hppOpenHRP/parserOpenHRPKineoDevice.h"
-#include "hppOpenHRP/parserOpenHRPKineoDeviceHrp2.h"
+#include "robotbuilder/robotbuilder.hh"
 #include "hppOpenHRP/parserOpenHRPKineoObstacle.h"
+#include "hppOpenHRP/parserOpenHRPKineoDevice.h"
 
 #include "hppModel/hppJoint.h"
 #include "hppModel/hppBody.h"
 #include "hppModel/hppSpecificHumanoidRobot.h"
+
+#include "hppCore/hppColPair.h"
 
 #include "hrp2Dynamics/hrp2OptHumanoidDynamicRobot.h"
 
@@ -474,23 +476,9 @@ ktStatus  ChppciOpenHrpClient::loadHrp2Model(double inPenetration,
 ktStatus ChppciOpenHrpClient::loadHrp2Model(ChppHumanoidRobotShPtr& HRP2Device,
 					    const std::string& inModel)
 {
-  // 
-  // Get Corba objects containing model of HRP2 and Obstacles.
-  //
-  if (getRobotURL(inModel)!= KD_OK) {
-    privateCorbaObject->orb->destroy();
-    cerr << "ERROR : ChppciOpenHrpClient::loadHrp2Model::Failed to load Hrp2 model" 
-	 << endl;
-    return KD_ERROR;
-  }
-
-  //
-  // Build KineoHRP2 from OpenHRPModel
-  //
-  CparserOpenHRPKineoDeviceHrp2 parser(privateCorbaObject->HRP2info) ;
   ChppHumanoidRobotShPtr humanoid;
-  humanoid = ChppSpecificHumanoidRobot<Chrp2OptHumanoidDynamicRobot>::create(privateCorbaObject->HRP2info->getCharObject()->name());
-  parser.parser(humanoid);
+  Robotbuilder::Robotbuilder robotBuilder;
+  humanoid = robotBuilder.makeRobot();
   Chrp2OptHumanoidDynamicRobot *hrp2;
   hrp2 = dynamic_cast<Chrp2OptHumanoidDynamicRobot *>(humanoid.get());
   hrp2->isKineoOrder(true);
