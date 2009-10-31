@@ -6,16 +6,17 @@ BUILT_SOURCES =
 # Add available warnings flags.
 AM_CXXFLAGS += $(WARNING_CXXFLAGS)
 
-hppCorbaServer_CPPFLAGS = -I$(srcdir)/../include \
-	@ROBOTBUILDER_CFLAGS@ \
-	@HPPCORE_CFLAGS@ \
-	@OMNIORB4_CFLAGS@ 
+SUFFIXES += SK.cc
 
-hppCorbaServer_LDFLAGS = ./.libs/libhppCorbaServer.a \
-	@ROBOTBUILDER_LIBS@ \
-	@HPPCORE_LIBS@ \
-	@OMNIORB4_LIBS@ \
-	@HRP2DYNAMICS_LIBS@
+%SK.cc %.hh: $(top_srcdir)/idl/server/%.idl
+	@OMNIORB_PREFIX@/bin/omniidl -bcxx $<
+
+%SK.cc %.hh: $(top_builddir)/idl/server/%.idl
+	@OMNIORB_PREFIX@/bin/omniidl -bcxx -I$(top_srcdir)/idl/server $<
+
+%SK.cc %.hh: @MODELLOADERJRL_IDL@/%.idl
+	@OMNIORB_PREFIX@/bin/omniidl -bcxx $<
+
 
 lib_LTLIBRARIES = libhppCorbaServer.la
 
@@ -43,24 +44,21 @@ libhppCorbaServer_la_SOURCES = 		\
 	hppciServerPrivate.cpp 		\
 	hppciTools.cpp
 
-libhppCorbaServer_la_CPPFLAGS = \
-	-I@top_builddir@/include \
-	-I$(srcdir)/../include \
-	-I. \
-	-I@top_builddir@/idl/server \
-	@ROBOTBUILDER_CFLAGS@
+libhppCorbaServer_la_CPPFLAGS = 	\
+	-I$(top_builddir)/include 	\
+	-I$(top_srcdir)/include 	\
+	-I. 				\
+	-I$(top_builddir)/idl/server	\
+	@ROBOTBUILDER_CFLAGS@ 		\
+	@HPPCORE_CFLAGS@ 		\
+	@OMNIORB4_CFLAGS@ 		\
+	@WITH_OPENHRP@
 
-
-libhppCorbaServer_la_CPPFLAGS += \
-	@HPPCORE_CFLAGS@ \
-	@OMNIORB4_CFLAGS@ \
-	@WITH_OPENHRP@ 
-
-libhppCorbaServer_la_LIBADD = \
-	@HPPCORE_LIBS@ \
-	@OMNIORB4_LIBS@ \
-	@HRP2DYNAMICS_LIBS@ \
-	@ROBOTBUILDER_LIBS@ 
+libhppCorbaServer_la_LIBADD = 		\
+	@ROBOTBUILDER_LIBS@		\
+	@HPPCORE_LIBS@ 			\
+	@OMNIORB4_LIBS@ 		\
+	@HRP2DYNAMICS_LIBS@
 
 libhppCorbaServer_la_LDFLAGS = -release $(PACKAGE_VERSION)
 
@@ -105,11 +103,13 @@ hppCorbaServer_SOURCES = hppCorbaServer.cpp
 
 hppCorbaServer_CPPFLAGS +=		\
 	$(AM_CPPFLAGS)			\
+	@ROBOTBUILDER_CFLAGS@ 		\
 	@HPPCORE_CFLAGS@ 		\
 	@OMNIORB4_CFLAGS@
 
 hppCorbaServer_LDADD = 			\
 	libhppCorbaServer.la		\
+	@ROBOTBUILDER_LIBS@		\
 	@HPPCORE_LIBS@ 			\
 	@OMNIORB4_LIBS@	 		\
 	@HRP2DYNAMICS_LIBS@
