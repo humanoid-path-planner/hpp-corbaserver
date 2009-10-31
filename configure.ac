@@ -26,6 +26,36 @@ if test "$GXX" = yes; then
   CXXFLAGS="$CXXFLAGS -pipe"
 fi
 
+# Macros are stored in build-aux.
+AC_CONFIG_MACRO_DIR([build-aux])
+
+## ------------------- ##
+## Additionnal tools.  ##
+## ------------------- ##
+
+# Search for misc. common tools.
+AC_PROG_MKDIR_P
+AC_PROG_SED
+AC_PROG_INSTALL
+
+# Customize warnings.
+JRL_CXX_WARNINGS([[-Wall],
+                   [-Wcast-align],
+                   [-Wcast-qual],
+                   [-Wformat],
+                   [-Wmissing-prototypes],
+                   [-Wstrict-prototypes],
+                   [-Wwrite-strings],
+                   [-Wbad-function-cast],
+                   [-Wmissing-declarations],
+                   [-Wnested-externs]])
+
+# Search for Libtool.
+LT_INIT([dlopen])
+
+# Search for Doxygen.
+JRL_PROG_DOXYGEN
+
 # Search for pkg-config dependencies.
 m4_include([deps.ac])
 
