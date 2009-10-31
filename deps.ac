@@ -1,7 +1,9 @@
-PKG_CHECK_MODULES([KINEOCONTROLLER], [KineoController])
-KINEOCONTROLLER_PREFIX=`$PKG_CONFIG KineoPathPlanner --variable=prefix`
-AC_SUBST([KINEOCONTROLLER_PREFIX])
-AC_SUBST([KINEO_ADDON_BUILD],[${KINEOCONTROLLER_PREFIX}/bin/KineoAddonBuilder])
+PKG_CHECK_MODULES([KINEO], [KineoController])
+KINEO_PREFIX=`$PKG_CONFIG KineoController --variable=prefix`
+KINEO_LIBDIR=`$PKG_CONFIG KineoController --variable=libdir`
+AC_SUBST([KINEO_PREFIX])
+AC_SUBST([KINEO_LIBDIR])
+AC_SUBST([KINEO_ADDON_BUILDER],[${KINEO_PREFIX}/bin/KineoAddonBuilder])
 
 define(robotbuilder_reqd, [robotbuilder >= 0.1])
 AC_SUBST([ROBOTBUILDER_REQD], ["robotbuilder_reqd"])
