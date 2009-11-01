@@ -56,20 +56,21 @@ public:
   ~ChppciOpenHrpClient();
 
   /** 
-      \brief Initialize Orb and load model of HRP2 by sending a Corba request modelLoader to OpenHRP. 
+      \brief Build an instance of HRP2 by using Robotbuilder::Robotbuilder
       
       \param inPenetration Dynamic penetration allowed for validating direct paths of the robot.
       \param inModel optional path to the file describing the robot.
 
-      This function gets the model of HRP2 from a CORBA request and initializes a ChppProblem 
-      with this robot by calling ChppPlanner::addHppProblem(CkppDeviceComponentShPtr robot).
+      This function an instance of HRP2 by calling Robotbuilder::makeRobot() 
+      and initializes a ChppProblem with this robot by calling 
+      ChppPlanner::addHppProblem(CkppDeviceComponentShPtr robot).
       Note that the robot is set into half-sitting configuration.
   */
   ktStatus loadHrp2Model(double inPenetration, const std::string& inModel = 
 			 std::string("@OPENHRP_PREFIX@/Controller/IOserver/robot/HRP2JRL/model/HRP2JRLmain.wrl"));
 
   /**
-     \brief  Initialize Orb and load model of HRP2 by sending a Corba request modelLoader to OpenHRP.
+     \brief  Build an instance of HRP2 by using Robotbuilder::Robotbuilder
 
      \param inModel optional path to the file describing the robot.
 
