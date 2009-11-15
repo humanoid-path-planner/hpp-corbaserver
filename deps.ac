@@ -1,4 +1,4 @@
-PKG_CHECK_MODULES([KINEO], [KineoController])
+KG_CHECK_MODULES([KINEO], [KineoController])
 KINEO_PREFIX=`$PKG_CONFIG KineoController --variable=prefix`
 KINEO_LIBDIR=`$PKG_CONFIG KineoController --variable=libdir`
 AC_SUBST([KINEO_PREFIX])
@@ -19,7 +19,7 @@ PKG_CHECK_MODULES([KWSPLUS], [kwsPlus_reqd])
 KWSPLUS_PREFIX=`$PKG_CONFIG kwsPlus --variable=prefix`
 AC_SUBST([KWSPLUS_PREFIX])
 
-define(hppcore_reqd, [hppCore >= 1.8.1])
+define(hppcore_reqd, [hppCore >= 1.10])
 AC_SUBST([HPPCORE_REQD], ["hppcore_reqd"])
 PKG_CHECK_MODULES([HPPCORE], [hppcore_reqd])
 HPPCORE_DOCDIR=`$PKG_CONFIG hppCore --variable=docdir`
@@ -46,7 +46,7 @@ AM_CONDITIONAL([OPENHRP], [test x$with_openhrp = xtrue])
 AC_SUBST([OPENHRP_DEPENDENCES], [])
 
 if test x$with_openhrp = xtrue; then
-	define(hppopenhrp_reqd, [hppOpenHRP >= 1.6.1])
+	define(hppopenhrp_reqd, [hppOpenHRP >= 1.7])
 	AC_SUBST([HPPOPENHRP_REQD], ["hppopenhrp_reqd"])
 	PKG_CHECK_MODULES([HPPOPENHRP], [hppopenhrp_reqd])
 	HPPOPENHRP_PREFIX=`$PKG_CONFIG hppOpenHRP --variable=prefix`
@@ -60,14 +60,13 @@ if test x$with_openhrp = xtrue; then
 	MODELLOADERJRL_IDL=`$PKG_CONFIG jrl-modelloader --variable=idldir`
 	AC_SUBST([MODELLOADERJRL_IDL])
 
-	define(hrp2dynamics_reqd, [hrp2Dynamics >= 1.1])
+	define(hrp2dynamics_reqd, [hrp2Dynamics >= 1.3])
 	AC_SUBST([HRP2DYNAMICS_REQD], ["hrp2dynamics_reqd"])
 	PKG_CHECK_MODULES([HRP2DYNAMICS], [hrp2dynamics_reqd])
 
-	define(hrp2_14_reqd, [hrp2_14 >= 1.6.1])
+	define(hrp2_14_reqd, [hrp2_14 >= 1.7.2])
 	AC_SUBST([HRP2_14_REQD], ["hrp2_14_reqd"])
 	PKG_CHECK_MODULES([HRP2_14], [hrp2_14_reqd])
 
 	OPENHRP_DEPENDENCES=", hppopenhrp_reqd, jrlmodelloader_reqd, hrp2dynamics_reqd, hrp2_14_reqd"
 fi
-
