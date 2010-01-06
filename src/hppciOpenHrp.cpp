@@ -453,7 +453,10 @@ void setHRP2Specificities(ChppHumanoidRobotShPtr i_humanoid,
       aHand->setAssociatedWrist(i_joint->jrlJoint());
       i_humanoid->leftHand(aHand);
 
-    }     for (unsigned int i=0; i<i_joint->countChildJoints(); i++){
+    }else if (name == "CHEST_JOINT1"){
+      i_humanoid->chest(i_joint->jrlJoint());
+    }
+     for (unsigned int i=0; i<i_joint->countChildJoints(); i++){
 	setHRP2Specificities(i_humanoid, i_joint->childJoint(i));
     }
 }
