@@ -1,4 +1,4 @@
-KG_CHECK_MODULES([KINEO], [KineoController])
+PKG_CHECK_MODULES([KINEO], [KineoController])
 KINEO_PREFIX=`$PKG_CONFIG KineoController --variable=prefix`
 KINEO_LIBDIR=`$PKG_CONFIG KineoController --variable=libdir`
 AC_SUBST([KINEO_PREFIX])
