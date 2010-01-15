@@ -33,6 +33,8 @@ INCLUDE
 DEFINE
 **************************************/
 
+static void makeColPair(ChppColPair &cp);
+static void setHRP2OuterLists(ChppHumanoidRobotShPtr i_hrp2);
 
   
 // ==============================================================================
@@ -346,121 +348,6 @@ void makeColPair(ChppColPair &cp)
   }
 }
 
-void setHRP2Specificities(ChppHumanoidRobotShPtr i_humanoid, 
-			  ChppJoint *i_joint)
-{
-    const std::string& name = i_joint->kppJoint()->name();
-    if (name == "HEAD_JOINT1"){
-	i_humanoid->gazeJoint(i_joint->jrlJoint());
-	vector3d dir,pos;
-	dir[0]=0; dir[1]=1; dir[2]=0;
-	pos[0]=0; pos[1]=0;  pos[2]=-0.118;
-	i_humanoid->gaze(dir, pos);
-
-   }else if (name == "RLEG_JOINT5"){
-      dynamicsJRLJapan::ObjectFactory aOF;
-      CjrlFoot *aFoot = aOF.createFoot(i_joint->jrlJoint());
-	 
-      aFoot->setAssociatedAnkle(i_joint->jrlJoint());
-      double Width=0.2172,Height=0.138;
-
-      aFoot->setSoleSize(Width,Height);
-      vector3d AnklePositionILF;
-      AnklePositionILF(0)=0.0;
-      AnklePositionILF(1)=0.0;
-      AnklePositionILF(2)=0.0;
-
-      aFoot->setAnklePositionInLocalFrame(AnklePositionILF);
-
-      vector3d SoleCenterILF;
-      SoleCenterILF(0)=0.0;
-      SoleCenterILF(1)=0.0;
-      SoleCenterILF(2)=-0.105;      
-      aFoot->setSoleCenterInLocalFrame(AnklePositionILF);
-      SoleCenterILF(2)=0.0;      
-      aFoot->setProjectionCenterLocalFrameInSole(AnklePositionILF);
-      i_humanoid->rightFoot(aFoot);
-      
-    }else if (name == "LLEG_JOINT5"){
-      dynamicsJRLJapan::ObjectFactory aOF;
-      CjrlFoot *aFoot = aOF.createFoot(i_joint->jrlJoint());
-
-      aFoot->setAssociatedAnkle(i_joint->jrlJoint());
-      double Width=0.2172,Height=0.138;
-
-      aFoot->setSoleSize(Width,Height);
-      vector3d AnklePositionILF;
-      AnklePositionILF(0)=0.0;
-      AnklePositionILF(1)=0.0;
-      AnklePositionILF(2)=0.0;
-
-      aFoot->setAnklePositionInLocalFrame(AnklePositionILF);
-
-      vector3d SoleCenterILF;
-      SoleCenterILF(0)=0.0;
-      SoleCenterILF(1)=0.0;
-      SoleCenterILF(2)=-0.105;      
-      aFoot->setSoleCenterInLocalFrame(AnklePositionILF);
-      SoleCenterILF(2)=0.0;      
-      aFoot->setProjectionCenterLocalFrameInSole(AnklePositionILF);
-      i_humanoid->leftFoot(aFoot);
-
-
-    }else if (name == "RARM_JOINT5"){
-      dynamicsJRLJapan::ObjectFactory aOF;
-      
-      CjrlHand * aHand = aOF.createHand(i_joint->jrlJoint());
-      vector3d center,okayAxis,showingAxis,palmAxis;
-      center[0] = 0;
-      center[1] = 0;
-      center[2] = 0.17;
-      aHand->setCenter(center);
-      okayAxis[0] = 0;
-      okayAxis[1] = 1;
-      okayAxis[2] = 0;
-      aHand->setThumbAxis(okayAxis);
-      showingAxis[0] = 0;
-      showingAxis[1] = 0;
-      showingAxis[2] = 1;
-      aHand->setForeFingerAxis(showingAxis);
-      palmAxis[0] = 1;
-      palmAxis[1] = 0;
-      palmAxis[2] = 0;
-      aHand->setPalmNormal(palmAxis);
-      aHand->setAssociatedWrist(i_joint->jrlJoint());
-      i_humanoid->rightHand(aHand);
-    }else if (name == "LARM_JOINT5"){
-      dynamicsJRLJapan::ObjectFactory aOF;
-      
-      CjrlHand * aHand = aOF.createHand(i_joint->jrlJoint());
-      vector3d center,okayAxis,showingAxis,palmAxis;
-      center[0] = 0;
-      center[1] = 0;
-      center[2] = 0.17;
-      aHand->setCenter(center);
-      okayAxis[0] = 0;
-      okayAxis[1] = 1;
-      okayAxis[2] = 0;
-      aHand->setThumbAxis(okayAxis);
-      showingAxis[0] = 0;
-      showingAxis[1] = 0;
-      showingAxis[2] = 1;
-      aHand->setForeFingerAxis(showingAxis);
-      palmAxis[0] = -1;
-      palmAxis[1] = 0;
-      palmAxis[2] = 0;
-      aHand->setPalmNormal(palmAxis);
-      aHand->setAssociatedWrist(i_joint->jrlJoint());
-      i_humanoid->leftHand(aHand);
-
-    }else if (name == "CHEST_JOINT1"){
-      i_humanoid->chest(i_joint->jrlJoint());
-    }
-     for (unsigned int i=0; i<i_joint->countChildJoints(); i++){
-	setHRP2Specificities(i_humanoid, i_joint->childJoint(i));
-    }
-}
-
 void setHRP2OuterLists(ChppHumanoidRobotShPtr i_hrp2)
 {
     ChppColPair hrpCP;
@@ -552,9 +439,6 @@ ktStatus ChppciOpenHrpClient::loadHrp2Model(ChppHumanoidRobotShPtr& HRP2Device,
   // set HRP2 joints in invisible mode by default
   //
   HRP2Device->isVisible(false) ;
-
-  // set HRP2 specifities
-  setHRP2Specificities(humanoid, humanoid->getRootJoint());
 
   // set Collision Check Pairs
   setHRP2OuterLists(humanoid);
