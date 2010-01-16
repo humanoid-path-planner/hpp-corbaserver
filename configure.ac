@@ -5,7 +5,7 @@ AC_PREREQ([2.59])
 ## --------------------- ##
 ## Package configuration ##
 ## --------------------- ##
-AC_INIT([hppCorbaServer],[1.8.1],[openrobot@laas.fr], [hppCorbaServer])
+AC_INIT([hppCorbaServer],[1.8.2],[openrobot@laas.fr], [hppCorbaServer])
 
 # Auxiliary files.
 AC_CONFIG_AUX_DIR([build-aux])

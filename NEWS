@@ -1,3 +1,9 @@
+Release 1.8.0, 10/31/2009
+
+	* Autotools packaging has been cleaned up. Package pass distcheck.
+
+Release 1.7.4, 05/28/2009
+
 Interface to ModelLoader implemented by class ChppciOpenHrpClient have been 
 homogeneized:
 
