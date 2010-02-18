@@ -26,13 +26,13 @@
 #define ODEBUG1(x)
 #endif
 
-ChppciProblem_impl::ChppciProblem_impl(ChppciServer* inHppciServer) : 
+ChppciProblem_impl::ChppciProblem_impl(ChppciServer* inHppciServer) :
   attHppciServer(inHppciServer), attHppPlanner(inHppciServer->getHppPlanner())
 {
 }
 
 
-CORBA::Short ChppciProblem_impl::setSteeringMethod(CORBA::UShort inProblemId, 
+CORBA::Short ChppciProblem_impl::setSteeringMethod(CORBA::UShort inProblemId,
 						   const char* inSteeringMethod, CORBA::Boolean inOriented)
 {
   std::string steeringMethodName(inSteeringMethod);
@@ -52,7 +52,7 @@ CORBA::Short ChppciProblem_impl::setSteeringMethod(CORBA::UShort inProblemId,
     }
 
     // Create steering method
-    CkwsSteeringMethodShPtr steeringMethod = 
+    CkwsSteeringMethodShPtr steeringMethod =
       attHppciServer->createSteeringMethod(steeringMethodName, inOriented);
 
     hppRobot->steeringMethod(steeringMethod);
@@ -70,7 +70,7 @@ CORBA::Short ChppciProblem_impl::setRoadmapbuilder(CORBA::UShort inProblemId, co
 {
   std::string roadmapBuilderName(inRoadmapBuilderName);
   unsigned int hppProblemId = (unsigned int)inProblemId;
-  ktStatus status; 
+  ktStatus status;
 
   unsigned int nbProblems = attHppPlanner->getNbHppProblems();
 
@@ -95,15 +95,15 @@ CORBA::Short ChppciProblem_impl::setRoadmapbuilder(CORBA::UShort inProblemId, co
     } else if (roadmapBuilderName == "visibility") {
       roadmapBuilder = ChppVisRdmBuilder::create(roadmap, penetration);
     } else if (roadmapBuilderName == "PCA<diffusing>") {
-      roadmapBuilder = 
+      roadmapBuilder =
 	CkwsPlusPCARdmBuilder<CkwsDiffusingRdmBuilder>::create(roadmap, penetration);
     } else {
       ODEBUG1(":setRoadmapbuilder: unknown roadmap builder");
       return -1;
     }
     status = attHppPlanner->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder, inDisplay);
-    return status;      
-    
+    return status;
+
   }
   else {
     ODEBUG1(":setRoadmapbuilder: wrong problem Id");
@@ -113,7 +113,7 @@ CORBA::Short ChppciProblem_impl::setRoadmapbuilder(CORBA::UShort inProblemId, co
   return 0;
 }
 
-CORBA::Short ChppciProblem_impl::setDiffusingNode(CORBA::UShort inProblemId, 
+CORBA::Short ChppciProblem_impl::setDiffusingNode(CORBA::UShort inProblemId,
 						  const char* inDiffusingNode)
 {
   std::string diffusingNode(inDiffusingNode);
@@ -123,8 +123,8 @@ CORBA::Short ChppciProblem_impl::setDiffusingNode(CORBA::UShort inProblemId,
   // Test that rank is less than number of robots in vector.
   if (hppProblemId < nbProblems) {
     // Get roadmap builder in hppPlanner object.
-    CkwsDiffusingRdmBuilderShPtr roadmapBuilder = 
-      KIT_DYNAMIC_PTR_CAST(CkwsDiffusingRdmBuilder, 
+    CkwsDiffusingRdmBuilderShPtr roadmapBuilder =
+      KIT_DYNAMIC_PTR_CAST(CkwsDiffusingRdmBuilder,
 			   attHppPlanner->roadmapBuilderIthProblem(hppProblemId));
     // Check that diffusion roadmap builder is set
     if (!roadmapBuilder) {
@@ -140,7 +140,7 @@ CORBA::Short ChppciProblem_impl::setDiffusingNode(CORBA::UShort inProblemId,
       roadmapBuilder->diffuseFromProblemStart(false);
       roadmapBuilder->diffuseFromProblemGoal(true);
       ODEBUG2(":setDiffusingNode: diffusing from goal");
-    } 
+    }
     else if (diffusingNode == "start and goal") {
       roadmapBuilder->diffuseFromProblemStart(true);
       roadmapBuilder->diffuseFromProblemGoal(true);
@@ -158,7 +158,7 @@ CORBA::Short ChppciProblem_impl::setDiffusingNode(CORBA::UShort inProblemId,
   return 0;
 }
 
-CORBA::Short ChppciProblem_impl::setPathOptimizer(CORBA::UShort inProblemId, 
+CORBA::Short ChppciProblem_impl::setPathOptimizer(CORBA::UShort inProblemId,
 						  const char* inPathOptimizerName,
 						  CORBA::UShort inMaxNumberLoop)
 {
@@ -168,7 +168,7 @@ CORBA::Short ChppciProblem_impl::setPathOptimizer(CORBA::UShort inProblemId,
   unsigned int hppProblemId = (unsigned int)inProblemId;
   unsigned int nbProblems = attHppPlanner->getNbHppProblems();
 
-  ODEBUG2(":setPathOptimizer: nbProblems " << nbProblems << "problem id " 
+  ODEBUG2(":setPathOptimizer: nbProblems " << nbProblems << "problem id "
 	  << inProblemId << ", pathOptimizerName " <<pathOptimizerName);
   // Test that rank is less than number of robots in vector.
   if (hppProblemId < nbProblems) {
@@ -191,7 +191,7 @@ CORBA::Short ChppciProblem_impl::setPathOptimizer(CORBA::UShort inProblemId,
       status = attHppPlanner->pathOptimizerIthProblem(hppProblemId, pathOptimizer);
       ODEBUG2(":setPathOptimizer: clear path optimizer set.");
       return (CORBA::Short)status;
-    } 
+    }
     else if (pathOptimizerName == "adaptiveShortcut") {
       CkwsLoopOptimizerShPtr pathOptimizer = CkwsAdaptiveShortcutOptimizer::create();
       pathOptimizer->distance(distance);
@@ -201,7 +201,7 @@ CORBA::Short ChppciProblem_impl::setPathOptimizer(CORBA::UShort inProblemId,
       status = attHppPlanner->pathOptimizerIthProblem(hppProblemId, pathOptimizer);
       ODEBUG2(":setPathOptimizer: adaptive shortcut path optimizer set");
       return (CORBA::Short)status;
-    } 
+    }
     else if (pathOptimizerName == "random") {
       CkwsLoopOptimizerShPtr pathOptimizer = CkwsRandomOptimizer::create();
       pathOptimizer->distance(distance);
@@ -211,13 +211,13 @@ CORBA::Short ChppciProblem_impl::setPathOptimizer(CORBA::UShort inProblemId,
       status = attHppPlanner->pathOptimizerIthProblem(hppProblemId, pathOptimizer);
       ODEBUG2(":setPathOptimizer: random path optimizer set");
       return (CORBA::Short)status;
-    } 
+    }
     else if (pathOptimizerName == "none") {
       CkwsPathOptimizerShPtr pathOptimizer;
       status = attHppPlanner->pathOptimizerIthProblem(hppProblemId, pathOptimizer);
       ODEBUG2(":setPathOptimizer: no path optimizer set");
       return (CORBA::Short)status;
-    } 
+    }
     else {
       ODEBUG2(":setPathOptimizer: unknown path optimizer");
       return -1;
@@ -247,7 +247,7 @@ CORBA::Short ChppciProblem_impl::setConfigExtractor(CORBA::UShort inProblemId, C
       if (attHppPlanner->configExtractorIthProblem(hppProblemId, configExtractor) == KD_ERROR) {
 	ODEBUG1(":setConfigExtractor: failed to delete configuration extractor.");
 	return -1;
-      } 
+      }
     } else {
       configExtractor = CkwsConfigExtractor::create(inMinRadius, inMaxRadius, inScaleFactor);
       if (!configExtractor) {
@@ -259,7 +259,7 @@ CORBA::Short ChppciProblem_impl::setConfigExtractor(CORBA::UShort inProblemId, C
 	return -1;
       }
     }
-  }  
+  }
   else {
     ODEBUG1(":setConfigExtractor: wrong problem Id");
     return -1;
@@ -285,12 +285,12 @@ CORBA::Short ChppciProblem_impl::setDistanceFunction(CORBA::UShort inProblemId, 
     }
 
     // Create distance function
-    CkwsDistanceShPtr distance = 
+    CkwsDistanceShPtr distance =
       attHppciServer->createDistanceFunction(distanceName, inOriented);
 
     ODEBUG2(":setDistanceFunction: set roadmap builder distance function to " << distanceName);
     //
-    // Set distance function in 
+    // Set distance function in
     //   - device
     //   - roadmap builder if any
     //   - path optimizer if any
@@ -310,7 +310,7 @@ CORBA::Short ChppciProblem_impl::setDistanceFunction(CORBA::UShort inProblemId, 
     }
 
     // path optimizer
-    CkwsPathOptimizerShPtr pathOptimizer = 
+    CkwsPathOptimizerShPtr pathOptimizer =
       attHppPlanner->pathOptimizerIthProblem(hppProblemId);
     if (pathOptimizer) {
       pathOptimizer->distance(distance);
@@ -324,7 +324,7 @@ CORBA::Short ChppciProblem_impl::setDistanceFunction(CORBA::UShort inProblemId, 
   return 0;
 }
 
-CORBA::Short ChppciProblem_impl::setDiffusionNodePicker(CORBA::UShort inProblemId, 
+CORBA::Short ChppciProblem_impl::setDiffusionNodePicker(CORBA::UShort inProblemId,
 							const char* inDiffusionNodePickerName)
 {
   std::string diffusionNodePickerName(inDiffusionNodePickerName);
@@ -334,8 +334,8 @@ CORBA::Short ChppciProblem_impl::setDiffusionNodePicker(CORBA::UShort inProblemI
   // Test that rank is less than number of robots in vector.
   if (hppProblemId < nbProblems) {
     // Get roadmap builder in hppPlanner object.
-    CkwsDiffusingRdmBuilderShPtr roadmapBuilder = 
-      KIT_DYNAMIC_PTR_CAST(CkwsDiffusingRdmBuilder, 
+    CkwsDiffusingRdmBuilderShPtr roadmapBuilder =
+      KIT_DYNAMIC_PTR_CAST(CkwsDiffusingRdmBuilder,
 			   attHppPlanner->roadmapBuilderIthProblem(hppProblemId));
     // Check that diffusion roadmap builder is set
     if (!roadmapBuilder) {
@@ -349,7 +349,7 @@ CORBA::Short ChppciProblem_impl::setDiffusionNodePicker(CORBA::UShort inProblemI
     }
 
     // Create diffusion node picker
-    CkwsDiffusionNodePickerShPtr diffusionNodePicker = 
+    CkwsDiffusionNodePickerShPtr diffusionNodePicker =
       attHppciServer->createDiffusionNodePicker(diffusionNodePickerName);
 
     ODEBUG2(":setDiffusionNodePicker: set roadmap builder diffusion node picker to " << diffusionNodePickerName);
@@ -363,7 +363,7 @@ CORBA::Short ChppciProblem_impl::setDiffusionNodePicker(CORBA::UShort inProblemI
   return 0;
 }
 
-CORBA::Short ChppciProblem_impl::setDiffusionShooter(CORBA::UShort inProblemId, 
+CORBA::Short ChppciProblem_impl::setDiffusionShooter(CORBA::UShort inProblemId,
 						     const char* inDiffusionShooterName,
 						     CORBA::Double inStandardDeviation)
 {
@@ -374,8 +374,8 @@ CORBA::Short ChppciProblem_impl::setDiffusionShooter(CORBA::UShort inProblemId,
   // Test that rank is less than number of robots in vector.
   if (hppProblemId < nbProblems) {
     // Get roadmap builder in hppPlanner object.
-    CkwsDiffusingRdmBuilderShPtr roadmapBuilder = 
-      KIT_DYNAMIC_PTR_CAST(CkwsDiffusingRdmBuilder, 
+    CkwsDiffusingRdmBuilderShPtr roadmapBuilder =
+      KIT_DYNAMIC_PTR_CAST(CkwsDiffusingRdmBuilder,
 			   attHppPlanner->roadmapBuilderIthProblem(hppProblemId));
     // Check that diffusion roadmap builder is set
     if (!roadmapBuilder) {
@@ -389,7 +389,7 @@ CORBA::Short ChppciProblem_impl::setDiffusionShooter(CORBA::UShort inProblemId,
     }
 
     // Create diffusion shooter
-    CkwsDiffusionShooterShPtr diffusionShooter = 
+    CkwsDiffusionShooterShPtr diffusionShooter =
       attHppciServer->createDiffusionShooter(diffusionShooterName,
 					     inStandardDeviation);
 
@@ -404,13 +404,13 @@ CORBA::Short ChppciProblem_impl::setDiffusionShooter(CORBA::UShort inProblemId,
   return 0;
 }
 
-CORBA::Short ChppciProblem_impl::setInitialConfig(CORBA::UShort inProblemId, const hppCorbaServer::dofSeq& dofArray) 
+CORBA::Short ChppciProblem_impl::setInitialConfig(CORBA::UShort inProblemId, const hppCorbaServer::dofSeq& dofArray)
 {
   unsigned int hppProblemId = (unsigned int)inProblemId;
   unsigned int configDim = (unsigned int)dofArray.length();
   std::vector<double> dofVector;
   unsigned int nbProblems = attHppPlanner->getNbHppProblems();
-  
+
   // Test that rank is less than nulber of robots in vector.
   if (hppProblemId < nbProblems) {
     // Get robot in hppPlanner object.
@@ -431,7 +431,7 @@ CORBA::Short ChppciProblem_impl::setInitialConfig(CORBA::UShort inProblemId, con
       ODEBUG1(":setInitialConfig: cannot create config. Check that robot nb dof is equal to config size");
       return -1;
     }
-    
+
     return (short)attHppPlanner->initConfIthProblem(hppProblemId, config);
   }
   else {
@@ -441,13 +441,13 @@ CORBA::Short ChppciProblem_impl::setInitialConfig(CORBA::UShort inProblemId, con
   return 0;
 }
 
-CORBA::Short ChppciProblem_impl::setGoalConfig(CORBA::UShort inProblemId, const hppCorbaServer::dofSeq& dofArray) 
+CORBA::Short ChppciProblem_impl::setGoalConfig(CORBA::UShort inProblemId, const hppCorbaServer::dofSeq& dofArray)
 {
   unsigned int hppProblemId = (unsigned int)inProblemId;
   unsigned int configDim = (unsigned int)dofArray.length();
   std::vector<double> dofVector;
   unsigned int nbProblems = attHppPlanner->getNbHppProblems();
-  
+
   // Test that rank is less than nulber of robots in vector.
   if (hppProblemId < nbProblems) {
     // Get robot in hppPlanner object.
@@ -575,19 +575,19 @@ CORBA::Short ChppciProblem_impl::initializeProblem()
 
 CORBA::Short ChppciProblem_impl::solveOneProblem(CORBA::UShort inProblemId, CORBA::Short& inLastPathId, CORBA::Double& pathLength)
 {
-  
+
   ktStatus status = KD_ERROR;
   inLastPathId = 0 ;
   pathLength = 0;
-  
+
   unsigned int hppProblemId = (unsigned int)inProblemId;
   unsigned int nbProblems = attHppPlanner->getNbHppProblems();
-  
+
   // Test that rank is less than number of robots in vector.
   if (hppProblemId < nbProblems) {
     status = attHppPlanner->solveOneProblem(hppProblemId);
   }
- 
+
 
   inLastPathId = attHppPlanner->getNbPaths(hppProblemId) - 1;
   if (inLastPathId > -1) {
@@ -617,12 +617,12 @@ CORBA::Short ChppciProblem_impl::optimizePath(CORBA::UShort inProblemId, CORBA::
 {
   unsigned int hppProblemId = (unsigned int)inProblemId;
   unsigned int pathId = (unsigned int)inPathId;
-  
+
   if (hppProblemId > attHppPlanner->getNbHppProblems() - 1) {
     ODEBUG1(":optimizePath: wrong problem id");
     return -1;
   }
-  
+
   if (pathId > attHppPlanner->getNbPaths(hppProblemId) - 1) {
     ODEBUG1(":optimizePath: wrong path id");
     return -1;
@@ -638,12 +638,12 @@ CORBA::Double ChppciProblem_impl::pathLength(CORBA::UShort inProblemId, CORBA::U
 
   unsigned int hppProblemId = (unsigned int)inProblemId;
   unsigned int pathId = (unsigned int)inPathId;
-  
+
   if (hppProblemId > attHppPlanner->getNbHppProblems() - 1) {
     ODEBUG1(":pathLength: wrong problem id");
     return -1.0;
   }
-  
+
   if (pathId > attHppPlanner->getNbPaths(hppProblemId) - 1) {
     ODEBUG1(":pathLength: wrong path id");
     return -1.0;
@@ -653,7 +653,7 @@ CORBA::Double ChppciProblem_impl::pathLength(CORBA::UShort inProblemId, CORBA::U
   return length;
 }
 
-hppCorbaServer::dofSeq* ChppciProblem_impl::configAtDistance(CORBA::UShort inProblemId, CORBA::UShort inPathId, CORBA::Double atDistance) 
+hppCorbaServer::dofSeq* ChppciProblem_impl::configAtDistance(CORBA::UShort inProblemId, CORBA::UShort inPathId, CORBA::Double atDistance)
 {
   unsigned int hppProblemId = (unsigned int)inProblemId;
   unsigned int pathId = (unsigned int)inPathId;
@@ -678,22 +678,22 @@ hppCorbaServer::dofSeq* ChppciProblem_impl::configAtDistance(CORBA::UShort inPro
   CORBA::ULong size = (CORBA::ULong)nbDofRobot;
   double* DofList = hppCorbaServer::dofSeq::allocbuf(size);
   hppCorbaServer::dofSeq* dofSeq = new hppCorbaServer::dofSeq(size, size, DofList, true);
-  
+
   //get the config of the robot on the path
   if (atDistance > length) {
     ODEBUG1(":configAtParam: param out of range (longer than path Length) " << "Param : "<< atDistance << " length : " << length);
-   
+
   }
   else {
      CkwsConfigShPtr inConfig ;
-     inConfig = attHppPlanner->getPath(hppProblemId, pathId)->configAtDistance(atDistance) ; 
+     inConfig = attHppPlanner->getPath(hppProblemId, pathId)->configAtDistance(atDistance) ;
      //convert the config in dofseq
      for ( unsigned int i = 0 ; i < inConfig->size() ; i++){
        DofList[i] =  inConfig->dofValue(i) ;
      }
   }
 
-  
+
 
   return dofSeq;
 }
@@ -702,7 +702,7 @@ hppCorbaServer::dofSeq* ChppciProblem_impl::configAtDistance(CORBA::UShort inPro
 CORBA::Short ChppciProblem_impl::setObstacleTolerance(CORBA::UShort inProblemId, CORBA::Double tolerance)
     throw(CORBA::SystemException)
 {
-  // get the planner  
+  // get the planner
   unsigned int hppProblemId = (unsigned int)inProblemId;
   // get object hppPlanner of Corba server.
 
@@ -714,12 +714,13 @@ CORBA::Short ChppciProblem_impl::setObstacleTolerance(CORBA::UShort inProblemId,
   std::vector<CkcdObjectShPtr> oList = attHppPlanner->obstacleList();
 
   if(oList.size() == 0)
-    std::cerr << " there are no obstacle in problem " << hppProblemId 
+    std::cerr << " there are no obstacle in problem " << hppProblemId
 	      << std::endl;
 
   for(unsigned int i =0; i<oList.size(); i++){
     oList[i]->tolerance(tolerance);
-    ODEBUG1(":setObstacleTolerance: tolerance " << tolerance << " set to obstacle " << i);
+    ODEBUG1(":setObstacleTolerance: tolerance " << tolerance
+	    << " set to obstacle " << i);
   }
   return 0;
 }
