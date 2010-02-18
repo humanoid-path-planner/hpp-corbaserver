@@ -427,7 +427,8 @@ int ChppciServer::processRequest(bool loop)
 {
   if (loop) {
     // Enter in the Corba control loop. Never return.
-    cout << "ChppciServer::processRequest: attPrivate->orb->run();" << endl;
+    std::cout << "ChppciServer::processRequest: attPrivate->orb->run();"
+	      << std::endl;
     attPrivate->orb->run();
   } else {
     if (attPrivate->orb->work_pending()) {
