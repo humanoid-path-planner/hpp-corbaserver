@@ -838,7 +838,7 @@ throw(CORBA::SystemException)
       }
     }
 
-    cout<<endl;
+    std::cout << std::endl;
 
 
   }
