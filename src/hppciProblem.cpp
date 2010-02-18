@@ -714,7 +714,8 @@ CORBA::Short ChppciProblem_impl::setObstacleTolerance(CORBA::UShort inProblemId,
   std::vector<CkcdObjectShPtr> oList = attHppPlanner->obstacleList();
 
   if(oList.size() == 0)
-    cerr << " there are no obstacle in problem " << hppProblemId << std::endl;
+    std::cerr << " there are no obstacle in problem " << hppProblemId 
+	      << std::endl;
 
   for(unsigned int i =0; i<oList.size(); i++){
     oList[i]->tolerance(tolerance);
