@@ -177,7 +177,6 @@ namespace hpp
       }
 #endif
 
-
       Short ChppciRobot_impl::createExtraDof(const char* inDofName, Boolean inRevolute,
 				  Double inValueMin, Double inValueMax)
 	throw (SystemException)
@@ -265,17 +264,23 @@ namespace hpp
 
 	// Determine type of joint.
 	if (jointType == "anchor") {
-	  CkppAnchorJointComponentShPtr kppAnchorJoint = CkppAnchorJointComponent::create(std::string(inJointName));
+	  CkppAnchorJointComponentShPtr kppAnchorJoint
+	    = CkppAnchorJointComponent::createWithDefaultBodyFactory
+	    (std::string(inJointName));
 	  kppAnchorJoint->setCurrentPosition(posMatrix);
 	  kppJoint = kppAnchorJoint;
 	}
 	else if (jointType == "freeflyer") {
-	  CkppFreeFlyerJointComponentShPtr kppFreeFlyerJoint = CkppFreeFlyerJointComponent::create(std::string(inJointName));
+	  CkppFreeFlyerJointComponentShPtr kppFreeFlyerJoint
+	    = CkppFreeFlyerJointComponent::createWithDefaultBodyFactory
+	    (std::string(inJointName));
 	  kppFreeFlyerJoint->setCurrentPosition(posMatrix);
 	  kppJoint = kppFreeFlyerJoint;
 	}
 	else if (jointType == "plan") {
-	  CkppFreeFlyerJointComponentShPtr kppFreeFlyerJoint = CkppFreeFlyerJointComponent::create(std::string(inJointName));
+	  CkppFreeFlyerJointComponentShPtr kppFreeFlyerJoint
+	    = CkppFreeFlyerJointComponent::createWithDefaultBodyFactory
+	    (std::string(inJointName));
 	  kppFreeFlyerJoint->dof(2)->isLocked(true);
 	  kppFreeFlyerJoint->dof(3)->isLocked(true);
 	  kppFreeFlyerJoint->dof(4)->isLocked(true);
@@ -284,12 +289,16 @@ namespace hpp
 	  kppJoint = kppFreeFlyerJoint;
 	}
 	else if (jointType == "rotation") {
-	  CkppRotationJointComponentShPtr kppRotationJoint = CkppRotationJointComponent::create(std::string(inJointName));
+	  CkppRotationJointComponentShPtr kppRotationJoint
+	    = CkppRotationJointComponent::createWithDefaultBodyFactory
+	    (std::string(inJointName));
 	  kppRotationJoint->setCurrentPosition(posMatrix);
 	  kppJoint = kppRotationJoint;
 	}
 	else if (jointType == "translation") {
-	  CkppTranslationJointComponentShPtr kppTranslationJoint = CkppTranslationJointComponent::create(std::string(inJointName));
+	  CkppTranslationJointComponentShPtr kppTranslationJoint
+	    = CkppTranslationJointComponent::createWithDefaultBodyFactory
+	    (std::string(inJointName));
 	  kppTranslationJoint->setCurrentPosition(posMatrix);
 	  kppJoint = kppTranslationJoint;
 	}
@@ -429,8 +438,6 @@ namespace hpp
 	}
 	return -1;
       }
-
-
 
       Short ChppciRobot_impl::setJointDisplayPath(UShort inProblemId, UShort inJointId,
 				       Boolean inDisplayPath)
