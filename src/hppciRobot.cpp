@@ -34,8 +34,9 @@
 #define ODEBUG1(x)
 #endif
 
-static ktStatus attachSolidComponentsToJoint(const CkppJointComponentShPtr& inKppJoint, 
-					     const ChppBodyShPtr& inHppBody)
+static ktStatus
+attachSolidComponentsToJoint(const CkppJointComponentShPtr& inKppJoint,
+			     const ChppBodyShPtr& inHppBody)
 {
   std::vector<CkcdObjectShPtr> innerObjectVector;
   inHppBody->innerObjects(innerObjectVector);
@@ -43,23 +44,26 @@ static ktStatus attachSolidComponentsToJoint(const CkppJointComponentShPtr& inKp
   for (unsigned int iObj=0; iObj<innerObjectVector.size(); iObj++) {
     CkcdObjectShPtr object = innerObjectVector[iObj];
 
-    CkppKCDPolyhedronShPtr kppPoly = KIT_DYNAMIC_PTR_CAST(CkppKCDPolyhedron, object);
+    CkppKCDPolyhedronShPtr kppPoly =
+      KIT_DYNAMIC_PTR_CAST(CkppKCDPolyhedron, object);
     if (!kppPoly) {
-      ODEBUG1(":attachSolidComponentsToJoint: Object is not a CkppKCDPolyhedron.");
+      ODEBUG1
+	(":attachSolidComponentsToJoint: Object is not a CkppKCDPolyhedron.");
       return KD_ERROR;
     }
-    inKppJoint->addSolidComponentRef(CkppSolidComponentRef::create(kppPoly)); 
+    inKppJoint->addSolidComponentRef(CkppSolidComponentRef::create(kppPoly));
   }
   return KD_OK;
 }
 
 // ==========================================================================
 
-static void localSetJointBounds(const CkwsJointShPtr& inKwsJoint,
-				const hppCorbaServer::jointBoundSeq& inJointBound)
+static void
+localSetJointBounds(const CkwsJointShPtr& inKwsJoint,
+		    const hppCorbaServer::jointBoundSeq& inJointBound)
 {
   unsigned int nbJointBounds = (unsigned int)inJointBound.length();
-  unsigned int kwsJointNbDofs = inKwsJoint->countDofs(); 
+  unsigned int kwsJointNbDofs = inKwsJoint->countDofs();
   if (nbJointBounds == 2*kwsJointNbDofs) {
     for (unsigned int iDof=0; iDof<kwsJointNbDofs; iDof++) {
       double vMin = inJointBound[2*iDof];
@@ -81,14 +85,14 @@ static void localSetJointBounds(const CkwsJointShPtr& inKwsJoint,
 
 // ==========================================================================
 
-ChppciRobot_impl::ChppciRobot_impl(ChppciServer *inHppciServer) : 
+ChppciRobot_impl::ChppciRobot_impl(ChppciServer *inHppciServer) :
   attHppciServer(inHppciServer), attHppPlanner(inHppciServer->getHppPlanner())
 {
 }
 
 // ==========================================================================
 
-CORBA::Short ChppciRobot_impl::createRobot(const char* inRobotName) 
+CORBA::Short ChppciRobot_impl::createRobot(const char* inRobotName)
   throw(CORBA::SystemException)
 {
   std::string robotName(inRobotName);
@@ -110,7 +114,8 @@ CORBA::Short ChppciRobot_impl::createRobot(const char* inRobotName)
 
 // ==========================================================================
 
-CORBA::Short ChppciRobot_impl::addHppProblem(const char* inRobotName, double inPenetration)
+CORBA::Short ChppciRobot_impl::addHppProblem(const char* inRobotName,
+					     double inPenetration)
   throw(CORBA::SystemException)
 {
   std::string robotName(inRobotName);
@@ -122,19 +127,19 @@ CORBA::Short ChppciRobot_impl::addHppProblem(const char* inRobotName, double inP
   CkppDeviceComponentShPtr hppDevice = robotMap[robotName];
   // Create a new problem with this robot.
   attHppPlanner->addHppProblem(hppDevice, inPenetration);
-  
+
   return 0;
 }
 
 // ==========================================================================
 
-CORBA::Short ChppciRobot_impl::setRobotRootJoint(const char* inRobotName, 
+CORBA::Short ChppciRobot_impl::setRobotRootJoint(const char* inRobotName,
 						 const char* inJointName)
   throw(CORBA::SystemException)
 {
   std::string robotName(inRobotName);
   std::string jointName(inJointName);
-    
+
   // Check that robot of this name exists.
   if (robotMap.count(robotName) != 1) {
     ODEBUG1(":setRobotRootJoint: robot " << robotName << " does not exist.");
@@ -147,7 +152,7 @@ CORBA::Short ChppciRobot_impl::setRobotRootJoint(const char* inRobotName,
   }
   CkppDeviceComponentShPtr hppDevice = robotMap[robotName];
   CkppJointComponentShPtr kppJoint = jointMap[jointName];
-  
+
   if (hppDevice->rootJointComponent(kppJoint)!=KD_OK) {
     ODEBUG1(":setRobotRootJoint: failed to set joint "
 	    << jointName << " as root joint of robot " << robotName << ".");
@@ -169,20 +174,26 @@ CORBA::Short ChppciRobot_impl::loadHrp2Model(double inPenetration)
 
 // ==========================================================================
 
-CORBA::Short ChppciRobot_impl::createExtraDof(const char* inDofName, CORBA::Boolean inRevolute, 
-					      CORBA::Double inValueMin, CORBA::Double inValueMax)
+CORBA::Short
+ChppciRobot_impl::createExtraDof(const char* inDofName,
+				 CORBA::Boolean inRevolute,
+				 CORBA::Double inValueMin,
+				 CORBA::Double inValueMax)
   throw(CORBA::SystemException)
 {
   std::string dofName(inDofName);
   // Check that extra dof of this name does not already exist.
   if (extraDofMap.count(dofName) != 0) {
-    ODEBUG1(":createExtraDof: extra degree of freedom " << dofName << " already exists.");
+    ODEBUG1(":createExtraDof: extra degree of freedom " << dofName
+	    << " already exists.");
     return -1;
   }
-  CkppExtraDofComponentShPtr extraDof = CkppExtraDofComponent::create(inRevolute, dofName);
+  CkppExtraDofComponentShPtr extraDof =
+    CkppExtraDofComponent::create(inRevolute, dofName);
   // Check whether creation failed.
   if (!extraDof) {
-    ODEBUG1(":createExtraDof: failed to create extra degree of freedom " << dofName);
+    ODEBUG1(":createExtraDof: failed to create extra degree of freedom "
+	    << dofName);
     return -1;
   }
   if (inValueMin <= inValueMax) {
@@ -199,7 +210,8 @@ CORBA::Short ChppciRobot_impl::createExtraDof(const char* inDofName, CORBA::Bool
 
 // ==========================================================================
 
-CORBA::Short ChppciRobot_impl::addExtraDofToRobot(const char* inRobotName, const char* inDofName)
+CORBA::Short ChppciRobot_impl::addExtraDofToRobot(const char* inRobotName,
+						  const char* inDofName)
   throw(CORBA::SystemException)
 {
   std::string robotName(inRobotName);
@@ -217,9 +229,9 @@ CORBA::Short ChppciRobot_impl::addExtraDofToRobot(const char* inRobotName, const
   }
   CkppDeviceComponentShPtr hppDevice = robotMap[robotName];
   CkppExtraDofComponentShPtr kwsExtraDof = extraDofMap[dofName];
-  
+
   if (hppDevice->addExtraDof(kwsExtraDof)!=KD_OK) {
-    ODEBUG1(":addExtraDofToRobot: failed add extra degree of freedom "	 
+    ODEBUG1(":addExtraDofToRobot: failed add extra degree of freedom "
 	    << dofName << " to robot " << robotName << ".");
     return -1;
   }
@@ -228,10 +240,12 @@ CORBA::Short ChppciRobot_impl::addExtraDofToRobot(const char* inRobotName, const
 
 // ==========================================================================
 
-CORBA::Short ChppciRobot_impl::createJoint(const char* inJointName, 
-					   const char* inJointType, const hppCorbaServer::Configuration& pos, 
-					   const hppCorbaServer::jointBoundSeq& inJointBound,
-					   CORBA::Boolean inDisplay) 
+CORBA::Short
+ChppciRobot_impl::createJoint(const char* inJointName,
+			      const char* inJointType,
+			      const hppCorbaServer::Configuration& pos,
+			      const hppCorbaServer::jointBoundSeq& inJointBound,
+			      CORBA::Boolean inDisplay)
   throw(CORBA::SystemException)
 {
   std::string jointName(inJointName);
@@ -249,10 +263,18 @@ CORBA::Short ChppciRobot_impl::createJoint(const char* inJointName,
   CkitMat4 posMatrix;
   ConfigurationToCkitMat4(pos, posMatrix);
 
-  ODEBUG2("Position matrix = (( " << posMatrix(0, 0) << ",\t " << posMatrix(0, 1) << ",\t " << posMatrix(0, 2) << ",\t " << posMatrix(0, 3) << " )");
-  ODEBUG2("                   ( " << posMatrix(1, 0) << ",\t " << posMatrix(1, 1) << ",\t " << posMatrix(1, 2) << ",\t " << posMatrix(1, 3) << " )");
-  ODEBUG2("                   ( " << posMatrix(2, 0) << ",\t " << posMatrix(2, 1) << ",\t " << posMatrix(2, 2) << ",\t " << posMatrix(2, 3) << " )");
-  ODEBUG2("                   ( " << posMatrix(3, 0) << ",\t " << posMatrix(3, 1) << ",\t " << posMatrix(3, 2) << ",\t " << posMatrix(3, 3) << " ))");
+  ODEBUG2("Position matrix = (( " << posMatrix(0, 0) << ",\t "
+	  << posMatrix(0, 1) << ",\t " << posMatrix(0, 2) << ",\t "
+	  << posMatrix(0, 3) << " )");
+  ODEBUG2("                   ( " << posMatrix(1, 0) << ",\t "
+	  << posMatrix(1, 1) << ",\t " << posMatrix(1, 2) << ",\t "
+	  << posMatrix(1, 3) << " )");
+  ODEBUG2("                   ( " << posMatrix(2, 0) << ",\t "
+	  << posMatrix(2, 1) << ",\t " << posMatrix(2, 2) << ",\t "
+	  << posMatrix(2, 3) << " )");
+  ODEBUG2("                   ( " << posMatrix(3, 0) << ",\t "
+	  << posMatrix(3, 1) << ",\t " << posMatrix(3, 2) << ",\t "
+	  << posMatrix(3, 3) << " ))");
 
   // Determine type of joint.
   if (jointType == "anchor") {
@@ -292,7 +314,7 @@ CORBA::Short ChppciRobot_impl::createJoint(const char* inJointName,
   if (!kppJoint) {
     ODEBUG1(":createJoint: failed to create joint " << jointName);
     return -1;
-  } 
+  }
 
   // Set the bounds of the joint
   // Bound joint if needed.
@@ -310,7 +332,7 @@ CORBA::Short ChppciRobot_impl::createJoint(const char* inJointName,
 // ==========================================================================
 
 
-CORBA::Short ChppciRobot_impl::addJoint(const char* inParentName, 
+CORBA::Short ChppciRobot_impl::addJoint(const char* inParentName,
 					const char* inChildName)
   throw(CORBA::SystemException)
 {
@@ -327,7 +349,8 @@ CORBA::Short ChppciRobot_impl::addJoint(const char* inParentName,
   CkppJointComponentShPtr parentJoint = jointMap[inParentName];
   CkppJointComponentShPtr childJoint = jointMap[inChildName];
   if (parentJoint->addChildJointComponent(childJoint) != KD_OK) {
-    ODEBUG1(":addJoint: failed to attach joint " << inChildName << " to joint " << inParentName);
+    ODEBUG1(":addJoint: failed to attach joint " << inChildName
+	    << " to joint " << inParentName);
     return -1;
   }
   return 0;
@@ -335,19 +358,23 @@ CORBA::Short ChppciRobot_impl::addJoint(const char* inParentName,
 
 // ==========================================================================
 
-CORBA::Short ChppciRobot_impl::setJointBounds(CORBA::UShort inProblemId, CORBA::UShort inJointId, 
-					      const hppCorbaServer::jointBoundSeq& inJointBound)
+CORBA::Short
+ChppciRobot_impl::setJointBounds(CORBA::UShort inProblemId,
+				 CORBA::UShort inJointId,
+				 const hppCorbaServer::jointBoundSeq&
+				 inJointBound)
   throw(CORBA::SystemException)
 {
   unsigned int hppProblemId = (unsigned int)inProblemId;
   unsigned int jointId = (unsigned int)inJointId;
 
   unsigned int nbProblems = attHppPlanner->getNbHppProblems();
-  
+
   // Test that rank is less than number of robots in vector.
   if (hppProblemId < nbProblems) {
     // Get robot in hppPlanner object.
-    CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppProblemId);
+    CkppDeviceComponentShPtr hppRobot =
+      attHppPlanner->robotIthProblem(hppProblemId);
 
     // get joint
     CkwsDevice::TJointVector jointVector;
@@ -357,13 +384,14 @@ CORBA::Short ChppciRobot_impl::setJointBounds(CORBA::UShort inProblemId, CORBA::
       localSetJointBounds(kwsJoint, inJointBound);
     }
     else {
-      ODEBUG1(":setJointBounds: jointId="  << jointId  << 
-	      " should be smaller than number of joints=" << jointVector.size());
+      ODEBUG1(":setJointBounds: jointId="  << jointId  <<
+	      " should be smaller than number of joints="
+	      << jointVector.size());
       return -1;
     }
   }
   else {
-    ODEBUG1(":setJointBounds: inProblemId="  << hppProblemId  << 
+    ODEBUG1(":setJointBounds: inProblemId="  << hppProblemId  <<
 	    " should be smaller than number of problems="
 	    << nbProblems);
     return -1;
@@ -373,19 +401,22 @@ CORBA::Short ChppciRobot_impl::setJointBounds(CORBA::UShort inProblemId, CORBA::
 
 // ==========================================================================
 
-CORBA::Short ChppciRobot_impl::setJointVisible(CORBA::UShort inProblemId, CORBA::UShort inJointId, 
-					       CORBA::Boolean inVisible)
+CORBA::Short
+ChppciRobot_impl::setJointVisible(CORBA::UShort inProblemId,
+				  CORBA::UShort inJointId,
+				  CORBA::Boolean inVisible)
   throw(CORBA::SystemException)
 {
   unsigned int hppProblemId = (unsigned int)inProblemId;
   unsigned int jointId = (unsigned int)inJointId;
 
   unsigned int nbProblems = attHppPlanner->getNbHppProblems();
-  
+
   // Test that rank is less than number of robots in vector.
   if (hppProblemId < nbProblems) {
     // Get robot in hppPlanner object.
-    CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppProblemId);
+    CkppDeviceComponentShPtr hppRobot =
+      attHppPlanner->robotIthProblem(hppProblemId);
     CkppJointComponentShPtr kppJoint = hppRobot->jointComponent(jointId);
 
     if (kppJoint) {
@@ -398,19 +429,22 @@ CORBA::Short ChppciRobot_impl::setJointVisible(CORBA::UShort inProblemId, CORBA:
 
 // ==========================================================================
 
-CORBA::Short ChppciRobot_impl::setJointTransparent(CORBA::UShort inProblemId, CORBA::UShort inJointId, 
-						   CORBA::Boolean inTransparent)
+CORBA::Short
+ChppciRobot_impl::setJointTransparent(CORBA::UShort inProblemId,
+				      CORBA::UShort inJointId,
+				      CORBA::Boolean inTransparent)
   throw(CORBA::SystemException)
 {
   unsigned int hppProblemId = (unsigned int)inProblemId;
   unsigned int jointId = (unsigned int)inJointId;
 
   unsigned int nbProblems = attHppPlanner->getNbHppProblems();
-  
+
   // Test that rank is less than number of robots in vector.
   if (hppProblemId < nbProblems) {
     // Get robot in hppPlanner object.
-    CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppProblemId);
+    CkppDeviceComponentShPtr hppRobot =
+      attHppPlanner->robotIthProblem(hppProblemId);
     CkppJointComponentShPtr kppJoint = hppRobot->jointComponent(jointId);
 
     if (kppJoint) {
@@ -423,20 +457,24 @@ CORBA::Short ChppciRobot_impl::setJointTransparent(CORBA::UShort inProblemId, CO
 
 // ==========================================================================
 
-CORBA::Short ChppciRobot_impl::setJointDisplayPath(CORBA::UShort inProblemId, CORBA::UShort inJointId, 
-						   CORBA::Boolean inDisplayPath)
+CORBA::Short
+ChppciRobot_impl::setJointDisplayPath(CORBA::UShort inProblemId,
+				      CORBA::UShort inJointId,
+				      CORBA::Boolean inDisplayPath)
   throw(CORBA::SystemException)
 {
   unsigned int hppProblemId = (unsigned int)inProblemId;
   unsigned int jointId = (unsigned int)inJointId;
 
   unsigned int nbProblems = attHppPlanner->getNbHppProblems();
-  
+
   // Test that rank is less than number of robots in vector.
   if (hppProblemId < nbProblems) {
     // Get robot in hppPlanner object.
-    CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppProblemId);
-    CkppJointComponentShPtr kppJoint = hppRobot->jointComponent(jointId);
+    CkppDeviceComponentShPtr hppRobot =
+      attHppPlanner->robotIthProblem(hppProblemId);
+    CkppJointComponentShPtr kppJoint =
+      hppRobot->jointComponent(jointId);
 
     if (kppJoint) {
       kppJoint->doesDisplayPath(inDisplayPath);
@@ -446,8 +484,9 @@ CORBA::Short ChppciRobot_impl::setJointDisplayPath(CORBA::UShort inProblemId, CO
   return -1;
 }
 
-CORBA::Short ChppciRobot_impl::setCurrentConfig(CORBA::UShort inProblemId, 
-						const hppCorbaServer::dofSeq& dofArray) 
+CORBA::Short
+ChppciRobot_impl::setCurrentConfig(CORBA::UShort inProblemId,
+				   const hppCorbaServer::dofSeq& dofArray)
   throw(CORBA::SystemException)
 {
   unsigned int hppProblemId = (unsigned int)inProblemId;
@@ -456,24 +495,25 @@ CORBA::Short ChppciRobot_impl::setCurrentConfig(CORBA::UShort inProblemId,
   std::vector<double> dofVector;
 
   unsigned int nbProblems = attHppPlanner->getNbHppProblems();
-  
+
   // Test that rank is less than number of robots in vector.
   if (hppProblemId < nbProblems) {
     // Get robot in hppPlanner object.
-    CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppProblemId);
+    CkppDeviceComponentShPtr hppRobot =
+      attHppPlanner->robotIthProblem(hppProblemId);
 
     // by Yoshida 06/08/25
     unsigned int deviceDim = hppRobot->countDofs ();
-
 
     // Fill dof vector with dof array.
     for (unsigned int iDof=0; iDof<configDim; iDof++) {
       dofVector.push_back(dofArray[iDof]);
     }
-    
+
     // by Yoshida 06/08/25
     // fill the vector by zero
-    ODEBUG2("robot id "<<hppProblemId<<", configDim "<<configDim<<",  deviceDim "<<deviceDim);
+    ODEBUG2("robot id " << hppProblemId << ", configDim " << configDim
+	    << ",  deviceDim " << deviceDim);
     if(configDim != deviceDim){
       ODEBUG1(":setCurrentConfig: dofVector Does not match");
       return -1;
@@ -483,8 +523,9 @@ CORBA::Short ChppciRobot_impl::setCurrentConfig(CORBA::UShort inProblemId,
 
     // Create a config for robot initialized with dof vector.
     CkwsConfig config(hppRobot, dofVector);
-    
-    return (short)attHppPlanner->robotCurrentConfIthProblem(hppProblemId, config);
+
+    return (short)attHppPlanner->robotCurrentConfIthProblem(hppProblemId,
+							    config);
   }
   else {
     ODEBUG1(":setCurrentConfig: wrong robot Id");
@@ -503,7 +544,10 @@ CORBA::Short ChppciRobot_impl::setCurrentConfig(CORBA::UShort inProblemId,
 #define RHAND_JOINT0_KINEO 29
 
 /// \brief the config is in the order of OpenHRP Joints  RARM, LARM, RHAND, LHAND
-CORBA::Short ChppciRobot_impl::setCurrentConfigOpenHRP(CORBA::UShort inProblemId, const hppCorbaServer::dofSeq& dofArray)
+CORBA::Short
+ChppciRobot_impl::setCurrentConfigOpenHRP(CORBA::UShort inProblemId,
+					  const hppCorbaServer::dofSeq&
+					  dofArray)
     throw(CORBA::SystemException)
 {
   hppCorbaServer::dofSeq dofArrayKineo(dofArray);
@@ -521,11 +565,12 @@ CORBA::Short ChppciRobot_impl::setCurrentConfigOpenHRP(CORBA::UShort inProblemId
 }
 
 /// \brief Comment in interface ChppciRobot::getCurrentConfig
-hppCorbaServer::dofSeq* ChppciRobot_impl::getCurrentConfigOpenHRP(CORBA::UShort inProblemId)
+hppCorbaServer::dofSeq*
+ChppciRobot_impl::getCurrentConfigOpenHRP(CORBA::UShort inProblemId)
     throw(CORBA::SystemException)
 {
   hppCorbaServer::dofSeq *dofArray = getCurrentConfig(inProblemId);
-  
+
   hppCorbaServer::dofSeq dofArrayKineo(*dofArray);
 
   // LARM
@@ -543,7 +588,8 @@ hppCorbaServer::dofSeq* ChppciRobot_impl::getCurrentConfigOpenHRP(CORBA::UShort 
 #endif
 
 /// \brief Comment in interface ChppciRobot::getCurrentConfig
-hppCorbaServer::dofSeq* ChppciRobot_impl::getCurrentConfig(CORBA::UShort inProblemId)
+hppCorbaServer::dofSeq*
+ChppciRobot_impl::getCurrentConfig(CORBA::UShort inProblemId)
     throw(CORBA::SystemException)
 {
   unsigned int hppProblemId = (unsigned int)inProblemId;
@@ -554,7 +600,8 @@ hppCorbaServer::dofSeq* ChppciRobot_impl::getCurrentConfig(CORBA::UShort inProbl
 
   if (hppProblemId < nbProblems) {
     // Get robot in hppPlanner object.
-    CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppProblemId);
+    CkppDeviceComponentShPtr hppRobot =
+      attHppPlanner->robotIthProblem(hppProblemId);
 
     std::vector<double> dofVector;
     hppRobot->getCurrentDofValues(dofVector);
@@ -587,7 +634,7 @@ hppCorbaServer::dofSeq* ChppciRobot_impl::getCurrentConfig(CORBA::UShort inProbl
 
 // ==========================================================================
 
-CORBA::Short ChppciRobot_impl::attachBodyToJoint(const char* inJointName, 
+CORBA::Short ChppciRobot_impl::attachBodyToJoint(const char* inJointName,
 						 const char* inBodyName)
   throw(CORBA::SystemException)
 {
@@ -609,7 +656,8 @@ CORBA::Short ChppciRobot_impl::attachBodyToJoint(const char* inJointName,
   ChppBodyShPtr hppBody = bodyMap[bodyName];
 
   if (kwsJoint->setAttachedBody(hppBody) != KD_OK) {
-    ODEBUG1(":attachBodyToJoint: failed to attach body "	 << bodyName << " to joint " << jointName);
+    ODEBUG1(":attachBodyToJoint: failed to attach body "
+	    << bodyName << " to joint " << jointName);
     return -1;
   }
   // If objects are attached to the body, the corresponding component need to
@@ -632,7 +680,7 @@ CORBA::Short ChppciRobot_impl::createBody(const char* inBodyName)
     return -1;
   }
   ChppBodyShPtr hppBody = ChppBody::create(bodyName);
-  
+
   if (!hppBody) {
     ODEBUG1(":createBody: failed to create body "	 << bodyName << ".");
     return -1;
@@ -645,13 +693,14 @@ CORBA::Short ChppciRobot_impl::createBody(const char* inBodyName)
 
 // ==========================================================================
 
-hppCorbaServer::nameSeq* ChppciRobot_impl::getJointInnerObject(const char* inBodyName)
+hppCorbaServer::nameSeq*
+ChppciRobot_impl::getJointInnerObject(const char* inBodyName)
 {
   std::string bodyName(inBodyName);
 
   hppCorbaServer::nameSeq *innerObjectSeq = NULL;
   // Find the body corresponding to the name in ChppPlanner object.
-  CkwsKCDBodyConstShPtr kcdBody = attHppPlanner->findBodyByJointName(bodyName);;
+  CkwsKCDBodyConstShPtr kcdBody = attHppPlanner->findBodyByJointName(bodyName);
 
   if (kcdBody) {
     std::vector<CkcdObjectShPtr> innerObjectList = kcdBody->innerObjects();
@@ -665,11 +714,11 @@ hppCorbaServer::nameSeq* ChppciRobot_impl::getJointInnerObject(const char* inBod
       for (unsigned int iObject=0; iObject < nbObjects; iObject++) {
 	CkcdObjectShPtr kcdObject = innerObjectList[iObject];
 	// Cast object into CkppKCDPolyhedron.
-	if (CkppGeometryComponentShPtr kppGeometry = 
+	if (CkppGeometryComponentShPtr kppGeometry =
 	    KIT_DYNAMIC_PTR_CAST(CkppGeometryComponent, kcdObject)) {
 	  // Get name of geometry and add it into the list.
 	  std::string geometryName = kppGeometry->name();
-	  nameList[iObject] = 
+	  nameList[iObject] =
 	    (char*)malloc(sizeof(char)*(geometryName.length()+1));
 	  strcpy(nameList[iObject], geometryName.c_str());
 	}
@@ -687,7 +736,8 @@ hppCorbaServer::nameSeq* ChppciRobot_impl::getJointInnerObject(const char* inBod
 
 // ==========================================================================
 
-hppCorbaServer::nameSeq* ChppciRobot_impl::getJointOuterObject(const char* inBodyName)
+hppCorbaServer::nameSeq*
+ChppciRobot_impl::getJointOuterObject(const char* inBodyName)
 {
   std::string bodyName(inBodyName);
 
@@ -706,11 +756,12 @@ hppCorbaServer::nameSeq* ChppciRobot_impl::getJointOuterObject(const char* inBod
       for (unsigned int iObject=0; iObject < nbObjects; iObject++) {
 	CkcdObjectShPtr kcdObject = outerObjectList[iObject];
 	// Cast object into CkppKCDPolyhedron.
-	if (CkppGeometryComponentShPtr kppGeometry = 
+	if (CkppGeometryComponentShPtr kppGeometry =
 	    KIT_DYNAMIC_PTR_CAST(CkppGeometryComponent, kcdObject)) {
 	  // Get name of geometry and add it into the list.
 	  std::string geometryName = kppGeometry->name();
-	  nameList[iObject] = (char*)malloc(sizeof(char)*(geometryName.length()+1));
+	  nameList[iObject] =
+	    (char*)malloc(sizeof(char)*(geometryName.length()+1));
 	  strcpy(nameList[iObject], geometryName.c_str());
 	}
       }
@@ -727,12 +778,12 @@ hppCorbaServer::nameSeq* ChppciRobot_impl::getJointOuterObject(const char* inBod
 
 // ==========================================================================
 
-CORBA::Short ChppciRobot_impl::setPenetration(CORBA::UShort inProblemId, 
+CORBA::Short ChppciRobot_impl::setPenetration(CORBA::UShort inProblemId,
 					      CORBA::Double inPenetration)
 {
   unsigned int hppProblemId = (unsigned int)inProblemId;
   unsigned int nbProblems = attHppPlanner->getNbHppProblems();
-  
+
   if (hppProblemId < nbProblems) {
     attHppPlanner->penetration(inProblemId, inPenetration);
   }
@@ -747,12 +798,12 @@ CORBA::Short ChppciRobot_impl::setPenetration(CORBA::UShort inProblemId,
 
 // ==========================================================================
 
-CORBA::Short ChppciRobot_impl::getPenetration(CORBA::UShort inProblemId, 
+CORBA::Short ChppciRobot_impl::getPenetration(CORBA::UShort inProblemId,
 					      CORBA::Double& outPenetration)
 {
   unsigned int hppProblemId = (unsigned int)inProblemId;
   unsigned int nbProblems = attHppPlanner->getNbHppProblems();
-  
+
   if (hppProblemId < nbProblems) {
     outPenetration = attHppPlanner->penetration(inProblemId);
   }
@@ -767,20 +818,22 @@ CORBA::Short ChppciRobot_impl::getPenetration(CORBA::UShort inProblemId,
 
 // ==========================================================================
 
-CORBA::Short 
-ChppciRobot_impl::checkLinkCollision(CORBA::UShort inProblemId, CORBA::UShort jointId, 
-				     CORBA::UShort& outResult) 
+CORBA::Short
+ChppciRobot_impl::checkLinkCollision(CORBA::UShort inProblemId,
+				     CORBA::UShort jointId,
+				     CORBA::UShort& outResult)
 throw(CORBA::SystemException)
 {
   unsigned int hppProblemId = (unsigned int)inProblemId;
-  unsigned int hppJointId = (unsigned int)jointId; 
-  
+  unsigned int hppJointId = (unsigned int)jointId;
+
   unsigned int nbProblems = attHppPlanner->getNbHppProblems();
 
 
   if (hppProblemId < nbProblems) {
     // Get robot in hppPlanner object.
-    CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppProblemId);
+    CkppDeviceComponentShPtr hppRobot =
+      attHppPlanner->robotIthProblem(hppProblemId);
 
     // by Yoshida 06/08/25
     unsigned int deviceDim = hppRobot->countDofs ();
@@ -794,7 +847,8 @@ throw(CORBA::SystemException)
     CkwsDevice::TJointVector jointList;
     hppRobot->getJointVector(jointList);
     // get object
-    ChppBodyShPtr hppBody = KIT_DYNAMIC_PTR_CAST(ChppBody, jointList[hppJointId]->attachedBody());
+    ChppBodyShPtr hppBody =
+      KIT_DYNAMIC_PTR_CAST(ChppBody, jointList[hppJointId]->attachedBody());
 
     // get result
     outResult = (CORBA::UShort) hppBody->computeEstimatedDistance();
@@ -805,7 +859,8 @@ throw(CORBA::SystemException)
 
     for(unsigned int i=0; i<jointList.size(); i++){
 
-      ChppBodyShPtr hppBody = KIT_DYNAMIC_PTR_CAST(ChppBody, jointList[i]->attachedBody());
+      ChppBodyShPtr hppBody =
+	KIT_DYNAMIC_PTR_CAST(ChppBody, jointList[i]->attachedBody());
 
       CkitMat4 mat = hppBody->absolutePosition();
       CkitMat4 matJoint = jointList[i]->currentPosition();
@@ -849,7 +904,7 @@ throw(CORBA::SystemException)
 
   return 0;
 }
- 
+
 // ==========================================================================
 
 CORBA::Short ChppciRobot_impl::createPolyhedron(const char* inPolyhedronName)
@@ -859,13 +914,16 @@ CORBA::Short ChppciRobot_impl::createPolyhedron(const char* inPolyhedronName)
 
   // Check that polyhedron does not already exist.
   if (polyhedronMap.count(polyhedronName) != 0) {
-    ODEBUG1(":createPolyhedron: polyhedron "	 << polyhedronName << " already exists.");
+    ODEBUG1(":createPolyhedron: polyhedron "	 << polyhedronName
+	    << " already exists.");
     return -1;
   }
-  CkppKCDPolyhedronShPtr kppPolyhedron = CkppKCDPolyhedron::create(polyhedronName);
+  CkppKCDPolyhedronShPtr kppPolyhedron =
+    CkppKCDPolyhedron::create(polyhedronName);
 
   if (!kppPolyhedron) {
-    ODEBUG1(":createPolyhedron: failed to create polyhedron "	 << polyhedronName);
+    ODEBUG1(":createPolyhedron: failed to create polyhedron "
+	    << polyhedronName);
     return -1;
   }
   polyhedronMap[polyhedronName] = kppPolyhedron;
@@ -874,23 +932,26 @@ CORBA::Short ChppciRobot_impl::createPolyhedron(const char* inPolyhedronName)
 }
 
 // ==========================================================================
- 
-CORBA::Short ChppciRobot_impl::createBox(const char* inBoxName, 
-					 CORBA::Double x, CORBA::Double y, 
+
+CORBA::Short ChppciRobot_impl::createBox(const char* inBoxName,
+					 CORBA::Double x, CORBA::Double y,
 					 CORBA::Double z)
   throw(CORBA::SystemException)
 {
-  //  attHppciServer->waitForMutex(std::string("ChppciObstacle_impl::createBox"));
   std::string polyhedronName(inBoxName);
   // Check that polyhedron does not already exist.
   if (polyhedronMap.count(polyhedronName) != 0) {
-    ODEBUG2("ChppciObstacle_impl::createPolyhedron: polyhedron "	 << polyhedronName << " already exists.");
+    ODEBUG2("ChppciObstacle_impl::createPolyhedron: polyhedron "
+	    << polyhedronName << " already exists.");
     return -1;
   }
-  CkppKCDPolyhedronShPtr kppPolyhedron = CkppKCDBox::create(polyhedronName, x, y, z);
+  CkppKCDPolyhedronShPtr kppPolyhedron =
+    CkppKCDBox::create(polyhedronName, x, y, z);
 
   if (!kppPolyhedron) {
-    ODEBUG2("ChppciObstacle_impl::createPolyhedron: failed to create polyhedron "	 << polyhedronName);
+    ODEBUG2
+      ("ChppciObstacle_impl::createPolyhedron: failed to create polyhedron "
+       << polyhedronName);
     return -1;
   }
   polyhedronMap[polyhedronName] = kppPolyhedron;
@@ -900,9 +961,9 @@ CORBA::Short ChppciRobot_impl::createBox(const char* inBoxName,
 
 // ==========================================================================
 
-CORBA::Short ChppciRobot_impl::addPoint(const char* inPolyhedronName, 
-					CORBA::Double x, CORBA::Double y, 
-					CORBA::Double z) 
+CORBA::Short ChppciRobot_impl::addPoint(const char* inPolyhedronName,
+					CORBA::Double x, CORBA::Double y,
+					CORBA::Double z)
   throw(CORBA::SystemException)
 {
   std::string polyhedronName(inPolyhedronName);
@@ -921,15 +982,18 @@ CORBA::Short ChppciRobot_impl::addPoint(const char* inPolyhedronName,
 
 // ==========================================================================
 
-CORBA::Short ChppciRobot_impl::addTriangle(const char* inPolyhedronName, 
-					   CORBA::ULong pt1, CORBA::ULong pt2, CORBA::ULong pt3)
+CORBA::Short
+ChppciRobot_impl::addTriangle(const char* inPolyhedronName,
+			      CORBA::ULong pt1, CORBA::ULong pt2,
+			      CORBA::ULong pt3)
   throw(CORBA::SystemException)
 {
   std::string polyhedronName(inPolyhedronName);
 
   // Check that polyhedron exists.
   if (polyhedronMap.count(polyhedronName) != 1) {
-    ODEBUG1(":addTriangle: polyhedron " << polyhedronName	 << " does not exist.");
+    ODEBUG1(":addTriangle: polyhedron " << polyhedronName
+	    << " does not exist.");
     return -1;
   }
   CkppKCDPolyhedronShPtr kppPolyhedron = polyhedronMap[polyhedronName];
@@ -952,8 +1016,10 @@ CORBA::Short ChppciRobot_impl::addTriangle(const char* inPolyhedronName,
 
 // ==========================================================================
 
-CORBA::Short ChppciRobot_impl::setDofBounds(CORBA::UShort inProblemId, CORBA::UShort inDofId, 
-					    CORBA::Double inMinValue, CORBA::Double inMaxValue)
+CORBA::Short
+ChppciRobot_impl::setDofBounds(CORBA::UShort inProblemId, CORBA::UShort inDofId,
+			       CORBA::Double inMinValue,
+			       CORBA::Double inMaxValue)
   throw(CORBA::SystemException)
 {
   unsigned int hppProblemId = (unsigned int)inProblemId;
@@ -963,7 +1029,8 @@ CORBA::Short ChppciRobot_impl::setDofBounds(CORBA::UShort inProblemId, CORBA::US
   // Test that rank is less than number of robots in vector.
   if (hppProblemId < nbProblems) {
     // Get robot in hppPlanner object.
-    CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppProblemId);
+    CkppDeviceComponentShPtr hppRobot =
+      attHppPlanner->robotIthProblem(hppProblemId);
 
     unsigned int deviceDim = hppRobot->countDofs();
     if (dofId < deviceDim) {
@@ -974,10 +1041,10 @@ CORBA::Short ChppciRobot_impl::setDofBounds(CORBA::UShort inProblemId, CORBA::US
       else {
 	hppRobot->dof(dofId)->isBounded(false);
 	hppRobot->dof(dofId)->bounds(inMaxValue, inMinValue);
-      }	
+      }
     }
     else {
-      ODEBUG1(":setDofBounds: dofId=" << dofId 
+      ODEBUG1(":setDofBounds: dofId=" << dofId
 	      << "should be smaller than device dim="
 	      << deviceDim);
       return -1;
@@ -992,25 +1059,29 @@ CORBA::Short ChppciRobot_impl::setDofBounds(CORBA::UShort inProblemId, CORBA::US
 
 // ==========================================================================
 
-CORBA::Short ChppciRobot_impl::setDofLocked(CORBA::UShort inProblemId, CORBA::UShort inDofId, 
-					    CORBA::Boolean locked, CORBA::Double lockedValue)
+CORBA::Short ChppciRobot_impl::setDofLocked(CORBA::UShort inProblemId,
+					    CORBA::UShort inDofId,
+					    CORBA::Boolean locked,
+					    CORBA::Double lockedValue)
   throw(CORBA::SystemException)
 {
   unsigned int hppRobotId = (unsigned int)inProblemId;
   unsigned int nbRobots = attHppPlanner->getNbHppProblems();
   unsigned int dofId = (unsigned int) inDofId;
-  
+
   // Test that rank is less than number of robots in vector.
   if (hppRobotId < nbRobots) {
     // Get robot in hppPlanner object.
-    CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppRobotId);
+    CkppDeviceComponentShPtr hppRobot =
+      attHppPlanner->robotIthProblem(hppRobotId);
 
     // get joint
     CkwsDevice::TDofVector dofList;
     hppRobot->getDofVector(dofList);
 
     if(dofId >= (unsigned short) dofList.size()){
-      ODEBUG1(":setJointBound: joint Id " << dofId << " is larger than total size " << dofList.size());
+      ODEBUG1(":setJointBound: joint Id " << dofId
+	      << " is larger than total size " << dofList.size());
       return -1;
     }
 
@@ -1028,19 +1099,21 @@ CORBA::Short ChppciRobot_impl::setDofLocked(CORBA::UShort inProblemId, CORBA::US
 
 // ==========================================================================
 
-CORBA::Short ChppciRobot_impl::getDeviceDim(CORBA::UShort inProblemId, CORBA::UShort& outDeviceDim)
+CORBA::Short ChppciRobot_impl::getDeviceDim(CORBA::UShort inProblemId,
+					    CORBA::UShort& outDeviceDim)
 throw(CORBA::SystemException)
 {
   unsigned int hppProblemId = (unsigned int)inProblemId;
 
   unsigned int nbProblems = attHppPlanner->getNbHppProblems();
-  
+
   // Test that rank is less than number of robots in vector.
   if (hppProblemId < nbProblems) {
     // Get robot in hppPlanner object.
-    CkppDeviceComponentShPtr hppRobot = attHppPlanner->robotIthProblem(hppProblemId);
+    CkppDeviceComponentShPtr hppRobot =
+      attHppPlanner->robotIthProblem(hppProblemId);
 
-   
+
     outDeviceDim = hppRobot->countDofs ();
   }
   else{
@@ -1052,8 +1125,10 @@ throw(CORBA::SystemException)
 
 // ==========================================================================
 
-CORBA::Short ChppciRobot_impl::addPolyToBody(const char* inBodyName, const char* inPolyhedronName, 
-					     const hppCorbaServer::Configuration& inConfig)
+CORBA::Short
+ChppciRobot_impl::addPolyToBody(const char* inBodyName,
+				const char* inPolyhedronName,
+				const hppCorbaServer::Configuration& inConfig)
   throw(CORBA::SystemException)
 {
   std::string bodyName(inBodyName);
@@ -1061,7 +1136,8 @@ CORBA::Short ChppciRobot_impl::addPolyToBody(const char* inBodyName, const char*
 
   // Check that body of this name exits.
   if (bodyMap.count(bodyName) != 1) {
-    ODEBUG1(":setBodyInnerObject: body "	 << bodyName << " does not exist.");
+    ODEBUG1(":setBodyInnerObject: body "	 << bodyName
+	    << " does not exist.");
     return -1;
   }
   // Check that polyhedron exists.
@@ -1076,8 +1152,9 @@ CORBA::Short ChppciRobot_impl::addPolyToBody(const char* inBodyName, const char*
   // Set polyhedron in given configuration.
   CkitMat4 pos;
   ConfigurationToCkitMat4(inConfig, pos);
-  
-  if (!hppBody->addInnerObject(CkppSolidComponentRef::create(kppPolyhedron), pos)) {
+
+  if (!hppBody->addInnerObject(CkppSolidComponentRef::create(kppPolyhedron),
+			       pos)) {
     return -1;
   }
   return 0;
