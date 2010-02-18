@@ -46,7 +46,7 @@ AM_CONDITIONAL([OPENHRP], [test x$with_openhrp = xtrue])
 AC_SUBST([OPENHRP_DEPENDENCES], [])
 
 if test x$with_openhrp = xtrue; then
-	define(hppopenhrp_reqd, [hppOpenHRP >= 1.7])
+	define(hppopenhrp_reqd, [hppOpenHRP >= 1.6.1])
 	AC_SUBST([HPPOPENHRP_REQD], ["hppopenhrp_reqd"])
 	PKG_CHECK_MODULES([HPPOPENHRP], [hppopenhrp_reqd])
 	HPPOPENHRP_PREFIX=`$PKG_CONFIG hppOpenHRP --variable=prefix`
@@ -64,7 +64,7 @@ if test x$with_openhrp = xtrue; then
 	AC_SUBST([HRP2DYNAMICS_REQD], ["hrp2dynamics_reqd"])
 	PKG_CHECK_MODULES([HRP2DYNAMICS], [hrp2dynamics_reqd])
 
-	define(hrp2_14_reqd, [hrp2_14 >= 1.7.2])
+	define(hrp2_14_reqd, [hrp2_14 >= 1.7.0])
 	AC_SUBST([HRP2_14_REQD], ["hrp2_14_reqd"])
 	PKG_CHECK_MODULES([HRP2_14], [hrp2_14_reqd])
 
