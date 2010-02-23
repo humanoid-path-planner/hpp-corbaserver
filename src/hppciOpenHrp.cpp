@@ -359,8 +359,14 @@ namespace hpp
 		    clist = hppOtherBody->innerObjects();
 		    for (unsigned int k = 0; k < clist.size (); ++k)
 		      {
-			CkppKCDPolyhedronShPtr kppPolyhedron = KIT_DYNAMIC_PTR_CAST(CkppKCDPolyhedron, clist[k]);
-			mergedList.push_back(kppPolyhedron);
+			CkppKCDPolyhedronShPtr kppPolyhedron = 
+			  KIT_DYNAMIC_PTR_CAST(CkppKCDPolyhedron, clist[k]);
+			// Insert only polyhedras since the robot is composed of
+			// polyhedra. An empty assembly might be inserted in the
+			// inner list of the body.
+			if (kppPolyhedron) {
+			  mergedList.push_back(kppPolyhedron);
+			}
 		      }
 		  }
 	      }
