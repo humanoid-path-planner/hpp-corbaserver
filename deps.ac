@@ -5,14 +5,6 @@ AC_SUBST([KINEO_PREFIX])
 AC_SUBST([KINEO_LIBDIR])
 AC_SUBST([KINEO_ADDON_BUILDER],[${KINEO_PREFIX}/bin/KineoAddonBuilder])
 
-define(robotbuilder_reqd, [robotbuilder >= 1.0.5])
-AC_SUBST([ROBOTBUILDER_REQD], ["robotbuilder_reqd"])
-PKG_CHECK_MODULES([ROBOTBUILDER], [robotbuilder_reqd])
-ROBOTBUILDER_PREFIX=`$PKG_CONFIG robotbuilder --variable=prefix`
-AC_SUBST([ROBOTBUILDER_PREFIX])
-AC_SUBST([ROBOTBUILDER_CFLAGS])
-AC_SUBST([ROBOTBUILDER_LIBS])
-
 define(kwsPlus_reqd, [kwsPlus >= 1.8])
 AC_SUBST([KWSPLUS_REQD], ["kwsPlus_reqd"])
 PKG_CHECK_MODULES([KWSPLUS], [kwsPlus_reqd])
@@ -68,5 +60,13 @@ if test x$with_openhrp = xtrue; then
 	AC_SUBST([HRP2_14_REQD], ["hrp2_14_reqd"])
 	PKG_CHECK_MODULES([HRP2_14], [hrp2_14_reqd])
 
-	OPENHRP_DEPENDENCES=", hppopenhrp_reqd, jrlmodelloader_reqd, hrp2dynamics_reqd, hrp2_14_reqd"
+	define(robotbuilder_reqd, [robotbuilder >= 1.0.5])
+	AC_SUBST([ROBOTBUILDER_REQD], ["robotbuilder_reqd"])
+	PKG_CHECK_MODULES([ROBOTBUILDER], [robotbuilder_reqd])
+	ROBOTBUILDER_PREFIX=`$PKG_CONFIG robotbuilder --variable=prefix`
+	AC_SUBST([ROBOTBUILDER_PREFIX])
+	AC_SUBST([ROBOTBUILDER_CFLAGS])
+	AC_SUBST([ROBOTBUILDER_LIBS])
+
+	OPENHRP_DEPENDENCES=", hppopenhrp_reqd, jrlmodelloader_reqd, hrp2dynamics_reqd, hrp2_14_reqd, robotbuilder_reqd"
 fi
