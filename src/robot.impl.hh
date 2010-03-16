@@ -1,232 +1,244 @@
-/*
-  Copyright 2006 LAAS-CNRS
+// Copyright (C) 2009, 2010 by Florent Lamiraux, Thomas Moulard, JRL.
+//
+// This file is part of the hpp-corbaserver.
+//
+// This software is provided "as is" without warranty of any kind,
+// either expressed or implied, including but not limited to the
+// implied warranties of fitness for a particular purpose.
+//
+// See the COPYING file for more information.
 
-  Author: Florent Lamiraux
+#ifndef HPP_CORBASERVER_ROBOT_IMPL_HH
+# define HPP_CORBASERVER_ROBOT_IMPL_HH
+# include <map>
+# include <string>
+# include <KineoKCDModel/kppKCDPolyhedron.h>
 
-*/
+# include "hppCore/hppPlanner.h"
+# include "hppModel/hppBody.h"
 
-#ifndef HPPCI_ROBOT_H
-#define HPPCI_ROBOT_H
+# include "hpp/corbaserver/fwd.hh"
 
-/**
-Robots and obstacles are stored in object ChppPlanner. 
-The kinematic part of a robot is stored in a CkppDeviceComponent object (see KineoWorks documentation). 
-\li To each \em joint is attached a \em body (CkwsBody).
-\li Each \em body contains a list of CkcdObject (derived into CkppKCDPolyhedron).
-\li A \em polyhedron is defined by a set of \em vertices and a set of \em facets.
+# include "hpp/corbaserver/robot.stub.hh"
 
-Obstacles are stored in collision lists (CkcdCollisionList) composed of polyhedra (CkppKCDPolyhedron).
-
- */
-
-#include <map>
-#include <string>
-
-#include "hppCore/hppPlanner.h"
-#include "hppModel/hppBody.h"
-
-/*
-  Undefine macros mistakenly defined by omniORB
-*/
-#ifdef PACKAGE_BUGREPORT
-#undef PACKAGE_BUGREPORT
-#endif
-#ifdef PACKAGE_NAME
-#undef PACKAGE_NAME
-#endif
-#ifdef PACKAGE_STRING
-#undef PACKAGE_STRING
-#endif
-#ifdef PACKAGE_TARNAME
-#undef PACKAGE_TARNAME
-#endif
-#ifdef PACKAGE_VERSION
-#undef PACKAGE_VERSION
-#endif
-
-#include "hppciRobotServer.hh"
-
-#include "KineoKCDModel/kppKCDPolyhedron.h"
-
-class ChppciServer;
-
-/**
-   \brief List of kcd objects with shared pointer to the joint owning the objects.
-*/
-class ChppKcdObjectVector : public std::vector<CkcdObjectShPtr> 
+namespace hpp
 {
-public:
-  /**
-     \brief Get joint
-  */
-  const CkppJointComponentShPtr& kppJoint() const { 
-    return attKppJoint; 
-  };
-  
-  /**
-     \brief Set joint
-  */
-  void kppJoint(const CkppJointComponentShPtr& inKppJoint) {attKppJoint = inKppJoint;};
+  namespace corbaServer
+  {
+    namespace impl
+    {
 
-private:
-  CkppJointComponentShPtr attKppJoint;
-};
+      /**
+	 Robots and obstacles are stored in object ChppPlanner.
+
+	 The kinematic part of a robot is stored in a
+	 CkppDeviceComponent object (see KineoWorks documentation).
+       
+	 \li To each \em joint is attached a \em body (CkwsBody).
+
+	 \li Each \em body contains a list of CkcdObject (derived into
+	 CkppKCDPolyhedron).
+
+	 \li A \em polyhedron is defined by a set of \em vertices and a
+	 set of \em facets.
+       
+	 Obstacles are stored in collision lists (CkcdCollisionList)
+	 composed of polyhedra (CkppKCDPolyhedron).
+      */
 
 
-/**
- * \brief Implementation of corba interface ChppciRobot.
+      //FIXME: this is so WRONG!
 
-The construction of a 
- */
-class ChppciRobot_impl : public virtual POA_hppCorbaServer::ChppciRobot {
-public:
-  /// \brief Store pointer to ChppPlanner object of hppciServer.
-  ChppciRobot_impl(ChppciServer *inHppciServer);
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::createRobot.
-  virtual CORBA::Short createRobot(const char* inRobotName) 
-    throw(CORBA::SystemException);
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::addHppProblem.
-  virtual CORBA::Short addHppProblem(const char* inRobotName, double inPenetration)
-    throw(CORBA::SystemException);
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::setRobotRootJoint.
-  virtual CORBA::Short 
-    setRobotRootJoint(const char* inRobotName, const char* inJointName)
-    throw(CORBA::SystemException);
+      /// \brief List of kcd objects with shared pointer to the joint
+      /// owning the objects.
+      class KcdObjectVector : public std::vector<CkcdObjectShPtr> 
+      {
+      public:
+	/**
+	   \brief Get joint
+	*/
+	const CkppJointComponentShPtr& kppJoint() const { 
+	  return attKppJoint; 
+	};
+      
+	/**
+	   \brief Set joint
+	*/
+	void kppJoint(const CkppJointComponentShPtr& inKppJoint) {attKppJoint = inKppJoint;};
+      
+      private:
+	CkppJointComponentShPtr attKppJoint;
+      };
+
+
+      /// \brief Implementation of corba interface ChppciRobot.
+      ///
+      /// The construction of a 
+      class Robot : public virtual POA_hpp::Robot
+      {
+      public:
+	Robot (corbaServer::Server* server);
+      
+	virtual Short
+	createRobot (const char* robotName) throw (SystemException);
+
+	virtual Short
+	addHppProblem(const char* robotName, double penetration)
+	  throw (SystemException);
+
+	virtual Short 
+	setRobotRootJoint(const char* robotName, const char* jointName)
+	  throw (SystemException);
+
+	// FIXME: OpenHRP only.
+	virtual Short loadHrp2Model (double penetration);
+
+	virtual Short
+	createExtraDof
+	(const char* dofName, Boolean revolute, Double valueMin, Double valueMax)
+	  throw (SystemException);
+
+	virtual Short
+	addExtraDofToRobot
+	(const char* robotName, const char* dofName) throw (SystemException);
+      
+	virtual Short
+	setDofBounds
+	(UShort problemId, UShort dofId, 	Double minValue, Double maxValue)
+	  throw (SystemException);
+
+	virtual Short
+	setDofLocked
+	(UShort problemId, UShort dofId, Boolean locked, Double lockedValue)
+	  throw (SystemException);
+
+	virtual Short
+	getDeviceDim
+	(UShort problemId, UShort& deviceDim) throw (SystemException);
+
+	virtual Short 
+	createJoint
+	(const char* jointName, const char* jointType, const  hpp::Configuration& pos,
+	 const hpp::jointBoundSeq& jointBound, Boolean display)
+	  throw (SystemException);
+
+	virtual Short 
+	addJoint
+	(const char* parentName, const char* childName) throw (SystemException);
+
+	virtual Short
+	setJointBounds
+	(UShort problemId, UShort inJointId, const hpp::jointBoundSeq& jointBound)
+	  throw (SystemException);
+
+	virtual Short
+	setJointVisible
+	(UShort problemId, UShort jointId, Boolean visible)
+	  throw (SystemException);
+
+	virtual Short
+	setJointTransparent
+	(UShort problemId, UShort jointId, Boolean isTransparent)
+	  throw (SystemException);
+
+	virtual Short
+	setJointDisplayPath
+	(UShort problemId, UShort jointId, Boolean displayPath)
+	  throw (SystemException);
+
+	virtual Short
+	setCurrentConfig
+	(UShort problemId, const hpp::dofSeq& dofArray) throw (SystemException);
+
 #if WITH_OPENHRP
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::loadHrp2Model.
-  virtual CORBA::Short loadHrp2Model(double inPenetration);
+	virtual Short
+	setCurrentConfigOpenHRP
+	(UShort problemId, const hpp::dofSeq& dofArray) throw (SystemException);
+
+	virtual hpp::dofSeq*
+	getCurrentConfigOpenHRP(UShort problemId) throw (SystemException);
 #endif
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::createExtraDof.
-  virtual CORBA::Short createExtraDof(const char* inDofName, CORBA::Boolean inRevolute, 
-				      CORBA::Double inValueMin, CORBA::Double inValueMax)
-    throw(CORBA::SystemException);
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::addExtraDofToRobot.
-  virtual CORBA::Short addExtraDofToRobot(const char* inRobotName, const char* inDofName)
-    throw(CORBA::SystemException);
 
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::setDofBound.
-  virtual CORBA::Short setDofBounds(CORBA::UShort inProblemId, CORBA::UShort inDofId, 
-				    CORBA::Double inMinValue, CORBA::Double inMaxValue)
-    throw(CORBA::SystemException);
+	virtual hpp::dofSeq*
+	getCurrentConfig(UShort problemId) throw (SystemException);
 
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::setDofLocked.
-  virtual CORBA::Short setDofLocked(CORBA::UShort inProblemId, CORBA::UShort inDofId, 
-				    CORBA::Boolean locked, CORBA::Double lockedValue)
-    throw(CORBA::SystemException);
+	virtual Short 
+	attachBodyToJoint
+	(const char* jointName, const char* bodyName) throw (SystemException);
 
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::getDeviceDim.
-  virtual CORBA::Short getDeviceDim(CORBA::UShort inProblemId, CORBA::UShort& outDeviceDim)
-    throw(CORBA::SystemException);
+	virtual Short
+	createBody
+	(const char* bodyName) throw (SystemException);
 
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::createJoint.
-  virtual CORBA::Short 
-    createJoint(const char* inJointName, const char* inJointType, const  hppCorbaServer::Configuration& pos,
-		const hppCorbaServer::jointBoundSeq& jointBound, CORBA::Boolean inDisplay) throw(CORBA::SystemException);
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::addJoint.
-  virtual CORBA::Short 
-    addJoint(const char* inParentName, const char* inChildName)
-    throw(CORBA::SystemException);
+	virtual hpp::nameSeq*
+	getJointInnerObject
+	(const char* bodyName);
 
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::setJointBound.
-  virtual CORBA::Short setJointBounds(CORBA::UShort inProblemId, CORBA::UShort inJointId, 
-				     const hppCorbaServer::jointBoundSeq& jointBound)
-    throw(CORBA::SystemException);
+	virtual hpp::nameSeq*
+	getJointOuterObject
+	(const char* bodyName);
 
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::setJointVisible.
-  virtual CORBA::Short setJointVisible(CORBA::UShort inProblemId, CORBA::UShort inJointId, CORBA::Boolean inVisible)
-    throw(CORBA::SystemException);
+	virtual Short
+	setPenetration
+	(UShort problemId, Double penetration);
 
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::setJointTransparent.
-  virtual CORBA::Short setJointTransparent(CORBA::UShort inProblemId, CORBA::UShort inJointId, CORBA::Boolean isTransparent)
-    throw(CORBA::SystemException);
+	virtual Short
+	getPenetration
+	(UShort problemId, Double& penetration);
 
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::setJointTransparent.
-  virtual CORBA::Short setJointDisplayPath(CORBA::UShort inProblemId, CORBA::UShort inJointId, CORBA::Boolean inDisplayPath)
-    throw(CORBA::SystemException);
+	virtual Short
+	checkLinkCollision
+	(UShort problemId, UShort jointId, UShort& result)
+	  throw (SystemException);
 
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::setCurrentConfig
-  virtual CORBA::Short setCurrentConfig(CORBA::UShort inProblemId, const hppCorbaServer::dofSeq& dofArray) 
-    throw(CORBA::SystemException);
+	virtual Short
+	createPolyhedron
+	(const char* polyhedronName) throw (SystemException);
 
-#if WITH_OPENHRP
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::setCurrentConfig in the order of joint of OpenHRP
-  virtual CORBA::Short setCurrentConfigOpenHRP(CORBA::UShort inProblemId, const hppCorbaServer::dofSeq& dofArray) 
-    throw(CORBA::SystemException);
+	virtual Short
+	createBox (const char* inBoxName, Double x, Double y, Double z)
+	  throw (SystemException);
 
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::getCurrentConfig in the order of joint of OpenHRP
-  virtual hppCorbaServer::dofSeq* getCurrentConfigOpenHRP(CORBA::UShort inProblemId)
-    throw(CORBA::SystemException);
-#endif
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::getCurrentConfig
-  virtual hppCorbaServer::dofSeq* getCurrentConfig(CORBA::UShort inProblemId)
-    throw(CORBA::SystemException);
+	virtual Short 
+	addPoint
+	(const char* polyhedronName, Double x, Double y, Double z) 
+	  throw (SystemException);
 
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::getCurrentConfig
-    /*
-  virtual CORBA::Short Test(CORBA::Short inProblemId)
-    throw(CORBA::SystemException);
-    */
+	virtual Short 
+	addTriangle
+	(const char* polyhedronName, ULong pt1, ULong pt2, ULong pt3)
+	  throw (SystemException);
 
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::attachBodyToJoint.
-  virtual CORBA::Short 
-    attachBodyToJoint(const char* inJointName, const char* inBodyName)
-    throw(CORBA::SystemException);
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::createBody.
-  virtual CORBA::Short createBody(const char* inBodyName)
-    throw(CORBA::SystemException);
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::getJointInnerObject.
-  virtual hppCorbaServer::nameSeq* getJointInnerObject(const char* inBodyName);
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::getJointOuterObject.
-  virtual hppCorbaServer::nameSeq* getJointOuterObject(const char* inBodyName);
+	virtual Short
+	addPolyToBody
+	(const char* bodyName, const char* polyhedronName,
+	 const hpp::Configuration& config)
+	  throw (SystemException);
 
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::setPenetration.
-  virtual CORBA::Short setPenetration(CORBA::UShort inProblemId, CORBA::Double inPenetration);
+      private:
+	// Store devices, joints and bodies in construction.
 
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::getPenetration.
-  virtual CORBA::Short getPenetration(CORBA::UShort inProblemId, CORBA::Double& outPenetration);
+	/// \brief map of devices in construction.
+	std::map<std::string, CkppDeviceComponentShPtr> robotMap_;
+	/// \brief map of extra degrees of freedom in construction.
+	std::map<std::string, CkppExtraDofComponentShPtr> extraDofMap_;
+	/// \brief map of joints in construction.
+	std::map<std::string, CkppJointComponentShPtr> jointMap_;
+	/// \brief map of bodies in construction.
+	std::map<std::string, ChppBodyShPtr> bodyMap_;
+	/// \brief map of polyhedra in construction.
+	std::map<std::string, CkppKCDPolyhedronShPtr> polyhedronMap_;
 
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::checkLinkCollision.
-  virtual CORBA::Short checkLinkCollision(CORBA::UShort inProblemId, 
-					  CORBA::UShort inJointId, CORBA::UShort& outResult)
-    throw(CORBA::SystemException);
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::createPolyhedron.
-  virtual CORBA::Short createPolyhedron(const char* inPolyhedronName)
-    throw(CORBA::SystemException);
-  /// \brief Comment in ChppciObstacle::createBox.
-  virtual CORBA::Short createBox(const char* inBoxName, CORBA::Double x, 
-	     CORBA::Double y, CORBA::Double z)
-    throw(CORBA::SystemException);
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::addPoint.
-  virtual CORBA::Short 
-    addPoint(const char* inPolyhedronName, CORBA::Double x, 
-	     CORBA::Double y, CORBA::Double z) throw(CORBA::SystemException);
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::addTriangle.
-  virtual CORBA::Short 
-    addTriangle(const char* inPolyhedronName, CORBA::ULong pt1, CORBA::ULong pt2, CORBA::ULong pt3)
-    throw(CORBA::SystemException);
-  /// \brief Comment in interface hppCorbaServer::ChppciRobot::addPolyToBody.
-  virtual CORBA::Short
-  addPolyToBody(const char* inBodyName, const char* inPolyhedronName, const hppCorbaServer::Configuration& inConfig)
-    throw(CORBA::SystemException);
-private:
-  // Store devices, joints and bodies in construction.
-  /// \brief map of devices in construction.
-  std::map<std::string, CkppDeviceComponentShPtr> robotMap;
-  /// \brief map of extra degrees of freedom in construction.
-  std::map<std::string, CkppExtraDofComponentShPtr> extraDofMap;
-  /// \brief map of joints in construction.
-  std::map<std::string, CkppJointComponentShPtr> jointMap;
-  /// \brief map of bodies in construction.
-  std::map<std::string, ChppBodyShPtr> bodyMap;
-  /// \brief map of polyhedra in construction.
-  std::map<std::string, CkppKCDPolyhedronShPtr> polyhedronMap;
+	/// \brief Pointer to the ChppciServer owning this object
+	corbaServer::Server* server_;
 
-  /// \brief Pointer to the ChppciServer owning this object
-  ChppciServer* attHppciServer;
-  /// \brief Pointer to hppPlanner object of hppciServer.
-  /// Instantiated at construction.
-  ChppPlanner *attHppPlanner;
-};
-
+	/// \brief Pointer to hppPlanner object of hppciServer.
+	///
+	/// Instantiated at construction.
+	ChppPlanner* planner_;
+      };
+    } // end of namespace impl.
+  } // end of namespace corbaServer.
+} // end of namespace hpp.
 
 #endif

@@ -1,5 +1,31 @@
 2010-03-16  Thomas Moulard  <thomas.moulard@gmail.com>
 
+	Clean code.
+	* idl/Makefile.am: Clean.
+	* idl/hpp/corbaserver/Makefile.am: Clean.
+	* idl/hpp/corbaserver/common.idl: Rename from idl/hpp/corbaserver/server.idl.
+	* idl/hpp/corbaserver/obstacle.idl,
+	* idl/hpp/corbaserver/problem.idl,
+	* idl/hpp/corbaserver/robot.idl: Fix includes.
+	* include/Makefile.am: Add new header.
+	* include/hpp/corbaserver/fwd.hh: New.
+	* include/hpp/corbaserver/server.hh: Clean.
+	* src/Makefile.am: Fix paths.
+	* src/hpp-corbaserver.cc,
+	* src/obstacle.impl.cc,
+	* src/obstacle.impl.hh,
+	* src/problem.impl.cc,
+	* src/problem.impl.hh,
+	* src/robot.impl.cc,
+	* src/robot.impl.hh,
+	* src/server-private.cc,
+	* src/server-private.hh,
+	* src/server.cc,
+	* src/tools.cc,
+	* src/tools.hh: Reorganize.
+
+2010-03-16  Thomas Moulard  <thomas.moulard@gmail.com>
+
 	Clean project.
 	* .gitignore: Update.
 	* .gitmodules: New.

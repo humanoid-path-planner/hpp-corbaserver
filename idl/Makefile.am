@@ -6,7 +6,7 @@ SUBDIRS = hpp/corbaserver
 idldir = $(datadir)/idl/hpp/corbaserver
 
 nobase_dist_idl_DATA=				\
-	hpp/corbaserver/problem.idl 		\
-	hpp/corbaserver/robot.idl 		\
+	hpp/corbaserver/common.idl		\
 	hpp/corbaserver/obstacle.idl 		\
-	hpp/corbaserver/server.idl
+	hpp/corbaserver/problem.idl 		\
+	hpp/corbaserver/robot.idl

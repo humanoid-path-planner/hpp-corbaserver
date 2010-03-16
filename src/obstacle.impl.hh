@@ -16,88 +16,74 @@
 # include <KineoKCDModel/kppKCDPolyhedron.h>
 
 # include <hppCore/hppPlanner.h>
+# include <hpp/corbaserver/fwd.hh>
 # include <hpp/corbaserver/obstacle.stub.hh>
 
-/// \brief Implementation CORBA interface Obstacle
+/// \brief Implement CORBA interface ``Obstacle''.
 namespace hpp
 {
   namespace corbaServer
   {
-    class Server; //FIXME: move to fwd.hh.
-
     namespace impl
     {
-      using CORBA::Boolean;
-      using CORBA::Double;
-      using CORBA::Short;
-      using CORBA::SystemException;
-      using CORBA::ULong;
-
       class Obstacle : public virtual POA_hpp::Obstacle
       {
       public:
-	/// \brief store pointer to ChppPlanner object.
-	Obstacle (ChppciServer *inHppciServer);
+	Obstacle (corbaServer::Server* server);
 
-	/// \brief Comment in interface hppCorbaServer::Obstacle::setObstacles
-	Short setObstacles (const char* inListName);
+	Short setObstacles (const char* listName);
+	Short addObstacle (const char* polyhedronName);
 
-	/// \brief Comment in interface hppCorbaServer::Obstacle::addObstacle
-	Short addObstacle (const char* inPolyhedronName);
-
-	/// \brief add an obstacle at the given position.
-	virtual Short addObstacleConfig
-	(const char* inPolyName, const Configuration& cfg)
-	  throw(SystemException);
-  
-	/// \brief Move obstacle to specified configuration.
 	virtual Short
-	moveObstacleConfig (const char* inPolyName, const Configuration& cfg)
-	  throw(SystemException);
-  
-	/// \brief Comment in interface Obstacle::createCollisionList.
-	virtual Short
-	createCollisionList (const char* inListName) throw (SystemException);
-  
-	/// \brief Comment in interface Obstacle::addPolyToCollList.
-	virtual Short
-	addPolyToCollList (const char* inListName, const char* inPolyhedronName)
-	  throw(SystemException);
-  
-	/// \brief Comment in interface Obstacle::createPolyhedron.
-	virtual Short
-	createPolyhedron (const char* inPolyhedronName)
+	addObstacleConfig
+	(const char* polyName, const Configuration& cfg)
 	  throw (SystemException);
 
-	/// \brief Comment in Obstacle::createBox.
-	virtual Short createBox(const char* inBoxName, Double x, 
-				       Double y, Double z)
+	virtual Short
+	moveObstacleConfig (const char* polyName, const Configuration& cfg)
+	  throw (SystemException);
+
+	virtual Short
+	createCollisionList
+	(const char* listName)
+	  throw (SystemException);
+
+	virtual Short
+	addPolyToCollList
+	(const char* listName, const char* polyhedronName)
+	  throw (SystemException);
+
+	virtual Short
+	createPolyhedron (const char* polyhedronName)
+	  throw (SystemException);
+
+	virtual Short createBox
+	(const char* boxName, Double x, Double y, Double z)
 	  throw(SystemException);
 
-	/// \brief Comment in interface Obstacle::addPoint.
-	virtual Short 
-	addPoint(const char* inPolyhedronName, Double x, 
-		 Double y, Double z) throw(SystemException);
-
-	/// \brief Comment in interface Obstacle::addTriangle.
-	virtual Short 
-	addTriangle(const char* inPolyhedronName, ULong pt1, ULong pt2, ULong pt3)
+	virtual Short
+	addPoint
+	(const char* polyhedronName, Double x, Double y, Double z)
 	  throw(SystemException);
 
-	/// \brief Comment in interface Obstacle::loadModelLoaderObstacle.
-	virtual Short 
-	loadModelLoaderObstacle(const char* inPolyName, const char* inFilename,
-				const char* inOpenHrpPrefix)
+	virtual Short
+	addTriangle
+	(const char* polyhedronName, ULong pt1, ULong pt2, ULong pt3)
+	  throw(SystemException);
+
+	virtual Short
+	loadModelLoaderObstacle
+	(const char* polyName, const char* filename, const char* openHrpPrefix)
 	  throw(SystemException);
 
 	/// \brief Comment in interface Obstacle::setVisible.
-	virtual Short 
-	setVisible(const char* inPolyname, Boolean inVisible)
+	virtual Short
+	setVisible(const char* polyname, Boolean visible)
 	  throw(SystemException);
 
 	/// \brief Comment in interface Obstacle::setTransparent.
-	virtual Short 
-	setTransparent(const char* inPolyname, Boolean inTransparent)
+	virtual Short
+	setTransparent(const char* polyname, Boolean transparent)
 	  throw(SystemException);
 
       private:
@@ -107,8 +93,8 @@ namespace hpp
 	/// \brief map of polyhedra in construction.
 	std::map<std::string, CkppKCDPolyhedronShPtr> polyhedronMap;
 
-	/// \brief Pointer to the ChppciServer owning this object..
-	Server* server_;
+	/// \brief Pointer to the ChppciServer owning this object.
+	corbaServer::Server* server_;
 
 	/// \brief Pointer to hppPlanner object of hppciServer.
 	ChppPlanner* planner_;

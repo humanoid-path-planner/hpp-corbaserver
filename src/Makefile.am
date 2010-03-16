@@ -17,7 +17,8 @@ nodist_libhpp_corbaserver_la_SOURCES =	\
 	tools.cc			\
 	tools.hh
 
-libhpp_corbaserver_la_LIBADD = $(top_builddir)/idl/libcorba-stubs.la
+libhpp_corbaserver_la_LIBADD = 		\
+	$(top_builddir)/idl/hpp/corbaserver/libcorba-stubs.la
 
 if OPENHRP
 

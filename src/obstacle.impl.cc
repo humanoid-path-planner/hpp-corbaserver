@@ -30,9 +30,9 @@ namespace hpp
   {
     namespace impl
     {
-      Obstacle::Obstacle (Server* server)
+      Obstacle::Obstacle (corbaServer::Server* server)
 	: server_ (server),
-	  planner_ (server->getHppPlanner ())
+	  planner_ (server->planner ())
       {}
 
       Short
@@ -69,7 +69,7 @@ namespace hpp
 
       Short
       Obstacle::addObstacleConfig
-      (const char* polyhedronName, const hppCorbaServer::Configuration& cfg)
+      (const char* polyhedronName, const hpp::Configuration& cfg)
 	throw(SystemException)
       {
 	// Check that polyhedron exists.
@@ -94,14 +94,14 @@ namespace hpp
 
       Short
       Obstacle::moveObstacleConfig
-      (const char* polyhedronName, const hppCorbaServer::Configuration& cfg)
+      (const char* polyhedronName, const hpp::Configuration& cfg)
 	throw(SystemException)
       {
-	BOOST_FOREACH (planner_->obstacleList (), CkcdObjectShPtr object)
+	BOOST_FOREACH (CkcdObjectShPtr object, planner_->obstacleList ())
 	  {
 	    CkppKCDPolyhedronShPtr polyhedron =
 	      KIT_DYNAMIC_PTR_CAST (CkppKCDPolyhedron, object);
-	    if (polyhedron && polyhedronName == poly->name ())
+	    if (polyhedron && polyhedronName == polyhedron->name ())
 	      {
 		hppDout (info, "found ``"
 			 << polyhedronName << "'' in the tree.");
@@ -180,11 +180,11 @@ namespace hpp
 
       Short
       Obstacle::createBox
-      (const char* inBoxName, Double x, Double y, Double z)
+      (const char* boxName, Double x, Double y, Double z)
 	throw (SystemException)
       {
 	// Check that polyhedron does not already exist.
-	if (polyhedronMap.count(polyhedronName) != 0)
+	if (polyhedronMap.count(boxName) != 0)
 	  {
 	    hppDout (error, "polyhedron "
 		     << polyhedronName << " already exists.");
@@ -192,14 +192,14 @@ namespace hpp
 	  }
 
 	CkppKCDPolyhedronShPtr polyhedron =
-	  CkppKCDBox::create (polyhedronName, x, y, z);
+	  CkppKCDBox::create (boxName, x, y, z);
 
 	if (!polyhedron)
 	  {
 	    hppDout (error, "failed to create polyhedron " << polyhedronName);
 	    return -1;
 	  }
-	polyhedronMap[polyhedronName] = polyhedron;
+	polyhedronMap[boxName] = polyhedron;
 	return 0;
       }
 
@@ -265,7 +265,7 @@ namespace hpp
 
 	// Create empty polyhedron
 	CkppKCDPolyhedronShPtr polyhedron =
-	  CkppKCDPolyhedron::create (polyName);
+	  CkppKCDPolyhedron::create (polyhedronName);
 
 	// Test whether directory is provided.
 	// If not take default argument
@@ -274,10 +274,10 @@ namespace hpp
 
 	if (directory == "")
 	  status = openHrpClient.loadObstacleModel
-	    (filename, polyName, polyhedron);
+	    (filename, polyhedronName, polyhedron);
 	else
 	  status = openHrpClient.loadObstacleModel
-	    (filename, polyName, polyhedron, directory);
+	    (filename, polyhedronName, polyhedron, directory);
 
 	if (status != KD_OK)
 	  {
@@ -300,7 +300,7 @@ namespace hpp
 
       Short
       Obstacle::setVisible
-      (const char* inPolyname, Boolean inVisible) throw (SystemException)
+      (const char* polyhedronName, Boolean visible) throw (SystemException)
       {
 	if (polyhedronMap.count (polyhedronName) != 1)
 	  {
@@ -313,14 +313,15 @@ namespace hpp
 
       Short
       Obstacle::setTransparent
-      (const char* inPolyname, Boolean inTransparent) throw (SystemException)
+      (const char* polyhedronName, Boolean transparent)
+	throw (SystemException)
       {
 	if (polyhedronMap.count (polyhedronName) != 1)
 	  {
 	    hppDout (error, "collision list " << listName << " does not exist");
 	    return -1;
 	  }
-	polyhedronMap[polyhedronName]->isTransparent(inTransparent);
+	polyhedronMap[polyhedronName]->isTransparent (transparent);
 	return 0;
       }
 

@@ -11,8 +11,12 @@
 #ifndef HPPCORBASERVER_TOOLS_HH
 # define HPPCORBASERVER_TOOLS_HH
 # include <KineoUtility/kitMat4.h>
-# include "hpp/corbaserver/server.hh"
+# include <hpp/util/portability.hh>
 
-void ConfigurationToCkitMat4 (const hppCorbaServer::Configuration inConfig, CkitMat4& outMatrix4);
+# include "hpp/corbaserver/common.stub.hh"
+
+HPP_LOCAL void
+ConfigurationToCkitMat4 (const hpp::Configuration inConfig,
+			 CkitMat4& outMatrix4);
 
 #endif //! HPPCORBASERVER_TOOLS_HH

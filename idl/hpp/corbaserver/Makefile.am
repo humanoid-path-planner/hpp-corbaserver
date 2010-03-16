@@ -11,11 +11,11 @@ include $(top_srcdir)/shared.mk
 # some (-Werror would then make the compilation fail).
 noinst_LTLIBRARIES = libcorba-stubs.la
 nodist_libcorba_stubs_la_SOURCES =	\
+	common.stub.cc			\
+	common.stub.hh			\
 	obstacle.stub.cc		\
 	obstacle.stub.hh		\
 	problem.stub.cc			\
 	problem.stub.hh			\
 	robot.stub.cc			\
-	robot.stub.hh			\
-	server.stub.cc			\
-	server.stub.hh
+	robot.stub.hh

@@ -15,16 +15,18 @@
 
 #include "hpp/corbaserver/server.hh"
 
+using hpp::corbaServer::Server;
+
 int
-main (int argc, char** argv)
+main (int argc, const char* argv[])
 {
   if (!CkppLicense::initialize ())
     hppDoutFatal (error, "failed to get a Kineo license");
 
   ChppPlanner* hppPlanner = new ChppPlanner;
-  ChppciServer server (hppPlanner, argc, argv, true);
+  Server server (hppPlanner, argc, argv, true);
 
-  if (server.startCorbaServer() < 0)
+  if (server.startCorbaServer () < 0)
     hppDoutFatal (error, "failed to start CORBA server");
   server.processRequest(true);
 }

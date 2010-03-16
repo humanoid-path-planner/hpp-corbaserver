@@ -1,122 +1,108 @@
-/*
-  Copyright 2006 LAAS-CNRS
+// Copyright (C) 2009, 2010 by Florent Lamiraux, Thomas Moulard, JRL.
+//
+// This file is part of the hpp-corbaserver.
+//
+// This software is provided "as is" without warranty of any kind,
+// either expressed or implied, including but not limited to the
+// implied warranties of fitness for a particular purpose.
+//
+// See the COPYING file for more information.
 
-  Author: Florent Lamiraux
+#ifndef HPP_CORBASERVER_PROBLEM_IMPL_HH
+# define HPP_CORBASERVER_PROBLEM_IMPL_HH
+# include <vector>
 
-*/
+# include "hpp/corbaserver/fwd.hh"
+# include "hpp/corbaserver/common.stub.hh"
+# include "hpp/corbaserver/problem.stub.hh"
 
-#ifndef HPPCI_PROBLEM_H
-#define HPPCI_PROBLEM_H
+namespace hpp
+{
+  namespace corbaServer
+  {
+    namespace impl
+    {
+      /// \brief Implement CORBA interface ``Problem''.
+      class Problem : public virtual POA_hpp::Problem
+      {
+      public:
+	Problem (corbaServer::Server* server);
 
-#include <vector>
+	virtual Short
+	setSteeringMethod
+	(UShort problemId, const char* steeringMethod, Boolean oriented);
 
-/*
-  Undefine macros mistakenly defined by omniORB
-*/
-#ifdef PACKAGE_BUGREPORT
-#undef PACKAGE_BUGREPORT
-#endif
-#ifdef PACKAGE_NAME
-#undef PACKAGE_NAME
-#endif
-#ifdef PACKAGE_STRING
-#undef PACKAGE_STRING
-#endif
-#ifdef PACKAGE_TARNAME
-#undef PACKAGE_TARNAME
-#endif
-#ifdef PACKAGE_VERSION
-#undef PACKAGE_VERSION
-#endif
+	virtual Short
+	setRoadmapbuilder
+	(UShort problemId, const char* roadmapBuilder, Boolean display);
 
-#include "hppciProblemServer.hh"
+	virtual Short
+	setDiffusingNode
+	(UShort problemId, const char* diffusingNode);
 
-class ChppciServer;
-/**
- * \brief Implementation of corba interface ChppciProblem.
- */
-class ChppciProblem_impl : public virtual POA_hppCorbaServer::ChppciProblem {
-public:
-  ChppciProblem_impl(ChppciServer* inHppciServer);
-  /// \brief Comment in interface hppCorbaServer::ChppciProblem::setSteeringMethod.
-  virtual CORBA::Short setSteeringMethod(CORBA::UShort inProblemId, 
-					 const char* inSteeringMethod, CORBA::Boolean inOriented);
+	virtual Short
+	setPathOptimizer
+	(UShort problemId, const char* pathOptimizer, UShort maxNumberLoop);
 
-  /// \brief Comment in interface hppCorbaServer::ChppciProblem::setRoadmapbuilder
-  virtual CORBA::Short setRoadmapbuilder(CORBA::UShort inProblemId, const char* inRoadmapBuilder,
-					 CORBA::Boolean inDisplay);
+	virtual Short
+	setConfigExtractor
+	(UShort problemId, Double minRadius, Double maxRadius, Double scaleFactor);
 
-  /// \brief Comment in interface hppCorbaServer::ChppciProblem::setDiffusingNode.
-  virtual CORBA::Short setDiffusingNode(CORBA::UShort inProblemId, const char* inDiffusingNode);
+	virtual Short
+	setDistanceFunction
+	(UShort problemId, const char* distanceName, Boolean oriented);
 
-  /// \brief Comment in interface hppCorbaServer::ChppciProblem::setPathOptimizer
-  virtual CORBA::Short setPathOptimizer(CORBA::UShort inProblemId, const char* inPathOptimizer,
-					CORBA::UShort inMaxNumberLoop);
+	virtual Short
+	setDiffusionNodePicker
+	(UShort problemId, const char* diffusionNodePickerName);
 
-  /// \brief Comment in interface hppCorbaServer::ChppciProblem::setConfigExtractor
-  virtual CORBA::Short setConfigExtractor(CORBA::UShort inProblemId, CORBA::Double inMinRadius,
-					  CORBA::Double inMaxRadius, CORBA::Double inScaleFactor);
+	virtual Short
+	setDiffusionShooter
+	(UShort problemId, const char* diffusionShooterName, Double standardDeviation);
 
+	virtual Short
+	setInitialConfig
+	(UShort problemId, const hpp::dofSeq& dofArray);
 
-  /// \brief Comment in interface hppCorbaServer::ChppciProblem::setDistanceFunction
-  virtual CORBA::Short setDistanceFunction(CORBA::UShort inProblemId, const char* inDistanceName, CORBA::Boolean inOriented);
+	virtual Short
+	setGoalConfig
+	(UShort problemId, const hpp::dofSeq& dofArray);
 
-  /// \brief Comment in interface hppCorbaServer::ChppciProblem::setDiffusionNodePicker
-  virtual CORBA::Short setDiffusionNodePicker(CORBA::UShort inProblemId, 
-					      const char* inDiffusionNodePickerName);
+	virtual hpp::dofSeq*
+	getInitialConfig (UShort problemId) throw (SystemException);
 
-  /// \brief Comment in interface hppCorbaServer::ChppciProblem::setDiffusionShooter
-  virtual CORBA::Short setDiffusionShooter(CORBA::UShort inProblemId, 
-					   const char* inDiffusionShooterName,
-					   CORBA::Double inStandardDeviation);
+	virtual hpp::dofSeq*
+	getGoalConfig (UShort problemId) throw (SystemException);
 
-  /// \brief Comment in interface hppCorbaServer::ChppciProblem::setInitialConfig
-  virtual CORBA::Short setInitialConfig(CORBA::UShort inProblemId, const hppCorbaServer::dofSeq& dofArray);
+	virtual Short initializeProblem ();
 
-  /// \brief Comment in interface hppCorbaServer::ChppciProblem::setGoalConfig
-  virtual CORBA::Short setGoalConfig(CORBA::UShort inProblemId, const hppCorbaServer::dofSeq& dofArray);
+	virtual Short
+	solveOneProblem
+	(UShort problemId, Short& inLastPathId, Double& pathLength);
 
-  /// \brief Comment in interface hppCorbaServer::ChppciProblem::getInitialConfig
-  virtual hppCorbaServer::dofSeq* getInitialConfig(CORBA::UShort inProblemId)
-    throw(CORBA::SystemException);
+	virtual Short solve ();
 
-  /// \brief Comment in interface hppCorbaServer::ChppciProblem::getGoalConfig
-  virtual hppCorbaServer::dofSeq* getGoalConfig(CORBA::UShort inProblemId)
-    throw(CORBA::SystemException);
+	virtual Short interruptPathPlanning ();
 
+	virtual Short optimizePath (UShort problemId, UShort pathId);
 
-  /// \brief Comment in interface hppCorbaServer::ChppciProblem::initializeProblem
-  virtual CORBA::Short initializeProblem();
+	virtual Double pathLength (UShort problemId, UShort pathId);
 
-  /// \brief Comment in interface hppCorbaServer::ChppciProblem::solveOneProblem
-  virtual CORBA::Short solveOneProblem(CORBA::UShort inProblemId, CORBA::Short& inLastPathId, CORBA::Double& pathLength) ;
+	virtual hpp::dofSeq* configAtDistance
+	(UShort problemId, UShort pathId, Double atDistance);
 
-  /// \brief Comment in interface hppCorbaServer::ChppciProblem::solve
-  virtual CORBA::Short solve();
+	virtual Short setObstacleTolerance
+	(UShort problemId, Double tolerance) throw (SystemException);
 
-  /// \brief Comment in interface hppCorbaServer::ChppciProblem::interruptPathPlanning
-  virtual CORBA::Short interruptPathPlanning();
+      private:
+	/// \brief Pointer to the ChppciServer owning this object
+	corbaServer::Server* server_;
+	/// \brief Pointer to hppPlanner object of hppciServer.
+	/// Instantiated at construction.
+	ChppPlanner* planner_;
+      };
+    } // end of namespace impl.
+  } // end of namespace corbaServer.
+} // end of namespace hpp.
 
-  /// \brief Comment in interface hppCorbaServer::ChppciProblem::optimizePath
-  virtual CORBA::Short optimizePath(CORBA::UShort inProblemId, CORBA::UShort inPathId);
-
-  /// \brief Comment in interface hppCorbaServer::ChppciProblem::pathLength
-  virtual CORBA::Double pathLength(CORBA::UShort inProblemId, CORBA::UShort inPathId); 
-
-  /// \brief Comment in interface hppCorbaServer::ChppciProblem::configAtDistance
-  virtual hppCorbaServer::dofSeq* configAtDistance(CORBA::UShort inProblemId, CORBA::UShort pathId, CORBA::Double atDistance) ;
-
-  /// \brief Comment in interface hppCorbaServer::ChppciProblem::setObstacleTolerance
-  virtual CORBA::Short setObstacleTolerance(CORBA::UShort inProblemId, CORBA::Double tolerance)
-    throw(CORBA::SystemException);
-
-private:
-  /// \brief Pointer to the ChppciServer owning this object
-  ChppciServer* attHppciServer;
-  /// \brief Pointer to hppPlanner object of hppciServer.
-  /// Instantiated at construction.
-  ChppPlanner *attHppPlanner;
-};  
-
-
-#endif
+#endif //! HPP_CORBASERVER_OBSTACLE_IMPL_HH
