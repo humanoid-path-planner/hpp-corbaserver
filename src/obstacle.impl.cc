@@ -186,8 +186,7 @@ namespace hpp
 	// Check that polyhedron does not already exist.
 	if (polyhedronMap.count(boxName) != 0)
 	  {
-	    hppDout (error, "polyhedron "
-		     << polyhedronName << " already exists.");
+	    hppDout (error, "polyhedron " << boxName << " already exists.");
 	    return -1;
 	  }
 
@@ -196,7 +195,7 @@ namespace hpp
 
 	if (!polyhedron)
 	  {
-	    hppDout (error, "failed to create polyhedron " << polyhedronName);
+	    hppDout (error, "failed to create polyhedron " << boxName);
 	    return -1;
 	  }
 	polyhedronMap[boxName] = polyhedron;
@@ -251,9 +250,9 @@ namespace hpp
       }
 
       Short
-      Obstacle::loadModelLoaderObstacle(const char* inPolyName,
-					const char* inFilename,
-					const char* inDirectory)
+      Obstacle::loadModelLoaderObstacle(const char* polyhedronName,
+					const char* filename,
+					const char* directory)
 	throw (SystemException)
       {
 #if HPP_CORBASERVER_ENABLE_OPENHRP
@@ -272,7 +271,7 @@ namespace hpp
 
 	ktStatus status = KD_OK;
 
-	if (directory == "")
+	if (!directory[0])
 	  status = openHrpClient.loadObstacleModel
 	    (filename, polyhedronName, polyhedron);
 	else
@@ -304,7 +303,8 @@ namespace hpp
       {
 	if (polyhedronMap.count (polyhedronName) != 1)
 	  {
-	    hppDout (error, "collision list " << listName << " does not exist");
+	    hppDout (error, "collision list "
+		     << polyhedronName << " does not exist");
 	    return -1;
 	  }
 	polyhedronMap[polyhedronName]->isVisible (visible);
@@ -318,7 +318,8 @@ namespace hpp
       {
 	if (polyhedronMap.count (polyhedronName) != 1)
 	  {
-	    hppDout (error, "collision list " << listName << " does not exist");
+	    hppDout (error, "collision list "
+		     << polyhedronName << " does not exist");
 	    return -1;
 	  }
 	polyhedronMap[polyhedronName]->isTransparent (transparent);

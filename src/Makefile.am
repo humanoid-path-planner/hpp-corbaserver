@@ -17,8 +17,11 @@ nodist_libhpp_corbaserver_la_SOURCES =	\
 	tools.cc			\
 	tools.hh
 
-libhpp_corbaserver_la_LIBADD = 		\
-	$(top_builddir)/idl/hpp/corbaserver/libcorba-stubs.la
+libhpp_corbaserver_la_LIBADD = 					\
+	$(top_builddir)/idl/hpp/corbaserver/libcorba-stubs.la	\
+	$(ROBOTBUILDER_LIBS)					\
+	$(HPPCORE_LIBS) 					\
+	$(HRP2DYNAMICS_LIBS)
 
 if OPENHRP
 

@@ -19,3 +19,5 @@ nodist_libcorba_stubs_la_SOURCES =	\
 	problem.stub.hh			\
 	robot.stub.cc			\
 	robot.stub.hh
+
+libcorba_stubs_la_LIBADD = $(OMNIORB4_LIBS)

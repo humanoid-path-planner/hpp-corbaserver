@@ -1,5 +1,12 @@
 2010-03-16  Thomas Moulard  <thomas.moulard@gmail.com>
 
+	Fix last compilation errors.
+	* idl/hpp/corbaserver/Makefile.am,
+	* src/Makefile.am,
+	* src/obstacle.impl.cc: Clean.
+
+2010-03-16  Thomas Moulard  <thomas.moulard@gmail.com>
+
 	Clean code.
 	* idl/Makefile.am: Clean.
 	* idl/hpp/corbaserver/Makefile.am: Clean.
