@@ -13,3 +13,5 @@ tests/testsuite
 +committed/
 ,*
 testsuite.log
+.version
+.tarball-version

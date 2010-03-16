@@ -1,0 +1,30 @@
+// Copyright (C) 2009, 2010 by Florent Lamiraux, Thomas Moulard, JRL.
+//
+// This file is part of the hpp-corbaserver.
+//
+// This software is provided "as is" without warranty of any kind,
+// either expressed or implied, including but not limited to the
+// implied warranties of fitness for a particular purpose.
+//
+// See the COPYING file for more information.
+
+#ifndef HPP_CORBASERVER_SERVER_IDL
+# define HPP_CORBASERVER_SERVER_IDL
+
+/// \brief main CORBA module.
+module hpp
+{
+  /// \brief KineoWorks configuration is defined by a sequence of dof value.
+  typedef sequence<double> dofSeq;
+
+  typedef double Translation[3];
+  typedef double Rotation[9];
+
+  struct Configuration
+  {
+    Translation trs;
+    Rotation rot;
+  };
+};
+
+#endif //! HPP_CORBASERVER_SERVER_IDL

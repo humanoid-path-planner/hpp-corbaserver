@@ -1,16 +1,19 @@
-/*
-  Research carried out within the scope of the Associated International Laboratory: Joint Japanese-French Robotics Laboratory (JRL)
+// Copyright (C) 2009, 2010 by Florent Lamiraux, Thomas Moulard, JRL.
+//
+// This file is part of the hpp-corbaserver.
+//
+// This software is provided "as is" without warranty of any kind,
+// either expressed or implied, including but not limited to the
+// implied warranties of fitness for a particular purpose.
+//
+// See the COPYING file for more information.
 
-  Developed by Florent Lamiraux (LAAS-CNRS)
+#ifndef HPP_CORBASERVER_ROBOT_SERVER_IDL
+# define HPP_CORBASERVER_ROBOT_SERVER_IDL
+# include <hpp/corbaserver/server.idl>
 
-*/
-
-#ifndef HPPCI_ROBOT_SERVER_IDL
-#define HPPCI_ROBOT_SERVER_IDL
-
-#include "hppciCommonServer.idl"
-
-module hppCorbaServer {
+module hpp
+{
   /**
    * \brief Array of joint bounds.in order [v1_min,v1_max,v2_min,v2_max,...].
    */
@@ -24,7 +27,7 @@ module hppCorbaServer {
   /**
    * \brief Creation of a ChppDevice, joints and bodies.
    */
-  interface ChppciRobot {
+  interface Robot {
     /**
        \name Create and register robot
        @{
@@ -53,8 +56,6 @@ module hppCorbaServer {
      */
     short setRobotRootJoint(in string inRobotName, in string inJointName);
 
-#if @OPENHRP@
-
     /**
      * \brief Load HRP2 model by sending a Corba request to OpenHRP
 
@@ -64,7 +65,6 @@ module hppCorbaServer {
 
      */
     short loadHrp2Model(in double inPenetration);
-#endif
 
     /** 
      *@}
@@ -380,4 +380,5 @@ module hppCorbaServer {
      */
   };
 };
-#endif
+
+#endif //! HPP_CORBASERVER_ROBOT_SERVER_IDL

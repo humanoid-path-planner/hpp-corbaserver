@@ -1,53 +1,9 @@
-# Distributed files.
-EXTRA_DIST = 				\
-	Doxyfile.in			\
-	additionalDoc/package.h 	\
-	footer.html 			\
-	header.html 			\
-	package.css 			\
-	pictures/footer.jpg
+include $(top_srcdir)/build-aux/init.mk
+include $(top_srcdir)/build-aux/doxygen.mk
 
-# Generated files.
-CLEANFILES =				\
-	$(PACKAGE_TARNAME).doxytag	\
-	Doxyfile			\
-	config.log
+EXTRA_DIST +=	header.html footer.html		\
+		additionalDoc/package.h		\
+		pictures/footer.jpg		\
+		pictures/footer.txt
 
-.PHONY: 				\
-	copy-pictures			\
-	doc				\
-	html				\
-	doxygen 			\
-	install-doxygen-html		\
-	uninstall-doxygen-html
-
-# Rules.
-doc: html
-
-html-local: doxygen
-
-doxygen: Doxyfile
-	$(DOXYGEN) "$<" \
-	&& cp -rf $(top_srcdir)/doc/pictures/* html
-
-# Doxygen generation rule.
-Doxyfile: $(srcdir)/Doxyfile.in
-	$(top_builddir)/config.status --file="$@":"$<" \
-	&& sed -i -e 's/^#.*//' -e '/^$$/d' "$@"
-
-# Clean rule.
-clean-local:
-	rm -rf html latex
-
-# Install rules.
-install-data-local: install-doxygen-html
-uninstall-local: uninstall-doxygen-html
-
-install-doxygen-html: html-local
-	$(mkdir_p) "$(DESTDIR)$(htmldir)"
-	cp -rf html "$(DESTDIR)$(htmldir)"
-	$(INSTALL_DATA) $(PACKAGE_TARNAME).doxytag \
-		"$(DESTDIR)$(htmldir)/html"
-
-uninstall-doxygen-html:
-	rm -rf "$(DESTDIR)$(htmldir)"
+DOXYGEN_EXTRA += $(srcdir)/pictures

@@ -4,11 +4,11 @@ include $(top_srcdir)/build-aux/init.mk
 ACLOCAL_AMFLAGS = -I build-aux
 
 SUBDIRS = 		\
-	idl/server	\
-	doc		\
+	idl		\
 	include		\
-	src
-
+	src		\
+	doc		\
+	tests
 
 # Provide bootstrap with the generated package.
 EXTRA_DIST +=	bootstrap			\
@@ -18,14 +18,8 @@ EXTRA_DIST +=	bootstrap			\
 # Nothing to do in this directory.
 all:
 
-# Libtool rules
-LIBTOOL_DEPS = @LIBTOOL_DEPS@
-libtool: $(LIBTOOL_DEPS)
-	$(SHELL) ./config.status --recheck
-
+# Include various rules...
+include $(top_srcdir)/build-aux/doc-recursive.mk
+include $(top_srcdir)/build-aux/libtool.mk
 include $(top_srcdir)/build-aux/pkg-config.mk
-
-# -- Generate documentation
-.PHONY: doc html
-doc html:
-	cd doc && $(MAKE) $(AM_MAKEFLAGS) $@
+include $(top_srcdir)/build-aux/git-version-gen.mk

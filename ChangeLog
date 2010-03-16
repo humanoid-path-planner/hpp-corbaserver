@@ -1,3 +1,67 @@
+2010-03-16  Thomas Moulard  <thomas.moulard@gmail.com>
+
+	Clean project.
+	* .gitignore: Update.
+	* .gitmodules: New.
+	* Makefile.am: Factorize rules.
+	* bootstrap: Add mechanism for roboptim alias check.
+	* build-aux/bootstrap: Remove.
+	* build-aux/config.guess: Remove.
+	* build-aux/config.sub: Remove.
+	* build-aux/depcomp: Remove.
+	* build-aux/doxygen.m4: Remove.
+	* build-aux/init.mk: Remove.
+	* build-aux/install-sh: Remove.
+	* build-aux/kineo.mk: Remove.
+	* build-aux/libtool.m4: Remove.
+	* build-aux/ltmain.sh: Remove.
+	* build-aux/ltoptions.m4: Remove.
+	* build-aux/ltsugar.m4: Remove.
+	* build-aux/ltversion.m4: Remove.
+	* build-aux/lt~obsolete.m4: Remove.
+	* build-aux/missing: Remove.
+	* build-aux/move-if-change: Remove.
+	* build-aux/pkg-config.mk: Remove.
+	* build-aux/pkg-config.pc.in: Remove.
+	* build-aux/warning.m4: Remove.
+	* build-aux: New.
+	* configure.ac: Clean.
+	* deps.ac: Remove.
+	* doc/Makefile.am: Factorize.
+	* idl/Makefile.am: New.
+	* idl/hpp/corbaserver/Makefile.am: New.
+	* idl/hpp/corbaserver/obstacle.idl: New.
+	* idl/hpp/corbaserver/problem.idl: Rename from idl/server/hppciProblemServer.idl.
+	* idl/hpp/corbaserver/robot.idl: Rename from idl/server/hppciRobotServer.idl.in.
+	* idl/hpp/corbaserver/server.idl: New.
+	* idl/server/Makefile.am: Remove.
+	* idl/server/hppciCommonServer.idl: Remove.
+	* idl/server/hppciObstacleServer.idl.in: Remove.
+	* include/Makefile.am: Do not distribute private headers.
+	* include/hpp/corbaserver/openhrp.hh.in: Rename from include/hppCorbaServer/hppciOpenHrp.h.in.
+	* include/hpp/corbaserver/server.hh: Rename from include/hppCorbaServer/hppciServer.h.
+	* include/hppCorbaServer/hppciObstacle.h: Remove.
+	* include/hppCorbaServer/hppciTools.h: Remove.
+	* shared.mk: New.
+	* src/Makefile.am: Simplify.
+	* src/hpp-corbaserver.cc: New.
+	* src/hppCorbaServer.cpp: Remove.
+	* src/hppciExceptionHandlingMacros.h: Remove.
+	* src/hppciObstacle.cpp: Remove.
+	* src/obstacle.impl.cc: New.
+	* src/obstacle.impl.hh: New.
+	* src/openhrp.cc: Rename from src/hppciOpenHrp.cpp.
+	* src/problem.impl.cc: Rename from src/hppciProblem.cpp.
+	* src/problem.impl.hh: Rename from include/hppCorbaServer/hppciProblem.h.
+	* src/robot.impl.cc: Rename from src/hppciRobot.cpp.
+	* src/robot.impl.hh: Rename from include/hppCorbaServer/hppciRobot.h.
+	* src/server-private.cc: Rename from src/hppciServerPrivate.cpp.
+	* src/server-private.hh: Rename from include/hppCorbaServer/hppciServerPrivate.h.
+	* src/server.cc: Rename from src/hppciServer.cpp.
+	* src/tools.cc: Rename from src/hppciTools.cpp.
+	* src/tools.hh: New.
+	* tests/Makefile.am: New.
+
 2009-11-29  Thomas Moulard  <thomas.moulard@gmail.com>
 
 	Fix typo.

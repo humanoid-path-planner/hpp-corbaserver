@@ -1,20 +1,22 @@
-/*
-  Research carried out within the scope of the Associated International Laboratory: Joint Japanese-French Robotics Laboratory (JRL)
+// Copyright (C) 2009, 2010 by Florent Lamiraux, Thomas Moulard, JRL.
+//
+// This file is part of the hpp-corbaserver.
+//
+// This software is provided "as is" without warranty of any kind,
+// either expressed or implied, including but not limited to the
+// implied warranties of fitness for a particular purpose.
+//
+// See the COPYING file for more information.
 
-  Developed by Florent Lamiraux (LAAS-CNRS)
+#ifndef HPP_CORBASERVER_PROBLEM_SERVER_IDL
+# define HPP_CORBASERVER_PROBLEM_SERVER_IDL
+# include <hpp/corbaserver/server.idl>
 
-*/
-
-#ifndef HPPCI_PROBLEM_SERVER_IDL
-#define HPPCI_PROBLEM_SERVER_IDL
-
-#include "hppciCommonServer.idl"
-
-module hppCorbaServer {
-  /**
-   * \brief To define and solve a path planning problem.
-   */
-  interface ChppciProblem {
+module hpp
+{
+  /// \brief To define and solve a path planning problem.
+  interface Problem
+  {
     /** \brief Set steering method of specified robot in ChppPlanner::robotVector.
 	\param inProblemId rank of problem in vector of hppProblems.
 	\param inSteeringMethodName name of the steering method in {"linear", "flic", "rs"}.
