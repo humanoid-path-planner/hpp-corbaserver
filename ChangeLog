@@ -1,5 +1,10 @@
 2010-03-19  Thomas Moulard  <thomas.moulard@gmail.com>
 
+	Fix idl directory.
+	* idl/Makefile.am: Here.
+
+2010-03-19  Thomas Moulard  <thomas.moulard@gmail.com>
+
 	Add symbol visibility management and global header.
 	* include/Makefile.am: Distribute new header.
 	* include/hpp/corbaserver.hh: New.
