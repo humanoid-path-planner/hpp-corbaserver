@@ -1,156 +1,118 @@
-/*
-  Research carried out within the scope of the Associated International Laboratory: Joint Japanese-French Robotics Laboratory (JRL)
-
-  Developed by Florent Lamiraux and Mathieu Poirier (LAAS-CNRS)
-
-*/
-
-#ifndef HPPCI_OPENHRP_H
-#define HPPCI_OPENHRP_H
-
-#if @OPENHRP@
-/*************************************
-INCLUDE
-**************************************/
-
-
-#include <stdlib.h>
-#include <map>
-#include <vector>
-#include <string>
-#include "hppCore/hppPlanner.h"
-
-#include "hppModel/hppHumanoidRobot.h"
-
-KIT_PREDEF_CLASS(CkppKCDPolyhedron);
-
-/*************************************
-STRUCTURES
-**************************************/
-
-// just a declaration : the body of this class is hppciOpenHp.cpp
-class CinternalCorbaObject ;
-
-// ==============================================================================
+// Copyright (C) 2009, 2010 by Florent Lamiraux, Thomas Moulard, JRL.
 //
-//  CLASS ChppciHrpClient
+// This file is part of the hpp-corbaserver.
 //
-// ==============================================================================
-/** 
-    \brief OpenHRP client to load HRP2 model.
-*/
-class ChppciOpenHrpClient {
-  
-  friend class CinternalCorbaObjet ;
+// This software is provided "as is" without warranty of any kind,
+// either expressed or implied, including but not limited to the
+// implied warranties of fitness for a particular purpose.
+//
+// See the COPYING file for more information.
 
-public:
+#ifndef HPP_CORBASERVER_OPENHRP_IMPL_HH
+# define HPP_CORBASERVER_OPENHRP_IMPL_HH
+# include <cstdlib>
+# include <map>
+# include <vector>
+# include <string>
 
-  /** 
-      \brief Constructor
-  */
-  ChppciOpenHrpClient(ChppPlanner *hpp);
+# include <hpp/corbaserver/fwd.hh>
+# include <hppCore/hppPlanner.h>
+# include <hppModel/hppHumanoidRobot.h>
 
-  /**
-     \brief Destroy joint absolute position matrices in associative array.
-  */
-  ~ChppciOpenHrpClient();
+namespace hpp
+{
+  namespace corbaServer
+  {
+    namespace impl
+    {
+      /// \brief OpenHRP client to load HRP2 model.
+      class OpenHRP
+      {
+	friend class InternalCorbaObject;
+      public:
+	explicit OpenHRP(ChppPlanner* hpp);
 
-  /** 
-      \brief Build an instance of HRP2 by using Robotbuilder::Robotbuilder
-      
-      \param inPenetration Dynamic penetration allowed for validating direct paths of the robot.
-      \param inModel optional path to the file describing the robot.
+	/// \brief Destroy joint absolute position matrices in associative array.
+	~OpenHRP ();
 
-      This function an instance of HRP2 by calling Robotbuilder::makeRobot() 
-      and initializes a ChppProblem with this robot by calling 
-      ChppPlanner::addHppProblem(CkppDeviceComponentShPtr robot).
-      Note that the robot is set into half-sitting configuration.
-  */
-  ktStatus loadHrp2Model(double inPenetration, const std::string& inModel = 
-			 std::string("@OPENHRP_PREFIX@/Controller/IOserver/robot/HRP2JRL/model/HRP2JRLmain.wrl"));
+	/// \brief Build an instance of HRP2 by using Robotbuilder::Robotbuilder
+	///
+	/// \param inPenetration Dynamic penetration allowed for validating direct paths of the robot.
+	/// \param inModel optional path to the file describing the robot.
+	///
+	/// This function an instance of HRP2 by calling Robotbuilder::makeRobot()
+	/// and initializes a ChppProblem with this robot by calling
+	/// ChppPlanner::addHppProblem(CkppDeviceComponentShPtr robot).
+	/// Note that the robot is set into half-sitting configuration.
+	ktStatus loadHrp2Model
+	(double inPenetration, const std::string& inModel =
+	 std::string("@OPENHRP_PREFIX@/Controller/IOserver/robot/HRP2JRL/model/HRP2JRLmain.wrl"));
 
-  /**
-     \brief  Build an instance of HRP2 by using Robotbuilder::Robotbuilder
+	/// \brief  Build an instance of HRP2 by using Robotbuilder::Robotbuilder
+	///
+	/// \param inModel optional path to the file describing the robot.
+	///
+	/// \retval outDevice The model of HRP2 set in half-sitting position.
+	///
+	/// Note that the robot is set into half-sitting configuration.
+	ktStatus loadHrp2Model
+	(ChppHumanoidRobotShPtr &outDevice,
+	 const std::string& inModel =
+	 std::string("@OPENHRP_PREFIX@/Controller/IOserver/robot/HRP2JRL/model/HRP2JRLmain.wrl"));
 
-     \param inModel optional path to the file describing the robot.
+	/// \brief  Initialize Orb and load model of a robot by sending a Corba request modelLoader to OpenHRP.
+	/// \param inFilename Name of the wrl file containing the description of the robot.
+	/// \param inDeviceName Name of the device
+	/// \param inDirectory Prefix of OpenHRP installation. Default value is provided by hppOpenHRP package.
+	/// \retval outDevice The model of robot.
+	///
+	/// \note The model of the robot is downloaded from "file://"inDirectory/inFileName".
+	/// \warning the way the arguments are handled has changed: "etc/" is not anymore inserted in the model path.
+	ktStatus
+	loadRobotModel (const std::string& inFilename,
+			const std::string& inDeviceName,
+			ChppDeviceShPtr& outDevice,
+			const std::string& inDirectory=
+			std::string("@OPENHRP_PREFIX@")+std::string("/etc"));
 
-     \retval outDevice The model of HRP2 set in half-sitting position.
+	/// \brief Initialize Orb and load model of objects by sending a Corba request modelLoader to OpenHRP.
+	/// \param inFilename Name of the wrl file containing the description of the obstacle.
+	/// \param inObstacleName Name of the obstacle.
+	/// \param inDirectory Prefix of OpenHRP installation. Default value is provided by hppOpenHRP package.
+	/// \retval outPolyhedron shared pointer to the polyhedron.
+	///
+	/// \note The model of the obstacle is downloaded from "file://"inDirectory/inFileName"
+	/// \warning the way the arguments are handled has changed: "etc/" is not anymore inserted in the model path.
+	ktStatus
+	loadObstacleModel (const std::string& inFilename,
+			   const std::string& inObstacleName,
+			   CkppKCDPolyhedronShPtr& outPolyhedron,
+			   const std::string& inDirectory=
+			   std::string("@OPENHRP_PREFIX@")+std::string("/etc/"));
 
-      Note that the robot is set into half-sitting configuration.
-  */
-  ktStatus loadHrp2Model(ChppHumanoidRobotShPtr &outDevice, 
-			 const std::string& inModel = 
-			 std::string("@OPENHRP_PREFIX@/Controller/IOserver/robot/HRP2JRL/model/HRP2JRLmain.wrl"));
+	/// \brief return the pointer to planner.
+	ChppPlanner* planner ()
+	{
+	  return hppPlanner;
+	}
 
-  /**
-     \brief  Initialize Orb and load model of a robot by sending a Corba request modelLoader to OpenHRP.
-     \param inFilename Name of the wrl file containing the description of the robot.
-     \param inDeviceName Name of the device
-     \param inDirectory Prefix of OpenHRP installation. Default value is provided by hppOpenHRP package.
-     \retval outDevice The model of robot.
+      private:
 
-     \note The model of the robot is downloaded from "file://"inDirectory/inFileName".
-     \warning the way the arguments are handled has changed: "etc/" is not anymore inserted in the model path.
+	/// \brief Get URL of robot for loadRobotModel function.
+	///
+	/// \param inModel Path to the model of HRP2 robot.
+	ktStatus getRobotURL (const std::string& inModel);
 
-  */
-  ktStatus loadRobotModel(const std::string& inFilename, 
-			  const std::string& inDeviceName, 
-			  ChppDeviceShPtr& outDevice, 
-			  const std::string& inDirectory=
-			  std::string("@OPENHRP_PREFIX@")+std::string("/etc"));
+	/// \brief Get URL of obstacle for loadObstacleModel function.
+	ktStatus getObstacleURL (const std::string& inFilename);
 
-  /** 
-      \brief Initialize Orb and load model of objects by sending a Corba request modelLoader to OpenHRP. 
-      \param inFilename Name of the wrl file containing the description of the obstacle.
-      \param inObstacleName Name of the obstacle.
-      \param inDirectory Prefix of OpenHRP installation. Default value is provided by hppOpenHRP package.
-      \retval outPolyhedron shared pointer to the polyhedron.
+	/// \brief Pointer to Path Planner object allocated elsewhere.
+	ChppPlanner* hppPlanner;
 
-      \note The model of the obstacle is downloaded from "file://"inDirectory/inFileName"
-      \warning the way the arguments are handled has changed: "etc/" is not anymore inserted in the model path.
+	InternalCorbaObject* privateCorbaObject ;
+      };
+    } // end of namespace impl.
+  } // end of namespace corbaServer.
+} // end of namespace hpp.
 
-  */
-  ktStatus loadObstacleModel(const std::string& inFilename, 
-			     const std::string& inObstacleName, 
-			     CkppKCDPolyhedronShPtr& outPolyhedron,
-			     const std::string& inDirectory=
-			     std::string("@OPENHRP_PREFIX@")+std::string("/etc/"));
- 
-  /** 
-      \brief Build a KineoWorks device from HRP2 model stored in Corba. 
-      Once created, the device is store in hppPlanner.
-      We add an extra dof in order to store time in the config.
-      This enables us to build stationary linear direct paths
-  */
-  //ktStatus buildKppDevice(ChppDeviceShPtr& hppDevice, bool selfColFlag); 
-
-  /**
-     \brief return the pointer to planner
-  */
-  ChppPlanner *planner() {return hppPlanner; };
-
-private :
-
-  /**
-     \brief Get URL of robot for loadRobotModel function.
-
-     \param inModel Path to the model of HRP2 robot.
-  */
-  ktStatus getRobotURL(const std::string& inModel);
-
-  /**
-     \brief Get URL of obstacle for loadObstacleModel function.
-  */
-  ktStatus getObstacleURL(const std::string& inFilename);
-
-  /** 
-      \brief Pointer to Path Planner object allocated elsewhere.
-  */
-  ChppPlanner *hppPlanner;
-
-  CinternalCorbaObject *privateCorbaObject ;
-
-};
-
-#endif
-#endif
+#endif //! HPP_CORBASERVER_OPENHRP_IMPL_HH

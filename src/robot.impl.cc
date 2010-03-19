@@ -22,12 +22,17 @@
 
 #include "hpp/corbaserver/server.hh"
 
-#if WITH_OPENHRP
+#include "robot.impl.hh"
+#include "tools.hh"
+
+#undef PACKAGE_STRING
+#undef PACKAGE_TARNAME
+#include "config.h"
+
+#if HPP_CORBASERVER_ENABLE_OPENHRP
 # include "hpp/corbaserver/openhrp.hh"
 #endif
 
-#include "robot.impl.hh"
-#include "tools.hh"
 
 namespace hpp
 {
@@ -156,14 +161,19 @@ namespace hpp
 	return 0;
       }
 
-#if WITH_OPENHRP
+#if HPP_CORBASERVER_ENABLE_OPENHRP
       Short Robot::loadHrp2Model(double inPenetration)
       {
-	ChppciOpenHrpClient openHrpClient(planner_);
-	if (openHrpClient.loadHrp2Model(inPenetration) != KD_OK) {
+	OpenHRP openHrpClient (planner_);
+	if (openHrpClient.loadHrp2Model(inPenetration) != KD_OK)
 	  return -1;
-	}
 	return 0;
+      }
+#else
+      Short Robot::loadHrp2Model(double inPenetration)
+      {
+	assert ("This function is not defined when OpenHRP is not enabled.");
+	return -1;
       }
 #endif
 
@@ -829,7 +839,7 @@ namespace hpp
 	    }
 	  }
 
-	  cout<<endl;
+	  std::cout << std::endl;
 
 
 	}
@@ -1074,4 +1084,3 @@ namespace hpp
     } // end of namespace impl.
   } // end of namespace corbaServer.
 } // end of namespace hpp.
->>>>>>> 4c8c71b... Continue cleaning, still temporary commit: now compile but there is

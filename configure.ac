@@ -34,7 +34,6 @@ fi
 
 # Customize warnings.
 JRL_CXX_WARNINGS([[-Wall],
-                   [-Werror],
                    [-Wcast-align],
                    [-Wcast-qual],
                    [-Wformat],
@@ -57,7 +56,7 @@ AC_ARG_ENABLE([openhrp],
 [AC_DEFINE([HPP_CORBASERVER_ENABLE_OPENHRP], [1],
            [Define to 1 if OpenHRP is enabled.])
 enable_openhrp=true])
-AM_CONDITIONAL([OPENHRP], [test x$with_openhrp = xtrue])
+AM_CONDITIONAL([OPENHRP], [test x$enable_openhrp = xtrue])
 
 ## ------------------- ##
 ## Additionnal tools.  ##
@@ -82,6 +81,7 @@ LT_INIT
 
 # Search for pkg-config dependencies.
 JRL_PKGCONFIGCHECK_ADDDEP([HPPCORE], [hppCore >= 1.11])
+JRL_PKGCONFIGCHECK_ADDDEP([HPP_UTIL], [hpp-util])
 JRL_PKGCONFIGCHECK([KWSPLUS], [kwsPlus >= 1.8])
 JRL_PKGCONFIGCHECK_ADDDEP([OMNIORB4], [omniORB4])
 
@@ -92,7 +92,7 @@ AC_SUBST([KINEO_ADDON_BUILDER],
 	[${KINEOCONTROLLER_PREFIX}/bin/KineoAddonBuilder])
 
 # Additional dependencies when OpenHRP is enabled.
-if test x$with_openhrp = xtrue; then
+if test x$enable_openhrp = xtrue; then
    JRL_PKGCONFIGCHECK_ADDDEP([HPPOPENHRP], [hppOpenHRP >= 1.6.2])
    AC_SUBST([OPENHRP_PREFIX],
             [`$PKG_CONFIG hppOpenHRP --variable=OpenHRP_prefix`])
@@ -104,6 +104,12 @@ if test x$with_openhrp = xtrue; then
    JRL_PKGCONFIGCHECK_ADDDEP([ROBOTBUILDER], [robotbuilder >= 1.0.5])
 fi
 
+
+# Generate ``config.hh'' header file.
+AC_SUBST([PACKAGE_CPPNAME],
+ [`echo "$PACKAGE_TARNAME" \
+  | tr '@<:@:lower:@:>@' '@<:@:upper:@:>@' | sed 's/-/_/g'`])
+AC_CONFIG_FILES([include/hpp/corbaserver/config.hh])
 
 ## ------------ ##
 ## Test-suite.  ##
@@ -134,13 +140,15 @@ AC_CONFIG_HEADERS([config.h])
 # Create Makefiles.
 AC_CONFIG_FILES([
   Makefile
-    idl/Makefile
-      idl/hpp/corbaserver/Makefile
-    include/Makefile
-     include/hpp/corbaserver/openhrp.hh
-    doc/Makefile
-    src/Makefile
-    tests/Makefile
+  idl/Makefile
+   idl/hpp/corbaserver/Makefile
+  include/Makefile
+   include/hpp/corbaserver/openhrp.hh
+  doc/Makefile
+  src/Makefile
+  tests/Makefile
+   tests/atlocal
+   tests/package.m4
 ])
 
 # Write files.

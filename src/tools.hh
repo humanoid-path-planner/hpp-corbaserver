@@ -13,9 +13,10 @@
 # include <KineoUtility/kitMat4.h>
 # include <hpp/util/portability.hh>
 
+# include <hpp/corbaserver/config.hh>
 # include "hpp/corbaserver/common.stub.hh"
 
-HPP_LOCAL void
+HPP_CORBASERVER_LOCAL void
 ConfigurationToCkitMat4 (const hpp::Configuration inConfig,
 			 CkitMat4& outMatrix4);
 

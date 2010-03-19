@@ -15,8 +15,9 @@
 //FIXME: should be replaced by CORBA base types forward declarations.
 # include <omniORB4/CORBA.h>
 
-KIT_PREDEF_CLASS(CkwsDiffusionNodePicker);
-KIT_PREDEF_CLASS(CkwsDiffusionShooter);
+KIT_PREDEF_CLASS (CkppKCDPolyhedron);
+KIT_PREDEF_CLASS (CkwsDiffusionNodePicker);
+KIT_PREDEF_CLASS (CkwsDiffusionShooter);
 
 class CkwsPlusSteeringMethodFactory;
 class CkwsPlusDistanceFactory;
@@ -42,6 +43,9 @@ namespace hpp
       class Obstacle;
       class Robot;
       class Server;
+
+      class InternalCorbaObject;
+      class OpenHRP;
     }
   } // end of namespace corbaServer.
 } // end of namespace hpp.

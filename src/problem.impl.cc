@@ -510,7 +510,6 @@ namespace hpp
 	    // by Yoshida 06/08/25
 	    unsigned int deviceDim = config->size();
 
-	    // cerr<<"deviceDim "<<deviceDim<<" [ ";
 	    dofArray = new hpp::dofSeq();
 	    dofArray->length(deviceDim);
 
@@ -550,18 +549,16 @@ namespace hpp
 	  std::vector<double> dofVector;
 	  CkwsConfigShPtr config = planner_->goalConfIthProblem(hppProblemId);
 
-	  if (config) {
-	    // by Yoshida 06/08/25
-	    unsigned int deviceDim = config->size();
+	  if (config)
+	    {
+	      unsigned int deviceDim = config->size ();
 
-	    // cerr<<"deviceDim "<<deviceDim<<" [ ";
-	    dofArray = new hpp::dofSeq();
-	    dofArray->length(deviceDim);
+	      dofArray = new hpp::dofSeq ();
+	      dofArray->length (deviceDim);
 
-	    for(unsigned int i=0; i<deviceDim; i++){
-	      (*dofArray)[i] = config->dofValue(i);
-	    }
-	    return dofArray;
+	      for (unsigned int i=0; i<deviceDim; i++)
+		(*dofArray)[i] = config->dofValue(i);
+	      return dofArray;
 	  }
 	  else {
 	    hppDout (error, ":getInitialConfig: no initial configuration defined");
@@ -725,12 +722,13 @@ namespace hpp
 	std::vector<CkcdObjectShPtr> oList = planner_->obstacleList();
 
 	if(oList.size() == 0)
-	  cerr << " there are no obstacle in problem " << hppProblemId << std::endl;
+	  std::cerr << " there are no obstacle in problem " << hppProblemId << std::endl;
 
-	for(unsigned int i =0; i<oList.size(); i++){
-	  oList[i]->tolerance(tolerance);
-	  hppDout (error, ":setObstacleTolerance: tolerance " << tolerance << " set to obstacle " << i);
-	}
+	for(unsigned int i =0; i<oList.size(); i++)
+	  {
+	    oList[i]->tolerance(tolerance);
+	    hppDout (error, ":setObstacleTolerance: tolerance " << tolerance << " set to obstacle " << i);
+	  }
 	return 0;
       }
     }

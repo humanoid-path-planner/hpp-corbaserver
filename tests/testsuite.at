@@ -1,0 +1,51 @@
+# Copyright (C) 2010 by Florent Lamiraux.                                    -*-Autotest-*-
+#
+# This file is part of the hpp-corbaserver.
+#
+# hpp-corbaserver is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# hpp-corbaserver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with hpp-corbaserver.  If not, see <http://www.gnu.org/licenses/>.
+
+m4_include([autotest.at])
+
+# CHECK_STDOUT_KINEO
+# --------------------------------------------------------------
+# See CHECK_STDOUT in build-aux/autotest.at.
+m4_define([CHECK_STDOUT_KINEO],
+[m4_ifset ([$1], [],
+           [m4_fatal([CHECK_STDOUT has be called with at least one argument])])
+AT_SETUP([m4_default([$2], [Unnamed test])])
+
+AT_CHECK([if m4_default([$3], [false]); then
+ exit 77; else
+ true; fi], [0], [ignore], [ignore])
+
+AT_XFAIL_IF([m4_default([$4], [false])])
+cp $abs_srcdir/$1.stdout expout
+cp $abs_builddir/$1.kab .
+AT_CHECK([$CHECK_PREFIX `which $1`], [0], [expout], [ignore])
+
+AT_CLEANUP
+]) # CHECK_STDOUT
+
+
+## ----------------------- ##
+## Launch the test suite.  ##
+## ----------------------- ##
+
+AT_INIT([Main library])
+AT_COPYRIGHT(
+[Copyright (C) 2010 hpp-corbaserver
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.])
+
+CHECK_STDOUT_KINEO([simple-test], [Empty test.])

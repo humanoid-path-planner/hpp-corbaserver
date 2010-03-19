@@ -1,3 +1,36 @@
+2010-03-19  Thomas Moulard  <thomas.moulard@gmail.com>
+
+	Clean package.
+	* config.h.in: Remove.
+	* configure.ac: Clean and rewrite.
+	* doc/Doxyfile.extra.in: New.
+	* doc/Doxyfile.in: Remove.
+	* doc/Makefile.am: Clean and rewrite.
+	* doc/footer.html: Clean and rewrite.
+	* doc/header.html: Clean and rewrite.
+	* doc/hpp.css: Remove.
+	* doc/package.css: Remove.
+	* include/Makefile.am: Clean and rewrite.
+	* include/hpp/corbaserver/config.hh.in: New.
+	* include/hpp/corbaserver/doc.hh: Rename from doc/additionalDoc/package.h.
+	* include/hpp/corbaserver/fwd.hh: Clean and rewrite.
+	* include/hpp/corbaserver/openhrp.hh.in: Clean and rewrite.
+	* shared.mk: Clean and rewrite.
+	* src/Makefile.am: Clean and rewrite.
+	* src/obstacle.impl.cc: Clean and rewrite.
+	* src/openhrp.cc: Clean and rewrite.
+	* src/problem.impl.cc: Clean and rewrite.
+	* src/robot.impl.cc: Clean and rewrite.
+	* src/server.cc: Clean and rewrite.
+	* src/tools.hh: Clean and rewrite.
+	* tests/Makefile.am: Clean and rewrite.
+	* tests/atlocal.in: New.
+	* tests/common.hh: New.
+	* tests/package.m4.in: New.
+	* tests/simple-test.cc: New.
+	* tests/simple-test.stdout: New.
+	* tests/testsuite.at: New.
+
 2010-03-16  Thomas Moulard  <thomas.moulard@gmail.com>
 
 	Fix last compilation errors.

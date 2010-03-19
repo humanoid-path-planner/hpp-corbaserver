@@ -458,7 +458,7 @@ namespace hpp
     {
       if (loop) {
 	// Enter in the Corba control loop. Never return.
-	std::cout << "Server::processRequest: attPrivate->orb->run();" << endl;
+	std::cout << "Server::processRequest: attPrivate->orb->run();" << std::endl;
 	attPrivate->orb_->run();
       } else {
 	if (attPrivate->orb_->work_pending()) {
