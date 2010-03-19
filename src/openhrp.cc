@@ -11,16 +11,17 @@
 #include <iostream>
 #include <string>
 
-#include <hpp/corbaserver/openhrp.hh>
 #include <robotbuilder/robotbuilder.hh>
-#include <hppOpenHRP/parserOpenHRPKineoObstacle.h>
-#include <hppOpenHRP/parserOpenHRPKineoDevice.h>
 
-#include <hppModel/hppJoint.h>
-#include <hppModel/hppBody.h>
-#include <hppModel/hppSpecificHumanoidRobot.h>
+#include <hpp/corbaserver/openhrp.hh>
 
+#include <hpp/util/debug.hh>
 #include <hppCore/hppColPair.h>
+#include <hppModel/hppBody.h>
+#include <hppModel/hppJoint.h>
+#include <hppModel/hppSpecificHumanoidRobot.h>
+#include <hppOpenHRP/parserOpenHRPKineoDevice.h>
+#include <hppOpenHRP/parserOpenHRPKineoObstacle.h>
 
 #include <hrp2Dynamics/hrp2OptHumanoidDynamicRobot.h>
 
@@ -385,7 +386,7 @@ namespace hpp
 	//
 	if (hppPlanner->addHppProblem (HRP2Device, inPenetration) != KD_OK)
 	  {
-	    std::cerr << "OpenHRP::loadHrp2Model: Failed to add robot" << endl;
+	    hppDout (error, "failed to add robot");
 	    return KD_ERROR;
 	  }
 
@@ -405,7 +406,7 @@ namespace hpp
 	HRP2Device = humanoid;
 	if (!HRP2Device)
 	  {
-	    std::cerr << " ERROR : OpenHRP::loadHrp2Model : Failed building Kineo HRP2 Model" << endl ;
+	    hppDout (error, "failed to build Kineo HRP2 Model");
 	    return KD_ERROR;
 	  }
 
@@ -440,8 +441,7 @@ namespace hpp
 	ModelLoader_var loader;
 	if (privateCorbaObject->getModelLoader() != KD_OK)
 	  {
-	    std::cerr << "ERROR : OpenHRP::loadRobotModel::Failed to load robot model"
-		      << endl;
+	    hppDout (error, "failed to load robot model");
 	    return KD_ERROR;
 	  }
 
@@ -453,7 +453,7 @@ namespace hpp
 	url += std::string ("/");
 	url += inFilename;
 
-	std:: cout << "OpenHRP::loadRobotModel: reading " << url << std::endl;
+	hppDout (info, "reading " << url);
 
 	try
 	  {
@@ -464,18 +464,18 @@ namespace hpp
 	  }
 	catch (CORBA::SystemException &ex)
 	  {
-	    std::cerr << "System exception( " << ex._rep_id() << ") in OpenHRP::loadRobotModel()" << endl;
+	    hppDout (error, "system exception (" << ex._rep_id () << ")");
 	    return KD_ERROR;
 	  }
 	catch (...)
 	  {
-	    std::cerr << "Unknown exception" << endl;
+	    hppDout (error, "unknown exception");
 	    return KD_ERROR;
 	  }
 
 	if (!outDevice)
 	  {
-	    std::cerr << " ERROR : OpenHRP::loadRobotModel : Failed building Kineo Robot Model" << endl ;
+	    hppDout (error, "failed to build Kineo Robot Model");
 	    return KD_ERROR;
 	  }
 
@@ -506,8 +506,7 @@ namespace hpp
 	if (getObstacleURL(url)!= KD_OK)
 	  {
 	    privateCorbaObject->orb->destroy();
-	    std::cerr << "ERROR : OpenHRP::loadObstacleModel: failed to load Obstacle model"
-		      << endl;
+	    hppDout (error, "failed to load Obstacle model");
 	    return KD_ERROR;
 	  }
 
@@ -525,7 +524,7 @@ namespace hpp
 
 	    if (obstacleVector.empty ())
 	      {
-		std::cerr << "ERROR OpenHRP::loadObstacleModel : Failed to parse the obstacle model " <<  endl;
+		hppDout (error, "failed to parse the obstacle model");
 		return KD_ERROR;
 	      }
 	    outPolyhedron = obstacleVector[0];
@@ -555,14 +554,12 @@ namespace hpp
 	    }
 	  catch (const CORBA::ORB::InvalidName&)
 	    {
-	      std::cerr << "ERROR :OpenHRP::getModelLoader : cannot resolve " << nameServiceString << endl;
+	      hppDout (error, "cannot resolve " << nameServiceString);
 	      return KD_ERROR;
 	    }
 	  if (CORBA::is_nil (nameService))
 	    {
-	      std::cerr
-		<< " ERROR :OpenHRP::getModelLoader "<< nameServiceString << "is a nil object reference"
-		<< std::endl;
+	      hppDout (info, nameServiceString << "is a nil object reference");
 	      return KD_ERROR;
 	    }
 
@@ -571,13 +568,11 @@ namespace hpp
 	    CosNaming::NamingContext::_narrow(nameService);
 	  if (CORBA::is_nil(cxt))
 	    {
-	      std::cerr
-		<< " ERROR :OpenHRP::getModelLoader "<< nameServiceString
-		<< " is not a NamingContext object reference"
-		<< std::endl;
+	      hppDout (error, nameServiceString
+		       << " is not a NamingContext object reference");
 	      return KD_ERROR;
 	    }
-	  
+
 	  CosNaming::Name ncFactory;
 	  ncFactory.length (1);
 
@@ -593,21 +588,18 @@ namespace hpp
 	    }
 	  catch (const CosNaming::NamingContext::NotFound&)
 	    {
-	      std::cerr
-		<< "ERROR :  InternalCorbaObject::getModelLoader : "
-		<< modelLoaderString <<  "NOT FOUND" << std::endl;
+	      hppDout (error, modelLoaderString <<  " not found");
 	      return KD_ERROR;
 	    }
 	  }
 	catch (CORBA::SystemException &ex)
 	  {
-	    std::cerr << "System exception(" << ex._rep_id()
-		      << ") in InternalCorbaObject::getModelLoader()" <<endl;
+	    hppDout (error, "system exception (" << ex._rep_id() << ")");
 	    return KD_ERROR;
 	  }
 	catch (...)
 	  {
-	    std::cerr << "Unknown exception" << endl;
+	    hppDout (error, "unknown exception");
 	    return KD_ERROR;
 	  }
 	return KD_OK;
@@ -625,12 +617,16 @@ namespace hpp
 	    url += inModel;
 	    privateCorbaObject->HRP2info = privateCorbaObject->attLoader->loadURL (url.c_str ());
 
-	    // TO CHECK ON SCREEN
-	    std::cout << std::endl;
-	    std::cout << "Loaded URL        : " << privateCorbaObject->HRP2info->getUrl () << std::endl;
-	    std::cout << "Loaded Model Name : " << privateCorbaObject->HRP2info->getCharObject ()->name ()
-		      << std::endl;
-	    std::cout << "Loaded Model Size : " << privateCorbaObject->HRP2info->getCharObject ()->modelObjectSeq ()->length () << std::endl;
+	    hppDout (info,
+		     "loaded URL: "
+		     << privateCorbaObject->HRP2info->getUrl ());
+	    hppDout
+	      (info,
+	       "loaded Model Name: "
+	       << privateCorbaObject->HRP2info->getCharObject ()->name ());
+	    hppDout
+	      (info, "loaded Model Size: "
+	       << privateCorbaObject->HRP2info->getCharObject ()->modelObjectSeq ()->length ());
 	}
 	return KD_OK;
       }
@@ -646,18 +642,19 @@ namespace hpp
 		privateCorbaObject->obstInfoVector.push_back
 		  (privateCorbaObject->attLoader->loadURL (inFilename.c_str ()));
 
-		// TO CHECK ON SCREEN
-		std::cout << std::endl;
-		std::cout << "Vector Obstacle " << 0 << std::endl;
-		std::cout << "Loaded URL        : " << privateCorbaObject->obstInfoVector[0]->getUrl ()
-			  << std::endl;
-		std::cout << "Loaded Model Name : " << privateCorbaObject->obstInfoVector[0]->getCharObject ()->name ()
-			  << std::endl;
-		std::cout << "Loaded Model Size : " << privateCorbaObject->obstInfoVector[0]->getCharObject ()->modelObjectSeq ()->length () << std::endl;
+		hppDout (info, "vector Obstacle " << 0);
+		hppDout (info, "loaded URL: "
+			 << privateCorbaObject->obstInfoVector[0]->getUrl ());
+		hppDout
+		  (info, "loaded Model Name: "
+		   << privateCorbaObject->obstInfoVector[0]->getCharObject ()->name ());
+		hppDout
+		  (info, "loaded Model Size: "
+		   << privateCorbaObject->obstInfoVector[0]->getCharObject ()->modelObjectSeq ()->length ());
 	      }
-	    catch (ModelLoader::ModelLoaderException& exception) 
+	    catch (ModelLoader::ModelLoaderException& exception)
 	      {
-		std::cerr << "OpenHRP::getObstacleURL: could not open file" << std::endl;
+		hppDout (error, "failed to open obstacle file");
 		return KD_ERROR;
 	      }
 	  }

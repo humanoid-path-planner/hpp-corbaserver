@@ -1,5 +1,14 @@
 2010-03-19  Thomas Moulard  <thomas.moulard@gmail.com>
 
+	Use debugging tools.
+	* src/openhrp.cc,
+	* src/problem.impl.cc,
+	* src/robot.impl.cc,
+	* src/server-private.cc,
+	* src/server.cc: Use hppDout instead of cerr/cout.
+
+2010-03-19  Thomas Moulard  <thomas.moulard@gmail.com>
+
 	Clean package.
 	* config.h.in: Remove.
 	* configure.ac: Clean and rewrite.

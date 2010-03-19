@@ -10,30 +10,31 @@
 
 #include <iostream>
 
+#include <hpp/util/debug.hh>
+
 #include "obstacle.impl.hh"
 #include "problem.impl.hh"
 #include "robot.impl.hh"
 #include "server-private.hh"
 
 //FIXME: remove me.
-#define HPPCI_CATCH(msg, ret)			\
-  catch(CORBA::SystemException&) {\
-    std::cerr << "hppCorbaServer: CORBA::SystemException: " << msg << std::endl;\
-    return ret;\
-  }\
-  catch(CORBA::Exception&) {\
-    std::cerr << "hppCorbaServer: CORBA::Exception: " << msg << std::endl;\
-    return ret;\
-  }\
-  catch(omniORB::fatalException& fe) {\
-    std::cerr << "hppCorbaServer: CORBA::fatalException: " << msg << std::endl;\
-    return ret;\
-  }\
-  catch(...) {\
-    std::cerr << "hppCorbaServer: unknown exception: " << msg << std::endl;\
-    return ret;\
-  }\
-
+#define HPPCI_CATCH(msg, ret)						\
+  catch(CORBA::SystemException&) {					\
+    hppDout (error, "hppCorbaServer: CORBA::SystemException: " << msg);	\
+    return ret;								\
+  }									\
+  catch(CORBA::Exception&) {						\
+    hppDout (error, "hppCorbaServer: CORBA::Exception: " << msg);	\
+    return ret;								\
+  }									\
+  catch(omniORB::fatalException& fe) {					\
+    hppDout (error, "hppCorbaServer: CORBA::fatalException: " << msg);	\
+    return ret;								\
+  }									\
+  catch(...) {								\
+    hppDout (error, "hppCorbaServer: unknown exception: " << msg);	\
+    return ret;								\
+  }
 
 namespace hpp
 {
@@ -78,7 +79,7 @@ namespace hpp
 	HPPCI_CATCH("failed to create implementation of ChppciProblem", KD_ERROR) /* see hppciExceptionHandlingMacros.h */
 
 	  try {
-    
+
 	    robotServantid_ = poa_->activate_object(robotServant_);
 	  }
 	HPPCI_CATCH("failed to activate implementation of ChppciRobot", KD_ERROR) /* see hppciExceptionHandlingMacros.h */
@@ -129,13 +130,13 @@ namespace hpp
 	  // Narrow the reference returned.
 	  rootContext = CosNaming::NamingContext::_narrow(localObj);
 	  if( is_nil(rootContext) ) {
-	    std::cerr << "Failed to narrow the root naming context." << std::endl;
+	    hppDout (error, "Failed to narrow the root naming context.");
 	    return false;
 	  }
 	}
 	catch(InvalidName& ex) {
 	  // This should not happen!
-	  std::cerr << "Service required is invalid [does not exist]." << std::endl;
+	  hppDout (error, "Service required is invalid [does not exist].");
 	  return false;
 	}
 	HPPCI_CATCH("failed to narrow the root naming context.", false);
@@ -162,19 +163,18 @@ namespace hpp
 	    localObj = rootContext->resolve(contextName);
 	    hppContext_ = CosNaming::NamingContext::_narrow(localObj);
 	    if( is_nil(hppContext_) ) {
-	      std::cerr << "Failed to narrow naming context." << std::endl;
+	      hppDout (error, "Failed to narrow naming context.");
 	      return false;
 	    }
 	  }
 	}
 	catch(COMM_FAILURE& ex) {
-	  std::cerr << "Caught system exception COMM_FAILURE -- unable to contact the "
-		    << "naming service." << std::endl;
+	  hppDout (error, "Caught system exception COMM_FAILURE -- unable to contact the "
+		   << "naming service.");
 	  return false;
 	}
 	catch(SystemException&) {
-	  std::cerr << "Caught a SystemException while creating the context."
-		    << std::endl;
+	  hppDout (error, "Caught a SystemException while creating the context.");
 	  return false;
 	}
 
@@ -189,7 +189,7 @@ namespace hpp
 	    hppContext_->bind(objectName, objref);
 	  }
 	  catch(CosNaming::NamingContext::AlreadyBound& ex) {
-	    std::cerr << "Warning naming context already bound" << std::endl;
+	    hppDout (error, "Warning naming context already bound");
 	    hppContext_->rebind(objectName, objref);
 	  }
 	  // Note: Using rebind() will overwrite any Object previously bound
@@ -204,13 +204,12 @@ namespace hpp
 	  // it should just bind].
 	}
 	catch(COMM_FAILURE& ex) {
-	  std::cerr << "Caught system exception COMM_FAILURE -- unable to contact the "
-		    << "naming service." << std::endl;
+	  hppDout (error, "Caught system exception COMM_FAILURE -- unable to contact the "
+		   << "naming service.");
 	  return false;
 	}
 	catch(SystemException&) {
-	  std::cerr << "Caught a SystemException while binding object to name service."
-		    << std::endl;
+	  hppDout (error, "Caught a SystemException while binding object to name service.");
 	  return false;
 	}
 

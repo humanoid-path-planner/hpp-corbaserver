@@ -713,18 +713,18 @@ namespace hpp
 	// get the planner
 	unsigned int hppProblemId = (unsigned int)problemId;
 	// get object hppPlanner of Corba server.
+	if(!planner_)
+	  {
+	    hppDout (error, ":setObstacleTolerance: problem " << hppProblemId << " not found");
+	    return -1;
+	  }
 
-	if(!planner_){
-	  hppDout (error, ":setObstacleTolerance: problem " << hppProblemId << " not found");
-	  return -1;
-	}
-
-	std::vector<CkcdObjectShPtr> oList = planner_->obstacleList();
+	std::vector<CkcdObjectShPtr> oList = planner_->obstacleList ();
 
 	if(oList.size() == 0)
-	  std::cerr << " there are no obstacle in problem " << hppProblemId << std::endl;
+	  hppDout (warning, "there are no obstacle in problem " << hppProblemId);
 
-	for(unsigned int i =0; i<oList.size(); i++)
+	for (unsigned int i = 0; i < oList.size(); ++i)
 	  {
 	    oList[i]->tolerance(tolerance);
 	    hppDout (error, ":setObstacleTolerance: tolerance " << tolerance << " set to obstacle " << i);

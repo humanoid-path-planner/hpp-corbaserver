@@ -558,37 +558,32 @@ namespace hpp
 
 	unsigned int nbProblems = planner_->getNbHppProblems();
 
-	if (hppProblemId < nbProblems) {
-	  // Get robot in hppPlanner object.
-	  CkppDeviceComponentShPtr hppRobot = planner_->robotIthProblem(hppProblemId);
+	if (hppProblemId < nbProblems)
+	  {
+	    // Get robot in hppPlanner object.
+	    CkppDeviceComponentShPtr hppRobot = planner_->robotIthProblem(hppProblemId);
 
-	  std::vector<double> dofVector;
-	  hppRobot->getCurrentDofValues(dofVector);
+	    std::vector<double> dofVector;
+	    hppRobot->getCurrentDofValues(dofVector);
 
-	  // by Yoshida 06/08/25
-	  unsigned int deviceDim = hppRobot->countDofs ();
+	    unsigned int deviceDim = hppRobot->countDofs ();
 
-	  // cerr<<"deviceDim "<<deviceDim<<" [ ";
-	  dofArray = new hpp::dofSeq();
-	  dofArray->length(deviceDim);
+	    dofArray = new hpp::dofSeq();
+	    dofArray->length(deviceDim);
 
-	  for(unsigned int i=0; i<deviceDim; i++){
-	    (*dofArray)[i] = dofVector[i];
-	    // cerr<<" "<<(*dofArray)[i];
+	    for(unsigned int i=0; i<deviceDim; i++)
+	      (*dofArray)[i] = dofVector[i];
+
+	    return dofArray;
 	  }
-	  // cerr<<" ] "<<endl;
+	else
+	  {
+	    hppDout (error, "wrong robot id");
+	    dofArray = new hpp::dofSeq (1);
 
-	  return dofArray;
-	}
-
-	else {
-	  hppDout (error, ":CurrentConfig: wrong robot Id");
-	  dofArray = new hpp::dofSeq(1);
-
-	  return dofArray;
-	}
-
-	return new hpp::dofSeq(1);
+	    return dofArray;
+	  }
+	return new hpp::dofSeq (1);
       }
 
 
@@ -601,12 +596,12 @@ namespace hpp
 
 	// Check that joint of this name exists.
 	if (jointMap_.count(jointName) != 1) {
-	  hppDout (error, ":addJoint: joint " << jointName 	 << " does not exist.");
+	  hppDout (error, "joint " << jointName 	 << " does not exist.");
 	  return -1;
 	}
 	// Check that body of this name exits.
 	if (bodyMap_.count(bodyName) != 1) {
-	  hppDout (error, ":attachBodyToJoint: body "	 << bodyName << " does not exist.");
+	  hppDout (error, "body "	 << bodyName << " does not exist.");
 	  return -1;
 	}
 	CkppJointComponentShPtr kppJoint = jointMap_[jointName];
@@ -614,7 +609,7 @@ namespace hpp
 	ChppBodyShPtr hppBody = bodyMap_[bodyName];
 
 	if (kwsJoint->setAttachedBody(hppBody) != KD_OK) {
-	  hppDout (error, ":attachBodyToJoint: failed to attach body "	 << bodyName << " to joint " << jointName);
+	  hppDout (error, "failed to attach body "	 << bodyName << " to joint " << jointName);
 	  return -1;
 	}
 	// If objects are attached to the body, the corresponding component need to
@@ -631,13 +626,13 @@ namespace hpp
 
 	// Check that body does not already exist.
 	if (bodyMap_.count(bodyName) != 0) {
-	  hppDout (error, ":createBody: body " << bodyName 	 << " already exists.");
+	  hppDout (error, "body " << bodyName 	 << " already exists.");
 	  return -1;
 	}
 	ChppBodyShPtr hppBody = ChppBody::create(bodyName);
 
 	if (!hppBody) {
-	  hppDout (error, ":createBody: failed to create body "	 << bodyName << ".");
+	  hppDout (error, "failed to create body "	 << bodyName << ".");
 	  return -1;
 	}
 	// Store body in map.
@@ -676,12 +671,13 @@ namespace hpp
 	      }
 	    }
 	  }
-	} else {
-	  hppDout (error, ":getBodyInnerObject: body of name " << " not found.");
 	}
-	if (!innerObjectSeq) {
-	  innerObjectSeq = new hpp::nameSeq(0);
-	}
+	else
+	  hppDout (error, "body of name " << " not found.");
+
+	if (!innerObjectSeq)
+	  innerObjectSeq = new hpp::nameSeq (0);
+
 	return innerObjectSeq;
       }
 
@@ -714,7 +710,7 @@ namespace hpp
 	    }
 	  }
 	} else {
-	  hppDout (error, ":getBodyOuterObject: body of name " << " not found.");
+	  hppDout (error, "body of name " << " not found.");
 	}
 	if (!outerObjectSeq) {
 	  outerObjectSeq = new hpp::nameSeq(0);
@@ -732,7 +728,7 @@ namespace hpp
 	  planner_->penetration(inProblemId, inPenetration);
 	}
 	else{
-	  hppDout (error, ":setPenetration: wrong robot Id");
+	  hppDout (error, "wrong robot id");
 	  return -1;
 	}
 	return 0;
@@ -748,7 +744,7 @@ namespace hpp
 	  outPenetration = planner_->penetration(inProblemId);
 	}
 	else{
-	  hppDout (error, ":getPenetration: wrong robot Id");
+	  hppDout (error, "wrong robot Id");
 	  return -1;
 	}
 
@@ -777,7 +773,7 @@ namespace hpp
 	  unsigned int deviceDim = hppRobot->countDofs ();
 
 	  if (hppJointId > deviceDim) {
-	    hppDout (error, ":checkLinkCollision: wrong joint Id");
+	    hppDout (error, "wrong joint Id");
 	    return -1;
 	  }
 
@@ -795,7 +791,6 @@ namespace hpp
 	  }
 
 	  // debug
-	  // cout<<"colliding bodies: ";
 	  hppDout (info, "=====================debugging collision detection ======================");
 
 	  for(unsigned int i=0; i<jointList.size(); i++){
@@ -808,7 +803,7 @@ namespace hpp
 	    CkitVect3 transJoint = matJoint.translation();
 	    double dist=0;
 	    if (hppBody->CkwsKCDBody::getEstimatedDistance(dist) == KD_ERROR) {
-	      hppDout (error, ":checkLinkCollision: failure in getting estimated distance");
+	      hppDout (error, "failure in getting estimated distance");
 	      return -1;
 	    }
 	    hppDout (info, "for joint " << hppBody->name() << " body pos " << trans[0]
@@ -816,13 +811,12 @@ namespace hpp
 	    hppDout (info, "for joint " << hppBody->name() << " joint pos " << transJoint[0]
 		     << ", " << transJoint[1] << ", " << transJoint[2]);
 #if DEBUG==2
-	    std::cout << " joint config:";
-	    for(unsigned int j=0; j<3; j++){
-	      for(unsigned int k=0; k<3; k++)
-		cout<<matJoint(j,k)<<" ";
-	      cout<<" ";
-	    }
-	    cout<<endl;
+	    hppDout (info, "joint config:");
+	    for(unsigned int j = 0; j < 3; ++j)
+	      {
+		for(unsigned int k=0; k<3; k++)
+		  hppDout (info, "(" << j << ", " << k << ") = " << matJoint(j,k));
+	      }
 #endif
 	    // hppBody->printCollisionStatusFast();
 
@@ -838,13 +832,9 @@ namespace hpp
 
 	    }
 	  }
-
-	  std::cout << std::endl;
-
-
 	}
 	else{
-	  hppDout (error, ":checkLinkCollision: wrong robot Id");
+	  hppDout (error, "wrong robot Id");
 	  return -1;
 	}
 
@@ -858,13 +848,13 @@ namespace hpp
 
 	// Check that polyhedron does not already exist.
 	if (polyhedronMap_.count(polyhedronName) != 0) {
-	  hppDout (error, ":createPolyhedron: polyhedron "	 << polyhedronName << " already exists.");
+	  hppDout (error, "polyhedron "	 << polyhedronName << " already exists.");
 	  return -1;
 	}
 	CkppKCDPolyhedronShPtr kppPolyhedron = CkppKCDPolyhedron::create(polyhedronName);
 
 	if (!kppPolyhedron) {
-	  hppDout (error, ":createPolyhedron: failed to create polyhedron "	 << polyhedronName);
+	  hppDout (error, "failed to create polyhedron "	 << polyhedronName);
 	  return -1;
 	}
 	polyhedronMap_[polyhedronName] = kppPolyhedron;
@@ -881,13 +871,13 @@ namespace hpp
 	std::string polyhedronName(inBoxName);
 	// Check that polyhedron does not already exist.
 	if (polyhedronMap_.count(polyhedronName) != 0) {
-	  hppDout (info, "ChppciObstacle_impl::createPolyhedron: polyhedron "	 << polyhedronName << " already exists.");
+	  hppDout (info, "polyhedron "	 << polyhedronName << " already exists.");
 	  return -1;
 	}
 	CkppKCDPolyhedronShPtr kppPolyhedron = CkppKCDBox::create(polyhedronName, x, y, z);
 
 	if (!kppPolyhedron) {
-	  hppDout (info, "ChppciObstacle_impl::createPolyhedron: failed to create polyhedron "	 << polyhedronName);
+	  hppDout (info, "failed to create polyhedron "	 << polyhedronName);
 	  return -1;
 	}
 	polyhedronMap_[polyhedronName] = kppPolyhedron;
@@ -906,7 +896,7 @@ namespace hpp
 
 	// Check that polyhedron exists.
 	if (polyhedronMap_.count(polyhedronName) != 1) {
-	  hppDout (error, ":addPoint: polyhedron " << polyhedronName	 << " does not exist.");
+	  hppDout (error, "polyhedron " << polyhedronName	 << " does not exist.");
 	  return -1;
 	}
 	CkppKCDPolyhedronShPtr kppPolyhedron = polyhedronMap_[polyhedronName];
@@ -926,7 +916,7 @@ namespace hpp
 
 	// Check that polyhedron exists.
 	if (polyhedronMap_.count(polyhedronName) != 1) {
-	  hppDout (error, ":addTriangle: polyhedron " << polyhedronName	 << " does not exist.");
+	  hppDout (error, "polyhedron " << polyhedronName	 << " does not exist.");
 	  return -1;
 	}
 	CkppKCDPolyhedronShPtr kppPolyhedron = polyhedronMap_[polyhedronName];
@@ -938,7 +928,7 @@ namespace hpp
 	    pt1 >= kppPolyhedron->countPoints() ||
 	    pt2 >= kppPolyhedron->countPoints() ||
 	    pt3 >= kppPolyhedron->countPoints()) {
-	  hppDout (error, ":addTriangle: wrong triangle");
+	  hppDout (error, "wrong triangle");
 	  return -1;
 	}
 
@@ -974,14 +964,15 @@ namespace hpp
 	    }
 	  }
 	  else {
-	    hppDout (error, ":setDofBounds: dofId=" << dofId
+	    hppDout (error,
+		     "dofId = " << dofId
 		     << "should be smaller than device dim="
 		     << deviceDim);
 	    return -1;
 	  }
 	}
 	else{
-	  hppDout (error, ":setDofBounds: wrong robot Id");
+	  hppDout (error, "wrong robot Id");
 	  return -1;
 	}
 	return 0;
@@ -1006,10 +997,12 @@ namespace hpp
 	  CkwsDevice::TDofVector dofList;
 	  hppRobot->getDofVector(dofList);
 
-	  if(dofId >= (unsigned short) dofList.size()){
-	    hppDout (error, ":setJointBound: joint Id " << dofId << " is larger than total size " << dofList.size());
-	    return -1;
-	  }
+	  if(dofId >= (unsigned short) dofList.size())
+	    {
+	      hppDout (error, "joint Id " << dofId
+		       << " is larger than total size " << dofList.size());
+	      return -1;
+	    }
 
 	  dofList[dofId]->isLocked(locked);
 
@@ -1017,7 +1010,7 @@ namespace hpp
 	    dofList[dofId]->lockedValue(lockedValue);
 	}
 	else {
-	  hppDout (error, "ChppciRobotConfig_impl::setJointBound: wrong robot Id");
+	  hppDout (error, "wrong robot Id");
 	  return -1;
 	}
 	return 0;
@@ -1041,7 +1034,7 @@ namespace hpp
 	  outDeviceDim = hppRobot->countDofs ();
 	}
 	else{
-	  hppDout (error, ":setCurrentConfig: wrong robot Id");
+	  hppDout (error, "wrong robot Id");
 	  return -1;
 	}
 	return 0;
@@ -1058,12 +1051,12 @@ namespace hpp
 
 	// Check that body of this name exits.
 	if (bodyMap_.count(bodyName) != 1) {
-	  hppDout (error, ":setBodyInnerObject: body "	 << bodyName << " does not exist.");
+	  hppDout (error, "body " << bodyName << " does not exist.");
 	  return -1;
 	}
 	// Check that polyhedron exists.
 	if (polyhedronMap_.count(polyhedronName) != 1) {
-	  hppDout (error, ":addPolyToCollList: polyhedron "	 << polyhedronName << " does not exist.");
+	  hppDout (error, "polyhedron "	 << polyhedronName << " does not exist.");
 	  return -1;
 	}
 

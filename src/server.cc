@@ -24,25 +24,24 @@
 #include "server-private.hh"
 
 
-
 //FIXME: remove me.
-#define HPPCI_CATCH(msg, ret)			\
-  catch(CORBA::SystemException&) {\
-    std::cerr << "hppCorbaServer: CORBA::SystemException: " << msg << std::endl;\
-    return ret;\
-  }\
-  catch(CORBA::Exception&) {\
-    std::cerr << "hppCorbaServer: CORBA::Exception: " << msg << std::endl;\
-    return ret;\
-  }\
-  catch(omniORB::fatalException& fe) {\
-    std::cerr << "hppCorbaServer: CORBA::fatalException: " << msg << std::endl;\
-    return ret;\
-  }\
-  catch(...) {\
-    std::cerr << "hppCorbaServer: unknown exception: " << msg << std::endl;\
-    return ret;\
-  }\
+#define HPPCI_CATCH(msg, ret)						\
+  catch(CORBA::SystemException&) {					\
+    hppDout (error, "hppCorbaServer: CORBA::SystemException: " << msg);	\
+    return ret;								\
+  }									\
+  catch(CORBA::Exception&) {						\
+    hppDout (error, "hppCorbaServer: CORBA::Exception: " << msg);	\
+    return ret;								\
+  }									\
+  catch(omniORB::fatalException& fe) {					\
+    hppDout (error, "hppCorbaServer: CORBA::fatalException: " << msg);	\
+    return ret;								\
+  }									\
+  catch(...) {								\
+    hppDout (error, "hppCorbaServer: unknown exception: " << msg);	\
+    return ret;								\
+  }
 
 namespace hpp
 {
@@ -326,7 +325,7 @@ namespace hpp
       try {
 	attPrivate->orb_ = ORB_init (argc, const_cast<char **> (argv)); //FIXME: handle this properly.
 	if (is_nil(attPrivate->orb_)) {
-	  std::cerr << "hppCorbaServer: failed to initialize ORB" << std::endl;
+	  hppDout (error, "failed to initialize ORB");
 	  return KD_ERROR;
 	}
       }
@@ -454,17 +453,18 @@ namespace hpp
 
 
     /// \brief If CORBA requests are pending, process them
-    int Server::processRequest(bool loop)
+    int Server::processRequest (bool loop)
     {
-      if (loop) {
-	// Enter in the Corba control loop. Never return.
-	std::cout << "Server::processRequest: attPrivate->orb->run();" << std::endl;
-	attPrivate->orb_->run();
-      } else {
-	if (attPrivate->orb_->work_pending()) {
-	  attPrivate->orb_->perform_work();
+      if (loop)
+	{
+	  hppDout (info, "start processing CORBA requests for ever.");
+	  attPrivate->orb_->run();
 	}
-      }
+      else
+	{
+	  if (attPrivate->orb_->work_pending())
+	    attPrivate->orb_->perform_work();
+	}
       return 0;
     }
 
