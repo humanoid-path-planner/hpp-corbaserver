@@ -1,5 +1,13 @@
 2010-03-19  Thomas Moulard  <thomas.moulard@gmail.com>
 
+	Add symbol visibility management and global header.
+	* include/Makefile.am: Distribute new header.
+	* include/hpp/corbaserver.hh: New.
+	* include/hpp/corbaserver/openhrp.hh.in,
+	* include/hpp/corbaserver/server.hh: Tag symbols as exportable.
+
+2010-03-19  Thomas Moulard  <thomas.moulard@gmail.com>
+
 	Use debugging tools.
 	* src/openhrp.cc,
 	* src/problem.impl.cc,

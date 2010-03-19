@@ -16,6 +16,7 @@
 # include <string>
 
 # include <hpp/corbaserver/fwd.hh>
+# include <hpp/corbaserver/config.hh>
 # include <hppCore/hppPlanner.h>
 # include <hppModel/hppHumanoidRobot.h>
 
@@ -26,7 +27,7 @@ namespace hpp
     namespace impl
     {
       /// \brief OpenHRP client to load HRP2 model.
-      class OpenHRP
+      class HPP_CORBASERVER_DLLAPI OpenHRP
       {
 	friend class InternalCorbaObject;
       public:

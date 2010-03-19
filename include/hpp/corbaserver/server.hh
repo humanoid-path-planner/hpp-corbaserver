@@ -11,6 +11,7 @@
 #ifndef HPP_CORBASERVER_SERVER_HH
 # define HPP_CORBASERVER_SERVER_HH
 # include <hpp/corbaserver/fwd.hh>
+# include <hpp/corbaserver/config.hh>
 # include <hppCore/hppPlanner.h>
 
 /**
@@ -62,7 +63,7 @@ namespace hpp
 {
   namespace corbaServer
   {
-    class Server
+    class HPP_CORBASERVER_DLLAPI Server
     {
     public:
       /**
