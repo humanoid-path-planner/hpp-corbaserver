@@ -1,3 +1,9 @@
+2010-03-30  Thomas Moulard  <thomas.moulard@gmail.com>
+
+	Remove error when initializing private server class.
+	* src/server-private.cc: Rebinding a CORBA object
+	is not an error.
+
 2010-03-19  Thomas Moulard  <thomas.moulard@gmail.com>
 
 	Fix idl directory.

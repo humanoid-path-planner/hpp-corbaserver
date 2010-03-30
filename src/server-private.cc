@@ -188,10 +188,10 @@ namespace hpp
 	  try {
 	    hppContext_->bind(objectName, objref);
 	  }
-	  catch(CosNaming::NamingContext::AlreadyBound& ex) {
-	    hppDout (error, "Warning naming context already bound");
-	    hppContext_->rebind(objectName, objref);
-	  }
+	  catch(CosNaming::NamingContext::AlreadyBound& ex)
+	    {
+	      hppContext_->rebind(objectName, objref);
+	    }
 	  // Note: Using rebind() will overwrite any Object previously bound
 	  //       to /hpp/RobotConfig with localObj.
 	  //       Alternatively, bind() can be used, which will raise a
