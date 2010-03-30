@@ -1,5 +1,10 @@
 2010-03-30  Thomas Moulard  <thomas.moulard@gmail.com>
 
+	Integrate CORBA logging mechanism into HPP.
+	* src/server.cc: Here.
+
+2010-03-30  Thomas Moulard  <thomas.moulard@gmail.com>
+
 	Remove error when initializing private server class.
 	* src/server-private.cc: Rebinding a CORBA object
 	is not an error.

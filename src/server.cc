@@ -54,9 +54,30 @@ namespace hpp
     using CORBA::PolicyList;
     using omniORB::fatalException;
 
+    namespace
+    {
+      /// \brief Forward logging messages to hpp logging mechanism.
+      /// If debug is disabled, CORBA logging will be disabled too.
+      ///
+      /// Tracing has to be enabled in your ``omniORB.cfg'' to use this
+      /// feature.
+      /// See ``omniORB configuration and API'' > ``Tracing options''
+      /// section of omniORB manual for more information.
+      void logFunction (const char* msg);
+
+      void logFunction (const char* msg)
+      {
+	hppDout (info, "omniORB: " << msg);
+      }
+    } // end of anonymous namespace.
+
+
     Server::Server(ChppPlanner *inHppPlanner, int argc, const char *argv[], bool inMultiThread) :
       hppPlanner(inHppPlanner)
     {
+      // Register log function.
+      omniORB::setLogFunction (&logFunction);
+
       attPrivate = new impl::Server;
 
       initORBandServers (argc, argv, inMultiThread);
