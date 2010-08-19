@@ -16,7 +16,7 @@
 #include <hpp/corbaserver/openhrp.hh>
 
 #include <hpp/util/debug.hh>
-#include <hppCore/hppColPair.h>
+#include <hpp/core/collision-pair.hh>
 #include <hppModel/hppBody.h>
 #include <hppModel/hppJoint.h>
 #include <hppModel/hppSpecificHumanoidRobot.h>

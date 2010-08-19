@@ -12,7 +12,7 @@
 # define HPP_CORBASERVER_SERVER_HH
 # include <hpp/corbaserver/fwd.hh>
 # include <hpp/corbaserver/config.hh>
-# include <hppCore/hppPlanner.h>
+# include <hpp/core/planner.hh>
 
 /**
 

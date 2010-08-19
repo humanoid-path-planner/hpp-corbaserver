@@ -14,7 +14,7 @@
 # include <string>
 # include <KineoKCDModel/kppKCDPolyhedron.h>
 
-# include "hppCore/hppPlanner.h"
+# include "hpp/core/planner.hh"
 # include "hppModel/hppBody.h"
 
 # include "hpp/corbaserver/fwd.hh"
