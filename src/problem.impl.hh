@@ -94,6 +94,10 @@ namespace hpp
 	virtual Short setObstacleTolerance
 	(UShort problemId, Double tolerance) throw (SystemException);
 
+	virtual Short parseFile
+	(const char* inFilename) throw (SystemException);
+
+
       private:
 	/// \brief Pointer to the ChppciServer owning this object
 	corbaServer::Server* server_;

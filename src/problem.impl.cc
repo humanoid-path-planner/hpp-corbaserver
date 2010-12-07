@@ -731,6 +731,17 @@ namespace hpp
 	  }
 	return 0;
       }
+      Short Problem::parseFile
+	(const char* inFilename) throw (SystemException)
+      {
+	if(!planner_)
+	  {
+	    hppDout (error, ":parseFile: no planner.");
+	    return -1;
+	  }
+	if (planner_->parseFile(inFilename) != KD_OK) return -1;
+	return 0;
+      }
     }
   }
 }

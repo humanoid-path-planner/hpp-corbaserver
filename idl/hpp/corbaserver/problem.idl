@@ -216,7 +216,12 @@ module hpp
 	\return 0 if success, -1 if failure.
     */
     short setObstacleTolerance(in unsigned short inProblemId, in double tolerance);
-  
+    /** \brief Load and parse a kxml file
+	\param filename file name.
+
+	Binds ChppPlanner::parseFile method.
+    */
+    short parseFile(in string inFilename);
   };
 };
 #endif
