@@ -143,13 +143,18 @@ AC_CONFIG_FILES([
   idl/Makefile
    idl/hpp/corbaserver/Makefile
   include/Makefile
-   include/hpp/corbaserver/openhrp.hh
   doc/Makefile
   src/Makefile
   tests/Makefile
    tests/atlocal
    tests/package.m4
 ])
+
+if test x$enable_openhrp = xtrue; then
+   AC_CONFIG_FILES([
+	include/hpp/corbaserver/openhrp.hh
+	])
+fi
 
 # Write files.
 AC_OUTPUT

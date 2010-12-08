@@ -34,11 +34,11 @@ namespace hpp
 	CORBA::ORB_var orb_;
 	PortableServer::POA_var poa_;
 
-	/// \brief Implementation of object ChppciRobot
+	/// \brief Implementation of object hpp::Robot
 	Robot* robotServant_;
-	/// \brief Implementation of object ChppciObstacle
+	/// \brief Implementation of object hpp::Obstacle
 	Obstacle* obstacleServant_;
-	/// \brief Implementation of object ChppciProblem.
+	/// \brief Implementation of object hpp::Problem.
 	Problem* problemServant_;
 
 	/// \brief It seems that we need to store this object to

@@ -41,7 +41,7 @@ namespace hpp
       static void setHRP2OuterLists(ChppHumanoidRobotShPtr i_hrp2);
 
       // Note : this class has been created because "common.hh" and "modelloader.hh"
-      // should not appear in hppciOpenHrp.h
+      // should not appear in openhrp.hh
       class InternalCorbaObject
       {
       public:

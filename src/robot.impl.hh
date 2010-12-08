@@ -71,7 +71,7 @@ namespace hpp
       };
 
 
-      /// \brief Implementation of corba interface ChppciRobot.
+      /// \brief Implementation of corba interface hpp::Robot.
       ///
       /// The construction of a 
       class Robot : public virtual POA_hpp::Robot
@@ -229,10 +229,10 @@ namespace hpp
 	/// \brief map of polyhedra in construction.
 	std::map<std::string, CkppKCDPolyhedronShPtr> polyhedronMap_;
 
-	/// \brief Pointer to the ChppciServer owning this object
+	/// \brief Pointer to the hpp::corbaServer::Server owning this object
 	corbaServer::Server* server_;
 
-	/// \brief Pointer to hppPlanner object of hppciServer.
+	/// \brief Pointer to hppPlanner object of hpp::corbaServer::Server.
 	///
 	/// Instantiated at construction.
 	ChppPlanner* planner_;

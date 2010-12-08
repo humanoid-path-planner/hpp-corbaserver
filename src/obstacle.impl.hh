@@ -93,10 +93,10 @@ namespace hpp
 	/// \brief map of polyhedra in construction.
 	std::map<std::string, CkppKCDPolyhedronShPtr> polyhedronMap;
 
-	/// \brief Pointer to the ChppciServer owning this object.
+	/// \brief Pointer to the hpp::corbaServer::Server owning this object.
 	corbaServer::Server* server_;
 
-	/// \brief Pointer to hppPlanner object of hppciServer.
+	/// \brief Pointer to hppPlanner object of hpp::corbaServer::Server.
 	ChppPlanner* planner_;
       };
 

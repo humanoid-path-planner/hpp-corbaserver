@@ -99,9 +99,9 @@ namespace hpp
 
 
       private:
-	/// \brief Pointer to the ChppciServer owning this object
+	/// \brief Pointer to the Server owning this object
 	corbaServer::Server* server_;
-	/// \brief Pointer to hppPlanner object of hppciServer.
+	/// \brief Pointer to hppPlanner object of hpp::corbaServer::Server.
 	/// Instantiated at construction.
 	ChppPlanner* planner_;
       };

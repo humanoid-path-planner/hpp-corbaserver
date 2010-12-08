@@ -527,7 +527,7 @@ namespace hpp
 	return setCurrentConfig(inProblemId, dofArrayKineo);
       }
 
-      /// \brief Comment in interface ChppciRobot::getCurrentConfig
+      /// \brief Comment in interface hpp::Robot::getCurrentConfig
       hpp::dofSeq* Robot::getCurrentConfigOpenHRP(UShort inProblemId)
 	throw (SystemException)
       {
@@ -549,7 +549,7 @@ namespace hpp
 
 #endif
 
-      /// \brief Comment in interface ChppciRobot::getCurrentConfig
+      /// \brief Comment in interface hpp::Robot::getCurrentConfig
       hpp::dofSeq* Robot::getCurrentConfig(UShort inProblemId)
 	throw (SystemException)
       {
@@ -867,7 +867,7 @@ namespace hpp
 			     Double z)
 	throw (SystemException)
       {
-	//  server_->waitForMutex(std::string("ChppciObstacle_impl::createBox"));
+	//  server_->waitForMutex(std::string("hpp::Obstacle_impl::createBox"));
 	std::string polyhedronName(inBoxName);
 	// Check that polyhedron does not already exist.
 	if (polyhedronMap_.count(polyhedronName) != 0) {

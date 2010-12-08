@@ -350,7 +350,7 @@ namespace hpp
 	  return KD_ERROR;
 	}
       }
-      HPPCI_CATCH("failed to initialize ORB", KD_ERROR) /* see hppciExceptionHandlingMacros.h */
+      HPPCI_CATCH("failed to initialize ORB", KD_ERROR)
 
 	/*
 	  ORB init
@@ -359,7 +359,7 @@ namespace hpp
 	try {
 	  obj = attPrivate->orb_->resolve_initial_references("RootPOA");
 	}
-      HPPCI_CATCH("failed to resolve initial references", KD_ERROR) /* see hppciExceptionHandlingMacros.h */
+      HPPCI_CATCH("failed to resolve initial references", KD_ERROR)
 
 	/*
 	  Create thread policy
@@ -379,7 +379,7 @@ namespace hpp
 	    threadPolicy = rootPoa->create_thread_policy(PortableServer::MAIN_THREAD_MODEL);
 	  }
 	}
-      HPPCI_CATCH("failed to create thread policy", KD_ERROR) /* see hppciExceptionHandlingMacros.h */
+      HPPCI_CATCH("failed to create thread policy", KD_ERROR)
 
 	/*
 	  Duplicate thread policy
@@ -394,7 +394,7 @@ namespace hpp
 						policyList);
 
 	}
-      HPPCI_CATCH("failed to duplicate thread policy", KD_ERROR) /* see hppciExceptionHandlingMacros.h */
+      HPPCI_CATCH("failed to duplicate thread policy", KD_ERROR)
 
 	/*
 	  Destroy thread policy
@@ -405,7 +405,7 @@ namespace hpp
 	  threadPolicy->destroy();
 
 	}
-      HPPCI_CATCH("failed to destroy thread policy", KD_ERROR); /* see hppciExceptionHandlingMacros.h */
+      HPPCI_CATCH("failed to destroy thread policy", KD_ERROR);
 
       return attPrivate->createAndActivateServers(this);
     }

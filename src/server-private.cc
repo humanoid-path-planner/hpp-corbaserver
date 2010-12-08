@@ -61,38 +61,38 @@ namespace hpp
       }
 
       ktStatus
-      Server::createAndActivateServers (corbaServer::Server* inHppciServer)
+      Server::createAndActivateServers (corbaServer::Server* inServer)
       {
 	try {
-	  robotServant_ = new Robot (inHppciServer);
+	  robotServant_ = new Robot (inServer);
 	}
-	HPPCI_CATCH("failed to create implementation of ChppciRobot", KD_ERROR) /* see hppciExceptionHandlingMacros.h */
+	HPPCI_CATCH("failed to create implementation of hpp::Robot", KD_ERROR)
 
 	  try {
-	    obstacleServant_ = new Obstacle (inHppciServer);
+	    obstacleServant_ = new Obstacle (inServer);
 	  }
-	HPPCI_CATCH("failed to create implementation of ChppciObstacle", KD_ERROR) /* see hppciExceptionHandlingMacros.h */
+	HPPCI_CATCH("failed to create implementation of hpp::Obstacle", KD_ERROR)
 
 	  try {
-	    problemServant_ = new Problem (inHppciServer);
+	    problemServant_ = new Problem (inServer);
 	  }
-	HPPCI_CATCH("failed to create implementation of ChppciProblem", KD_ERROR) /* see hppciExceptionHandlingMacros.h */
+	HPPCI_CATCH("failed to create implementation of hpp::Problem", KD_ERROR)
 
 	  try {
 
 	    robotServantid_ = poa_->activate_object(robotServant_);
 	  }
-	HPPCI_CATCH("failed to activate implementation of ChppciRobot", KD_ERROR) /* see hppciExceptionHandlingMacros.h */
+	HPPCI_CATCH("failed to activate implementation of hpp::Robot", KD_ERROR)
 
 	  try {
 	    obstacleServantid_ = poa_->activate_object(obstacleServant_);
 	  }
-	HPPCI_CATCH("failed to activate implementation of ChppciObstacle", KD_ERROR) /* see hppciExceptionHandlingMacros.h */
+	HPPCI_CATCH("failed to activate implementation of hpp::Obstacle", KD_ERROR)
 
 	  try {
 	    problemServantid_ = poa_->activate_object(problemServant_);
 	  }
-	HPPCI_CATCH("failed to activate implementation of ChppciProblem", KD_ERROR) /* see hppciExceptionHandlingMacros.h */
+	HPPCI_CATCH("failed to activate implementation of hpp::Problem", KD_ERROR)
 
 	  return KD_OK;
       }
