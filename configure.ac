@@ -6,7 +6,7 @@ AC_PREREQ([2.63])
 ## Package configuration ##
 ## --------------------- ##
 AC_INIT([hpp-corbaserver],
-        [m4_esyscmd(build-aux/git-version-gen .tarball-version)],
+        1.9,
 	[hpp@laas.fr],
 	[hpp-corbaserver])
 

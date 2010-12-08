@@ -1,3 +1,10 @@
+Release 1.9, 12/08/2010
+
+	* --with-openhrp configuration option has been replaced by
+	--enable-openhrp
+	* package has been cleaned-up to fit new HPP coding style.
+	* Problem interface has now a parseFile() method to load a kxml file.
+
 Release 1.8.0, 10/31/2009
 
 	* Autotools packaging has been cleaned up. Package pass distcheck.
