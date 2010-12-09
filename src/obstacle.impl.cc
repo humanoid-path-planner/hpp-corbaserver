@@ -170,7 +170,7 @@ namespace hpp
 
 	CkppKCDPolyhedronShPtr polyhedron =
 	  CkppKCDPolyhedron::create (polyhedronName);
-	if (polyhedron)
+	if (!polyhedron)
 	  {
 	    hppDout (error, "failed to create polyhedron " << polyhedronName);
 	    return -1;
