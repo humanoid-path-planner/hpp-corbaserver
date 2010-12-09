@@ -145,9 +145,6 @@ AC_CONFIG_FILES([
   include/Makefile
   doc/Makefile
   src/Makefile
-  tests/Makefile
-   tests/atlocal
-   tests/package.m4
 ])
 
 if test x$enable_openhrp = xtrue; then
