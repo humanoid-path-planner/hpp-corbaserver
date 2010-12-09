@@ -22,4 +22,3 @@ all:
 include $(top_srcdir)/build-aux/doc-recursive.mk
 include $(top_srcdir)/build-aux/libtool.mk
 include $(top_srcdir)/build-aux/pkg-config.mk
-include $(top_srcdir)/build-aux/git-version-gen.mk
