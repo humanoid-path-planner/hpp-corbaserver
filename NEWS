@@ -1,3 +1,7 @@
+Release 1.9.1, 12/09/2010
+
+	* correct a bug in polyhedron creation
+
 Release 1.9, 12/08/2010
 
 	* --with-openhrp configuration option has been replaced by
