@@ -23,7 +23,7 @@
 #include <hppOpenHRP/parserOpenHRPKineoDevice.h>
 #include <hppOpenHRP/parserOpenHRPKineoObstacle.h>
 
-#include <hrp2Dynamics/hrp2OptHumanoidDynamicRobot.h>
+#include <hrp2-dynamics/hrp2OptHumanoidDynamicRobot.h>
 
 #include <hrp2_14/hrp2_14.h>
 
