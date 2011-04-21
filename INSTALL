@@ -12,7 +12,7 @@ Configuration
   Configuration options
   ---------------------
 
-    --with-openhrp
+    --enable-openhrp
     implement a Corba Request to OpenHrp::Modelloader in order to load the 
     model of HRP2.
 
