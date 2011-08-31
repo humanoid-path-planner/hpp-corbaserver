@@ -33,16 +33,19 @@ if test "$GXX" = yes; then
 fi
 
 # Customize warnings.
-JRL_CXX_WARNINGS([[-Wall],
-                   [-Wcast-align],
-                   [-Wcast-qual],
-                   [-Wformat],
-                   [-Wmissing-prototypes],
-                   [-Wstrict-prototypes],
-                   [-Wwrite-strings],
-                   [-Wbad-function-cast],
-                   [-Wmissing-declarations],
-                   [-Wnested-externs]])
+if  test "$GXX" = yes; then
+  CXXFLAGS="$CXXFLAGS"
+  CXXFLAGS="$CXXFLAGS -Wall"
+  CXXFLAGS="$CXXFLAGS -Wcast-align"
+  CXXFLAGS="$CXXFLAGS -Wcast-qual"
+  CXXFLAGS="$CXXFLAGS -Wformat"
+  CXXFLAGS="$CXXFLAGS -Wmissing-prototypes"
+  CXXFLAGS="$CXXFLAGS -Wstrict-prototypes"
+  CXXFLAGS="$CXXFLAGS -Wwrite-strings"
+  CXXFLAGS="$CXXFLAGS -Wbad-function-cast"
+  CXXFLAGS="$CXXFLAGS -Wmissing-declarations"
+  CXXFLAGS="$CXXFLAGS -Wnested-externs"
+fi
 
 # Macros are stored in build-aux.
 AC_CONFIG_MACRO_DIR([build-aux])
@@ -100,7 +103,7 @@ if test x$enable_openhrp = xtrue; then
    AC_SUBST([MODELLOADERJRL_IDL],
             [`$PKG_CONFIG jrl-modelloader --variable=idldir`])
    JRL_PKGCONFIGCHECK_ADDDEP([HRP2DYNAMICS], [hrp2-dynamics >= 1.5])
-   JRL_PKGCONFIGCHECK_ADDDEP([HRP2_14], [hrp2_14 >= 1.7.3])
+   JRL_PKGCONFIGCHECK_ADDDEP([HRP2_14], [hrp2-14 >= 1.7.3])
    JRL_PKGCONFIGCHECK_ADDDEP([ROBOTBUILDER], [robotbuilder >= 1.0.7])
 fi
 
