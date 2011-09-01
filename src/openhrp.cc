@@ -25,7 +25,7 @@
 
 #include <hrp2-dynamics/hrp2OptHumanoidDynamicRobot.h>
 
-#include <hrp2_14/hrp2_14.h>
+#include <hrp2-14/hrp2_14.h>
 
 // CORBA stubs.
 #include "common-modelloader.hh"
