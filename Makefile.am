@@ -7,7 +7,8 @@ SUBDIRS = 		\
 	idl		\
 	include		\
 	src		\
-	doc
+	doc		\
+	tests
 
 # Provide bootstrap with the generated package.
 EXTRA_DIST +=	bootstrap			\

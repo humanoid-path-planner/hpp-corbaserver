@@ -22,6 +22,7 @@ int run_test ();
 int run_test ()
 {
   std::cout << "Running simple-test" << std::endl;
+  return 0;
 }
 
 GENERATE_TEST ()

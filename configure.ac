@@ -144,10 +144,13 @@ AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([
   Makefile
   idl/Makefile
-   idl/hpp/corbaserver/Makefile
+  idl/hpp/corbaserver/Makefile
   include/Makefile
   doc/Makefile
   src/Makefile
+  tests/Makefile
+  tests/atlocal
+  tests/package.m4
 ])
 
 if test x$enable_openhrp = xtrue; then

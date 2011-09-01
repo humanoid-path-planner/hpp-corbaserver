@@ -87,3 +87,4 @@ bin_PROGRAMS = hpp-corbaserver
 hpp_corbaserver_SOURCES = hpp-corbaserver.cc
 hpp_corbaserver_LDADD = libhpp-corbaserver.la
 BUILT_SOURCES += hpp-corbaserver.kab
+CLEANFILES += hpp-corbaserver.kab
