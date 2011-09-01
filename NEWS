@@ -1,3 +1,8 @@
+Release 1.11, 09/01/2011
+
+	* Adapt to hrp2 package new name.
+	* Autotools packaging has been cleaned up. Package passes distcheck.
+
 Release 1.9.1, 12/09/2010
 
 	* correct a bug in polyhedron creation
