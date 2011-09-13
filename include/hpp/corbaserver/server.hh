@@ -65,7 +65,7 @@ namespace hpp
 	 \note If multi-thread policy is not selected, request hpp::Problem::interruptPathPlanning
 	 will have no effect.
       */
-      Server (ChppPlanner* inHppPlanner, int argc, const char* argv[], bool multiThread = false);
+      Server (core::Planner* inHppPlanner, int argc, const char* argv[], bool multiThread = false);
 
       /// \brief Shutdown CORBA server
       ~Server ();
@@ -78,8 +78,8 @@ namespace hpp
       /// \param loop if true, the function never returns; if false, the function processes pending requests and returns.
       int processRequest (bool loop);
 
-      const ChppPlanner* planner () const;
-      ChppPlanner* planner ();
+      const core::Planner* planner () const;
+      core::Planner* planner ();
 
       /**
 	 \name Steering method management
@@ -362,7 +362,7 @@ namespace hpp
       /// processed by this object. Notice that this pointer is passed
       /// to each constructor of implementation classes of the server
       /// Corba interface.
-      ChppPlanner* hppPlanner;
+      core::Planner* hppPlanner;
     };
 
   } // end of namespace corbaServer.

@@ -44,7 +44,7 @@ namespace hpp
       {
 	static ktStatus
 	attachSolidComponentsToJoint(const CkppJointComponentShPtr& inKppJoint,
-				     const ChppBodyShPtr& inHppBody)
+				     const model::BodyShPtr& inHppBody)
 	{
 	  std::vector<CkcdObjectShPtr> innerObjectVector;
 	  inHppBody->innerObjects(innerObjectVector);
@@ -606,7 +606,7 @@ namespace hpp
 	}
 	CkppJointComponentShPtr kppJoint = jointMap_[jointName];
 	CkwsJointShPtr kwsJoint = KIT_DYNAMIC_PTR_CAST(CkwsJoint, kppJoint);
-	ChppBodyShPtr hppBody = bodyMap_[bodyName];
+	model::BodyShPtr hppBody = bodyMap_[bodyName];
 
 	if (kwsJoint->setAttachedBody(hppBody) != KD_OK) {
 	  hppDout (error, "failed to attach body "	 << bodyName << " to joint " << jointName);
@@ -629,7 +629,7 @@ namespace hpp
 	  hppDout (error, "body " << bodyName 	 << " already exists.");
 	  return -1;
 	}
-	ChppBodyShPtr hppBody = ChppBody::create(bodyName);
+	model::BodyShPtr hppBody = model::Body::create(bodyName);
 
 	if (!hppBody) {
 	  hppDout (error, "failed to create body "	 << bodyName << ".");
@@ -781,7 +781,7 @@ namespace hpp
 	  CkwsDevice::TJointVector jointList;
 	  hppRobot->getJointVector(jointList);
 	  // get object
-	  ChppBodyShPtr hppBody = KIT_DYNAMIC_PTR_CAST(ChppBody, jointList[hppJointId]->attachedBody());
+	  model::BodyShPtr hppBody = KIT_DYNAMIC_PTR_CAST(model::Body, jointList[hppJointId]->attachedBody());
 
 	  // get result
 	  {
@@ -795,7 +795,7 @@ namespace hpp
 
 	  for(unsigned int i=0; i<jointList.size(); i++){
 
-	    ChppBodyShPtr hppBody = KIT_DYNAMIC_PTR_CAST(ChppBody, jointList[i]->attachedBody());
+	    model::BodyShPtr hppBody = KIT_DYNAMIC_PTR_CAST(model::Body, jointList[i]->attachedBody());
 
 	    CkitMat4 mat = hppBody->absolutePosition();
 	    CkitMat4 matJoint = jointList[i]->currentPosition();
@@ -1060,7 +1060,7 @@ namespace hpp
 	  return -1;
 	}
 
-	ChppBodyShPtr hppBody = bodyMap_[bodyName];
+	model::BodyShPtr hppBody = bodyMap_[bodyName];
 	CkppKCDPolyhedronShPtr kppPolyhedron = polyhedronMap_[polyhedronName];
 
 	// Set polyhedron in given configuration.

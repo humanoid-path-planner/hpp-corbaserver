@@ -72,7 +72,7 @@ namespace hpp
     } // end of anonymous namespace.
 
 
-    Server::Server(ChppPlanner *inHppPlanner, int argc, const char *argv[], bool inMultiThread) :
+    Server::Server(core::Planner *inHppPlanner, int argc, const char *argv[], bool inMultiThread) :
       hppPlanner(inHppPlanner)
     {
       // Register log function.
@@ -460,12 +460,12 @@ namespace hpp
       return KD_OK;
     }
 
-    const ChppPlanner* Server::planner() const
+    const core::Planner* Server::planner() const
     {
       return hppPlanner;
     }
 
-    ChppPlanner* Server::planner()
+    core::Planner* Server::planner()
     {
       return hppPlanner;
     }

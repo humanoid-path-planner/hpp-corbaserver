@@ -15,7 +15,7 @@
 # include <KineoKCDModel/kppKCDPolyhedron.h>
 
 # include "hpp/core/planner.hh"
-# include "hppModel/hppBody.h"
+# include "hpp/model/body.hh"
 
 # include "hpp/corbaserver/fwd.hh"
 
@@ -225,7 +225,7 @@ namespace hpp
 	/// \brief map of joints in construction.
 	std::map<std::string, CkppJointComponentShPtr> jointMap_;
 	/// \brief map of bodies in construction.
-	std::map<std::string, ChppBodyShPtr> bodyMap_;
+	std::map<std::string, model::BodyShPtr> bodyMap_;
 	/// \brief map of polyhedra in construction.
 	std::map<std::string, CkppKCDPolyhedronShPtr> polyhedronMap_;
 
@@ -235,7 +235,7 @@ namespace hpp
 	/// \brief Pointer to hppPlanner object of hpp::corbaServer::Server.
 	///
 	/// Instantiated at construction.
-	ChppPlanner* planner_;
+	core::Planner* planner_;
       };
     } // end of namespace impl.
   } // end of namespace corbaServer.

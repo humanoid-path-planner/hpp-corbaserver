@@ -23,7 +23,7 @@ main (int argc, const char* argv[])
   if (!CkppLicense::initialize ())
     hppDoutFatal (error, "failed to get a Kineo license");
 
-  ChppPlanner* hppPlanner = new ChppPlanner;
+  hpp::core::Planner* hppPlanner = new hpp::core::Planner;
   Server server (hppPlanner, argc, argv, true);
 
   if (server.startCorbaServer () < 0)

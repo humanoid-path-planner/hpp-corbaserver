@@ -33,10 +33,10 @@ namespace hpp
       namespace
       {
 	static bool
-	checkProblemId (const ChppPlanner& planner, unsigned id);
+	checkProblemId (const core::Planner& planner, unsigned id);
 
 	static bool
-	checkProblemId (const ChppPlanner& planner, unsigned id)
+	checkProblemId (const core::Planner& planner, unsigned id)
 	{
 	  if (id >= planner.getNbHppProblems ())
 	    {

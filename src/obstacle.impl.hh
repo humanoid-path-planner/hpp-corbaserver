@@ -97,7 +97,7 @@ namespace hpp
 	corbaServer::Server* server_;
 
 	/// \brief Pointer to hppPlanner object of hpp::corbaServer::Server.
-	ChppPlanner* planner_;
+	core::Planner* planner_;
       };
 
     } // end of namespace implementation.
