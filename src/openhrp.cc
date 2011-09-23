@@ -17,9 +17,9 @@
 
 #include <hpp/util/debug.hh>
 #include <hpp/core/collision-pair.hh>
-#include <hppModel/hppBody.h>
-#include <hppModel/hppJoint.h>
-#include <hppModel/hppSpecificHumanoidRobot.h>
+#include <hpp/model/body.hh>
+#include <hpp/model/joint.hh>
+#include <hpp/model/specific-humanoid-robot.hh>
 #include <hppOpenHRP/parserOpenHRPKineoDevice.h>
 #include <hppOpenHRP/parserOpenHRPKineoObstacle.h>
 
@@ -38,7 +38,7 @@ namespace hpp
     namespace impl
     {
       static void makeColPair(ChppColPair &cp);
-      static void setHRP2OuterLists(ChppHumanoidRobotShPtr i_hrp2);
+      static void setHRP2OuterLists(model::HumanoidRobotShPtr i_hrp2);
 
       // Note : this class has been created because "common.hh" and "modelloader.hh"
       // should not appear in openhrp.hh
@@ -72,7 +72,7 @@ namespace hpp
 
 
 
-      OpenHRP::OpenHRP (ChppPlanner *hpp)
+      OpenHRP::OpenHRP (core::Planner *hpp)
       {
 	hppPlanner = hpp;
 	privateCorbaObject = new InternalCorbaObject(this) ;
@@ -332,7 +332,7 @@ namespace hpp
 	}
       }
 
-      void setHRP2OuterLists (ChppHumanoidRobotShPtr i_hrp2)
+      void setHRP2OuterLists (model::HumanoidRobotShPtr i_hrp2)
       {
 	ChppColPair hrpCP;
 	makeColPair (hrpCP);
@@ -343,14 +343,15 @@ namespace hpp
 	// adding outer objects
 	for(unsigned int iJoint = 0; iJoint < jv.size (); ++iJoint)
 	  {
-	    ChppBodyShPtr hppBody;
-	    hppBody = KIT_DYNAMIC_PTR_CAST(ChppBody, jv[iJoint]->attachedBody());
+	    model::BodyShPtr hppBody;
+	    hppBody = KIT_DYNAMIC_PTR_CAST(model::Body, jv[iJoint]->attachedBody());
 
 	    std::vector<CkcdObjectShPtr> mergedList;
 
 	    for (unsigned int jJoint=0; jJoint < jv.size (); ++jJoint)
 	      {
-		ChppBodyShPtr hppOtherBody = KIT_DYNAMIC_PTR_CAST(ChppBody, jv[jJoint]->attachedBody());
+		model::BodyShPtr hppOtherBody =
+		  KIT_DYNAMIC_PTR_CAST(model::Body, jv[jJoint]->attachedBody());
 
 		if (jJoint != iJoint && hrpCP.existPairNarrow(iJoint, jJoint) )
 		  {
@@ -376,7 +377,7 @@ namespace hpp
       OpenHRP::loadHrp2Model (double inPenetration,
 			      const std::string& inModel)
       {
-	ChppHumanoidRobotShPtr HRP2Device;
+	model::HumanoidRobotShPtr HRP2Device;
 	if (loadHrp2Model(HRP2Device, inModel) != KD_OK){
 	  return KD_ERROR;
 	}
@@ -395,9 +396,9 @@ namespace hpp
 
       ktStatus
       OpenHRP::loadHrp2Model
-      (ChppHumanoidRobotShPtr& HRP2Device, const std::string& inModel)
+      (model::HumanoidRobotShPtr& HRP2Device, const std::string& inModel)
       {
-	ChppHumanoidRobotShPtr humanoid;
+	model::HumanoidRobotShPtr humanoid;
 	Robotbuilder::Robotbuilder robotBuilder;
 	humanoid = robotBuilder.makeRobot();
 	Chrp2OptHumanoidDynamicRobot *hrp2;
@@ -435,7 +436,7 @@ namespace hpp
       ktStatus
       OpenHRP::loadRobotModel(const std::string& inFilename,
 			      const std::string& inDeviceName,
-			      ChppDeviceShPtr &outDevice,
+			      model::DeviceShPtr &outDevice,
 			      const std::string& inDirectory)
       {
 	ModelLoader_var loader;
@@ -458,7 +459,7 @@ namespace hpp
 	try
 	  {
 	    CparserOpenHRPKineoDevice parser(privateCorbaObject->attLoader->loadURL(url.c_str())) ;
-	    ChppHumanoidRobotShPtr humanoid;
+	    model::HumanoidRobotShPtr humanoid;
 	    parser.parser(humanoid) ;
 	    outDevice = humanoid;
 	  }

@@ -21,8 +21,8 @@ namespace hpp
     /** \brief Implementation of Hpp module Corba server.
      *
      This class initializes the Corba server and starts the following Corba interface implementations.
-     \li hpp::Robot: to build a ChppDevice and to insert it in a ChppPlanner object,
-     \li hpp::Obstacle: to build obstacles and insert them in a ChppPlanner object,
+     \li hpp::Robot: to build a model::Device and to insert it in a core::Planner object,
+     \li hpp::Obstacle: to build obstacles and insert them in a core::Planner object,
      \li hpp::Problem: to define a path planning problem and solve it.
 
      To use this object, call the constructor
@@ -30,8 +30,8 @@ namespace hpp
      \code
      int argc=1;
      char *argv[1] = {"program"};
-     ChppPlanner* hppPlanner = new ChppPlanner;
-     hpp::corbaServer::Server server(ChppPlanner* hppPlanner, argc, argv, isMultiThread);
+     core::Planner* hppPlanner = new core::Planner;
+     Server server(core::Planner* hppPlanner, argc, argv, isMultiThread);
      \endcode
      where \c isMultiThread specifies whether the server should process
      requests using multi-thread policy of not.
@@ -62,7 +62,7 @@ namespace hpp
 	 \note It is highly recommended not to enable multi-thread policy in CORBA request processing when using
 	 hppCorbaServer with KPP interface, since OpenGL is not compatible with multi-threading.
 
-	 \note If multi-thread policy is not selected, request hpp::Problem::interruptPathPlanning
+	 \note If multi-thread policy is not selected, request Problem::interruptPathPlanning
 	 will have no effect.
       */
       Server (core::Planner* inHppPlanner, int argc, const char* argv[], bool multiThread = false);
@@ -355,9 +355,9 @@ namespace hpp
 
       impl::Server* attPrivate;
 
-      /// \brief pointer to ChppPlanner Object.
+      /// \brief pointer to core::Planner Object.
       ///
-      /// At initialization, the constructor creates a ChppPlanner
+      /// At initialization, the constructor creates a core::Planner
       /// object and keeps a pointer to it. All Corba requests are
       /// processed by this object. Notice that this pointer is passed
       /// to each constructor of implementation classes of the server

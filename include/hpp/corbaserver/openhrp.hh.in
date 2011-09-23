@@ -17,8 +17,8 @@
 
 # include <hpp/corbaserver/fwd.hh>
 # include <hpp/corbaserver/config.hh>
-# include <hppCore/hppPlanner.h>
-# include <hppModel/hppHumanoidRobot.h>
+# include <hpp/core/planner.hh>
+# include <hpp/model/humanoid-robot.hh>
 
 namespace hpp
 {
@@ -31,7 +31,7 @@ namespace hpp
       {
 	friend class InternalCorbaObject;
       public:
-	explicit OpenHRP(ChppPlanner* hpp);
+	explicit OpenHRP(core::Planner* hpp);
 
 	/// \brief Destroy joint absolute position matrices in associative array.
 	~OpenHRP ();
@@ -43,7 +43,7 @@ namespace hpp
 	///
 	/// This function an instance of HRP2 by calling Robotbuilder::makeRobot()
 	/// and initializes a ChppProblem with this robot by calling
-	/// ChppPlanner::addHppProblem(CkppDeviceComponentShPtr robot).
+	/// core::Planner::addHppProblem(CkppDeviceComponentShPtr robot).
 	/// Note that the robot is set into half-sitting configuration.
 	ktStatus loadHrp2Model
 	(double inPenetration, const std::string& inModel =
@@ -57,7 +57,7 @@ namespace hpp
 	///
 	/// Note that the robot is set into half-sitting configuration.
 	ktStatus loadHrp2Model
-	(ChppHumanoidRobotShPtr &outDevice,
+	(model::HumanoidRobotShPtr &outDevice,
 	 const std::string& inModel =
 	 std::string("@OPENHRP_PREFIX@/Controller/IOserver/robot/HRP2JRL/model/HRP2JRLmain.wrl"));
 
@@ -72,7 +72,7 @@ namespace hpp
 	ktStatus
 	loadRobotModel (const std::string& inFilename,
 			const std::string& inDeviceName,
-			ChppDeviceShPtr& outDevice,
+			model::DeviceShPtr& outDevice,
 			const std::string& inDirectory=
 			std::string("@OPENHRP_PREFIX@")+std::string("/etc"));
 
@@ -92,7 +92,7 @@ namespace hpp
 			   std::string("@OPENHRP_PREFIX@")+std::string("/etc/"));
 
 	/// \brief return the pointer to planner.
-	ChppPlanner* planner ()
+	core::Planner* planner ()
 	{
 	  return hppPlanner;
 	}
@@ -108,7 +108,7 @@ namespace hpp
 	ktStatus getObstacleURL (const std::string& inFilename);
 
 	/// \brief Pointer to Path Planner object allocated elsewhere.
-	ChppPlanner* hppPlanner;
+	core::Planner* hppPlanner;
 
 	InternalCorbaObject* privateCorbaObject ;
       };

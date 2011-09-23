@@ -646,7 +646,7 @@ namespace hpp
 	std::string bodyName(inBodyName);
 
 	hpp::nameSeq *innerObjectSeq = NULL;
-	// Find the body corresponding to the name in ChppPlanner object.
+	// Find the body corresponding to the name in core::Planner object.
 	CkwsKCDBodyConstShPtr kcdBody = planner_->findBodyByJointName(bodyName);;
 
 	if (kcdBody) {
@@ -686,7 +686,7 @@ namespace hpp
 	std::string bodyName(inBodyName);
 
 	hpp::nameSeq *outerObjectSeq = NULL;
-	// Find the body corresponding to the name in ChppPlanner object.
+	// Find the body corresponding to the name in core::Planner object.
 	CkwsKCDBodyConstShPtr kcdBody = planner_->findBodyByJointName(bodyName);
 
 	if (kcdBody) {

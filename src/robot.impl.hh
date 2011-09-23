@@ -29,7 +29,7 @@ namespace hpp
     {
 
       /**
-	 Robots and obstacles are stored in object ChppPlanner.
+	 Robots and obstacles are stored in object core::Planner.
 
 	 The kinematic part of a robot is stored in a
 	 CkppDeviceComponent object (see KineoWorks documentation).
