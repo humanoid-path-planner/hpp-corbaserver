@@ -6,7 +6,7 @@ AC_PREREQ([2.63])
 ## Package configuration ##
 ## --------------------- ##
 AC_INIT([hpp-corbaserver],
-        [1.11],
+        [1.12],
 	[hpp@laas.fr],
 	[hpp-corbaserver])
 
@@ -83,8 +83,8 @@ JRL_PROG_DOXYGEN
 LT_INIT
 
 # Search for pkg-config dependencies.
-JRL_PKGCONFIGCHECK_ADDDEP([HPPCORE], [hpp-core >= 1.11])
-JRL_PKGCONFIGCHECK_ADDDEP([HPP_UTIL], [hpp-util])
+JRL_PKGCONFIGCHECK_ADDDEP([HPPCORE], [hpp-core >= 1.15])
+JRL_PKGCONFIGCHECK_ADDDEP([HPP_UTIL], [hpp-util >= 0.4])
 JRL_PKGCONFIGCHECK([KWSPLUS], [kwsPlus >= 1.8])
 JRL_PKGCONFIGCHECK_ADDDEP([OMNIORB4], [omniORB4])
 
@@ -96,15 +96,15 @@ AC_SUBST([KINEO_ADDON_BUILDER],
 
 # Additional dependencies when OpenHRP is enabled.
 if test x$enable_openhrp = xtrue; then
-   JRL_PKGCONFIGCHECK_ADDDEP([HPPOPENHRP], [hppOpenHRP >= 1.6.2])
+   JRL_PKGCONFIGCHECK_ADDDEP([HPPOPENHRP], [hppOpenHRP >= 1.9])
    AC_SUBST([OPENHRP_PREFIX],
             [`$PKG_CONFIG hppOpenHRP --variable=OpenHRP_prefix`])
    JRL_PKGCONFIGCHECK_ADDDEP([JRLMODELLOADER], [jrl-modelloader >= 1.4])
    AC_SUBST([MODELLOADERJRL_IDL],
             [`$PKG_CONFIG jrl-modelloader --variable=idldir`])
    JRL_PKGCONFIGCHECK_ADDDEP([HRP2DYNAMICS], [hrp2-dynamics >= 1.5])
-   JRL_PKGCONFIGCHECK_ADDDEP([HRP2_14], [hrp2-14 >= 1.7.3])
-   JRL_PKGCONFIGCHECK_ADDDEP([ROBOTBUILDER], [robotbuilder >= 1.0.7])
+   JRL_PKGCONFIGCHECK_ADDDEP([HRP2_14], [hrp2-14 >= 1.8])
+   JRL_PKGCONFIGCHECK_ADDDEP([ROBOTBUILDER], [robotbuilder >= 1.2])
 fi
 
 
