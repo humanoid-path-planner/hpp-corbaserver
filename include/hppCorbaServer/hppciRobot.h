@@ -29,7 +29,7 @@ namespace hpp
     {
 
       /**
-	 Robots and obstacles are stored in object core::Planner.
+	 ChppciRobot_impls and obstacles are stored in object core::Planner.
 
 	 The kinematic part of a robot is stored in a
 	 CkppDeviceComponent object (see KineoWorks documentation).
@@ -71,23 +71,23 @@ namespace hpp
       };
 
 
-      /// \brief Implementation of corba interface hpp::Robot.
+      /// \brief Implementation of corba interface hpp::ChppciRobot_impl.
       ///
       /// The construction of a 
-      class Robot : public virtual POA_hpp::Robot
+      class ChppciRobot_impl : public virtual POA_hpp::ChppciRobot_impl
       {
       public:
-	Robot (corbaServer::Server* server);
+	ChppciRobot_impl (corbaServer::Server* server);
       
 	virtual Short
-	createRobot (const char* robotName) throw (SystemException);
+	createChppciRobot_impl (const char* robotName) throw (SystemException);
 
 	virtual Short
 	addHppProblem(const char* robotName, double penetration)
 	  throw (SystemException);
 
 	virtual Short 
-	setRobotRootJoint(const char* robotName, const char* jointName)
+	setChppciRobot_implRootJoint(const char* robotName, const char* jointName)
 	  throw (SystemException);
 
 	// FIXME: OpenHRP only.
@@ -99,7 +99,7 @@ namespace hpp
 	  throw (SystemException);
 
 	virtual Short
-	addExtraDofToRobot
+	addExtraDofToChppciRobot_impl
 	(const char* robotName, const char* dofName) throw (SystemException);
       
 	virtual Short

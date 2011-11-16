@@ -16,7 +16,7 @@
 
 namespace hpp
 {
-  namespace corbaServer
+  namespace corbaChppciServer
   {
     /** \brief Implementation of Hpp module Corba server.
      *
@@ -31,14 +31,14 @@ namespace hpp
      int argc=1;
      char *argv[1] = {"program"};
      core::Planner* hppPlanner = new core::Planner;
-     Server server(core::Planner* hppPlanner, argc, argv, isMultiThread);
+     ChppciServer server(core::Planner* hppPlanner, argc, argv, isMultiThread);
      \endcode
      where \c isMultiThread specifies whether the server should process
      requests using multi-thread policy of not.
 
      After starting a name server and configuring your Corba implementation, start the servers.
      \code
-     server.startCorbaServer();
+     server.startCorbaChppciServer();
      \endcode
      Then, enter in the loop that handle the Corba requests
      \code
@@ -47,7 +47,7 @@ namespace hpp
      You can then send request to the servers.
     */
 
-    class HPP_CORBASERVER_DLLAPI Server
+    class HPP_CORBASERVER_DLLAPI ChppciServer
     {
     public:
       /**
@@ -60,19 +60,19 @@ namespace hpp
 	 variables and to set argc to 1 and argv to any string.
 
 	 \note It is highly recommended not to enable multi-thread policy in CORBA request processing when using
-	 hppCorbaServer with KPP interface, since OpenGL is not compatible with multi-threading.
+	 hppCorbaChppciServer with KPP interface, since OpenGL is not compatible with multi-threading.
 
 	 \note If multi-thread policy is not selected, request Problem::interruptPathPlanning
 	 will have no effect.
       */
-      Server (core::Planner* inHppPlanner, int argc, const char* argv[], bool multiThread = false);
+      ChppciServer (core::Planner* inHppPlanner, int argc, const char* argv[], bool multiThread = false);
 
       /// \brief Shutdown CORBA server
-      ~Server ();
+      ~ChppciServer ();
 
       /// \brief Initialize CORBA server to process requests from clients to hpp module
       /// \return 0 if success, -1 if failure.
-      int startCorbaServer ();
+      int startCorbaChppciServer ();
 
       /// \brief If ORB work is pending, process it
       /// \param loop if true, the function never returns; if false, the function processes pending requests and returns.
@@ -211,7 +211,7 @@ namespace hpp
 	 \param argc, argv parameter to feed ORB initialization.
 	 \param inMultiThread whether the server may process request using multithred policy.
       */
-      ktStatus initORBandServers (int argc, const char* argv[], bool inMultiThread);
+      ktStatus initORBandChppciServers (int argc, const char* argv[], bool inMultiThread);
 
       /**
 	 @}
@@ -353,7 +353,7 @@ namespace hpp
 	 @}
       */
 
-      impl::Server* attPrivate;
+      impl::ChppciServer* attPrivate;
 
       /// \brief pointer to core::Planner Object.
       ///
@@ -365,6 +365,6 @@ namespace hpp
       core::Planner* hppPlanner;
     };
 
-  } // end of namespace corbaServer.
+  } // end of namespace corbaChppciServer.
 } // end of namespace hpp.
 #endif

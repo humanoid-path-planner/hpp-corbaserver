@@ -90,26 +90,26 @@ namespace hpp
       } // end of namespace.
 
 
-      Robot::Robot(corbaServer::Server* server) :
+      ChppciRobot_impl::ChppciRobot_impl(corbaServer::Server* server) :
 	server_(server), planner_(server->planner())
       {
       }
 
 
 
-      Short Robot::createRobot(const char* inRobotName)
+      Short ChppciRobot_impl::createChppciRobot_impl(const char* inChppciRobot_implName)
 	throw (SystemException)
       {
-	std::string robotName(inRobotName);
+	std::string robotName(inChppciRobot_implName);
 	// Check that no robot of this name already exists.
 	if (robotMap_.count(robotName) != 0) {
-	  hppDout (error, ":createRobot: robot " << robotName << " already exists.");
+	  hppDout (error, ":createChppciRobot_impl: robot " << robotName << " already exists.");
 	  return -1;
 	}
 	// Try to create a robot.
 	CkppDeviceComponentShPtr hppDevice=CkppDeviceComponent::create(robotName);
 	if (!hppDevice) {
-	  hppDout (error, ":createRobot: failed to create a robot.");
+	  hppDout (error, ":createChppciRobot_impl: failed to create a robot.");
 	  return -1;
 	}
 	// Store robot in map.
@@ -117,10 +117,10 @@ namespace hpp
 	return 0;
       }
 
-      Short Robot::addHppProblem(const char* inRobotName, double inPenetration)
+      Short ChppciRobot_impl::addHppProblem(const char* inChppciRobot_implName, double inPenetration)
 	throw (SystemException)
       {
-	std::string robotName(inRobotName);
+	std::string robotName(inChppciRobot_implName);
 	// Check that robot of this name exists.
 	if (robotMap_.count(robotName) != 1) {
 	  hppDout (error, ":addHppProblem: robot " << robotName << " does not exist.");
@@ -133,28 +133,28 @@ namespace hpp
 	return 0;
       }
 
-      Short Robot::setRobotRootJoint(const char* inRobotName,
+      Short ChppciRobot_impl::setChppciRobot_implRootJoint(const char* inChppciRobot_implName,
 				     const char* inJointName)
 	throw (SystemException)
       {
-	std::string robotName(inRobotName);
+	std::string robotName(inChppciRobot_implName);
 	std::string jointName(inJointName);
 
 	// Check that robot of this name exists.
 	if (robotMap_.count(robotName) != 1) {
-	  hppDout (error, ":setRobotRootJoint: robot " << robotName << " does not exist.");
+	  hppDout (error, ":setChppciRobot_implRootJoint: robot " << robotName << " does not exist.");
 	  return -1;
 	}
 	// Check that joint of this name exists.
 	if (jointMap_.count(jointName) != 1) {
-	  hppDout (error, ":setRobotRootJoint: joint " << jointName << " does not exist.");
+	  hppDout (error, ":setChppciRobot_implRootJoint: joint " << jointName << " does not exist.");
 	  return -1;
 	}
 	CkppDeviceComponentShPtr hppDevice = robotMap_[robotName];
 	CkppJointComponentShPtr kppJoint = jointMap_[jointName];
 
 	if (hppDevice->rootJointComponent(kppJoint)!=KD_OK) {
-	  hppDout (error, ":setRobotRootJoint: failed to set joint "
+	  hppDout (error, ":setChppciRobot_implRootJoint: failed to set joint "
 		   << jointName << " as root joint of robot " << robotName << ".");
 	  return -1;
 	}
@@ -162,7 +162,7 @@ namespace hpp
       }
 
 #if HPP_CORBASERVER_ENABLE_OPENHRP
-      Short Robot::loadHrp2Model(double inPenetration)
+      Short ChppciRobot_impl::loadHrp2Model(double inPenetration)
       {
 	OpenHRP openHrpClient (planner_);
 	if (openHrpClient.loadHrp2Model(inPenetration) != KD_OK)
@@ -170,7 +170,7 @@ namespace hpp
 	return 0;
       }
 #else
-      Short Robot::loadHrp2Model(double inPenetration)
+      Short ChppciRobot_impl::loadHrp2Model(double inPenetration)
       {
 	assert ("This function is not defined when OpenHRP is not enabled.");
 	return -1;
@@ -178,7 +178,7 @@ namespace hpp
 #endif
 
 
-      Short Robot::createExtraDof(const char* inDofName, Boolean inRevolute,
+      Short ChppciRobot_impl::createExtraDof(const char* inDofName, Boolean inRevolute,
 				  Double inValueMin, Double inValueMax)
 	throw (SystemException)
       {
@@ -208,27 +208,27 @@ namespace hpp
 
 
 
-      Short Robot::addExtraDofToRobot(const char* inRobotName, const char* inDofName)
+      Short ChppciRobot_impl::addExtraDofToChppciRobot_impl(const char* inChppciRobot_implName, const char* inDofName)
 	throw (SystemException)
       {
-	std::string robotName(inRobotName);
+	std::string robotName(inChppciRobot_implName);
 	std::string dofName(inDofName);
 
 	// Check that robot of this name exists.
 	if (robotMap_.count(robotName) != 1) {
-	  hppDout (error, ":addExtraDofToRobot: robot " << robotName << " does not exist.");
+	  hppDout (error, ":addExtraDofToChppciRobot_impl: robot " << robotName << " does not exist.");
 	  return -1;
 	}
 	// Check that extra degree of freedom of this name exists.
 	if (extraDofMap_.count(dofName) != 1) {
-	  hppDout (error, ":addExtraDofToRobot: joint " << dofName << " does not exist.");
+	  hppDout (error, ":addExtraDofToChppciRobot_impl: joint " << dofName << " does not exist.");
 	  return -1;
 	}
 	CkppDeviceComponentShPtr hppDevice = robotMap_[robotName];
 	CkppExtraDofComponentShPtr kwsExtraDof = extraDofMap_[dofName];
 
 	if (hppDevice->addExtraDof(kwsExtraDof)!=KD_OK) {
-	  hppDout (error, ":addExtraDofToRobot: failed add extra degree of freedom "
+	  hppDout (error, ":addExtraDofToChppciRobot_impl: failed add extra degree of freedom "
 		   << dofName << " to robot " << robotName << ".");
 	  return -1;
 	}
@@ -237,7 +237,7 @@ namespace hpp
 
 
 
-      Short Robot::createJoint(const char* inJointName,
+      Short ChppciRobot_impl::createJoint(const char* inJointName,
 			       const char* inJointType, const hpp::Configuration& pos,
 			       const hpp::jointBoundSeq& inJointBound,
 			       Boolean inDisplay)
@@ -319,7 +319,7 @@ namespace hpp
 
 
 
-      Short Robot::addJoint(const char* inParentName,
+      Short ChppciRobot_impl::addJoint(const char* inParentName,
 			    const char* inChildName)
 	throw (SystemException)
       {
@@ -344,7 +344,7 @@ namespace hpp
 
 
 
-      Short Robot::setJointBounds(UShort inProblemId, UShort inJointId,
+      Short ChppciRobot_impl::setJointBounds(UShort inProblemId, UShort inJointId,
 				  const hpp::jointBoundSeq& inJointBound)
 	throw (SystemException)
       {
@@ -356,11 +356,11 @@ namespace hpp
 	// Test that rank is less than number of robots in vector.
 	if (hppProblemId < nbProblems) {
 	  // Get robot in hppPlanner object.
-	  CkppDeviceComponentShPtr hppRobot = planner_->robotIthProblem(hppProblemId);
+	  CkppDeviceComponentShPtr hppChppciRobot_impl = planner_->robotIthProblem(hppProblemId);
 
 	  // get joint
 	  CkwsDevice::TJointVector jointVector;
-	  hppRobot->getJointVector (jointVector);
+	  hppChppciRobot_impl->getJointVector (jointVector);
 	  if (jointId < jointVector.size()) {
 	    CkwsJointShPtr kwsJoint = jointVector[jointId];
 	    localSetJointBounds(kwsJoint, inJointBound);
@@ -382,7 +382,7 @@ namespace hpp
 
 
 
-      Short Robot::setJointVisible(UShort inProblemId, UShort inJointId,
+      Short ChppciRobot_impl::setJointVisible(UShort inProblemId, UShort inJointId,
 				   Boolean inVisible)
 	throw (SystemException)
       {
@@ -394,8 +394,8 @@ namespace hpp
 	// Test that rank is less than number of robots in vector.
 	if (hppProblemId < nbProblems) {
 	  // Get robot in hppPlanner object.
-	  CkppDeviceComponentShPtr hppRobot = planner_->robotIthProblem(hppProblemId);
-	  CkppJointComponentShPtr kppJoint = hppRobot->jointComponent(jointId);
+	  CkppDeviceComponentShPtr hppChppciRobot_impl = planner_->robotIthProblem(hppProblemId);
+	  CkppJointComponentShPtr kppJoint = hppChppciRobot_impl->jointComponent(jointId);
 
 	  if (kppJoint) {
 	    kppJoint->isVisible(inVisible);
@@ -407,7 +407,7 @@ namespace hpp
 
 
 
-      Short Robot::setJointTransparent(UShort inProblemId, UShort inJointId,
+      Short ChppciRobot_impl::setJointTransparent(UShort inProblemId, UShort inJointId,
 				       Boolean inTransparent)
 	throw (SystemException)
       {
@@ -419,8 +419,8 @@ namespace hpp
 	// Test that rank is less than number of robots in vector.
 	if (hppProblemId < nbProblems) {
 	  // Get robot in hppPlanner object.
-	  CkppDeviceComponentShPtr hppRobot = planner_->robotIthProblem(hppProblemId);
-	  CkppJointComponentShPtr kppJoint = hppRobot->jointComponent(jointId);
+	  CkppDeviceComponentShPtr hppChppciRobot_impl = planner_->robotIthProblem(hppProblemId);
+	  CkppJointComponentShPtr kppJoint = hppChppciRobot_impl->jointComponent(jointId);
 
 	  if (kppJoint) {
 	    kppJoint->isTransparent(inTransparent);
@@ -432,7 +432,7 @@ namespace hpp
 
 
 
-      Short Robot::setJointDisplayPath(UShort inProblemId, UShort inJointId,
+      Short ChppciRobot_impl::setJointDisplayPath(UShort inProblemId, UShort inJointId,
 				       Boolean inDisplayPath)
 	throw (SystemException)
       {
@@ -444,8 +444,8 @@ namespace hpp
 	// Test that rank is less than number of robots in vector.
 	if (hppProblemId < nbProblems) {
 	  // Get robot in hppPlanner object.
-	  CkppDeviceComponentShPtr hppRobot = planner_->robotIthProblem(hppProblemId);
-	  CkppJointComponentShPtr kppJoint = hppRobot->jointComponent(jointId);
+	  CkppDeviceComponentShPtr hppChppciRobot_impl = planner_->robotIthProblem(hppProblemId);
+	  CkppJointComponentShPtr kppJoint = hppChppciRobot_impl->jointComponent(jointId);
 
 	  if (kppJoint) {
 	    kppJoint->doesDisplayPath(inDisplayPath);
@@ -455,7 +455,7 @@ namespace hpp
 	return -1;
       }
 
-      Short Robot::setCurrentConfig(UShort inProblemId,
+      Short ChppciRobot_impl::setCurrentConfig(UShort inProblemId,
 				    const hpp::dofSeq& dofArray)
 	throw (SystemException)
       {
@@ -469,10 +469,10 @@ namespace hpp
 	// Test that rank is less than number of robots in vector.
 	if (hppProblemId < nbProblems) {
 	  // Get robot in hppPlanner object.
-	  CkppDeviceComponentShPtr hppRobot = planner_->robotIthProblem(hppProblemId);
+	  CkppDeviceComponentShPtr hppChppciRobot_impl = planner_->robotIthProblem(hppProblemId);
 
 	  // by Yoshida 06/08/25
-	  unsigned int deviceDim = hppRobot->countDofs ();
+	  unsigned int deviceDim = hppChppciRobot_impl->countDofs ();
 
 
 	  // Fill dof vector with dof array.
@@ -491,7 +491,7 @@ namespace hpp
 	  }
 
 	  // Create a config for robot initialized with dof vector.
-	  CkwsConfig config(hppRobot, dofVector);
+	  CkwsConfig config(hppChppciRobot_impl, dofVector);
 
 	  return (short)planner_->robotCurrentConfIthProblem(hppProblemId, config);
 	}
@@ -510,7 +510,7 @@ namespace hpp
 #define RHAND_JOINT0_KINEO 29
 
       /// \brief the config is in the order of OpenHRP Joints  RARM, LARM, RHAND, LHAND
-      Short Robot::setCurrentConfigOpenHRP(UShort inProblemId, const hpp::dofSeq& dofArray)
+      Short ChppciRobot_impl::setCurrentConfigOpenHRP(UShort inProblemId, const hpp::dofSeq& dofArray)
 	throw (SystemException)
       {
 	hpp::dofSeq dofArrayKineo(dofArray);
@@ -527,8 +527,8 @@ namespace hpp
 	return setCurrentConfig(inProblemId, dofArrayKineo);
       }
 
-      /// \brief Comment in interface hpp::Robot::getCurrentConfig
-      hpp::dofSeq* Robot::getCurrentConfigOpenHRP(UShort inProblemId)
+      /// \brief Comment in interface hpp::ChppciRobot_impl::getCurrentConfig
+      hpp::dofSeq* ChppciRobot_impl::getCurrentConfigOpenHRP(UShort inProblemId)
 	throw (SystemException)
       {
 	hpp::dofSeq *dofArray = getCurrentConfig(inProblemId);
@@ -549,8 +549,8 @@ namespace hpp
 
 #endif
 
-      /// \brief Comment in interface hpp::Robot::getCurrentConfig
-      hpp::dofSeq* Robot::getCurrentConfig(UShort inProblemId)
+      /// \brief Comment in interface hpp::ChppciRobot_impl::getCurrentConfig
+      hpp::dofSeq* ChppciRobot_impl::getCurrentConfig(UShort inProblemId)
 	throw (SystemException)
       {
 	unsigned int hppProblemId = (unsigned int)inProblemId;
@@ -561,12 +561,12 @@ namespace hpp
 	if (hppProblemId < nbProblems)
 	  {
 	    // Get robot in hppPlanner object.
-	    CkppDeviceComponentShPtr hppRobot = planner_->robotIthProblem(hppProblemId);
+	    CkppDeviceComponentShPtr hppChppciRobot_impl = planner_->robotIthProblem(hppProblemId);
 
 	    std::vector<double> dofVector;
-	    hppRobot->getCurrentDofValues(dofVector);
+	    hppChppciRobot_impl->getCurrentDofValues(dofVector);
 
-	    unsigned int deviceDim = hppRobot->countDofs ();
+	    unsigned int deviceDim = hppChppciRobot_impl->countDofs ();
 
 	    dofArray = new hpp::dofSeq();
 	    dofArray->length(deviceDim);
@@ -587,7 +587,7 @@ namespace hpp
       }
 
 
-      Short Robot::attachBodyToJoint(const char* inJointName,
+      Short ChppciRobot_impl::attachBodyToJoint(const char* inJointName,
 				     const char* inBodyName)
 	throw (SystemException)
       {
@@ -619,7 +619,7 @@ namespace hpp
 	return 0;
       }
 
-      Short Robot::createBody(const char* inBodyName)
+      Short ChppciRobot_impl::createBody(const char* inBodyName)
 	throw (SystemException)
       {
 	std::string bodyName(inBodyName);
@@ -641,7 +641,7 @@ namespace hpp
 	return 0;
       }
 
-      hpp::nameSeq* Robot::getJointInnerObject(const char* inBodyName)
+      hpp::nameSeq* ChppciRobot_impl::getJointInnerObject(const char* inBodyName)
       {
 	std::string bodyName(inBodyName);
 
@@ -681,7 +681,7 @@ namespace hpp
 	return innerObjectSeq;
       }
 
-      hpp::nameSeq* Robot::getJointOuterObject(const char* inBodyName)
+      hpp::nameSeq* ChppciRobot_impl::getJointOuterObject(const char* inBodyName)
       {
 	std::string bodyName(inBodyName);
 
@@ -718,7 +718,7 @@ namespace hpp
 	return outerObjectSeq;
       }
 
-      Short Robot::setPenetration(UShort inProblemId,
+      Short ChppciRobot_impl::setPenetration(UShort inProblemId,
 				  Double inPenetration)
       {
 	unsigned int hppProblemId = (unsigned int)inProblemId;
@@ -734,7 +734,7 @@ namespace hpp
 	return 0;
       }
 
-      Short Robot::getPenetration(UShort inProblemId,
+      Short ChppciRobot_impl::getPenetration(UShort inProblemId,
 				  Double& outPenetration)
       {
 	unsigned int hppProblemId = (unsigned int)inProblemId;
@@ -755,7 +755,7 @@ namespace hpp
 
 
       Short
-      Robot::checkLinkCollision(UShort inProblemId, UShort jointId,
+      ChppciRobot_impl::checkLinkCollision(UShort inProblemId, UShort jointId,
 				UShort& outResult)
 	throw (SystemException)
       {
@@ -767,10 +767,10 @@ namespace hpp
 
 	if (hppProblemId < nbProblems) {
 	  // Get robot in hppPlanner object.
-	  CkppDeviceComponentShPtr hppRobot = planner_->robotIthProblem(hppProblemId);
+	  CkppDeviceComponentShPtr hppChppciRobot_impl = planner_->robotIthProblem(hppProblemId);
 
 	  // by Yoshida 06/08/25
-	  unsigned int deviceDim = hppRobot->countDofs ();
+	  unsigned int deviceDim = hppChppciRobot_impl->countDofs ();
 
 	  if (hppJointId > deviceDim) {
 	    hppDout (error, "wrong joint Id");
@@ -779,7 +779,7 @@ namespace hpp
 
 	  // get joint
 	  CkwsDevice::TJointVector jointList;
-	  hppRobot->getJointVector(jointList);
+	  hppChppciRobot_impl->getJointVector(jointList);
 	  // get object
 	  model::BodyShPtr hppBody = KIT_DYNAMIC_PTR_CAST(model::Body, jointList[hppJointId]->attachedBody());
 
@@ -841,7 +841,7 @@ namespace hpp
 	return 0;
       }
 
-      Short Robot::createPolyhedron(const char* inPolyhedronName)
+      Short ChppciRobot_impl::createPolyhedron(const char* inPolyhedronName)
 	throw (SystemException)
       {
 	std::string polyhedronName(inPolyhedronName);
@@ -862,7 +862,7 @@ namespace hpp
       }
 
 
-      Short Robot::createBox(const char* inBoxName,
+      Short ChppciRobot_impl::createBox(const char* inBoxName,
 			     Double x, Double y,
 			     Double z)
 	throw (SystemException)
@@ -887,7 +887,7 @@ namespace hpp
 
 
 
-      Short Robot::addPoint(const char* inPolyhedronName,
+      Short ChppciRobot_impl::addPoint(const char* inPolyhedronName,
 			    Double x, Double y,
 			    Double z)
 	throw (SystemException)
@@ -908,7 +908,7 @@ namespace hpp
 
 
 
-      Short Robot::addTriangle(const char* inPolyhedronName,
+      Short ChppciRobot_impl::addTriangle(const char* inPolyhedronName,
 			       ULong pt1, ULong pt2, ULong pt3)
 	throw (SystemException)
       {
@@ -939,7 +939,7 @@ namespace hpp
 
 
 
-      Short Robot::setDofBounds(UShort inProblemId, UShort inDofId,
+      Short ChppciRobot_impl::setDofBounds(UShort inProblemId, UShort inDofId,
 				Double inMinValue, Double inMaxValue)
 	throw (SystemException)
       {
@@ -950,17 +950,17 @@ namespace hpp
 	// Test that rank is less than number of robots in vector.
 	if (hppProblemId < nbProblems) {
 	  // Get robot in hppPlanner object.
-	  CkppDeviceComponentShPtr hppRobot = planner_->robotIthProblem(hppProblemId);
+	  CkppDeviceComponentShPtr hppChppciRobot_impl = planner_->robotIthProblem(hppProblemId);
 
-	  unsigned int deviceDim = hppRobot->countDofs();
+	  unsigned int deviceDim = hppChppciRobot_impl->countDofs();
 	  if (dofId < deviceDim) {
 	    if (inMinValue <= inMaxValue) {
-	      hppRobot->dof(dofId)->isBounded(true);
-	      hppRobot->dof(dofId)->bounds(inMinValue, inMaxValue);
+	      hppChppciRobot_impl->dof(dofId)->isBounded(true);
+	      hppChppciRobot_impl->dof(dofId)->bounds(inMinValue, inMaxValue);
 	    }
 	    else {
-	      hppRobot->dof(dofId)->isBounded(false);
-	      hppRobot->dof(dofId)->bounds(inMaxValue, inMinValue);
+	      hppChppciRobot_impl->dof(dofId)->isBounded(false);
+	      hppChppciRobot_impl->dof(dofId)->bounds(inMaxValue, inMinValue);
 	    }
 	  }
 	  else {
@@ -980,22 +980,22 @@ namespace hpp
 
 
 
-      Short Robot::setDofLocked(UShort inProblemId, UShort inDofId,
+      Short ChppciRobot_impl::setDofLocked(UShort inProblemId, UShort inDofId,
 				Boolean locked, Double lockedValue)
 	throw (SystemException)
       {
-	unsigned int hppRobotId = (unsigned int)inProblemId;
-	unsigned int nbRobots = planner_->getNbHppProblems();
+	unsigned int hppChppciRobot_implId = (unsigned int)inProblemId;
+	unsigned int nbChppciRobot_impls = planner_->getNbHppProblems();
 	unsigned int dofId = (unsigned int) inDofId;
 
 	// Test that rank is less than number of robots in vector.
-	if (hppRobotId < nbRobots) {
+	if (hppChppciRobot_implId < nbChppciRobot_impls) {
 	  // Get robot in hppPlanner object.
-	  CkppDeviceComponentShPtr hppRobot = planner_->robotIthProblem(hppRobotId);
+	  CkppDeviceComponentShPtr hppChppciRobot_impl = planner_->robotIthProblem(hppChppciRobot_implId);
 
 	  // get joint
 	  CkwsDevice::TDofVector dofList;
-	  hppRobot->getDofVector(dofList);
+	  hppChppciRobot_impl->getDofVector(dofList);
 
 	  if(dofId >= (unsigned short) dofList.size())
 	    {
@@ -1018,7 +1018,7 @@ namespace hpp
 
 
 
-      Short Robot::getDeviceDim(UShort inProblemId, UShort& outDeviceDim)
+      Short ChppciRobot_impl::getDeviceDim(UShort inProblemId, UShort& outDeviceDim)
 	throw (SystemException)
       {
 	unsigned int hppProblemId = (unsigned int)inProblemId;
@@ -1028,10 +1028,10 @@ namespace hpp
 	// Test that rank is less than number of robots in vector.
 	if (hppProblemId < nbProblems) {
 	  // Get robot in hppPlanner object.
-	  CkppDeviceComponentShPtr hppRobot = planner_->robotIthProblem(hppProblemId);
+	  CkppDeviceComponentShPtr hppChppciRobot_impl = planner_->robotIthProblem(hppProblemId);
 
 
-	  outDeviceDim = hppRobot->countDofs ();
+	  outDeviceDim = hppChppciRobot_impl->countDofs ();
 	}
 	else{
 	  hppDout (error, "wrong robot Id");
@@ -1042,7 +1042,7 @@ namespace hpp
 
 
 
-      Short Robot::addPolyToBody(const char* inBodyName, const char* inPolyhedronName,
+      Short ChppciRobot_impl::addPolyToBody(const char* inBodyName, const char* inPolyhedronName,
 				 const hpp::Configuration& inConfig)
 	throw (SystemException)
       {

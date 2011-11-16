@@ -26,15 +26,15 @@ namespace hpp
   {
     namespace impl
     {
-      /// \brief OpenHRP client to load HRP2 model.
-      class HPP_CORBASERVER_DLLAPI OpenHRP
+      /// \brief ChppciOpenHrpClient client to load HRP2 model.
+      class HPP_CORBASERVER_DLLAPI ChppciOpenHrpClient
       {
 	friend class InternalCorbaObject;
       public:
-	explicit OpenHRP(core::Planner* hpp);
+	explicit ChppciOpenHrpClient(core::Planner* hpp);
 
 	/// \brief Destroy joint absolute position matrices in associative array.
-	~OpenHRP ();
+	~ChppciOpenHrpClient ();
 
 	/// \brief Build an instance of HRP2 by using Robotbuilder::Robotbuilder
 	///
@@ -61,10 +61,10 @@ namespace hpp
 	 const std::string& inModel =
 	 std::string("@OPENHRP_PREFIX@/Controller/IOserver/robot/HRP2JRL/model/HRP2JRLmain.wrl"));
 
-	/// \brief  Initialize Orb and load model of a robot by sending a Corba request modelLoader to OpenHRP.
+	/// \brief  Initialize Orb and load model of a robot by sending a Corba request modelLoader to ChppciOpenHrpClient.
 	/// \param inFilename Name of the wrl file containing the description of the robot.
 	/// \param inDeviceName Name of the device
-	/// \param inDirectory Prefix of OpenHRP installation. Default value is provided by hppOpenHRP package.
+	/// \param inDirectory Prefix of ChppciOpenHrpClient installation. Default value is provided by hppChppciOpenHrpClient package.
 	/// \retval outDevice The model of robot.
 	///
 	/// \note The model of the robot is downloaded from "file://"inDirectory/inFileName".
@@ -76,10 +76,10 @@ namespace hpp
 			const std::string& inDirectory=
 			std::string("@OPENHRP_PREFIX@")+std::string("/etc"));
 
-	/// \brief Initialize Orb and load model of objects by sending a Corba request modelLoader to OpenHRP.
+	/// \brief Initialize Orb and load model of objects by sending a Corba request modelLoader to ChppciOpenHrpClient.
 	/// \param inFilename Name of the wrl file containing the description of the obstacle.
 	/// \param inObstacleName Name of the obstacle.
-	/// \param inDirectory Prefix of OpenHRP installation. Default value is provided by hppOpenHRP package.
+	/// \param inDirectory Prefix of ChppciOpenHrpClient installation. Default value is provided by hppChppciOpenHrpClient package.
 	/// \retval outPolyhedron shared pointer to the polyhedron.
 	///
 	/// \note The model of the obstacle is downloaded from "file://"inDirectory/inFileName"
