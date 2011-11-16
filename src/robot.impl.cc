@@ -73,7 +73,7 @@ namespace hpp
 	    for (unsigned int iDof=0; iDof<kwsJointNbDofs; iDof++) {
 	      double vMin = inJointBound[2*iDof];
 	      double vMax = inJointBound[2*iDof+1];
-	      CkwsJointDofShPtr dof = inKwsJoint->dof(iDof);
+	      CkwsDofShPtr dof = inKwsJoint->dof(iDof);
 	      if (vMin <= vMax) {
 		/* Dof is actually bounded */
 		dof->isBounded(true);
@@ -793,7 +793,7 @@ namespace hpp
 	  // get result
 	  {
 	    double dist = 0.;
-	    hppBody->isColliding (CkwsBody::ESTIMATED_DISTANCE_REPORT, dist);
+	    hppBody->isColliding (CkwsBody::CCollisionAnalysisParameters::ESTIMATED_DISTANCE, dist);
 	    outResult = (UShort) dist;
 	  }
 
@@ -830,7 +830,7 @@ namespace hpp
 	    short res = 0;
 	    {
 	      double dist = 0.;
-	      hppBody->isColliding (CkwsBody::ESTIMATED_DISTANCE_REPORT, dist);
+	      hppBody->isColliding (CkwsBody::CCollisionAnalysisParameters::ESTIMATED_DISTANCE, dist);
 	      res = (short) dist;
 	    }
 
