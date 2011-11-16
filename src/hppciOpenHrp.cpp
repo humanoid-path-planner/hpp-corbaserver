@@ -56,11 +56,11 @@ namespace hpp
 	// Obstacle Corba Information
 	std::vector<ModelInfo_var> obstInfoVector;
 
-	ChppciOpenHrpClient* attOpenHrpClient;
+	OpenHRP* attOpenHrpClient;
 
 
 	// Constructor
-	InternalCorbaObject (ChppciOpenHrpClient* openHrpClientPtr)
+	InternalCorbaObject (OpenHRP* openHrpClientPtr)
 	{
 	  attOpenHrpClient = openHrpClientPtr;
 	}
@@ -72,7 +72,7 @@ namespace hpp
 
 
 
-      ChppciOpenHrpClient::ChppciOpenHrpClient (core::Planner *hpp)
+      OpenHRP::OpenHRP (core::Planner *hpp)
       {
 	hppPlanner = hpp;
 	privateCorbaObject = new InternalCorbaObject(this) ;
@@ -80,7 +80,7 @@ namespace hpp
 
 
 
-      ChppciOpenHrpClient::~ChppciOpenHrpClient()
+      OpenHRP::~OpenHRP()
       {}
 
 
@@ -380,7 +380,7 @@ namespace hpp
       }
 
       ktStatus
-      ChppciOpenHrpClient::loadHrp2Model (double inPenetration,
+      OpenHRP::loadHrp2Model (double inPenetration,
 			      const std::string& inModel)
       {
 	model::HumanoidRobotShPtr HRP2Device;
@@ -401,7 +401,7 @@ namespace hpp
       }
 
       ktStatus
-      ChppciOpenHrpClient::loadHrp2Model
+      OpenHRP::loadHrp2Model
       (model::HumanoidRobotShPtr& HRP2Device, const std::string& inModel)
       {
 	model::HumanoidRobotShPtr humanoid;
@@ -440,7 +440,7 @@ namespace hpp
 
 
       ktStatus
-      ChppciOpenHrpClient::loadRobotModel(const std::string& inFilename,
+      OpenHRP::loadRobotModel(const std::string& inFilename,
 			      const std::string& inDeviceName,
 			      model::DeviceShPtr &outDevice,
 			      const std::string& inDirectory)
@@ -453,7 +453,7 @@ namespace hpp
 	  }
 
 	//
-	// Build hppDevice from ChppciOpenHrpClientModel
+	// Build hppDevice from OpenHRPModel
 	//
 	std::string url ("file://");
 	url += inDirectory;
@@ -464,7 +464,7 @@ namespace hpp
 
 	try
 	  {
-	    CparserChppciOpenHrpClientKineoDevice parser(privateCorbaObject->attLoader->loadURL(url.c_str())) ;
+	    CparserOpenHRPKineoDevice parser(privateCorbaObject->attLoader->loadURL(url.c_str())) ;
 	    model::HumanoidRobotShPtr humanoid;
 	    parser.parser(humanoid) ;
 	    outDevice = humanoid;
@@ -497,7 +497,7 @@ namespace hpp
 
 
       ktStatus
-      ChppciOpenHrpClient::loadObstacleModel (const std::string& inFilename,
+      OpenHRP::loadObstacleModel (const std::string& inFilename,
 				  const std::string& inObstacleName,
 				  CkppKCDPolyhedronShPtr& outPolyhedron,
 				  const std::string& inDirectory)
@@ -523,9 +523,9 @@ namespace hpp
 	if (!privateCorbaObject->obstInfoVector.empty ())
 	  {
 	    //
-	    // Build KineoObstacle from ChppciOpenHrpClientModel
+	    // Build KineoObstacle from OpenHRPModel
 	    //
-	    CparserChppciOpenHrpClientKineoObstacle parserObstacle (privateCorbaObject->obstInfoVector);
+	    CparserOpenHRPKineoObstacle parserObstacle (privateCorbaObject->obstInfoVector);
 
 	    std::vector<CkppKCDPolyhedronShPtr> obstacleVector = parserObstacle.parser ();
 
@@ -612,7 +612,7 @@ namespace hpp
 	return KD_OK;
       }
 
-      ktStatus ChppciOpenHrpClient::getRobotURL (const std::string& inModel)
+      ktStatus OpenHRP::getRobotURL (const std::string& inModel)
       {
 	if (privateCorbaObject->getModelLoader() != KD_OK)
 	  return KD_ERROR;
@@ -638,7 +638,7 @@ namespace hpp
 	return KD_OK;
       }
 
-      ktStatus ChppciOpenHrpClient::getObstacleURL (const std::string& inFilename)
+      ktStatus OpenHRP::getObstacleURL (const std::string& inFilename)
       {
 	if (privateCorbaObject->getModelLoader() != KD_OK)
 	  return KD_ERROR;

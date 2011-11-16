@@ -33,12 +33,12 @@ namespace hpp
       namespace
       {
 	static bool
-	checkChppciProblem_implId (const core::Planner& planner, unsigned id);
+	checkProblemId (const core::Planner& planner, unsigned id);
 
 	static bool
-	checkChppciProblem_implId (const core::Planner& planner, unsigned id)
+	checkProblemId (const core::Planner& planner, unsigned id)
 	{
-	  if (id >= planner.getNbHppChppciProblem_impls ())
+	  if (id >= planner.getNbHppProblems ())
 	    {
 	      hppDout (error, "invalid problem id");
 	      return false;
@@ -49,21 +49,21 @@ namespace hpp
       } // end of namespace.
 
 
-      ChppciProblem_impl::ChppciProblem_impl (corbaServer::Server* server)
+      Problem::Problem (corbaServer::Server* server)
 	: server_ (server),
 	  planner_ (server->planner ())
       {}
 
       Short
-      ChppciProblem_impl::setSteeringMethod
+      Problem::setSteeringMethod
       (UShort problemId, const char* steeringMethodName, Boolean oriented)
       {
 	assert (planner_);
-	if (!checkChppciProblem_implId (*planner_, problemId))
+	if (!checkProblemId (*planner_, problemId))
 	  return -1;
 
 	// Get robot in hppPlanner object.
-	CkppDeviceComponentShPtr robot = planner_->robotIthChppciProblem_impl (problemId);
+	CkppDeviceComponentShPtr robot = planner_->robotIthProblem (problemId);
 
 	/* Check that name correspond to a steering method factory */
 	if (!server_->steeringMethodFactoryAlreadySet (steeringMethodName))
@@ -80,19 +80,19 @@ namespace hpp
 	return 0;
       }
 
-      Short ChppciProblem_impl::setRoadmapbuilder(UShort problemId, const char* inRoadmapBuilderName,
+      Short Problem::setRoadmapbuilder(UShort problemId, const char* inRoadmapBuilderName,
 				       Boolean inDisplay)
       {
 	std::string roadmapBuilderName(inRoadmapBuilderName);
-	unsigned int hppChppciProblem_implId = (unsigned int)problemId;
+	unsigned int hppProblemId = (unsigned int)problemId;
 	ktStatus status;
 
-	unsigned int nbChppciProblem_impls = planner_->getNbHppChppciProblem_impls();
+	unsigned int nbProblems = planner_->getNbHppProblems();
 
 	// Test that rank is less than number of robots in vector.
-	if (hppChppciProblem_implId < nbChppciProblem_impls) {
+	if (hppProblemId < nbProblems) {
 	  // Get robot in hppPlanner object.
-	  CkppDeviceComponentShPtr robot = planner_->robotIthChppciProblem_impl(hppChppciProblem_implId);
+	  CkppDeviceComponentShPtr robot = planner_->robotIthProblem(hppProblemId);
 
 	  // Create an empty roadmap for the robot.
 	  CkwsRoadmapShPtr roadmap = CkwsRoadmap::create(robot->kwsDevice());
@@ -116,7 +116,7 @@ namespace hpp
 	    hppDout (error, ":setRoadmapbuilder: unknown roadmap builder");
 	    return -1;
 	  }
-	  status = planner_->roadmapBuilderIthChppciProblem_impl(hppChppciProblem_implId, roadmapBuilder, inDisplay);
+	  status = planner_->roadmapBuilderIthProblem(hppProblemId, roadmapBuilder, inDisplay);
 	  return status;
 
 	}
@@ -128,37 +128,37 @@ namespace hpp
 	return 0;
       }
 
-      Short ChppciProblem_impl::setDiffusingNode(UShort problemId,
+      Short Problem::setDiffusingNode(UShort problemId,
 				      const char* inDiffusingNode)
       {
 	std::string diffusingNode(inDiffusingNode);
-	unsigned int hppChppciProblem_implId = (unsigned int)problemId;
-	unsigned int nbChppciProblem_impls = planner_->getNbHppChppciProblem_impls();
+	unsigned int hppProblemId = (unsigned int)problemId;
+	unsigned int nbProblems = planner_->getNbHppProblems();
 
 	// Test that rank is less than number of robots in vector.
-	if (hppChppciProblem_implId < nbChppciProblem_impls) {
+	if (hppProblemId < nbProblems) {
 	  // Get roadmap builder in hppPlanner object.
 	  CkwsDiffusingRdmBuilderShPtr roadmapBuilder =
 	    KIT_DYNAMIC_PTR_CAST(CkwsDiffusingRdmBuilder,
-				 planner_->roadmapBuilderIthChppciProblem_impl(hppChppciProblem_implId));
+				 planner_->roadmapBuilderIthProblem(hppProblemId));
 	  // Check that diffusion roadmap builder is set
 	  if (!roadmapBuilder) {
 	    hppDout (error, ":setDiffusingNode: roadmap builder is not set or not of type diffusion");
 	    return -1;
 	  }
 	  if (diffusingNode == "start") {
-	    roadmapBuilder->diffuseFromChppciProblem_implStart(true);
-	    roadmapBuilder->diffuseFromChppciProblem_implGoal(false);
+	    roadmapBuilder->diffuseFromProblemStart(true);
+	    roadmapBuilder->diffuseFromProblemGoal(false);
 	    hppDout (info, ":setDiffusingNode: diffusing from start");
 	  }
 	  else if (diffusingNode == "goal") {
-	    roadmapBuilder->diffuseFromChppciProblem_implStart(false);
-	    roadmapBuilder->diffuseFromChppciProblem_implGoal(true);
+	    roadmapBuilder->diffuseFromProblemStart(false);
+	    roadmapBuilder->diffuseFromProblemGoal(true);
 	    hppDout (info, ":setDiffusingNode: diffusing from goal");
 	  }
 	  else if (diffusingNode == "start and goal") {
-	    roadmapBuilder->diffuseFromChppciProblem_implStart(true);
-	    roadmapBuilder->diffuseFromChppciProblem_implGoal(true);
+	    roadmapBuilder->diffuseFromProblemStart(true);
+	    roadmapBuilder->diffuseFromProblemGoal(true);
 	    hppDout (info, ":setDiffusingNode: diffusing from start and goal");
 	  }
 	  else  {
@@ -173,22 +173,22 @@ namespace hpp
 	return 0;
       }
 
-      Short ChppciProblem_impl::setPathOptimizer(UShort problemId,
+      Short Problem::setPathOptimizer(UShort problemId,
 				      const char* inPathOptimizerName,
 				      UShort inMaxNumberLoop)
       {
 	std::string pathOptimizerName(inPathOptimizerName);
 
 	ktStatus status;
-	unsigned int hppChppciProblem_implId = (unsigned int)problemId;
-	unsigned int nbChppciProblem_impls = planner_->getNbHppChppciProblem_impls();
+	unsigned int hppProblemId = (unsigned int)problemId;
+	unsigned int nbProblems = planner_->getNbHppProblems();
 
-	hppDout (info, ":setPathOptimizer: nbChppciProblem_impls " << nbChppciProblem_impls << "problem id "
+	hppDout (info, ":setPathOptimizer: nbProblems " << nbProblems << "problem id "
 		 << problemId << ", pathOptimizerName " <<pathOptimizerName);
 	// Test that rank is less than number of robots in vector.
-	if (hppChppciProblem_implId < nbChppciProblem_impls) {
+	if (hppProblemId < nbProblems) {
 	  // Get robot in hppPlanner object.
-	  CkppDeviceComponentShPtr robot = planner_->robotIthChppciProblem_impl(hppChppciProblem_implId);
+	  CkppDeviceComponentShPtr robot = planner_->robotIthProblem(hppProblemId);
 	  CkwsDistanceShPtr distance = CkwsDistance::create();
 
 	  // Get distance function associated to robot if any
@@ -203,7 +203,7 @@ namespace hpp
 	    pathOptimizer->distance(distance);
 	    pathOptimizer->shortcutMethod(CkwsShortcutDirect::create());
 
-	    status = planner_->pathOptimizerIthChppciProblem_impl(hppChppciProblem_implId, pathOptimizer);
+	    status = planner_->pathOptimizerIthProblem(hppProblemId, pathOptimizer);
 	    hppDout (info, ":setPathOptimizer: clear path optimizer set.");
 	    return (Short)status;
 	  }
@@ -213,7 +213,7 @@ namespace hpp
 	    pathOptimizer->shortcutMethod(CkwsShortcutDirect::create());
 	    pathOptimizer->maxNbLoop(inMaxNumberLoop);
 
-	    status = planner_->pathOptimizerIthChppciProblem_impl(hppChppciProblem_implId, pathOptimizer);
+	    status = planner_->pathOptimizerIthProblem(hppProblemId, pathOptimizer);
 	    hppDout (info, ":setPathOptimizer: adaptive shortcut path optimizer set");
 	    return (Short)status;
 	  }
@@ -223,13 +223,13 @@ namespace hpp
 	    pathOptimizer->shortcutMethod(CkwsShortcutDirect::create());
 	    pathOptimizer->maxNbLoop(inMaxNumberLoop);
 
-	    status = planner_->pathOptimizerIthChppciProblem_impl(hppChppciProblem_implId, pathOptimizer);
+	    status = planner_->pathOptimizerIthProblem(hppProblemId, pathOptimizer);
 	    hppDout (info, ":setPathOptimizer: random path optimizer set");
 	    return (Short)status;
 	  }
 	  else if (pathOptimizerName == "none") {
 	    CkwsPathOptimizerShPtr pathOptimizer;
-	    status = planner_->pathOptimizerIthChppciProblem_impl(hppChppciProblem_implId, pathOptimizer);
+	    status = planner_->pathOptimizerIthProblem(hppProblemId, pathOptimizer);
 	    hppDout (info, ":setPathOptimizer: no path optimizer set");
 	    return (Short)status;
 	  }
@@ -246,20 +246,20 @@ namespace hpp
 	return 0;
       }
 
-      Short ChppciProblem_impl::setConfigExtractor(UShort problemId, Double inMinRadius,
+      Short Problem::setConfigExtractor(UShort problemId, Double inMinRadius,
 					Double inMaxRadius, Double inScaleFactor)
       {
-	unsigned int hppChppciProblem_implId = (unsigned int)problemId;
-	unsigned int nbChppciProblem_impls = planner_->getNbHppChppciProblem_impls();
+	unsigned int hppProblemId = (unsigned int)problemId;
+	unsigned int nbProblems = planner_->getNbHppProblems();
 
 	// Test that rank is less than number of robots in vector.
-	if (hppChppciProblem_implId < nbChppciProblem_impls) {
+	if (hppProblemId < nbProblems) {
 	  /*
 	    If inMinRadius = 0 remove configuration extractor from problem.
 	  */
 	  CkwsConfigExtractorShPtr configExtractor;
 	  if (inMinRadius == 0) {
-	    if (planner_->configExtractorIthChppciProblem_impl(hppChppciProblem_implId, configExtractor) == KD_ERROR) {
+	    if (planner_->configExtractorIthProblem(hppProblemId, configExtractor) == KD_ERROR) {
 	      hppDout (error, ":setConfigExtractor: failed to delete configuration extractor.");
 	      return -1;
 	    }
@@ -269,7 +269,7 @@ namespace hpp
 	      hppDout (error, ":setConfigExtractor: failed at creating a configuration extractor.");
 	      return -1;
 	    }
-	    if (planner_->configExtractorIthChppciProblem_impl(hppChppciProblem_implId, configExtractor) != KD_OK) {
+	    if (planner_->configExtractorIthProblem(hppProblemId, configExtractor) != KD_OK) {
 	      hppDout (error, ":setConfigExtractor: failed at setting configuration extractor.");
 	      return -1;
 	    }
@@ -283,14 +283,14 @@ namespace hpp
 	return 0;
       }
 
-      Short ChppciProblem_impl::setDistanceFunction(UShort problemId, const char* inDistanceName, Boolean oriented)
+      Short Problem::setDistanceFunction(UShort problemId, const char* inDistanceName, Boolean oriented)
       {
 	std::string distanceName(inDistanceName);
-	unsigned int hppChppciProblem_implId = (unsigned int)problemId;
-	unsigned int nbChppciProblem_impls = planner_->getNbHppChppciProblem_impls();
+	unsigned int hppProblemId = (unsigned int)problemId;
+	unsigned int nbProblems = planner_->getNbHppProblems();
 
 	// Test that rank is less than number of robots in vector.
-	if (hppChppciProblem_implId < nbChppciProblem_impls) {
+	if (hppProblemId < nbProblems) {
 
 	  /* Check that name corresponds to a distance function factory */
 	  if (!server_->distanceFactoryAlreadySet(distanceName)) {
@@ -310,22 +310,22 @@ namespace hpp
 	  //   - path optimizer if any
 
 	  // Device
-	  CkppDeviceComponentShPtr robot = planner_->robotIthChppciProblem_impl(hppChppciProblem_implId);
+	  CkppDeviceComponentShPtr robot = planner_->robotIthProblem(hppProblemId);
 	  if (!robot) {
-	    hppDout (error, ":setDistanceFunction: no robot in problem " << hppChppciProblem_implId);
+	    hppDout (error, ":setDistanceFunction: no robot in problem " << hppProblemId);
 	    return -1;
 	  }
 	  robot->distance(distance);
 
 	  // Roadmap builder
-	  CkwsRoadmapBuilderShPtr roadmapBuilder = planner_->roadmapBuilderIthChppciProblem_impl(hppChppciProblem_implId);
+	  CkwsRoadmapBuilderShPtr roadmapBuilder = planner_->roadmapBuilderIthProblem(hppProblemId);
 	  if (roadmapBuilder) {
 	    roadmapBuilder->distance(distance);
 	  }
 
 	  // path optimizer
 	  CkwsPathOptimizerShPtr pathOptimizer =
-	    planner_->pathOptimizerIthChppciProblem_impl(hppChppciProblem_implId);
+	    planner_->pathOptimizerIthProblem(hppProblemId);
 	  if (pathOptimizer) {
 	    pathOptimizer->distance(distance);
 	  }
@@ -338,19 +338,19 @@ namespace hpp
 	return 0;
       }
 
-      Short ChppciProblem_impl::setDiffusionNodePicker(UShort problemId,
+      Short Problem::setDiffusionNodePicker(UShort problemId,
 					    const char* inDiffusionNodePickerName)
       {
 	std::string diffusionNodePickerName(inDiffusionNodePickerName);
-	unsigned int hppChppciProblem_implId = (unsigned int)problemId;
-	unsigned int nbChppciProblem_impls = planner_->getNbHppChppciProblem_impls();
+	unsigned int hppProblemId = (unsigned int)problemId;
+	unsigned int nbProblems = planner_->getNbHppProblems();
 
 	// Test that rank is less than number of robots in vector.
-	if (hppChppciProblem_implId < nbChppciProblem_impls) {
+	if (hppProblemId < nbProblems) {
 	  // Get roadmap builder in hppPlanner object.
 	  CkwsDiffusingRdmBuilderShPtr roadmapBuilder =
 	    KIT_DYNAMIC_PTR_CAST(CkwsDiffusingRdmBuilder,
-				 planner_->roadmapBuilderIthChppciProblem_impl(hppChppciProblem_implId));
+				 planner_->roadmapBuilderIthProblem(hppProblemId));
 	  // Check that diffusion roadmap builder is set
 	  if (!roadmapBuilder) {
 	    hppDout (error, ":setDiffusionNodePicker: roadmap builder is not set or not of type diffusion");
@@ -377,20 +377,20 @@ namespace hpp
 	return 0;
       }
 
-      Short ChppciProblem_impl::setDiffusionShooter(UShort problemId,
+      Short Problem::setDiffusionShooter(UShort problemId,
 					 const char* inDiffusionShooterName,
 					 Double inStandardDeviation)
       {
 	std::string diffusionShooterName(inDiffusionShooterName);
-	unsigned int hppChppciProblem_implId = (unsigned int)problemId;
-	unsigned int nbChppciProblem_impls = planner_->getNbHppChppciProblem_impls();
+	unsigned int hppProblemId = (unsigned int)problemId;
+	unsigned int nbProblems = planner_->getNbHppProblems();
 
 	// Test that rank is less than number of robots in vector.
-	if (hppChppciProblem_implId < nbChppciProblem_impls) {
+	if (hppProblemId < nbProblems) {
 	  // Get roadmap builder in hppPlanner object.
 	  CkwsDiffusingRdmBuilderShPtr roadmapBuilder =
 	    KIT_DYNAMIC_PTR_CAST(CkwsDiffusingRdmBuilder,
-				 planner_->roadmapBuilderIthChppciProblem_impl(hppChppciProblem_implId));
+				 planner_->roadmapBuilderIthProblem(hppProblemId));
 	  // Check that diffusion roadmap builder is set
 	  if (!roadmapBuilder) {
 	    hppDout (error, ":setDiffusionShooter: roadmap builder is not set or not of type diffusion");
@@ -418,17 +418,17 @@ namespace hpp
 	return 0;
       }
 
-      Short ChppciProblem_impl::setInitialConfig(UShort problemId, const hpp::dofSeq& dofArray)
+      Short Problem::setInitialConfig(UShort problemId, const hpp::dofSeq& dofArray)
       {
-	unsigned int hppChppciProblem_implId = (unsigned int)problemId;
+	unsigned int hppProblemId = (unsigned int)problemId;
 	unsigned int configDim = (unsigned int)dofArray.length();
 	std::vector<double> dofVector;
-	unsigned int nbChppciProblem_impls = planner_->getNbHppChppciProblem_impls();
+	unsigned int nbProblems = planner_->getNbHppProblems();
 
 	// Test that rank is less than nulber of robots in vector.
-	if (hppChppciProblem_implId < nbChppciProblem_impls) {
+	if (hppProblemId < nbProblems) {
 	  // Get robot in hppPlanner object.
-	  CkppDeviceComponentShPtr robot = planner_->robotIthChppciProblem_impl(hppChppciProblem_implId);
+	  CkppDeviceComponentShPtr robot = planner_->robotIthProblem(hppProblemId);
 
 	  // Compare size of input array with number of degrees of freedom of robot.
 	  if (configDim != robot->countDofs()) {
@@ -446,7 +446,7 @@ namespace hpp
 	    return -1;
 	  }
 
-	  return (short)planner_->initConfIthChppciProblem_impl(hppChppciProblem_implId, config);
+	  return (short)planner_->initConfIthProblem(hppProblemId, config);
 	}
 	else {
 	  hppDout (error, ":setInitialConfig: wrong problem Id");
@@ -455,17 +455,17 @@ namespace hpp
 	return 0;
       }
 
-      Short ChppciProblem_impl::setGoalConfig(UShort problemId, const hpp::dofSeq& dofArray)
+      Short Problem::setGoalConfig(UShort problemId, const hpp::dofSeq& dofArray)
       {
-	unsigned int hppChppciProblem_implId = (unsigned int)problemId;
+	unsigned int hppProblemId = (unsigned int)problemId;
 	unsigned int configDim = (unsigned int)dofArray.length();
 	std::vector<double> dofVector;
-	unsigned int nbChppciProblem_impls = planner_->getNbHppChppciProblem_impls();
+	unsigned int nbProblems = planner_->getNbHppProblems();
 
 	// Test that rank is less than nulber of robots in vector.
-	if (hppChppciProblem_implId < nbChppciProblem_impls) {
+	if (hppProblemId < nbProblems) {
 	  // Get robot in hppPlanner object.
-	  CkppDeviceComponentShPtr robot = planner_->robotIthChppciProblem_impl(hppChppciProblem_implId);
+	  CkppDeviceComponentShPtr robot = planner_->robotIthProblem(hppProblemId);
 
 	  // Compare size of input array with number of degrees of freedom of robot.
 	  if (configDim != robot->countDofs()) {
@@ -483,7 +483,7 @@ namespace hpp
 	    hppDout (error, ":setGoalConfig: cannot create config. Check that robot nb dof is equal to config size");
 	    return -1;
 	  }
-	  return (short)planner_->goalConfIthChppciProblem_impl(hppChppciProblem_implId, config);
+	  return (short)planner_->goalConfIthProblem(hppProblemId, config);
 	}
 	else {
 	  hppDout (error, ":setGoalConfig: wrong problem Id");
@@ -492,19 +492,19 @@ namespace hpp
 	return 0;
       }
 
-      hpp::dofSeq* ChppciProblem_impl::getInitialConfig(UShort problemId)
+      hpp::dofSeq* Problem::getInitialConfig(UShort problemId)
 	throw(SystemException)
       {
 	hpp::dofSeq *dofArray;
-	unsigned int hppChppciProblem_implId = (unsigned int)problemId;
-	unsigned int nbChppciProblem_impls = planner_->getNbHppChppciProblem_impls();
+	unsigned int hppProblemId = (unsigned int)problemId;
+	unsigned int nbProblems = planner_->getNbHppProblems();
 
-	if (hppChppciProblem_implId < nbChppciProblem_impls) {
+	if (hppProblemId < nbProblems) {
 	  // Get robot in hppPlanner object.
-	  CkppDeviceComponentShPtr robot = planner_->robotIthChppciProblem_impl(hppChppciProblem_implId);
+	  CkppDeviceComponentShPtr robot = planner_->robotIthProblem(hppProblemId);
 
 	  std::vector<double> dofVector;
-	  CkwsConfigShPtr config = planner_->initConfIthChppciProblem_impl(hppChppciProblem_implId);
+	  CkwsConfigShPtr config = planner_->initConfIthProblem(hppProblemId);
 
 	  if (config) {
 	    // by Yoshida 06/08/25
@@ -535,19 +535,19 @@ namespace hpp
       }
 
 
-      hpp::dofSeq* ChppciProblem_impl::getGoalConfig(UShort problemId)
+      hpp::dofSeq* Problem::getGoalConfig(UShort problemId)
 	throw(SystemException)
       {
 	hpp::dofSeq *dofArray;
-	unsigned int hppChppciProblem_implId = (unsigned int)problemId;
-	unsigned int nbChppciProblem_impls = planner_->getNbHppChppciProblem_impls();
+	unsigned int hppProblemId = (unsigned int)problemId;
+	unsigned int nbProblems = planner_->getNbHppProblems();
 
-	if (hppChppciProblem_implId < nbChppciProblem_impls) {
+	if (hppProblemId < nbProblems) {
 	  // Get robot in hppPlanner object.
-	  CkppDeviceComponentShPtr robot = planner_->robotIthChppciProblem_impl(hppChppciProblem_implId);
+	  CkppDeviceComponentShPtr robot = planner_->robotIthProblem(hppProblemId);
 
 	  std::vector<double> dofVector;
-	  CkwsConfigShPtr config = planner_->goalConfIthChppciProblem_impl(hppChppciProblem_implId);
+	  CkwsConfigShPtr config = planner_->goalConfIthProblem(hppProblemId);
 
 	  if (config)
 	    {
@@ -577,64 +577,64 @@ namespace hpp
       }
 
 
-      Short ChppciProblem_impl::initializeChppciProblem_impl()
+      Short Problem::initializeProblem()
       {
-	ktStatus status  = planner_->initializeChppciProblem_impl();
+	ktStatus status  = planner_->initializeProblem();
 	return (Short)status;
       }
 
 
-      Short ChppciProblem_impl::solveOneChppciProblem_impl(UShort problemId, Short& inLastPathId, Double& pathLength)
+      Short Problem::solveOneProblem(UShort problemId, Short& inLastPathId, Double& pathLength)
       {
 
 	ktStatus status = KD_ERROR;
 	inLastPathId = 0 ;
 	pathLength = 0;
 
-	unsigned int hppChppciProblem_implId = (unsigned int)problemId;
-	unsigned int nbChppciProblem_impls = planner_->getNbHppChppciProblem_impls();
+	unsigned int hppProblemId = (unsigned int)problemId;
+	unsigned int nbProblems = planner_->getNbHppProblems();
 
 	// Test that rank is less than number of robots in vector.
-	if (hppChppciProblem_implId < nbChppciProblem_impls) {
-	  status = planner_->solveOneChppciProblem_impl(hppChppciProblem_implId);
+	if (hppProblemId < nbProblems) {
+	  status = planner_->solveOneProblem(hppProblemId);
 	}
 
 
-	inLastPathId = planner_->getNbPaths(hppChppciProblem_implId) - 1;
+	inLastPathId = planner_->getNbPaths(hppProblemId) - 1;
 	if (inLastPathId > -1) {
-	  pathLength = planner_->getPath(hppChppciProblem_implId, inLastPathId)->length();
+	  pathLength = planner_->getPath(hppProblemId, inLastPathId)->length();
 	}
 	else {
-	  hppDout (error, ":solveOneChppciProblem_impl: no path in hppChppciProblem_impl " << hppChppciProblem_implId);
+	  hppDout (error, ":solveOneProblem: no path in hppProblem " << hppProblemId);
 	}
 
 	return (Short)status;
       }
 
 
-      Short ChppciProblem_impl::solve()
+      Short Problem::solve()
       {
 	ktStatus status  = planner_->solve();
 	return (Short)status;
       }
 
-      Short ChppciProblem_impl::interruptPathPlanning()
+      Short Problem::interruptPathPlanning()
       {
 	planner_->interruptPathPlanning();
 	return 0;
       }
 
-      Short ChppciProblem_impl::optimizePath(UShort problemId, UShort inPathId)
+      Short Problem::optimizePath(UShort problemId, UShort inPathId)
       {
-	unsigned int hppChppciProblem_implId = (unsigned int)problemId;
+	unsigned int hppProblemId = (unsigned int)problemId;
 	unsigned int pathId = (unsigned int)inPathId;
 
-	if (hppChppciProblem_implId > planner_->getNbHppChppciProblem_impls() - 1) {
+	if (hppProblemId > planner_->getNbHppProblems() - 1) {
 	  hppDout (error, ":optimizePath: wrong problem id");
 	  return -1;
 	}
 
-	if (pathId > planner_->getNbPaths(hppChppciProblem_implId) - 1) {
+	if (pathId > planner_->getNbPaths(hppProblemId) - 1) {
 	  hppDout (error, ":optimizePath: wrong path id");
 	  return -1;
 	}
@@ -643,46 +643,46 @@ namespace hpp
 	return (Short)status;
       }
 
-      Double ChppciProblem_impl::pathLength(UShort problemId, UShort inPathId)
+      Double Problem::pathLength(UShort problemId, UShort inPathId)
       {
 	double length = -1.0;
 
-	unsigned int hppChppciProblem_implId = (unsigned int)problemId;
+	unsigned int hppProblemId = (unsigned int)problemId;
 	unsigned int pathId = (unsigned int)inPathId;
 
-	if (hppChppciProblem_implId > planner_->getNbHppChppciProblem_impls() - 1) {
+	if (hppProblemId > planner_->getNbHppProblems() - 1) {
 	  hppDout (error, ":pathLength: wrong problem id");
 	  return -1.0;
 	}
 
-	if (pathId > planner_->getNbPaths(hppChppciProblem_implId) - 1) {
+	if (pathId > planner_->getNbPaths(hppProblemId) - 1) {
 	  hppDout (error, ":pathLength: wrong path id");
 	  return -1.0;
 	}
 
-	length = planner_->getPath(hppChppciProblem_implId, pathId)->length();
+	length = planner_->getPath(hppProblemId, pathId)->length();
 	return length;
       }
 
-      hpp::dofSeq* ChppciProblem_impl::configAtDistance(UShort problemId, UShort inPathId, Double atDistance)
+      hpp::dofSeq* Problem::configAtDistance(UShort problemId, UShort inPathId, Double atDistance)
       {
-	unsigned int hppChppciProblem_implId = (unsigned int)problemId;
+	unsigned int hppProblemId = (unsigned int)problemId;
 	unsigned int pathId = (unsigned int)inPathId;
 
-	if (hppChppciProblem_implId > planner_->getNbHppChppciProblem_impls() - 1) {
+	if (hppProblemId > planner_->getNbHppProblems() - 1) {
 	  hppDout (error, ":configAtDistance: wrong problem id");
 	  return new hpp::dofSeq(0, 0, NULL, true);
 	}
 
-	if (pathId > planner_->getNbPaths(hppChppciProblem_implId) - 1) {
+	if (pathId > planner_->getNbPaths(hppProblemId) - 1) {
 	  hppDout (error, ":configAtDistance: wrong path id");
 	  return new hpp::dofSeq(0, 0, NULL, true);
 	}
 
-	double length = planner_->getPath(hppChppciProblem_implId, pathId)->length();
+	double length = planner_->getPath(hppProblemId, pathId)->length();
 
 	//get the nb of dof of the robot in the problem
-	unsigned int nbDofRobot = planner_->robotIthChppciProblem_impl(problemId)->countDofs();
+	unsigned int nbDofRobot = planner_->robotIthProblem(problemId)->countDofs();
 
 	//init the seqdof
 	// Allocate result now that the size is known.
@@ -696,7 +696,7 @@ namespace hpp
 	}
 	else {
 	  CkwsConfigShPtr inConfig ;
-	  inConfig = planner_->getPath(hppChppciProblem_implId, pathId)->configAtDistance(atDistance) ;
+	  inConfig = planner_->getPath(hppProblemId, pathId)->configAtDistance(atDistance) ;
 	  //convert the config in dofseq
 	  for ( unsigned int i = 0 ; i < inConfig->size() ; i++){
 	    DofList[i] =  inConfig->dofValue(i) ;
@@ -707,22 +707,22 @@ namespace hpp
       }
 
       /// \brief set tolerance to the objects in the planner
-      Short ChppciProblem_impl::setObstacleTolerance(UShort problemId, Double tolerance)
+      Short Problem::setObstacleTolerance(UShort problemId, Double tolerance)
 	throw(SystemException)
       {
 	// get the planner
-	unsigned int hppChppciProblem_implId = (unsigned int)problemId;
+	unsigned int hppProblemId = (unsigned int)problemId;
 	// get object hppPlanner of Corba server.
 	if(!planner_)
 	  {
-	    hppDout (error, ":setObstacleTolerance: problem " << hppChppciProblem_implId << " not found");
+	    hppDout (error, ":setObstacleTolerance: problem " << hppProblemId << " not found");
 	    return -1;
 	  }
 
 	std::vector<CkcdObjectShPtr> oList = planner_->obstacleList ();
 
 	if(oList.size() == 0)
-	  hppDout (warning, "there are no obstacle in problem " << hppChppciProblem_implId);
+	  hppDout (warning, "there are no obstacle in problem " << hppProblemId);
 
 	for (unsigned int i = 0; i < oList.size(); ++i)
 	  {
@@ -731,7 +731,7 @@ namespace hpp
 	  }
 	return 0;
       }
-      Short ChppciProblem_impl::parseFile
+      Short Problem::parseFile
 	(const char* inFilename) throw (SystemException)
       {
 	if(!planner_)

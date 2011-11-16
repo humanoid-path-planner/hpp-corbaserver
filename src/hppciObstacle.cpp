@@ -31,13 +31,13 @@ namespace hpp
   {
     namespace impl
     {
-      ChppciObstacle_impl::ChppciObstacle_impl (corbaServer::Server* server)
+      Obstacle::Obstacle (corbaServer::Server* server)
 	: server_ (server),
 	  planner_ (server->planner ())
       {}
 
       Short
-      ChppciObstacle_impl::setChppciObstacle_impls (const char* listName)
+      Obstacle::setObstacles (const char* listName)
       {
 	// Check that collision list exists.
 	if (collisionListMap.count(listName) != 1)
@@ -51,7 +51,7 @@ namespace hpp
       }
 
       Short
-      ChppciObstacle_impl::addChppciObstacle_impl(const char* polyhedronName)
+      Obstacle::addObstacle(const char* polyhedronName)
       {
 	// Check that polyhedron exists.
 	if (polyhedronMap.count(polyhedronName) != 1)
@@ -64,12 +64,12 @@ namespace hpp
 
 	// Build collision entity for KCD.
 	hppPolyhedron->makeCollisionEntity();
-	planner_->addChppciObstacle_impl(hppPolyhedron);
+	planner_->addObstacle(hppPolyhedron);
 	return 0;
       }
 
       Short
-      ChppciObstacle_impl::addChppciObstacle_implConfig
+      Obstacle::addObstacleConfig
       (const char* polyhedronName, const hpp::Configuration& cfg)
 	throw(SystemException)
       {
@@ -89,12 +89,12 @@ namespace hpp
 	ConfigurationToCkitMat4(cfg, mat);
 
 	polyhedron->setAbsolutePosition(mat);
-	planner_->addChppciObstacle_impl(polyhedron);
+	planner_->addObstacle(polyhedron);
 	return 0;
       }
 
       Short
-      ChppciObstacle_impl::moveChppciObstacle_implConfig
+      Obstacle::moveObstacleConfig
       (const char* polyhedronName, const hpp::Configuration& cfg)
 	throw(SystemException)
       {
@@ -118,7 +118,7 @@ namespace hpp
       }
 
       Short
-      ChppciObstacle_impl::createCollisionList
+      Obstacle::createCollisionList
       (const char* listName) throw (SystemException)
       {
 	if (collisionListMap.count (listName) != 0)
@@ -131,7 +131,7 @@ namespace hpp
       }
 
       Short
-      ChppciObstacle_impl::addPolyToCollList
+      Obstacle::addPolyToCollList
       (const char* listName, const char* polyhedronName)
 	throw (SystemException)
       {
@@ -157,7 +157,7 @@ namespace hpp
       }
 
       Short
-      ChppciObstacle_impl::createPolyhedron
+      Obstacle::createPolyhedron
       (const char* polyhedronName) throw (SystemException)
       {
 	// Check that polyhedron does not already exist.
@@ -180,7 +180,7 @@ namespace hpp
       }
 
       Short
-      ChppciObstacle_impl::createBox
+      Obstacle::createBox
       (const char* boxName, Double x, Double y, Double z)
 	throw (SystemException)
       {
@@ -203,7 +203,7 @@ namespace hpp
 	return 0;
       }
 
-      Short ChppciObstacle_impl::addPoint
+      Short Obstacle::addPoint
       (const char* polyhedronName, Double x, Double y, Double z)
 	throw (SystemException)
       {
@@ -221,7 +221,7 @@ namespace hpp
       }
 
       Short
-      ChppciObstacle_impl::addTriangle
+      Obstacle::addTriangle
       (const char* polyhedronName, ULong pt1, ULong pt2, ULong pt3)
 	throw (SystemException)
       {
@@ -252,7 +252,7 @@ namespace hpp
 
 #if HPP_CORBASERVER_ENABLE_OPENHRP
       Short
-      ChppciObstacle_impl::loadModelLoaderChppciObstacle_impl(const char* polyhedronName,
+      Obstacle::loadModelLoaderObstacle(const char* polyhedronName,
 					const char* filename,
 					const char* directory)
 	throw (SystemException)
@@ -269,10 +269,10 @@ namespace hpp
 	ktStatus status = KD_OK;
 
 	if (!directory[0])
-	  status = openHrpClient.loadChppciObstacle_implModel
+	  status = openHrpClient.loadObstacleModel
 	    (filename, polyhedronName, polyhedron);
 	else
-	  status = openHrpClient.loadChppciObstacle_implModel
+	  status = openHrpClient.loadObstacleModel
 	    (filename, polyhedronName, polyhedron, directory);
 
 	if (status != KD_OK)
@@ -283,7 +283,7 @@ namespace hpp
 	    return -1;
 	  }
 
-	if (planner_->addChppciObstacle_impl (polyhedron) != KD_OK)
+	if (planner_->addObstacle (polyhedron) != KD_OK)
 	  {
 	    hppDout (error, "failed to add obstacle");
 	    return -1;
@@ -295,7 +295,7 @@ namespace hpp
       }
 #else
       Short
-      ChppciObstacle_impl::loadModelLoaderChppciObstacle_impl(const char* polyhedronName,
+      Obstacle::loadModelLoaderObstacle(const char* polyhedronName,
 					const char* filename,
 					const char* directory)
 	throw (SystemException)
@@ -306,7 +306,7 @@ namespace hpp
 #endif //! HPP_CORBASERVER_ENABLE_OPENHRP
 
       Short
-      ChppciObstacle_impl::setVisible
+      Obstacle::setVisible
       (const char* polyhedronName, Boolean visible) throw (SystemException)
       {
 	if (polyhedronMap.count (polyhedronName) != 1)
@@ -320,7 +320,7 @@ namespace hpp
       }
 
       Short
-      ChppciObstacle_impl::setTransparent
+      Obstacle::setTransparent
       (const char* polyhedronName, Boolean transparent)
 	throw (SystemException)
       {

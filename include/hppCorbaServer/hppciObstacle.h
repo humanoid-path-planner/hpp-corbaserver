@@ -19,28 +19,28 @@
 # include <hpp/corbaserver/fwd.hh>
 # include <hpp/corbaserver/obstacle.stub.hh>
 
-/// \brief Implement CORBA interface ``ChppciObstacle_impl''.
+/// \brief Implement CORBA interface ``Obstacle''.
 namespace hpp
 {
   namespace corbaServer
   {
     namespace impl
     {
-      class ChppciObstacle_impl : public virtual POA_hpp::ChppciObstacle_impl
+      class Obstacle : public virtual POA_hpp::Obstacle
       {
       public:
-	ChppciObstacle_impl (corbaServer::Server* server);
+	Obstacle (corbaServer::Server* server);
 
-	Short setChppciObstacle_impls (const char* listName);
-	Short addChppciObstacle_impl (const char* polyhedronName);
+	Short setObstacles (const char* listName);
+	Short addObstacle (const char* polyhedronName);
 
 	virtual Short
-	addChppciObstacle_implConfig
+	addObstacleConfig
 	(const char* polyName, const Configuration& cfg)
 	  throw (SystemException);
 
 	virtual Short
-	moveChppciObstacle_implConfig (const char* polyName, const Configuration& cfg)
+	moveObstacleConfig (const char* polyName, const Configuration& cfg)
 	  throw (SystemException);
 
 	virtual Short
@@ -72,16 +72,16 @@ namespace hpp
 	  throw(SystemException);
 
 	virtual Short
-	loadModelLoaderChppciObstacle_impl
+	loadModelLoaderObstacle
 	(const char* polyName, const char* filename, const char* openHrpPrefix)
 	  throw(SystemException);
 
-	/// \brief Comment in interface ChppciObstacle_impl::setVisible.
+	/// \brief Comment in interface Obstacle::setVisible.
 	virtual Short
 	setVisible(const char* polyname, Boolean visible)
 	  throw(SystemException);
 
-	/// \brief Comment in interface ChppciObstacle_impl::setTransparent.
+	/// \brief Comment in interface Obstacle::setTransparent.
 	virtual Short
 	setTransparent(const char* polyname, Boolean transparent)
 	  throw(SystemException);

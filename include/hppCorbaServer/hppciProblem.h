@@ -22,11 +22,11 @@ namespace hpp
   {
     namespace impl
     {
-      /// \brief Implement CORBA interface ``ChppciProblem_impl''.
-      class ChppciProblem_impl : public virtual POA_hpp::ChppciProblem_impl
+      /// \brief Implement CORBA interface ``Problem''.
+      class Problem : public virtual POA_hpp::Problem
       {
       public:
-	ChppciProblem_impl (corbaServer::Server* server);
+	Problem (corbaServer::Server* server);
 
 	virtual Short
 	setSteeringMethod
@@ -74,10 +74,10 @@ namespace hpp
 	virtual hpp::dofSeq*
 	getGoalConfig (UShort problemId) throw (SystemException);
 
-	virtual Short initializeChppciProblem_impl ();
+	virtual Short initializeProblem ();
 
 	virtual Short
-	solveOneChppciProblem_impl
+	solveOneProblem
 	(UShort problemId, Short& inLastPathId, Double& pathLength);
 
 	virtual Short solve ();

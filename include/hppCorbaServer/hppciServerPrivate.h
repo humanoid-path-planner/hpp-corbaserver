@@ -47,11 +47,11 @@ namespace hpp
 
 	/// \brief It seems that we need to store this object to
 	/// deactivate the server.
-	PortableChppciServerPrivate::ObjectId* obstacleServantid_;
+	PortableServer::ObjectId* obstacleServantid_;
 
 	/// \brief It seems that we need to store this object to
 	/// deactivate the server.
-	PortableChppciServerPrivate::ObjectId* problemServantid_;
+	PortableServer::ObjectId* problemServantid_;
 
 	/// \brief Corba context.
 	CosNaming::NamingContext_var hppContext_;
@@ -68,13 +68,13 @@ namespace hpp
 	/// \brief Deactivate and destroy servers
 	///
 	/// Destroying active servers raises a Corba exception.
-	void deactivateAndDestroyChppciServerPrivates ();
+	void deactivateAndDestroyServers ();
 
-	friend class corbaChppciServerPrivate::ChppciServerPrivate;
+	friend class corbaServer::Server;
       };
 
     } // end of namespace impl.
-  } // end of namespace corbaChppciServerPrivate.
+  } // end of namespace corbaServer.
 } // end of namespace hpp.
 
 #endif //! HPP_CORBASERVER_SERVER_PRIVATE_HH

@@ -27,25 +27,25 @@
 //FIXME: remove me.
 #define HPPCI_CATCH(msg, ret)						\
   catch(CORBA::SystemException&) {					\
-    hppDout (error, "hppCorbaChppciServer: CORBA::SystemException: " << msg);	\
+    hppDout (error, "hppCorbaServer: CORBA::SystemException: " << msg);	\
     return ret;								\
   }									\
   catch(CORBA::Exception&) {						\
-    hppDout (error, "hppCorbaChppciServer: CORBA::Exception: " << msg);	\
+    hppDout (error, "hppCorbaServer: CORBA::Exception: " << msg);	\
     return ret;								\
   }									\
   catch(omniORB::fatalException& fe) {					\
-    hppDout (error, "hppCorbaChppciServer: CORBA::fatalException: " << msg);	\
+    hppDout (error, "hppCorbaServer: CORBA::fatalException: " << msg);	\
     return ret;								\
   }									\
   catch(...) {								\
-    hppDout (error, "hppCorbaChppciServer: unknown exception: " << msg);	\
+    hppDout (error, "hppCorbaServer: unknown exception: " << msg);	\
     return ret;								\
   }
 
 namespace hpp
 {
-  namespace corbaChppciServer
+  namespace corbaServer
   {
     using CORBA::Exception;
     using CORBA::Object_var;
@@ -72,15 +72,15 @@ namespace hpp
     } // end of anonymous namespace.
 
 
-    ChppciServer::ChppciServer(core::Planner *inHppPlanner, int argc, const char *argv[], bool inMultiThread) :
+    Server::Server(core::Planner *inHppPlanner, int argc, const char *argv[], bool inMultiThread) :
       hppPlanner(inHppPlanner)
     {
       // Register log function.
       omniORB::setLogFunction (&logFunction);
 
-      attPrivate = new impl::ChppciServer;
+      attPrivate = new impl::Server;
 
-      initORBandChppciServers (argc, argv, inMultiThread);
+      initORBandServers (argc, argv, inMultiThread);
       initMapSteeringMethodFactory();
       initMapDistanceFunctionFactory();
       initMapDiffusionNodePickerFactory();
@@ -88,9 +88,9 @@ namespace hpp
     }
 
     /// \brief Shutdown CORBA server
-    ChppciServer::~ChppciServer()
+    Server::~Server()
     {
-      attPrivate->deactivateAndDestroyChppciServers();
+      attPrivate->deactivateAndDestroyServers();
       attPrivate->orb_->shutdown(0);
       delete attPrivate;
       attPrivate = NULL;
@@ -104,13 +104,13 @@ namespace hpp
       STEERING METHOD FACTORIES
     */
 
-    void ChppciServer::initMapSteeringMethodFactory()
+    void Server::initMapSteeringMethodFactory()
     {
       attMapSteeringMethodFactory["linear"] = new CkwsPlusLinearSteeringMethodFactory;
       attMapSteeringMethodFactory["rs"] = new CkwsPlusRSSteeringMethodFactory(1.0);
     }
 
-    void ChppciServer::destroySteeringMethodFactory()
+    void Server::destroySteeringMethodFactory()
     {
       std::map<std::string, CkwsPlusSteeringMethodFactory*>::iterator start
 	= attMapSteeringMethodFactory.begin();
@@ -125,7 +125,7 @@ namespace hpp
       }
     }
 
-    bool ChppciServer::steeringMethodFactoryAlreadySet(std::string inName)
+    bool Server::steeringMethodFactoryAlreadySet(std::string inName)
     {
       if (attMapSteeringMethodFactory.count(inName) == 1) {
 	return true;
@@ -134,7 +134,7 @@ namespace hpp
     }
 
 
-    bool ChppciServer::addSteeringMethodFactory(std::string inName,
+    bool Server::addSteeringMethodFactory(std::string inName,
 						CkwsPlusSteeringMethodFactory* inSteeringMethodFactory)
     {
       if(steeringMethodFactoryAlreadySet(inName)) {
@@ -144,8 +144,8 @@ namespace hpp
       return true;
     }
 
-    CkwsSteeringMethodShPtr ChppciServer::createSteeringMethod(std::string inName,
-							       bool inOriented)
+    CkwsSteeringMethodShPtr Server::createSteeringMethod(std::string inName,
+							 bool inOriented)
     {
       CkwsSteeringMethodShPtr result;
 
@@ -159,13 +159,13 @@ namespace hpp
       DISTANCE FUNCTION FACTORIES
     */
 
-    void ChppciServer::initMapDistanceFunctionFactory()
+    void Server::initMapDistanceFunctionFactory()
     {
       attMapDistanceFunctionFactory["linear"] = new CkwsPlusLinearDistanceFactory;
       attMapDistanceFunctionFactory["rs"] = new CkwsPlusRSDistanceFactory(1.0);
     }
 
-    void ChppciServer::destroyDistanceFunctionFactory()
+    void Server::destroyDistanceFunctionFactory()
     {
       std::map<std::string, CkwsPlusDistanceFactory*>::iterator start
 	= attMapDistanceFunctionFactory.begin();
@@ -180,7 +180,7 @@ namespace hpp
       }
     }
 
-    bool ChppciServer::distanceFactoryAlreadySet(std::string inName)
+    bool Server::distanceFactoryAlreadySet(std::string inName)
     {
       if (attMapDistanceFunctionFactory.count(inName) == 1) {
 	return true;
@@ -189,7 +189,7 @@ namespace hpp
     }
 
 
-    bool ChppciServer::addDistanceFactory(std::string inName,
+    bool Server::addDistanceFactory(std::string inName,
 					  CkwsPlusDistanceFactory* inDistanceFunctionFactory)
     {
       if(distanceFactoryAlreadySet(inName)) {
@@ -199,7 +199,7 @@ namespace hpp
       return true;
     }
 
-    CkwsDistanceShPtr ChppciServer::createDistanceFunction(std::string inName,
+    CkwsDistanceShPtr Server::createDistanceFunction(std::string inName,
 							   bool inOriented)
     {
       CkwsDistanceShPtr result;
@@ -215,14 +215,14 @@ namespace hpp
       DIFFUSION NODE PICKER FACTORIES
     */
 
-    void ChppciServer::initMapDiffusionNodePickerFactory()
+    void Server::initMapDiffusionNodePickerFactory()
     {
       attMapDiffusionNodePickerFactory["basic"] = new CkwsPlusBasicDiffusionNodePickerFactory;
       attMapDiffusionNodePickerFactory["smallestTree"] =
 	new CkwsPlusSmallestTreeDiffusionNodePickerFactory;
     }
 
-    void ChppciServer::destroyDiffusionNodePickerFactory()
+    void Server::destroyDiffusionNodePickerFactory()
     {
       std::map<std::string, CkwsPlusDiffusionNodePickerFactory*>::iterator start
 	= attMapDiffusionNodePickerFactory.begin();
@@ -237,7 +237,7 @@ namespace hpp
       }
     }
 
-    bool ChppciServer::diffusionNodePickerFactoryAlreadySet(std::string inName)
+    bool Server::diffusionNodePickerFactoryAlreadySet(std::string inName)
     {
       if (attMapDiffusionNodePickerFactory.count(inName) == 1) {
 	return true;
@@ -246,7 +246,7 @@ namespace hpp
     }
 
 
-    bool ChppciServer::addDiffusionNodePickerFactory(std::string inName,
+    bool Server::addDiffusionNodePickerFactory(std::string inName,
 						     CkwsPlusDiffusionNodePickerFactory* inDiffusionNodePickerFactory)
     {
       if(diffusionNodePickerFactoryAlreadySet(inName)) {
@@ -256,7 +256,7 @@ namespace hpp
       return true;
     }
 
-    CkwsDiffusionNodePickerShPtr ChppciServer::createDiffusionNodePicker(std::string inName)
+    CkwsDiffusionNodePickerShPtr Server::createDiffusionNodePicker(std::string inName)
     {
       CkwsDiffusionNodePickerShPtr result;
 
@@ -270,14 +270,14 @@ namespace hpp
       DIFFUSION SHOOTER FACTORIES
     */
 
-    void ChppciServer::initMapDiffusionShooterFactory()
+    void Server::initMapDiffusionShooterFactory()
     {
       attMapDiffusionShooterFactory["config space"] = new CkwsPlusShooterConfigSpaceFactory;
       attMapDiffusionShooterFactory["roadmap box"] = new CkwsPlusShooterRoadmapBoxFactory;
       attMapDiffusionShooterFactory["roadmap node"] = new CkwsPlusShooterRoadmapNodesFactory;
     }
 
-    void ChppciServer::destroyDiffusionShooterFactory()
+    void Server::destroyDiffusionShooterFactory()
     {
       std::map<std::string, CkwsPlusDiffusionShooterFactory*>::iterator start
 	= attMapDiffusionShooterFactory.begin();
@@ -292,7 +292,7 @@ namespace hpp
       }
     }
 
-    bool ChppciServer::diffusionShooterFactoryAlreadySet(std::string inName)
+    bool Server::diffusionShooterFactoryAlreadySet(std::string inName)
     {
       if (attMapDiffusionShooterFactory.count(inName) == 1) {
 	return true;
@@ -301,7 +301,7 @@ namespace hpp
     }
 
 
-    bool ChppciServer::addDiffusionShooterFactory(std::string inName,
+    bool Server::addDiffusionShooterFactory(std::string inName,
 						  CkwsPlusDiffusionShooterFactory* inDiffusionShooterFactory)
     {
       if(diffusionShooterFactoryAlreadySet(inName)) {
@@ -311,7 +311,7 @@ namespace hpp
       return true;
     }
 
-    CkwsDiffusionShooterShPtr ChppciServer::createDiffusionShooter(std::string inName,
+    CkwsDiffusionShooterShPtr Server::createDiffusionShooter(std::string inName,
 								   double inStandardDeviation)
     {
       CkwsDiffusionShooterShPtr result;
@@ -328,11 +328,11 @@ namespace hpp
       CORBA SERVER INITIALIZATION
     */
 
-    ktStatus ChppciServer::initORBandChppciServers(int argc, const char* argv[], bool inMultiThread)
+    ktStatus Server::initORBandServers(int argc, const char* argv[], bool inMultiThread)
     {
       Object_var obj;
-      PortableChppciServer::ThreadPolicy_var threadPolicy;
-      PortableChppciServer::POA_var rootPoa;
+      PortableServer::ThreadPolicy_var threadPolicy;
+      PortableServer::POA_var rootPoa;
 
       /*
 	 Fine granularity in exception handling
@@ -368,13 +368,13 @@ namespace hpp
 	  // Make the CORBA object single-threaded to avoid GUI krash
 	  //
 	  // Create a sigle threaded policy object
-	  rootPoa = PortableChppciServer::POA::_narrow(obj);
+	  rootPoa = PortableServer::POA::_narrow(obj);
 
 	  if (inMultiThread) {
-	    threadPolicy = rootPoa->create_thread_policy(PortableChppciServer::ORB_CTRL_MODEL);
+	    threadPolicy = rootPoa->create_thread_policy(PortableServer::ORB_CTRL_MODEL);
 	  }
 	  else {
-	    threadPolicy = rootPoa->create_thread_policy(PortableChppciServer::MAIN_THREAD_MODEL);
+	    threadPolicy = rootPoa->create_thread_policy(PortableServer::MAIN_THREAD_MODEL);
 	  }
 	}
       HPPCI_CATCH("failed to create thread policy", KD_ERROR)
@@ -386,9 +386,9 @@ namespace hpp
 	try {
 	  PolicyList policyList;
 	  policyList.length(1);
-	  policyList[0] = PortableChppciServer::ThreadPolicy::_duplicate(threadPolicy);
+	  policyList[0] = PortableServer::ThreadPolicy::_duplicate(threadPolicy);
 
-	  attPrivate->poa_ = rootPoa->create_POA("child", PortableChppciServer::POAManager::_nil(),
+	  attPrivate->poa_ = rootPoa->create_POA("child", PortableServer::POAManager::_nil(),
 						policyList);
 
 	}
@@ -405,10 +405,10 @@ namespace hpp
 	}
       HPPCI_CATCH("failed to destroy thread policy", KD_ERROR);
 
-      return attPrivate->createAndActivateChppciServers(this);
+      return attPrivate->createAndActivateServers(this);
     }
 
-    int ChppciServer::startCorbaChppciServer()
+    int Server::startCorbaServer()
     {
       try {
 	// Obtain a reference to objects, and register them in
@@ -451,19 +451,19 @@ namespace hpp
 	}
 	attPrivate->problemServant_->_remove_ref();
 
-	PortableChppciServer::POAManager_var pman = attPrivate->poa_->the_POAManager();
+	PortableServer::POAManager_var pman = attPrivate->poa_->the_POAManager();
 	pman->activate();
       }
       HPPCI_CATCH("failed to start CORBA server", KD_ERROR);
       return KD_OK;
     }
 
-    const core::Planner* ChppciServer::planner() const
+    const core::Planner* Server::planner() const
     {
       return hppPlanner;
     }
 
-    core::Planner* ChppciServer::planner()
+    core::Planner* Server::planner()
     {
       return hppPlanner;
     }
@@ -472,7 +472,7 @@ namespace hpp
 
 
     /// \brief If CORBA requests are pending, process them
-    int ChppciServer::processRequest (bool loop)
+    int Server::processRequest (bool loop)
     {
       if (loop)
 	{
@@ -487,5 +487,5 @@ namespace hpp
       return 0;
     }
 
-  } // end of namespace corbaChppciServer.
+  } // end of namespace corbaServer.
 } // end of namespace hpp.

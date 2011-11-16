@@ -20,25 +20,25 @@
 //FIXME: remove me.
 #define HPPCI_CATCH(msg, ret)						\
   catch(CORBA::SystemException&) {					\
-    hppDout (error, "hppCorbaChppciServerPrivate: CORBA::SystemException: " << msg);	\
+    hppDout (error, "hppCorbaServer: CORBA::SystemException: " << msg);	\
     return ret;								\
   }									\
   catch(CORBA::Exception&) {						\
-    hppDout (error, "hppCorbaChppciServerPrivate: CORBA::Exception: " << msg);	\
+    hppDout (error, "hppCorbaServer: CORBA::Exception: " << msg);	\
     return ret;								\
   }									\
   catch(omniORB::fatalException& fe) {					\
-    hppDout (error, "hppCorbaChppciServerPrivate: CORBA::fatalException: " << msg);	\
+    hppDout (error, "hppCorbaServer: CORBA::fatalException: " << msg);	\
     return ret;								\
   }									\
   catch(...) {								\
-    hppDout (error, "hppCorbaChppciServerPrivate: unknown exception: " << msg);	\
+    hppDout (error, "hppCorbaServer: unknown exception: " << msg);	\
     return ret;								\
   }
 
 namespace hpp
 {
-  namespace corbaChppciServerPrivate
+  namespace corbaServer
   {
     namespace impl
     {
@@ -53,7 +53,7 @@ namespace hpp
 
       typedef CORBA::ORB::InvalidName InvalidName;
 
-      ChppciServerPrivate::~ChppciServerPrivate ()
+      Server::~Server ()
       {
 	delete robotServantid_;
 	delete problemServantid_;
@@ -61,20 +61,20 @@ namespace hpp
       }
 
       ktStatus
-      ChppciServerPrivate::createAndActivateChppciServerPrivates (corbaChppciServerPrivate::ChppciServerPrivate* inChppciServerPrivate)
+      Server::createAndActivateServers (corbaServer::Server* inServer)
       {
 	try {
-	  robotServant_ = new Robot (inChppciServerPrivate);
+	  robotServant_ = new Robot (inServer);
 	}
 	HPPCI_CATCH("failed to create implementation of hpp::Robot", KD_ERROR)
 
 	  try {
-	    obstacleServant_ = new Obstacle (inChppciServerPrivate);
+	    obstacleServant_ = new Obstacle (inServer);
 	  }
 	HPPCI_CATCH("failed to create implementation of hpp::Obstacle", KD_ERROR)
 
 	  try {
-	    problemServant_ = new Problem (inChppciServerPrivate);
+	    problemServant_ = new Problem (inServer);
 	  }
 	HPPCI_CATCH("failed to create implementation of hpp::Problem", KD_ERROR)
 
@@ -97,7 +97,7 @@ namespace hpp
 	  return KD_OK;
       }
 
-      void ChppciServerPrivate::deactivateAndDestroyChppciServerPrivates()
+      void Server::deactivateAndDestroyServers()
       {
 	if (robotServant_) {
 	  poa_->deactivate_object(*robotServantid_);
@@ -114,7 +114,7 @@ namespace hpp
       }
 
 
-      bool ChppciServerPrivate::createHppContext ()
+      bool Server::createHppContext ()
       {
 	CosNaming::NamingContext_var rootContext;
 	Object_var localObj;
@@ -181,7 +181,7 @@ namespace hpp
 	return true;
       }
 
-      bool ChppciServerPrivate::bindObjectToName(Object_ptr objref,
+      bool Server::bindObjectToName(Object_ptr objref,
 						 CosNaming::Name objectName)
       {
 	try {
@@ -217,5 +217,5 @@ namespace hpp
       }
 
     } // end of namespace impl.
-  } // end of namespace corbaChppciServerPrivate.
+  } // end of namespace corbaServer.
 } // end of namespace hpp.
