@@ -108,7 +108,6 @@ namespace hpp
     {
       attMapSteeringMethodFactory["linear"] = new CkwsPlusLinearSteeringMethodFactory;
       attMapSteeringMethodFactory["rs"] = new CkwsPlusRSSteeringMethodFactory(1.0);
-      attMapSteeringMethodFactory["flic"] = new CkwsPlusFlicSteeringMethodFactory();
     }
 
     void ChppciServer::destroySteeringMethodFactory()
@@ -164,7 +163,6 @@ namespace hpp
     {
       attMapDistanceFunctionFactory["linear"] = new CkwsPlusLinearDistanceFactory;
       attMapDistanceFunctionFactory["rs"] = new CkwsPlusRSDistanceFactory(1.0);
-      attMapDistanceFunctionFactory["flic"] = new CkwsPlusApproxFlicDistanceFactory;
     }
 
     void ChppciServer::destroyDistanceFunctionFactory()
