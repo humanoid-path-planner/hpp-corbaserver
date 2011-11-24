@@ -111,7 +111,7 @@ namespace hpp
 	    roadmapBuilder = ChppVisRdmBuilder::create(roadmap, penetration);
 	  } else if (roadmapBuilderName == "PCA<diffusing>") {
 	    roadmapBuilder =
-	      CkwsPlusPCARdmBuilder<CkwsDiffusingRdmBuilder>::create(roadmap, penetration);
+	      CkwsPlusPCARdmBuilder<CkwsDiffusingRdmBuilder>::create(roadmap);
 	  } else {
 	    hppDout (error, ":setRoadmapbuilder: unknown roadmap builder");
 	    return -1;
