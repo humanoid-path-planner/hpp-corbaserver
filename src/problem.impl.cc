@@ -709,7 +709,9 @@ namespace hpp
 	throw(SystemException)
       {
 	// get the planner
+#ifdef HPP_DEBUG
 	unsigned int hppProblemId = (unsigned int)problemId;
+#endif
 	// get object hppPlanner of Corba server.
 	if(!planner_)
 	  {
