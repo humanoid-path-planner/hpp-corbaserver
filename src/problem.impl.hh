@@ -58,7 +58,7 @@ namespace hpp
 
 	virtual Short
 	setDiffusionShooter
-	(UShort problemId, const char* diffusionShooterName, Double standardDeviation);
+	(UShort problemId, const char* diffusionShooterName);
 
 	virtual Short
 	setInitialConfig

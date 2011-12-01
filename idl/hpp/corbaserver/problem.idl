@@ -110,7 +110,6 @@ module hpp
     /** \brief Set diffusion shooter used by roadmap builder
 	\param inProblemId Rank of problem in vector of hppProblems.
 	\param inDiffusionShooterName Name of the diffusion shooter.
-	\param inStandardDeviation standard deviation of Gaussian sampling.
 
 	\note diffusion shooter is stored in the roadmap builder. Resetting the roadmap builder 
 	will therefore discard the diffusion shooter.
@@ -123,7 +122,7 @@ module hpp
 	\li "roadmap node": CkwsShooterRoadmapNodes (see KineoWorks documentation)
 	Other diffusion shooters can be added using function ChppciServer::addDiffusionShooterFactory.
     */
-    short setDiffusionShooter(in unsigned short inProblemId, in string inDiffusionShooterName, in double inStandardDeviation);
+    short setDiffusionShooter(in unsigned short inProblemId, in string inDiffusionShooterName);
 
     /** \brief Set initial configuration of specified robot in ChppPlanner::robotVector.
 	\param inProblemId rank of robot in vector of robots.

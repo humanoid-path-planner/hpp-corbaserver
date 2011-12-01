@@ -378,8 +378,7 @@ namespace hpp
       }
 
       Short Problem::setDiffusionShooter(UShort problemId,
-					 const char* inDiffusionShooterName,
-					 Double inStandardDeviation)
+					 const char* inDiffusionShooterName)
       {
 	std::string diffusionShooterName(inDiffusionShooterName);
 	unsigned int hppProblemId = (unsigned int)problemId;
@@ -404,8 +403,7 @@ namespace hpp
 
 	  // Create diffusion shooter
 	  CkwsDiffusionShooterShPtr diffusionShooter =
-	    server_->createDiffusionShooter(diffusionShooterName,
-					    inStandardDeviation);
+	    server_->createDiffusionShooter(diffusionShooterName);
 
 	  hppDout (info, ":setDiffusionShooter: set roadmap builder diffusion shooter to " << diffusionShooterName);
 	  roadmapBuilder->diffusionShooter(diffusionShooter);

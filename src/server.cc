@@ -313,13 +313,12 @@ namespace hpp
       return true;
     }
 
-    CkwsDiffusionShooterShPtr Server::createDiffusionShooter(std::string inName,
-								   double inStandardDeviation)
+    CkwsDiffusionShooterShPtr Server::createDiffusionShooter(std::string inName)
     {
       CkwsDiffusionShooterShPtr result;
 
       if (diffusionShooterFactoryAlreadySet(inName)) {
-	result = attMapDiffusionShooterFactory[inName]->makeDiffusionShooter(inStandardDeviation);
+	result = attMapDiffusionShooterFactory[inName]->makeDiffusionShooter();
       }
       return result;
     }

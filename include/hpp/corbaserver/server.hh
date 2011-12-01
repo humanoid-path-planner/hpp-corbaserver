@@ -192,8 +192,7 @@ namespace hpp
 	 \param inName name of the diffusion shooter.
 	 \param inStandardDeviation standard deviation of Gaussian sampling
       */
-      CkwsDiffusionShooterShPtr createDiffusionShooter (std::string inName,
-						       double inStandardDeviation);
+      CkwsDiffusionShooterShPtr createDiffusionShooter (std::string inName);
 
       /**
 	 @}
