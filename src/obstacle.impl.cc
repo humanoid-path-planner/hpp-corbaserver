@@ -63,7 +63,7 @@ namespace hpp
 	CkppKCDPolyhedronShPtr hppPolyhedron = polyhedronMap[polyhedronName];
 
 	// Build collision entity for KCD.
-	hppPolyhedron->makeCollisionEntity();
+	hppPolyhedron->makeCollisionEntity(CkcdObject::IMMEDIATE_BUILD);
 	planner_->addObstacle(hppPolyhedron);
 	return 0;
       }
@@ -83,7 +83,7 @@ namespace hpp
 	CkppKCDPolyhedronShPtr polyhedron = polyhedronMap[polyhedronName];
 
 	// Build collision entity for KCD.
-	polyhedron->makeCollisionEntity();
+	polyhedron->makeCollisionEntity(CkcdObject::IMMEDIATE_BUILD);
 
 	CkitMat4 mat;
 	ConfigurationToCkitMat4(cfg, mat);
@@ -151,7 +151,7 @@ namespace hpp
 	  }
 
 	CkppKCDPolyhedronShPtr polyhedron = polyhedronMap[polyhedronName];
-	polyhedron->makeCollisionEntity ();
+	polyhedron->makeCollisionEntity (CkcdObject::IMMEDIATE_BUILD);
 	collisionListMap[listName].push_back (polyhedron);
 	return 0;
       }
