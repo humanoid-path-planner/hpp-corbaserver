@@ -205,37 +205,6 @@ namespace hpp
 	return 0;
       }
 
-
-
-      Short Robot::addExtraDofToRobot(const char* inRobotName, const char* inDofName)
-	throw (SystemException)
-      {
-	std::string robotName(inRobotName);
-	std::string dofName(inDofName);
-
-	// Check that robot of this name exists.
-	if (robotMap_.count(robotName) != 1) {
-	  hppDout (error, ":addExtraDofToRobot: robot " << robotName << " does not exist.");
-	  return -1;
-	}
-	// Check that extra degree of freedom of this name exists.
-	if (extraDofMap_.count(dofName) != 1) {
-	  hppDout (error, ":addExtraDofToRobot: joint " << dofName << " does not exist.");
-	  return -1;
-	}
-	CkppDeviceComponentShPtr hppDevice = robotMap_[robotName];
-	CkppExtraDofComponentShPtr kwsExtraDof = extraDofMap_[dofName];
-
-	if (hppDevice->addExtraDof(kwsExtraDof)!=KD_OK) {
-	  hppDout (error, ":addExtraDofToRobot: failed add extra degree of freedom "
-		   << dofName << " to robot " << robotName << ".");
-	  return -1;
-	}
-	return 0;
-      }
-
-
-
       Short Robot::createJoint(const char* inJointName,
 			       const char* inJointType, const hpp::Configuration& pos,
 			       const hpp::jointBoundSeq& inJointBound,

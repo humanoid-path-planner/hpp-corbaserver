@@ -86,13 +86,6 @@ module hpp
     short createExtraDof(in string inDofName, in boolean inRevolute, in double inValueMin, in double inValueMax);
 
     /**
-       \brief Add an extra degree of freedom to a robot.
-       \param inRobotName name of the robot.
-       \param inDofName name of the extra dof
-    */
-    short addExtraDofToRobot(in string inRobotName, in string inDofName);
-
-    /**
        \brief Set bound of degree of freedom
        
        \param inProblemId rank of robot in vector of robots. 

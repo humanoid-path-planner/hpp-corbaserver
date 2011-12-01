@@ -99,10 +99,6 @@ namespace hpp
 	  throw (SystemException);
 
 	virtual Short
-	addExtraDofToRobot
-	(const char* robotName, const char* dofName) throw (SystemException);
-      
-	virtual Short
 	setDofBounds
 	(UShort problemId, UShort dofId, 	Double minValue, Double maxValue)
 	  throw (SystemException);
