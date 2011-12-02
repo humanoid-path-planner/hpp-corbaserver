@@ -37,7 +37,7 @@ namespace hpp
   {
     namespace impl
     {
-      static void makeColPair(ChppColPair &cp);
+      static void makeColPair(hpp::core::CollisionPair &cp);
       static void setHRP2OuterLists(model::HumanoidRobotShPtr i_hrp2);
 
       // Note : this class has been created because "common.hh" and "modelloader.hh"
@@ -139,7 +139,7 @@ namespace hpp
 
       } ;
 
-      void makeColPair (ChppColPair &cp)
+      void makeColPair (hpp::core::CollisionPair &cp)
       {
 	// BODY:  +ARM2  +LEG2
 	cp.addColPairRange (BODY, RARM_LINK2, RARM_LINK6);
@@ -334,7 +334,7 @@ namespace hpp
 
       void setHRP2OuterLists (model::HumanoidRobotShPtr i_hrp2)
       {
-	ChppColPair hrpCP;
+	hpp::core::CollisionPair hrpCP;
 	makeColPair (hrpCP);
 
 	std::vector<CkwsJointShPtr> jv;
