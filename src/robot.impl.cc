@@ -172,7 +172,7 @@ namespace hpp
 #else
       Short Robot::loadHrp2Model(double inPenetration)
       {
-	assert ("This function is not defined when OpenHRP is not enabled.");
+	assert ("This function is not defined when OpenHRP is not enabled."&&0);
 	return -1;
       }
 #endif
