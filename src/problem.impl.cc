@@ -73,10 +73,10 @@ namespace hpp
 	  }
 
 	// Create steering method
-	CkwsSteeringMethodShPtr steeringMethod =
+	CkppSteeringMethodComponentShPtr steeringMethod =
 	  server_->createSteeringMethod (steeringMethodName, oriented);
 
-	robot->steeringMethod (steeringMethod);
+	robot->steeringMethodComponent (steeringMethod);
 	return 0;
       }
 

@@ -108,7 +108,6 @@ namespace hpp
     {
       attMapSteeringMethodFactory["linear"] = new CkwsPlusLinearSteeringMethodFactory;
       attMapSteeringMethodFactory["rs"] = new CkwsPlusRSSteeringMethodFactory(1.0);
-      attMapSteeringMethodFactory["flic"] = new CkwsPlusFlicSteeringMethodFactory();
     }
 
     void Server::destroySteeringMethodFactory()
@@ -145,13 +144,14 @@ namespace hpp
       return true;
     }
 
-    CkwsSteeringMethodShPtr Server::createSteeringMethod(std::string inName,
-							 bool inOriented)
+    CkppSteeringMethodComponentShPtr
+    Server::createSteeringMethod(std::string inName, bool inOriented)
     {
-      CkwsSteeringMethodShPtr result;
+      CkppSteeringMethodComponentShPtr result;
 
       if (steeringMethodFactoryAlreadySet(inName)) {
-	result = attMapSteeringMethodFactory[inName]->makeSteeringMethod(inOriented);
+	result =
+	  attMapSteeringMethodFactory[inName]->makeSteeringMethod(inOriented);
       }
       return result;
     }
@@ -164,7 +164,6 @@ namespace hpp
     {
       attMapDistanceFunctionFactory["linear"] = new CkwsPlusLinearDistanceFactory;
       attMapDistanceFunctionFactory["rs"] = new CkwsPlusRSDistanceFactory(1.0);
-      attMapDistanceFunctionFactory["flic"] = new CkwsPlusApproxFlicDistanceFactory;
     }
 
     void Server::destroyDistanceFunctionFactory()

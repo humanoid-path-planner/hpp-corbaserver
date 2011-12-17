@@ -105,7 +105,8 @@ namespace hpp
       /**
 	 \brief Get steering method from name.
       */
-      CkwsSteeringMethodShPtr createSteeringMethod (std::string inName, bool inOriented);
+      CkppSteeringMethodComponentShPtr createSteeringMethod
+	(std::string inName, bool inOriented);
 
       /**
 	 @}
