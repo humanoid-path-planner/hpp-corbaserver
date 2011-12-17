@@ -54,32 +54,6 @@ namespace hpp
 	  planner_ (server->planner ())
       {}
 
-      Short
-      Problem::setSteeringMethod
-      (UShort problemId, const char* steeringMethodName, Boolean oriented)
-      {
-	assert (planner_);
-	if (!checkProblemId (*planner_, problemId))
-	  return -1;
-
-	// Get robot in hppPlanner object.
-	CkppDeviceComponentShPtr robot = planner_->robotIthProblem (problemId);
-
-	/* Check that name correspond to a steering method factory */
-	if (!server_->steeringMethodFactoryAlreadySet (steeringMethodName))
-	  {
-	    hppDout (error, "invalid steering method");
-	    return -1;
-	  }
-
-	// Create steering method
-	CkppSteeringMethodComponentShPtr steeringMethod =
-	  server_->createSteeringMethod (steeringMethodName, oriented);
-
-	robot->steeringMethodComponent (steeringMethod);
-	return 0;
-      }
-
       Short Problem::setRoadmapbuilder(UShort problemId, const char* inRoadmapBuilderName,
 				       Boolean inDisplay)
       {

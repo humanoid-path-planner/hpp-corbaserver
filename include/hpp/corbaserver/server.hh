@@ -247,7 +247,8 @@ namespace hpp
       /**
 	 \brief Associative array of Steering method factories.
       */
-      std::map<std::string, CkwsPlusSteeringMethodFactory*> attMapSteeringMethodFactory;
+      std::map<std::string, CkwsPlusSteeringMethodFactory*>
+	attMapSteeringMethodFactory;
 
       /**
 	 @}

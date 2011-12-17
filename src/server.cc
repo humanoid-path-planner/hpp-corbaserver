@@ -106,8 +106,6 @@ namespace hpp
 
     void Server::initMapSteeringMethodFactory()
     {
-      attMapSteeringMethodFactory["linear"] = new CkwsPlusLinearSteeringMethodFactory;
-      attMapSteeringMethodFactory["rs"] = new CkwsPlusRSSteeringMethodFactory(1.0);
     }
 
     void Server::destroySteeringMethodFactory()
@@ -135,7 +133,8 @@ namespace hpp
 
 
     bool Server::addSteeringMethodFactory(std::string inName,
-						CkwsPlusSteeringMethodFactory* inSteeringMethodFactory)
+					  CkwsPlusSteeringMethodFactory*
+					  inSteeringMethodFactory)
     {
       if(steeringMethodFactoryAlreadySet(inName)) {
 	return false;
@@ -162,8 +161,6 @@ namespace hpp
 
     void Server::initMapDistanceFunctionFactory()
     {
-      attMapDistanceFunctionFactory["linear"] = new CkwsPlusLinearDistanceFactory;
-      attMapDistanceFunctionFactory["rs"] = new CkwsPlusRSDistanceFactory(1.0);
     }
 
     void Server::destroyDistanceFunctionFactory()

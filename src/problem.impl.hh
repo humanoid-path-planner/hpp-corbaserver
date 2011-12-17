@@ -29,10 +29,6 @@ namespace hpp
 	Problem (corbaServer::Server* server);
 
 	virtual Short
-	setSteeringMethod
-	(UShort problemId, const char* steeringMethod, Boolean oriented);
-
-	virtual Short
 	setRoadmapbuilder
 	(UShort problemId, const char* roadmapBuilder, Boolean display);
 
