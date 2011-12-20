@@ -1,3 +1,11 @@
+Release 1.13, 12/20/2011
+
+	* Compatibility with kitelab-2.06.
+
+Release 1.12, 09/30/2011
+
+	* Compatibility with hpp-model-2.0
+
 Release 1.11, 09/01/2011
 
 	* Adapt to hrp2 package new name.

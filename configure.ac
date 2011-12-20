@@ -6,7 +6,7 @@ AC_PREREQ([2.63])
 ## Package configuration ##
 ## --------------------- ##
 AC_INIT([hpp-corbaserver],
-        [1.12.0.99],
+        [1.13],
 	[hpp@laas.fr],
 	[hpp-corbaserver])
 
@@ -39,12 +39,8 @@ if  test "$GXX" = yes; then
   CXXFLAGS="$CXXFLAGS -Wcast-align"
   CXXFLAGS="$CXXFLAGS -Wcast-qual"
   CXXFLAGS="$CXXFLAGS -Wformat"
-  CXXFLAGS="$CXXFLAGS -Wmissing-prototypes"
-  CXXFLAGS="$CXXFLAGS -Wstrict-prototypes"
   CXXFLAGS="$CXXFLAGS -Wwrite-strings"
-  CXXFLAGS="$CXXFLAGS -Wbad-function-cast"
   CXXFLAGS="$CXXFLAGS -Wmissing-declarations"
-  CXXFLAGS="$CXXFLAGS -Wnested-externs"
 fi
 
 # Macros are stored in build-aux.
@@ -83,12 +79,12 @@ JRL_PROG_DOXYGEN
 LT_INIT
 
 # Search for pkg-config dependencies.
-JRL_PKGCONFIGCHECK_ADDDEP([HPPCORE], [hpp-core >= 1.15])
+JRL_PKGCONFIGCHECK_ADDDEP([HPPCORE], [hpp-core >= 2.0])
 JRL_PKGCONFIGCHECK_ADDDEP([HPP_UTIL], [hpp-util >= 0.4])
-JRL_PKGCONFIGCHECK([KWSPLUS], [kwsPlus >= 1.8])
+JRL_PKGCONFIGCHECK([KWSPLUS], [kwsPlus >= 2.1])
 JRL_PKGCONFIGCHECK_ADDDEP([OMNIORB4], [omniORB4])
 
-JRL_PKGCONFIGCHECK([KINEOCONTROLLER], [KineoController])
+JRL_PKGCONFIGCHECK([KINEOCONTROLLER], [KineoController >= 2.06])
 AC_SUBST([KINEO_LIBDIR],[${KINEOCONTROLLER_PREFIX}/lib])
 AC_SUBST(KINEO_PREFIX, [${KINEOPATHPLANNER_PREFIX}])
 AC_SUBST([KINEO_ADDON_BUILDER],
