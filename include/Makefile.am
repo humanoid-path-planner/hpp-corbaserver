@@ -10,7 +10,7 @@ nobase_include_HEADERS =				\
 
 if OPENHRP
 
-nodist_nobase_include_HEADERS =				\
+nobase_nodist_include_HEADERS =				\
 	hpp/corbaserver/openhrp.hh
 
 endif
