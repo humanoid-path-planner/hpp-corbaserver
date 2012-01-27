@@ -202,7 +202,7 @@ namespace hpp
 	    return (Short)status;
 	  }
 	  else if (pathOptimizerName == "none") {
-	    CkwsPathOptimizerShPtr pathOptimizer;
+	    CkwsPathPlannerShPtr pathOptimizer;
 	    status = planner_->pathOptimizerIthProblem(hppProblemId, pathOptimizer);
 	    hppDout (info, ":setPathOptimizer: no path optimizer set");
 	    return (Short)status;
@@ -298,7 +298,7 @@ namespace hpp
 	  }
 
 	  // path optimizer
-	  CkwsPathOptimizerShPtr pathOptimizer =
+	  CkwsPathPlannerShPtr pathOptimizer =
 	    planner_->pathOptimizerIthProblem(hppProblemId);
 	  if (pathOptimizer) {
 	    pathOptimizer->distance(distance);
