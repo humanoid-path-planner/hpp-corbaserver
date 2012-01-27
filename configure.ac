@@ -6,7 +6,7 @@ AC_PREREQ([2.63])
 ## Package configuration ##
 ## --------------------- ##
 AC_INIT([hpp-corbaserver],
-        [1.13],
+        [1.14],
 	[hpp@laas.fr],
 	[hpp-corbaserver])
 
