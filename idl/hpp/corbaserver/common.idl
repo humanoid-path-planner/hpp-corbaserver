@@ -16,6 +16,7 @@ module hpp
 {
   /// \brief KineoWorks configuration is defined by a sequence of dof value.
   typedef sequence<double> dofSeq;
+  typedef sequence<dofSeq> dofSeqSeq;
 
   typedef double Translation[3];
   typedef double Rotation[9];

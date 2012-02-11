@@ -50,21 +50,21 @@ module hpp
        \param inMinRadius Initial size of the neighborhood to explore
        \param inMaxRadius Maximum size of the neighborhood to explore
        \param inScaleFactor Growth rate of the neighborhood size
-       
+
        If inMinRadius = 0 remove configuration extractor from problem.
 
        \return 0 if success, -1 if failure.
     */
     short setConfigExtractor(in unsigned short inProblemId, in double inMinRadius,
 			     in double inMaxRadius, in double inScaleFactor);
-       
-  
+
+
     /** \brief Set distance function used by roadmap builder
 	\param inProblemId Rank of problem in vector of hppProblems.
 	\param inDistanceName Name of the distance function.
 	\param inOriented whether distance corresponds to an oriented local method.
 
-	\note Distance function is given to the device, to the roadmap builder, 
+	\note Distance function is given to the device, to the roadmap builder,
 	and path optimizer if any.
 
 	\return 0 if success, -1 if failure.
@@ -81,7 +81,7 @@ module hpp
 	\param inProblemId Rank of problem in vector of hppProblems.
 	\param inDiffusionNodePickerName Name of the diffusion node picker.
 
-	\note diffusion node picker is stored in the roadmap builder. Resetting the roadmap builder 
+	\note diffusion node picker is stored in the roadmap builder. Resetting the roadmap builder
 	will therefore discard the diffusion node picker.
 
 	\return 0 if success, -1 if failure. Roadmap builder should be of type diffusing.
@@ -97,7 +97,7 @@ module hpp
 	\param inProblemId Rank of problem in vector of hppProblems.
 	\param inDiffusionShooterName Name of the diffusion shooter.
 
-	\note diffusion shooter is stored in the roadmap builder. Resetting the roadmap builder 
+	\note diffusion shooter is stored in the roadmap builder. Resetting the roadmap builder
 	will therefore discard the diffusion shooter.
 
 	\return 0 if success, -1 if failure. Roadmap builder should be of type diffusing.
@@ -110,31 +110,31 @@ module hpp
     */
     short setDiffusionShooter(in unsigned short inProblemId, in string inDiffusionShooterName);
 
-    /** \brief Set initial configuration of specified robot in ChppPlanner::robotVector.
-	\param inProblemId rank of robot in vector of robots.
-	\param dofArray Array of degrees of freedom 
-	\return 0 if success, -1 if failure.
-    */
-    short setInitialConfig(in unsigned short inProblemId, in dofSeq dofArray);
+    /// Set initial configuration of specified problem.
+    ///	\param inProblemId rank of robot in vector of robots.
+    ///	\param dofArray Array of degrees of freedom
+    ///	\return 0 if success, -1 if failure.
+    short setInitialConfig (in unsigned short inProblemId, in dofSeq dofArray);
 
-    /** \brief Set goal configuration of specified robot in ChppPlanner::robotVector.
-	\param inProblemId rank of robot in vector of robots.
-	\param dofArray Array of degrees of freedom 
-	\return 0 if success, -1 if failure.
-    */
-    short setGoalConfig(in unsigned short inProblemId, in dofSeq dofArray);
+    /// Get initial configuration of specified problem.
+    ///	\param inProblemId rank of robot in vector of robots.
+    ///	\return Array of degrees of freedom
+     dofSeq getInitialConfig (in unsigned short inProblemId);
 
-    /** \brief Get initial configuration of specified robot in ChppPlanner::robotVector.
-	\param inProblemId rank of robot in vector of robots.
-	\return Array of degrees of freedom 
-    */
-     dofSeq getInitialConfig(in unsigned short inProblemId);
+    /// \brief Add goal configuration to specified problem.
+    ///	\param inProblemId rank of robot in vector of robots.
+    ///	\param dofArray Array of degrees of freedom
+    ///	\return 0 if success, -1 if failure.
+    short addGoalConfig (in unsigned short inProblemId, in dofSeq dofArray);
 
-    /** \brief Set goal configuration of specified robot in ChppPlanner::robotVector.
-	\param inProblemId rank of robot in vector of robots.
-	\return Array of degrees of freedom 
-    */
-    dofSeq getGoalConfig(in unsigned short inProblemId);
+    /// Get goal configurations of specified problem.
+    ///	\param inProblemId rank of robot in vector of robots.
+    ///	\return Array of degrees of freedom
+    dofSeqSeq getGoalConfig (in unsigned short inProblemId);
+
+    /// Reset goal configurations
+    ///	\param inProblemId rank of robot in vector of robots.
+    short resetGoalConfig (in unsigned short inProblemId);
 
     /** \brief Solve specified problem in ChppPlanner::robotVector.
 	\param inProblemId rank of robot in vector of robots.
@@ -162,7 +162,7 @@ module hpp
 
     /**
        \brief Interrupt path planning activity
-       
+
        \note this request is effective only when multi-thread policy is used by CORBA server.
        See constructor ChppciServer::ChppciServer for details.
     */
@@ -183,9 +183,9 @@ module hpp
        \param inPathId rank of the path in the problem
        \return length of path if path exists, -1 otherwise
     */
-    double pathLength(in unsigned short inProblemId, in unsigned short inPathId); 
-       
-    /** \brief get the robot's config at param on the a path 
+    double pathLength(in unsigned short inProblemId, in unsigned short inPathId);
+
+    /** \brief get the robot's config at param on the a path
 
 	\param inProblemId rank of robot in vector of robots.
 	\param inPathId rank of the path in the problem

@@ -1,3 +1,8 @@
+Release 1.15, 02/11/2011
+
+	* Update to modifications in hpp-core version 2.4.
+	   - modify idl functions that handle goal configurations.
+
 Release 1.13, 12/20/2011
 
 	* Compatibility with kitelab-2.06.

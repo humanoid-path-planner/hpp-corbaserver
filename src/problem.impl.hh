@@ -60,15 +60,18 @@ namespace hpp
 	setInitialConfig
 	(UShort problemId, const hpp::dofSeq& dofArray);
 
-	virtual Short
-	setGoalConfig
-	(UShort problemId, const hpp::dofSeq& dofArray);
-
 	virtual hpp::dofSeq*
 	getInitialConfig (UShort problemId) throw (SystemException);
 
-	virtual hpp::dofSeq*
+	virtual Short
+	addGoalConfig
+	(UShort problemId, const hpp::dofSeq& dofArray);
+
+	virtual hpp::dofSeqSeq*
 	getGoalConfig (UShort problemId) throw (SystemException);
+
+	virtual Short
+	resetGoalConfig (UShort problemId)  throw (SystemException);
 
 	virtual Short initializeProblem ();
 
