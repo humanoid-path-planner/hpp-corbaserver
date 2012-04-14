@@ -5,6 +5,8 @@ include $(top_srcdir)/shared.mk
 
 BUILT_SOURCES=
 
+AM_CPPFLAGS += $(HPP_MODEL_URDF_CFLAGS)
+
 # Add available warnings flags.
 AM_CXXFLAGS += $(WARNING_CXXFLAGS)
 
@@ -26,11 +28,10 @@ libhpp_corbaserver_la_SOURCES =		\
 
 libhpp_corbaserver_la_LIBADD = 					\
 	$(top_builddir)/idl/hpp/corbaserver/libcorba-stubs.la	\
-	$(ROBOTBUILDER_LIBS)					\
+	$(HPP_MODEL_URDF_LIBS)					\
 	$(HPPCORE_LIBS) 					\
 	$(HPP_UTIL_LIBS)					\
-	$(KWSPLUS_LIBS)						\
-	$(HRP2DYNAMICS_LIBS)
+	$(KWSPLUS_LIBS)
 
 if OPENHRP
 

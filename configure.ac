@@ -98,9 +98,7 @@ if test x$enable_openhrp = xtrue; then
    JRL_PKGCONFIGCHECK_ADDDEP([JRLMODELLOADER], [jrl-modelloader >= 1.4])
    AC_SUBST([MODELLOADERJRL_IDL],
             [`$PKG_CONFIG jrl-modelloader --variable=idldir`])
-   JRL_PKGCONFIGCHECK_ADDDEP([HRP2DYNAMICS], [hrp2-dynamics >= 1.5])
-   JRL_PKGCONFIGCHECK_ADDDEP([HRP2_14], [hrp2-14 >= 1.8])
-   JRL_PKGCONFIGCHECK_ADDDEP([ROBOTBUILDER], [robotbuilder >= 1.2])
+   JRL_PKGCONFIGCHECK_ADDDEP([HPP_MODEL_URDF], [hpp-model-urdf >= 0.0.1])
 fi
 
 
