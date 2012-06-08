@@ -542,6 +542,7 @@ namespace hpp
 
 	if (hppProblemId >= nbProblems) return -1;
 	planner_->resetGoalConfIthProblem (hppProblemId);
+	return 0;
       }
 
       Short Problem::initializeProblem()
