@@ -207,6 +207,22 @@ module hpp
 	Binds ChppPlanner::parseFile method.
     */
     short parseFile(in string inFilename);
+
+    /// \name exploring the roadmap
+    /// \{
+    /// Number of nodes
+    short countNodes (in unsigned short inProblemId);
+
+    /// Node at given rank
+    dofSeq node (in unsigned short inProblemId, in unsigned short inNodeId);
+
+    /// Number of edges
+    short countEdges (in unsigned short inProblemId);
+
+    /// Number of connected components
+    short countConnectedComponents (in unsigned short inProblemId);
+
+    /// \}
   };
 };
 #endif

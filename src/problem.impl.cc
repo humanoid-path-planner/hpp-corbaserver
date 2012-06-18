@@ -712,6 +712,84 @@ namespace hpp
 	if (planner_->parseFile(inFilename) != KD_OK) return -1;
 	return 0;
       }
+
+      Short Problem::countNodes (UShort problemId)
+      {
+	unsigned int hppProblemId = (unsigned int)problemId;
+
+	if (hppProblemId > planner_->getNbHppProblems() - 1) {
+	  hppDout (error, "wrong problem id");
+	  return -1;
+	}
+	if (CkwsRoadmapBuilderShPtr rdmbuilder =
+	    planner_->roadmapBuilderIthProblem (hppProblemId))
+	  {
+	    return rdmbuilder->roadmap ()->countNodes ();
+	  }
+	return -1;
+      }
+
+      hpp::dofSeq* Problem::node (UShort problemId, UShort nodeId)
+      {
+	unsigned int hppProblemId = (unsigned int)problemId;
+
+	if (hppProblemId > planner_->getNbHppProblems() - 1) {
+	  hppDout (error, "wrong problem id");
+	  return new hpp::dofSeq(0, 0, NULL, true);
+	}
+	if (CkwsRoadmapBuilderShPtr rdmbuilder =
+	    planner_->roadmapBuilderIthProblem (hppProblemId))
+	  {
+	    CkwsNodeShPtr node =
+	      rdmbuilder->roadmap ()->node ((unsigned int)nodeId);
+	    if (node) {
+	      const CkwsConfig& config = node->config ();
+	      //init the seqdof
+	      // Allocate result now that the size is known.
+	      ULong size = (ULong)config.size ();
+	      double* DofList = hpp::dofSeq::allocbuf(size);
+	      hpp::dofSeq* dofSeq = new hpp::dofSeq(size, size, DofList, true);
+
+	      //convert the config in dofseq
+	      for (unsigned int i = 0 ; i < config.size() ; i++) {
+		DofList[i] =  config.dofValue(i) ;
+	      }
+	      return dofSeq;
+	    }
+	  }
+	return new hpp::dofSeq(0, 0, NULL, true);
+      }
+
+      Short Problem::countEdges (UShort problemId)
+      {
+	unsigned int hppProblemId = (unsigned int)problemId;
+
+	if (hppProblemId > planner_->getNbHppProblems() - 1) {
+	  hppDout (error, "wrong problem id");
+	  return -1;
+	}
+	if (CkwsRoadmapBuilderShPtr rdmbuilder =
+	    planner_->roadmapBuilderIthProblem (hppProblemId))
+	  {
+	    return rdmbuilder->roadmap ()->countEdges ();
+	  }
+	return -1;
+      }
+      Short Problem::countConnectedComponents (UShort problemId)
+      {
+	unsigned int hppProblemId = (unsigned int)problemId;
+
+	if (hppProblemId > planner_->getNbHppProblems() - 1) {
+	  hppDout (error, "wrong problem id");
+	  return -1;
+	}
+	if (CkwsRoadmapBuilderShPtr rdmbuilder =
+	    planner_->roadmapBuilderIthProblem (hppProblemId))
+	  {
+	    return rdmbuilder->roadmap ()->countConnectedComponents ();
+	  }
+	return -1;
+      }
     }
   }
 }

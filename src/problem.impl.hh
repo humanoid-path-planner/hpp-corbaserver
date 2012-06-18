@@ -96,6 +96,10 @@ namespace hpp
 	virtual Short parseFile
 	(const char* inFilename) throw (SystemException);
 
+	virtual Short countNodes (UShort problemId);
+	virtual hpp::dofSeq* node (UShort inProblemId, UShort inNodeId);
+	virtual Short countEdges (UShort problemId);
+	virtual Short countConnectedComponents (UShort problemId);
 
       private:
 	/// \brief Pointer to the Server owning this object
