@@ -210,6 +210,7 @@ module hpp
 
     /// \name exploring the roadmap
     /// \{
+
     /// Number of nodes
     short countNodes (in unsigned short inProblemId);
 
@@ -222,6 +223,8 @@ module hpp
     /// Number of connected components
     short countConnectedComponents (in unsigned short inProblemId);
 
+    /// Clear the roadmaps
+    short clearRoadmaps ();
     /// \}
   };
 };

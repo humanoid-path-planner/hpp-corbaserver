@@ -100,7 +100,7 @@ namespace hpp
 	virtual hpp::dofSeq* node (UShort inProblemId, UShort inNodeId);
 	virtual Short countEdges (UShort problemId);
 	virtual Short countConnectedComponents (UShort problemId);
-
+	virtual Short clearRoadmaps ();
       private:
 	/// \brief Pointer to the Server owning this object
 	corbaServer::Server* server_;

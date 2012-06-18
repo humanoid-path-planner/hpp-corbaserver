@@ -790,6 +790,10 @@ namespace hpp
 	  }
 	return -1;
       }
+      Short Problem::clearRoadmaps ()
+      {
+	planner_->clearRoadmaps ();
+      }
     }
   }
 }
