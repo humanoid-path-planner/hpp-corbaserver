@@ -95,25 +95,25 @@ namespace hpp
 
       Short
       Obstacle::moveObstacleConfig
-      (const char* polyhedronName, const hpp::Configuration& cfg)
+      (const char* solidComponentName, const hpp::Configuration& cfg)
 	throw(SystemException)
       {
 	BOOST_FOREACH (CkcdObjectShPtr object, planner_->obstacleList ())
 	  {
-	    CkppKCDPolyhedronShPtr polyhedron =
-	      KIT_DYNAMIC_PTR_CAST (CkppKCDPolyhedron, object);
-	    if (polyhedron && polyhedronName == polyhedron->name ())
+	    CkppSolidComponentShPtr solidComponent
+	      = KIT_DYNAMIC_PTR_CAST (CkppSolidComponent, object);
+	    if (solidComponent && solidComponentName == solidComponent->name ())
 	      {
 		hppDout (info, "found ``"
-			 << polyhedronName << "'' in the tree.");
+			 << solidComponentName << "'' in the tree.");
 		CkitMat4 mat;
 		ConfigurationToCkitMat4 (cfg, mat);
-		polyhedron->setAbsolutePosition (mat);
+		solidComponent->setAbsolutePosition (mat);
 		return 0;
 	      }
 	  }
 	hppDout (error, "failed to find ``"
-		 << polyhedronName << "'' in the tree.");
+		 << solidComponentName << "'' in the tree.");
 	return -1;
       }
 
