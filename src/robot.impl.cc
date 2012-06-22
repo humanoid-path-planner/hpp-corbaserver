@@ -19,20 +19,13 @@
 #include <KineoKCDModel/kppKCDBox.h>
 
 #include <hpp/util/debug.hh>
+#include <hpp/model/urdf/parser.hh>
+#include <hpp/model/srdf/parser.hh>
 
 #include "hpp/corbaserver/server.hh"
 
 #include "robot.impl.hh"
 #include "tools.hh"
-
-#undef PACKAGE_STRING
-#undef PACKAGE_TARNAME
-#include "config.h"
-
-#if HPP_CORBASERVER_ENABLE_OPENHRP
-# include "hpp/corbaserver/openhrp.hh"
-#endif
-
 
 namespace hpp
 {
@@ -161,21 +154,35 @@ namespace hpp
 	return 0;
       }
 
-#if HPP_CORBASERVER_ENABLE_OPENHRP
       Short Robot::loadHrp2Model(double inPenetration)
       {
-	OpenHRP openHrpClient (planner_);
-	if (openHrpClient.loadHrp2Model(inPenetration) != KD_OK)
+	hpp::model::urdf::Parser parser;
+	hpp::model::srdf::Parser srdfParser;
+	model::HumanoidRobotShPtr hrp2 =
+	  parser.parse ("package://hrp2_14_description/urdf/hrp2-capsule.urdf");
+	if (!hrp2) {
+	  hppDout (error, "failed to build Kineo HRP2 Model");
 	  return -1;
+	}
+
+	hrp2->isVisible (false);
+	// set Collision Check Pairs
+	srdfParser.parse("package://hrp2_14_description/urdf/hrp2-capsule.urdf",
+			 "package://hrp2_14_description/srdf/hrp2-capsule.srdf",
+			 hrp2);
+
+	hpp::model::srdf::Parser::HppConfigurationType halfSittingConfig
+	  = srdfParser.getHppReferenceConfig ("all", "half_sitting");
+
+	hrp2->hppSetCurrentConfig (halfSittingConfig);
+
+	if (planner_->addHppProblem (hrp2, inPenetration) != KD_OK) {
+	  hppDout (error, "failed to add robot");
+	  return -1;
+	}
+
 	return 0;
       }
-#else
-      Short Robot::loadHrp2Model(double inPenetration)
-      {
-	assert ("This function is not defined when OpenHRP is not enabled."&&0);
-	return -1;
-      }
-#endif
 
       Short Robot::createExtraDof(const char* inDofName, Boolean inRevolute,
 				  Double inValueMin, Double inValueMax)

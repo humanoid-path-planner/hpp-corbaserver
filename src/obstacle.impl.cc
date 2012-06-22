@@ -19,12 +19,6 @@
 
 #include "hpp/corbaserver/server.hh"
 
-#include "config.h"
-#if HPP_CORBASERVER_ENABLE_OPENHRP
-# include "hpp/corbaserver/openhrp.hh"
-#else
-#endif // HPP_CORBASERVER_ENABLE_OPENHRP
-
 namespace hpp
 {
   namespace corbaServer
@@ -250,60 +244,6 @@ namespace hpp
 	return rank;
       }
 
-#if HPP_CORBASERVER_ENABLE_OPENHRP
-      Short
-      Obstacle::loadModelLoaderObstacle(const char* polyhedronName,
-					const char* filename,
-					const char* directory)
-	throw (SystemException)
-      {
-	OpenHRP openHrpClient (planner_);
-
-	// Create empty polyhedron
-	CkppKCDPolyhedronShPtr polyhedron =
-	  CkppKCDPolyhedron::create (polyhedronName);
-
-	// Test whether directory is provided.
-	// If not take default argument
-
-	ktStatus status = KD_OK;
-
-	if (!directory[0])
-	  status = openHrpClient.loadObstacleModel
-	    (filename, polyhedronName, polyhedron);
-	else
-	  status = openHrpClient.loadObstacleModel
-	    (filename, polyhedronName, polyhedron, directory);
-
-	if (status != KD_OK)
-	  {
-	    hppDout (error, "failed to load obstacle from Modelloader");
-	    hppDout (error, "OpenHRP prefix: "
-		     << ((directory == "") ? "default" : directory));
-	    return -1;
-	  }
-
-	if (planner_->addObstacle (polyhedron) != KD_OK)
-	  {
-	    hppDout (error, "failed to add obstacle");
-	    return -1;
-	  }
-
-	hppDout (info,
-		 "obstacle ``" << polyhedronName << "'' sucessfully loaded");
-	return 0;
-      }
-#else
-      Short
-      Obstacle::loadModelLoaderObstacle(const char* polyhedronName,
-					const char* filename,
-					const char* directory)
-	throw (SystemException)
-      {
-	hppDout (error, "failed to load obstacle: OpenHRP support is disabled");
-	return -1;
-      }
-#endif //! HPP_CORBASERVER_ENABLE_OPENHRP
 
       Short
       Obstacle::setVisible

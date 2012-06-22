@@ -19,7 +19,7 @@
 
 # include "hpp/corbaserver/fwd.hh"
 
-# include "hpp/corbaserver/robot.stub.hh"
+# include "robot.hh"
 
 namespace hpp
 {

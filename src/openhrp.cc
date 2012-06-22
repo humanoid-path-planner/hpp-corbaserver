@@ -89,13 +89,6 @@ namespace hpp
 	//
 	// ADD HRP2 to the planner
 	//
-	if (hppPlanner->addHppProblem (HRP2Device, inPenetration) != KD_OK)
-	  {
-	    hppDout (error, "failed to add robot");
-	    return KD_ERROR;
-	  }
-
-	return KD_OK;
       }
 
       ktStatus

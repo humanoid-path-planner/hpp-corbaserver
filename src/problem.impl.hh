@@ -13,8 +13,8 @@
 # include <vector>
 
 # include "hpp/corbaserver/fwd.hh"
-# include "hpp/corbaserver/common.stub.hh"
-# include "hpp/corbaserver/problem.stub.hh"
+# include "common.hh"
+# include "problem.hh"
 
 namespace hpp
 {

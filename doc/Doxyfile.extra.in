@@ -1,10 +1,5 @@
 FILE_PATTERNS          = *.idl *.hh
-EXCLUDE_PATTERNS       = *stub*
 
-INPUT                  = @abs_top_srcdir@/include \
-                         @abs_top_srcdir@/idl	  \
-                         @abs_top_srcdir@/doc
-
-HTML_HEADER            = @abs_top_srcdir@/doc/header.html
-HTML_FOOTER            = @abs_top_srcdir@/doc/footer.html
-IMAGE_PATH             = @abs_top_srcdir@/doc/pictures
+INPUT                  = @CMAKE_SOURCE_DIR@/include \
+                         @CMAKE_SOURCE_DIR@/idl	  \
+                         @CMAKE_SOURCE_DIR@/doc

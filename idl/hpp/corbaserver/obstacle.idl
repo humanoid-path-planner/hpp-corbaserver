@@ -130,19 +130,6 @@ module hpp
     (in string inPolyName, in unsigned long pt1,
      in unsigned long pt2, in unsigned long pt3);
 
-    /// \brief Load a polyhedron from Modelloader.
-    ///
-    /// Once loaded, the obstacle is added to the list of obstacles.
-    ///
-    /// \param inPolyName Name of the polyhedron.
-    /// \param inFilename Name of file in ModelLoader
-    /// \param inDirectory Directory containing the file
-    /// (if "", ModelLoader default location is used).
-    ///
-    /// \return 0 if success, -1 if failure.
-    short loadModelLoaderObstacle
-    (in string inPolyName, in string inFilename, in string inDirectory);
-
     /// \}
 
     /// \name Graphical properties
