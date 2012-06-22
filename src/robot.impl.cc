@@ -19,6 +19,8 @@
 #include <KineoKCDModel/kppKCDBox.h>
 
 #include <hpp/util/debug.hh>
+#include <hpp/model/urdf/parser.hh>
+#include <hpp/model/srdf/parser.hh>
 
 #include <hpp/model/urdf/util.hh>
 
