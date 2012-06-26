@@ -71,11 +71,6 @@ namespace hpp
 	(const char* polyhedronName, ULong pt1, ULong pt2, ULong pt3)
 	  throw(SystemException);
 
-	virtual Short
-	loadModelLoaderObstacle
-	(const char* polyName, const char* filename, const char* openHrpPrefix)
-	  throw(SystemException);
-
 	/// \brief Comment in interface Obstacle::setVisible.
 	virtual Short
 	setVisible(const char* polyname, Boolean visible)
