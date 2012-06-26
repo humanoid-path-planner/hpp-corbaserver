@@ -23,6 +23,7 @@
 
 #include <hpp/model/urdf/parser.hh>
 #include <hpp/model/srdf/parser.hh>
+#include <hpp/model/rcpdf/parser.hh>
 
 // CORBA stubs.
 #include "common-modelloader.hh"
@@ -98,8 +99,8 @@ namespace hpp
 	model::HumanoidRobotShPtr hrp2;
 	hpp::model::urdf::Parser parser;
 	hpp::model::srdf::Parser srdfParser;
-	hrp2 = parser.parse ("package://hrp2_14_description/urdf/hrp2-capsule.urdf",
-			     "base_footprint_joint");
+	hpp::model::rcpdf::Parser rcpdfParser;
+	hrp2 = parser.parse ("package://hrp2_14_description/urdf/hrp2_capsule.urdf");
 
 	HRP2Device = hrp2;
 	if (!HRP2Device)
@@ -114,8 +115,8 @@ namespace hpp
 	HRP2Device->isVisible (false);
 
 	// set Collision Check Pairs
-	srdfParser.parse ("package://hrp2_14_description/urdf/hrp2-capsule.urdf",
-			  "package://hrp2_14_description/srdf/hrp2-capsule.srdf",
+	srdfParser.parse ("package://hrp2_14_description/urdf/hrp2_capsule.urdf",
+			  "package://hrp2_14_description/srdf/hrp2_capsule.srdf",
 			  hrp2);
 
 	//
@@ -125,6 +126,10 @@ namespace hpp
 	  = srdfParser.getHppReferenceConfig ("all", "half_sitting");
 
 	HRP2Device->hppSetCurrentConfig (halfSittingConfig);
+
+	// Parse contact points to set foot size.
+	rcpdfParser.parse ("package://hrp2_14_description/rcpdf/hrp2.rcpdf",
+			   hrp2);
 
 	return KD_OK;
       }
