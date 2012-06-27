@@ -159,7 +159,7 @@ namespace hpp
 	hpp::model::urdf::Parser parser;
 	hpp::model::srdf::Parser srdfParser;
 	model::HumanoidRobotShPtr hrp2 =
-	  parser.parse ("package://hrp2_14_description/urdf/hrp2-capsule.urdf");
+	  parser.parse ("package://hrp2_14_description/urdf/hrp2_capsule.urdf");
 	if (!hrp2) {
 	  hppDout (error, "failed to build Kineo HRP2 Model");
 	  return -1;
@@ -167,8 +167,8 @@ namespace hpp
 
 	hrp2->isVisible (false);
 	// set Collision Check Pairs
-	srdfParser.parse("package://hrp2_14_description/urdf/hrp2-capsule.urdf",
-			 "package://hrp2_14_description/srdf/hrp2-capsule.srdf",
+	srdfParser.parse("package://hrp2_14_description/urdf/hrp2_capsule.urdf",
+			 "package://hrp2_14_description/srdf/hrp2_capsule.srdf",
 			 hrp2);
 
 	hpp::model::srdf::Parser::HppConfigurationType halfSittingConfig
