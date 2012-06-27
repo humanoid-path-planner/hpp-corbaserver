@@ -48,6 +48,7 @@ ADD_LIBRARY(${LIBRARY_NAME}
   obstacleSK.cc
   problemSK.cc
   robotSK.cc
+  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/common_idl.py
   ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/obstacle_idl.py
   ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/problem_idl.py
   ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/robot_idl.py
@@ -73,12 +74,12 @@ FOREACH (IDL ${IDL_SOURCES})
     ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/${IDL}.idl
     )
   SET_SOURCE_FILES_PROPERTIES(
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/${IDL}_idl.py
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp_corbaserver/${IDL}_idl.py
     GENERATED=ON
     )
   INSTALL(
     FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/${IDL}_idl.py
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp_corbaserver/${IDL}_idl.py
     DESTINATION ${PYTHON_SITELIB}/hpp_corbaserver
     )
 ENDFOREACH()
@@ -94,12 +95,17 @@ INSTALL(
   )
 INSTALL(
   FILES
-  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/hpp/__init__.py
+  ${CMAKE_CURRENT_BINARY_DIR}/hpp_corbaserver/__init__.py
+  DESTINATION ${PYTHON_SITELIB}/hpp_corbaserver
+  )
+INSTALL(
+  FILES
+  ${CMAKE_CURRENT_BINARY_DIR}/hpp_corbaserver/hpp/__init__.py
   DESTINATION ${PYTHON_SITELIB}/hpp_corbaserver/hpp
   )
 INSTALL(
   FILES
-  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/hpp__POA/__init__.py
+  ${CMAKE_CURRENT_BINARY_DIR}/hpp_corbaserver/hpp__POA/__init__.py
   DESTINATION ${PYTHON_SITELIB}/hpp_corbaserver/hpp__POA
   )
 INSTALL(
