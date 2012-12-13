@@ -90,7 +90,12 @@ namespace hpp
 	setRobotRootJoint(const char* robotName, const char* jointName)
 	  throw (SystemException);
 
-	// FIXME: OpenHRP only.
+	virtual Short loadRobotModel (const char* modelName,
+				      double penetration,
+				      const char* urdfSuffix = "",
+				      const char* srdfSuffix = "",
+				      const char* rcpdfSuffix = "");
+
 	virtual Short loadHrp2Model (double penetration);
 
 	virtual Short

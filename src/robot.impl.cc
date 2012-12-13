@@ -21,6 +21,7 @@
 #include <hpp/util/debug.hh>
 #include <hpp/model/urdf/parser.hh>
 #include <hpp/model/srdf/parser.hh>
+#include <hpp/model/rcpdf/parser.hh>
 
 #include "hpp/corbaserver/server.hh"
 
@@ -154,34 +155,60 @@ namespace hpp
 	return 0;
       }
 
-      Short Robot::loadHrp2Model(double inPenetration)
+      Short Robot::loadRobotModel(const char* modelName,
+				  double penetration,
+				  const char* urdfSuffix,
+				  const char* srdfSuffix,
+				  const char* rcpdfSuffix)
       {
-	hpp::model::urdf::Parser parser;
+	hpp::model::urdf::Parser urdfParser;
 	hpp::model::srdf::Parser srdfParser;
-	model::HumanoidRobotShPtr hrp2 =
-	  parser.parse ("package://hrp2_14_description/urdf/hrp2_capsule.urdf");
-	if (!hrp2) {
-	  hppDout (error, "failed to build Kineo HRP2 Model");
-	  return -1;
-	}
+	hpp::model::rcpdf::Parser rcpdfParser;
 
-	hrp2->isVisible (false);
-	// set Collision Check Pairs
-	srdfParser.parse("package://hrp2_14_description/urdf/hrp2_capsule.urdf",
-			 "package://hrp2_14_description/srdf/hrp2_capsule.srdf",
-			 hrp2);
+	std::string packagePath
+	  = "package://" + std::string(modelName) + "_description/";
+	std::string urdfPath
+	  = packagePath + "urdf/" + modelName + urdfSuffix + ".urdf";
+	std::string srdfPath
+	  = packagePath + "srdf/" + modelName + srdfSuffix + ".srdf";
+	std::string rcpdfPath
+	  = packagePath + "rcpdf/" + modelName + rcpdfSuffix + ".rcpdf";
 
+	// Build robot model from URDF.
+	model::HumanoidRobotShPtr device = urdfParser.parse (urdfPath);
+	device->isVisible (false);
+
+	if (!device)
+	  {
+	    hppDout (error, "Could not parse URDF file.");
+	    return -1;
+	  }
+
+	// Set Collision Check Pairs
+	srdfParser.parse (urdfPath, srdfPath, device);
+
+	// Set robot in a half-sitting configuration;
 	hpp::model::srdf::Parser::HppConfigurationType halfSittingConfig
 	  = srdfParser.getHppReferenceConfig ("all", "half_sitting");
 
-	hrp2->hppSetCurrentConfig (halfSittingConfig);
+	device->hppSetCurrentConfig (halfSittingConfig);
 
-	if (planner_->addHppProblem (hrp2, inPenetration) != KD_OK) {
-	  hppDout (error, "failed to add robot");
-	  return -1;
-	}
+	// Set contact point properties.
+	rcpdfParser.parse (rcpdfPath, device);
+
+	// Add device to the planner
+	if (planner_->addHppProblem (device, penetration) != KD_OK)
+	  {
+	    hppDout (error, "failed to add robot");
+	    return -1;
+	  }
 
 	return 0;
+      }
+
+      Short Robot::loadHrp2Model(double inPenetration)
+      {
+	return loadRobotModel("hrp2_14", inPenetration);
       }
 
       Short Robot::createExtraDof(const char* inDofName, Boolean inRevolute,

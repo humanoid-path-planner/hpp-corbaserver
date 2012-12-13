@@ -66,6 +66,26 @@ module hpp
      */
     short loadHrp2Model(in double inPenetration);
 
+    /// \brief Load robot model
+    ///
+    /// \param modelName robot model name.
+    ///
+    /// \param penetration dynamic penetration allowed to validate direct paths.
+    ///
+    /// \param urdfSuffix suffix for urdf file,
+    /// e.g. ${modelName}${urdfSuffix}.urdf
+    ///
+    /// \param srdfSuffix suffix for urdf file,
+    /// e.g. ${modelName}${urdfSuffix}.srdf
+    ///
+    /// \param rcpdfSuffix suffix for urdf file,
+    /// e.g. ${modelName}${urdfSuffix}.rcpdf
+    short loadRobotModel(in string modelName,
+			 in double penetration,
+			 in string urdfSuffix,
+			 in string srdfSuffix,
+			 in string rcpdfSuffix);
+
     /** 
      *@}
      */
