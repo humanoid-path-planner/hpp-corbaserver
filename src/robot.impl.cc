@@ -19,9 +19,8 @@
 #include <KineoKCDModel/kppKCDBox.h>
 
 #include <hpp/util/debug.hh>
-#include <hpp/model/urdf/parser.hh>
-#include <hpp/model/srdf/parser.hh>
-#include <hpp/model/rcpdf/parser.hh>
+
+#include <hpp/model/urdf/util.hh>
 
 #include "hpp/corbaserver/server.hh"
 
@@ -161,40 +160,17 @@ namespace hpp
 				  const char* srdfSuffix,
 				  const char* rcpdfSuffix)
       {
-	hpp::model::urdf::Parser urdfParser;
-	hpp::model::srdf::Parser srdfParser;
-	hpp::model::rcpdf::Parser rcpdfParser;
-
-	std::string packagePath
-	  = "package://" + std::string(modelName) + "_description/";
-	std::string urdfPath
-	  = packagePath + "urdf/" + modelName + urdfSuffix + ".urdf";
-	std::string srdfPath
-	  = packagePath + "srdf/" + modelName + srdfSuffix + ".srdf";
-	std::string rcpdfPath
-	  = packagePath + "rcpdf/" + modelName + rcpdfSuffix + ".rcpdf";
-
-	// Build robot model from URDF.
-	model::HumanoidRobotShPtr device = urdfParser.parse (urdfPath);
-	device->isVisible (false);
-
-	if (!device)
+	hpp::model::HumanoidRobotShPtr device;
+	
+	if (!hpp::model::urdf::loadRobotModel (device,
+					       std::string (modelName),
+					       std::string (urdfSuffix),
+					       std::string (srdfSuffix),
+					       std::string (rcpdfSuffix)))
 	  {
-	    hppDout (error, "Could not parse URDF file.");
+	    hppDout (error, "Failed to load robot.");
 	    return -1;
 	  }
-
-	// Set Collision Check Pairs
-	srdfParser.parse (urdfPath, srdfPath, device);
-
-	// Set robot in a half-sitting configuration;
-	hpp::model::srdf::Parser::HppConfigurationType halfSittingConfig
-	  = srdfParser.getHppReferenceConfig ("all", "half_sitting");
-
-	device->hppSetCurrentConfig (halfSittingConfig);
-
-	// Set contact point properties.
-	rcpdfParser.parse (rcpdfPath, device);
 
 	// Add device to the planner
 	if (planner_->addHppProblem (device, penetration) != KD_OK)
