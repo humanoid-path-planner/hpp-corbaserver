@@ -713,6 +713,18 @@ namespace hpp
 	return 0;
       }
 
+      Short Problem::loadPathFromFile
+	(const char* inFilename) throw (SystemException)
+      {
+	if(!planner_)
+	  {
+	    hppDout (error, ":parseFile: no planner.");
+	    return -1;
+	  }
+	if (planner_->loadPathFromFile(inFilename) != KD_OK) return -1;
+	return 0;
+      }
+
       Short Problem::countNodes (UShort problemId)
       {
 	unsigned int hppProblemId = (unsigned int)problemId;

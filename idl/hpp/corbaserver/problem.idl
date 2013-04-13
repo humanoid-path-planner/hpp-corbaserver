@@ -208,6 +208,13 @@ module hpp
     */
     short parseFile(in string inFilename);
 
+    /** \brief Load a path from a kxml file
+	\param filename file name.
+
+	Binds ChppPlanner::loadPathFromFile method.
+    */
+    short loadPathFromFile(in string inFilename);
+
     /// \name exploring the roadmap
     /// \{
 
