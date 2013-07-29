@@ -655,8 +655,9 @@ namespace hpp
 	    }
 	  }
 	}
-	else
+	else {
 	  hppDout (error, "body of name " << " not found.");
+	}
 
 	if (!innerObjectSeq)
 	  innerObjectSeq = new hpp::nameSeq (0);
@@ -884,7 +885,8 @@ namespace hpp
 	}
 	CkppKCDPolyhedronShPtr kppPolyhedron = polyhedronMap_[polyhedronName];
 	unsigned int rank;
-	kppPolyhedron->CkcdPolyhedron::addPoint(x, y, z, rank);
+	kppPolyhedron->CkcdPolyhedron::addPoint((kcdReal)x, (kcdReal)y,
+						(kcdReal)z, rank);
 
 	return rank;
       }
