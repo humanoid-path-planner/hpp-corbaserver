@@ -56,32 +56,21 @@ module hpp
      */
     short setRobotRootJoint(in string inRobotName, in string inJointName);
 
-    /**
-     * \brief Load HRP2 model by sending a Corba request to OpenHRP
-
-     * \param inPenetration dynamic penetration allowed to validate direct paths.
-
-     Send ChppciOpenHrpClient::loadHrp2Model() request to Modelloader.
-
-     */
-    short loadHrp2Model(in double inPenetration);
-
-    /// \brief Load robot model
+    /// Load robot model
     ///
     /// \param modelName robot model name.
-    ///
     /// \param penetration dynamic penetration allowed to validate direct paths.
-    ///
     /// \param urdfSuffix suffix for urdf file,
-    /// e.g. ${modelName}${urdfSuffix}.urdf
+    /// \param srdfSuffix suffix for srdf file,
+    /// \param rcpdfSuffix suffix for rcpdf file,
     ///
-    /// \param srdfSuffix suffix for urdf file,
-    /// e.g. ${modelName}${urdfSuffix}.srdf
-    ///
-    /// \param rcpdfSuffix suffix for urdf file,
-    /// e.g. ${modelName}${urdfSuffix}.rcpdf
+    /// Load three files describing a robot:
+    ///   - ${robotDataDir}/urdf/${modelName}${urdfSuffix}.urdf,
+    ///   - ${robotDataDir}/srdf/${modelName}${urdfSuffix}.srdf,
+    ///   - ${robotDataDir}/rcpdf/${modelName}${urdfSuffix}.rcpdf.
     short loadRobotModel(in string modelName,
 			 in double penetration,
+			 in string robotDataDir,
 			 in string urdfSuffix,
 			 in string srdfSuffix,
 			 in string rcpdfSuffix);
