@@ -162,17 +162,22 @@ namespace hpp
 				  const char* rcpdfSuffix)
       {
 	hpp::model::HumanoidRobotShPtr device;
-	
-	if (!hpp::model::urdf::loadRobotModel (device,
-					       std::string (modelName),
-					       std::string (robotDataDir),
-					       std::string (urdfSuffix),
-					       std::string (srdfSuffix),
-					       std::string (rcpdfSuffix)))
-	  {
-	    hppDout (error, "Failed to load robot.");
-	    return -1;
-	  }
+	bool result;
+	try {
+	  result =
+	    hpp::model::urdf::loadRobotModel (device,
+					      std::string (modelName),
+					      std::string (robotDataDir),
+					      std::string (urdfSuffix),
+					      std::string (srdfSuffix),
+					      std::string (rcpdfSuffix));
+	} catch (const std::exception& exc) {
+	  hppDout (error, exc.what ());
+	  return -1;
+	}
+	if (!result) {
+	  return -1;
+	}
 
 	// Add device to the planner
 	if (planner_->addHppProblem (device, penetration) != KD_OK)
