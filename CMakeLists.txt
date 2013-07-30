@@ -38,6 +38,12 @@ SET(${PROJECT_NAME}_HEADERS
 
 SETUP_PROJECT ()
 
+# Activate hpp-util logging if requested
+SET (HPP_DEBUG FALSE CACHE BOOL "trigger hpp-util debug output")
+IF (HPP_DEBUG)
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHPP_DEBUG")
+ENDIF()
+
 # Dependencies
 ADD_REQUIRED_DEPENDENCY("hpp-core >= 2.5")
 ADD_REQUIRED_DEPENDENCY("hpp-model-urdf >= 0.0.1")
