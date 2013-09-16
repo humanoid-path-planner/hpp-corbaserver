@@ -14,8 +14,9 @@
 # include <string>
 # include <KineoKCDModel/kppKCDPolyhedron.h>
 
+# include <hpp/model/body-distance.hh>
+
 # include "hpp/core/planner.hh"
-# include "hpp/model/body.hh"
 
 # include "hpp/corbaserver/fwd.hh"
 
@@ -217,7 +218,7 @@ namespace hpp
 	/// \brief map of joints in construction.
 	std::map<std::string, CkppJointComponentShPtr> jointMap_;
 	/// \brief map of bodies in construction.
-	std::map<std::string, model::BodyShPtr> bodyMap_;
+	std::map<std::string, model::BodyDistanceShPtr> bodyMap_;
 	/// \brief map of polyhedra in construction.
 	std::map<std::string, CkppKCDPolyhedronShPtr> polyhedronMap_;
 

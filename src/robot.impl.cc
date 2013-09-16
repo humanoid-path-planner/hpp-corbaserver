@@ -39,10 +39,10 @@ namespace hpp
       {
 	static ktStatus
 	attachSolidComponentsToJoint(const CkppJointComponentShPtr& inKppJoint,
-				     const model::BodyShPtr& inHppBody)
+				     const model::BodyDistanceShPtr& inHppBody)
 	{
 	  std::vector<CkcdObjectShPtr> innerObjectVector;
-	  inHppBody->innerObjects(innerObjectVector);
+	  inHppBody->body ()->mobileObjects(innerObjectVector);
 
 	  for (unsigned int iObj=0; iObj<innerObjectVector.size(); iObj++) {
 	    CkcdObjectShPtr object = innerObjectVector[iObj];
@@ -582,10 +582,11 @@ namespace hpp
 
 	hpp::nameSeq *innerObjectSeq = NULL;
 	// Find the body corresponding to the name in core::Planner object.
-	CkwsKCDBodyConstShPtr kcdBody = planner_->findBodyByJointName(bodyName);;
+	CkwsKCDBodyAdvancedConstShPtr kcdBody
+	  = planner_->findBodyByJointName(bodyName);;
 
 	if (kcdBody) {
-	  std::vector<CkcdObjectShPtr> innerObjectList = kcdBody->innerObjects();
+	  std::vector<CkcdObjectShPtr> innerObjectList = kcdBody->mobileObjects();
 	  if (innerObjectList.size() > 0) {
 	    unsigned int nbObjects = innerObjectList.size();
 	    // Allocate result now that the size is known.
@@ -623,10 +624,11 @@ namespace hpp
 
 	hpp::nameSeq *outerObjectSeq = NULL;
 	// Find the body corresponding to the name in core::Planner object.
-	CkwsKCDBodyConstShPtr kcdBody = planner_->findBodyByJointName(bodyName);
+	CkwsKCDBodyAdvancedConstShPtr kcdBody
+	  = planner_->findBodyByJointName(bodyName);
 
 	if (kcdBody) {
-	  std::vector<CkcdObjectShPtr> outerObjectList = kcdBody->outerObjects();
+	  std::vector<CkcdObjectShPtr> outerObjectList = kcdBody->obstacleObjects();
 	  if (outerObjectList.size() > 0) {
 	    unsigned int nbObjects = outerObjectList.size();
 	    // Allocate result now that the size is known.
@@ -717,12 +719,12 @@ namespace hpp
 	  CkwsDevice::TJointVector jointList;
 	  hppRobot->getJointVector(jointList);
 	  // get object
-	  model::BodyShPtr hppBody = KIT_DYNAMIC_PTR_CAST(model::Body, jointList[hppJointId]->attachedBody());
+	  CkwsBodyShPtr body = jointList[hppJointId]->attachedBody();
 
 	  // get result
 	  {
 	    double dist = 0.;
-	    hppBody->isColliding (CkwsBody::CCollisionAnalysisParameters::ESTIMATED_DISTANCE, dist);
+	    body->isColliding (CkwsBody::CCollisionAnalysisParameters::ESTIMATED_DISTANCE, dist);
 	    outResult = (UShort) dist;
 	  }
 
@@ -731,20 +733,20 @@ namespace hpp
 
 	  for(unsigned int i=0; i<jointList.size(); i++){
 
-	    model::BodyShPtr hppBody = KIT_DYNAMIC_PTR_CAST(model::Body, jointList[i]->attachedBody());
+	    CkwsBodyShPtr body = jointList[i]->attachedBody();
 
-	    CkitMat4 mat = hppBody->absolutePosition();
+	    CkitMat4 mat = body->absolutePosition();
 	    CkitMat4 matJoint = jointList[i]->currentPosition();
 	    CkitVect3 trans = mat.translation();
 	    CkitVect3 transJoint = matJoint.translation();
 	    double dist=0;
-	    if (hppBody->CkwsKCDBody::getEstimatedDistance(dist) == KD_ERROR) {
+	    if (body->getEstimatedDistance(dist) == KD_ERROR) {
 	      hppDout (error, "failure in getting estimated distance");
 	      return -1;
 	    }
-	    hppDout (info, "for joint " << hppBody->name() << " body pos " << trans[0]
+	    hppDout (info, "for joint " << jointList[i]->name() << " body pos " << trans[0]
 		     << ", " << trans[1] << ", " << trans[2] <<" distance "<<dist);
-	    hppDout (info, "for joint " << hppBody->name() << " joint pos " << transJoint[0]
+	    hppDout (info, "for joint " << jointList[i]->name() << " joint pos " << transJoint[0]
 		     << ", " << transJoint[1] << ", " << transJoint[2]);
 #if DEBUG==2
 	    hppDout (info, "joint config:");
@@ -759,7 +761,7 @@ namespace hpp
 	    short res = 0;
 	    {
 	      double dist = 0.;
-	      hppBody->isColliding (CkwsBody::CCollisionAnalysisParameters::ESTIMATED_DISTANCE, dist);
+	      body->isColliding (CkwsBody::CCollisionAnalysisParameters::ESTIMATED_DISTANCE, dist);
 	      res = (short) dist;
 	    }
 
@@ -997,7 +999,7 @@ namespace hpp
 	  return -1;
 	}
 
-	model::BodyShPtr hppBody = bodyMap_[bodyName];
+	model::BodyDistanceShPtr hppBody = bodyMap_[bodyName];
 	CkppKCDPolyhedronShPtr kppPolyhedron = polyhedronMap_[polyhedronName];
 
 	// Set polyhedron in given configuration.
