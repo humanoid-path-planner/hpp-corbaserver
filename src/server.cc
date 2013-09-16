@@ -197,10 +197,10 @@ namespace hpp
       return true;
     }
 
-    CkwsDistanceShPtr Server::createDistanceFunction(std::string inName,
-							   bool inOriented)
+    CkwsMetricShPtr Server::createDistanceFunction(std::string inName,
+						   bool inOriented)
     {
-      CkwsDistanceShPtr result;
+      CkwsMetricShPtr result;
 
       if (distanceFactoryAlreadySet(inName)) {
 	result = attMapDistanceFunctionFactory[inName]->makeDistance(inOriented);

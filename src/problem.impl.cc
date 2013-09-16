@@ -143,18 +143,10 @@ namespace hpp
 	if (hppProblemId < nbProblems) {
 	  // Get robot in hppPlanner object.
 	  CkppDeviceComponentShPtr robot = planner_->robotIthProblem(hppProblemId);
-	  CkwsDistanceShPtr distance = CkwsDistance::create();
-
-	  // Get distance function associated to robot if any
-	  if (robot) {
-	    if (robot->specificDistance()) {
-	      distance = robot->specificDistance();
-	    }
-	  }
 
 	  if (pathOptimizerName == "clear") {
 	    CkwsPathOptimizerShPtr pathOptimizer = CkwsClearOptimizer::create();
-	    pathOptimizer->distance(distance);
+	    pathOptimizer->pathEvaluator (CkwsPathEvaluatorLength::create ());
 	    pathOptimizer->shortcutMethod(CkwsShortcutDirect::create());
 
 	    status = planner_->pathOptimizerIthProblem(hppProblemId, pathOptimizer);
@@ -163,7 +155,7 @@ namespace hpp
 	  }
 	  else if (pathOptimizerName == "adaptiveShortcut") {
 	    CkwsLoopOptimizerShPtr pathOptimizer = CkwsAdaptiveShortcutOptimizer::create();
-	    pathOptimizer->distance(distance);
+	    pathOptimizer->pathEvaluator (CkwsPathEvaluatorLength::create ());
 	    pathOptimizer->shortcutMethod(CkwsShortcutDirect::create());
 	    pathOptimizer->maxNbLoop(inMaxNumberLoop);
 
@@ -173,7 +165,7 @@ namespace hpp
 	  }
 	  else if (pathOptimizerName == "random") {
 	    CkwsLoopOptimizerShPtr pathOptimizer = CkwsRandomOptimizer::create();
-	    pathOptimizer->distance(distance);
+	    pathOptimizer->pathEvaluator (CkwsPathEvaluatorLength::create ());
 	    pathOptimizer->shortcutMethod(CkwsShortcutDirect::create());
 	    pathOptimizer->maxNbLoop(inMaxNumberLoop);
 
@@ -253,7 +245,7 @@ namespace hpp
 	  }
 
 	  // Create distance function
-	  CkwsDistanceShPtr distance =
+	  CkwsMetricShPtr distance =
 	    server_->createDistanceFunction(distanceName, oriented);
 
 	  hppDout (info, ":setDistanceFunction: set roadmap builder distance function to " << distanceName);
@@ -269,19 +261,19 @@ namespace hpp
 	    hppDout (error, ":setDistanceFunction: no robot in problem " << hppProblemId);
 	    return -1;
 	  }
-	  robot->distance(distance);
+	  robot->configSpace ()->metric (distance);
 
 	  // Roadmap builder
 	  CkwsRoadmapBuilderShPtr roadmapBuilder = planner_->roadmapBuilderIthProblem(hppProblemId);
 	  if (roadmapBuilder) {
-	    roadmapBuilder->distance(distance);
+	    roadmapBuilder->roadmap ()->configSpace ()-> metric (distance);
 	  }
 
 	  // path optimizer
 	  CkwsPathPlannerShPtr pathOptimizer =
 	    planner_->pathOptimizerIthProblem(hppProblemId);
 	  if (pathOptimizer) {
-	    pathOptimizer->distance(distance);
+	    pathOptimizer->configSpace ()->metric (distance);
 	  }
 	}
 	else {

@@ -134,7 +134,7 @@ namespace hpp
       /**
 	 \brief Get distance function from name.
       */
-      CkwsDistanceShPtr createDistanceFunction (std::string inName, bool inOriented);
+      CkwsMetricShPtr createDistanceFunction (std::string inName, bool inOriented);
 
       /**
 	 @}
