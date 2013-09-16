@@ -13,7 +13,6 @@
 #include <KineoWorks2/kwsIPPRdmBuilder.h>
 
 #include <kwsPlus/directPath/flicSteeringMethod.h>
-#include <kwsPlus/directPath/reedsSheppSteeringMethod.h>
 #include <kwsPlus/roadmap/hppVisRdmBuilder.h>
 #include <kwsPlus/roadmap/kwsPlusPCARdmBuilder.h>
 
