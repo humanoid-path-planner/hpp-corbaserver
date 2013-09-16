@@ -576,61 +576,6 @@ namespace hpp
 	return new hpp::dofSeq (1);
       }
 
-
-      Short Robot::attachBodyToJoint(const char* inJointName,
-				     const char* inBodyName)
-	throw (SystemException)
-      {
-	std::string jointName(inJointName);
-	std::string bodyName(inBodyName);
-
-	// Check that joint of this name exists.
-	if (jointMap_.count(jointName) != 1) {
-	  hppDout (error, "joint " << jointName 	 << " does not exist.");
-	  return -1;
-	}
-	// Check that body of this name exits.
-	if (bodyMap_.count(bodyName) != 1) {
-	  hppDout (error, "body "	 << bodyName << " does not exist.");
-	  return -1;
-	}
-	CkppJointComponentShPtr kppJoint = jointMap_[jointName];
-	CkwsJointShPtr kwsJoint = KIT_DYNAMIC_PTR_CAST(CkwsJoint, kppJoint);
-	model::BodyShPtr hppBody = bodyMap_[bodyName];
-
-	if (kwsJoint->setAttachedBody(hppBody) != KD_OK) {
-	  hppDout (error, "failed to attach body "	 << bodyName << " to joint " << jointName);
-	  return -1;
-	}
-	// If objects are attached to the body, the corresponding component need to
-	// be attached to the joint component
-	attachSolidComponentsToJoint(kppJoint, hppBody);
-
-	return 0;
-      }
-
-      Short Robot::createBody(const char* inBodyName)
-	throw (SystemException)
-      {
-	std::string bodyName(inBodyName);
-
-	// Check that body does not already exist.
-	if (bodyMap_.count(bodyName) != 0) {
-	  hppDout (error, "body " << bodyName 	 << " already exists.");
-	  return -1;
-	}
-	model::BodyShPtr hppBody = model::Body::create(bodyName);
-
-	if (!hppBody) {
-	  hppDout (error, "failed to create body "	 << bodyName << ".");
-	  return -1;
-	}
-	// Store body in map.
-	bodyMap_[bodyName] = hppBody;
-
-	return 0;
-      }
-
       hpp::nameSeq* Robot::getJointInnerObject(const char* inBodyName)
       {
 	std::string bodyName(inBodyName);

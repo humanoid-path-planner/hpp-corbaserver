@@ -162,14 +162,6 @@ namespace hpp
 	virtual hpp::dofSeq*
 	getCurrentConfig(UShort problemId) throw (SystemException);
 
-	virtual Short 
-	attachBodyToJoint
-	(const char* jointName, const char* bodyName) throw (SystemException);
-
-	virtual Short
-	createBody
-	(const char* bodyName) throw (SystemException);
-
 	virtual hpp::nameSeq*
 	getJointInnerObject
 	(const char* bodyName);

@@ -246,20 +246,6 @@ module hpp
     */
 
     /**
-     * \brief Attach body to joint.
-     * \param inJointName name of the joint to which the body is attached.
-     * \param inBodyName name of the body.
-     * \return 0 if success, -1 if failure.
-     */
-    short attachBodyToJoint(in string inJointName, in string inBodyName);
-  
-    /**
-     * \brief Create a body of given name.
-     * \return 0 if success, -1 if failure.
-     */
-    short createBody(in string inBodyName);
-
-    /**
        \brief Get the list of objects attached to a joint.
        \param inJointName name of the joint.
        \return list of names of KCDobject attached to the body.
