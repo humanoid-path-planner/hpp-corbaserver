@@ -217,7 +217,6 @@ module hpp
 
     /// \name exploring the roadmap
     /// \{
-
     /// Number of nodes
     short countNodes (in unsigned short inProblemId);
 

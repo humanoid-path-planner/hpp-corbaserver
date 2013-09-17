@@ -19,8 +19,6 @@
 #include <KineoKCDModel/kppKCDBox.h>
 
 #include <hpp/util/debug.hh>
-#include <hpp/model/urdf/parser.hh>
-#include <hpp/model/srdf/parser.hh>
 
 #include <hpp/model/urdf/util.hh>
 
@@ -158,7 +156,6 @@ namespace hpp
 
       Short Robot::loadRobotModel(const char* modelName,
 				  double penetration,
-				  const char* robotDataDir,
 				  const char* urdfSuffix,
 				  const char* srdfSuffix,
 				  const char* rcpdfSuffix)
@@ -169,7 +166,6 @@ namespace hpp
 	  result =
 	    hpp::model::urdf::loadRobotModel (device,
 					      std::string (modelName),
-					      std::string (robotDataDir),
 					      std::string (urdfSuffix),
 					      std::string (srdfSuffix),
 					      std::string (rcpdfSuffix));
@@ -189,6 +185,11 @@ namespace hpp
 	  }
 
 	return 0;
+      }
+
+      Short Robot::loadHrp2Model(double inPenetration)
+      {
+	return loadRobotModel("hrp2_14", inPenetration);
       }
 
       Short Robot::createExtraDof(const char* inDofName, Boolean inRevolute,

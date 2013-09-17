@@ -93,10 +93,11 @@ namespace hpp
 
 	virtual Short loadRobotModel (const char* modelName,
 				      double penetration,
-				      const char* robotDataDir,
 				      const char* urdfSuffix = "",
 				      const char* srdfSuffix = "",
 				      const char* rcpdfSuffix = "");
+
+	virtual Short loadHrp2Model (double penetration);
 
 	virtual Short
 	createExtraDof
