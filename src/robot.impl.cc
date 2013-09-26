@@ -745,9 +745,11 @@ namespace hpp
 	      hppDout (error, "failure in getting estimated distance");
 	      return -1;
 	    }
-	    hppDout (info, "for joint " << jointList[i]->name() << " body pos " << trans[0]
+	    CkppJointComponentShPtr jointComponent
+	      = KIT_DYNAMIC_PTR_CAST(CkppJointComponent, jointList[i]);
+	    hppDout (info, "for joint " << jointComponent->name() << " body pos " << trans[0]
 		     << ", " << trans[1] << ", " << trans[2] <<" distance "<<dist);
-	    hppDout (info, "for joint " << jointList[i]->name() << " joint pos " << transJoint[0]
+	    hppDout (info, "for joint " << jointComponent->name() << " joint pos " << transJoint[0]
 		     << ", " << transJoint[1] << ", " << transJoint[2]);
 #if DEBUG==2
 	    hppDout (info, "joint config:");
