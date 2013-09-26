@@ -12,10 +12,10 @@
 #include <pthread.h>
 #include <iostream>
 
-#include <kwsPlus/directPath/kwsPlusSteeringMethodFactory.h>
-#include <kwsPlus/directPath/kwsPlusDistanceFactory.h>
-#include <kwsPlus/roadmap/kwsPlusDiffusionNodePickerFactory.h>
-#include <kwsPlus/roadmap/kwsPlusDiffusionShooterFactory.h>
+#include <hpp/kwsplus/direct-path/steering-method-factory.hh>
+#include <hpp/kwsplus/direct-path/distance-factory.hh>
+#include <hpp/kwsplus/roadmap/diffusion-node-picker-factory.hh>
+#include <hpp/kwsplus/roadmap/diffusion-shooter-factory.hh>
 
 #include <hpp/util/debug.hh>
 

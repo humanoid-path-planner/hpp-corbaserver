@@ -12,9 +12,9 @@
 
 #include <KineoWorks2/kwsIPPRdmBuilder.h>
 
-#include <kwsPlus/directPath/flicSteeringMethod.h>
-#include <kwsPlus/roadmap/hppVisRdmBuilder.h>
-#include <kwsPlus/roadmap/kwsPlusPCARdmBuilder.h>
+#include <hpp/kwsplus/direct-path/flic-steering-method.hh>
+#include <hpp/kwsplus/roadmap/vis-rdm-builder.hh>
+#include <hpp/kwsplus/roadmap/pca-rdm-builder.hh>
 
 #include <hpp/util/debug.hh>
 #include <hpp/util/portability.hh>
