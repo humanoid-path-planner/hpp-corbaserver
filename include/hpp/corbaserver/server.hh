@@ -10,6 +10,10 @@
 
 #ifndef HPP_CORBASERVER_SERVER_HH
 # define HPP_CORBASERVER_SERVER_HH
+
+# include <KineoWorks2/kwsDiffusionNodePicker.h>
+# include <KineoKCDModel/kppKCDPolyhedron.h>
+
 # include <hpp/corbaserver/fwd.hh>
 # include <hpp/corbaserver/config.hh>
 # include <hpp/core/planner.hh>

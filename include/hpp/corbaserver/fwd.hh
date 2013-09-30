@@ -15,10 +15,6 @@
 //FIXME: should be replaced by CORBA base types forward declarations.
 # include <omniORB4/CORBA.h>
 
-KIT_PREDEF_CLASS (CkppKCDPolyhedron);
-KIT_PREDEF_CLASS (CkwsDiffusionNodePicker);
-KIT_PREDEF_CLASS (CkwsDiffusionShooter);
-
 class CkwsPlusSteeringMethodFactory;
 class CkwsPlusDistanceFactory;
 class CkwsPlusDiffusionNodePickerFactory;
