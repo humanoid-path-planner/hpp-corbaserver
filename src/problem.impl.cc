@@ -796,6 +796,7 @@ namespace hpp
       Short Problem::clearRoadmaps ()
       {
 	planner_->clearRoadmaps ();
+	return 0;
       }
     }
   }
