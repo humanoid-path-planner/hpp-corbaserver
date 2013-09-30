@@ -35,28 +35,6 @@ namespace hpp
     {
       namespace
       {
-	static ktStatus
-	attachSolidComponentsToJoint(const CkppJointComponentShPtr& inKppJoint,
-				     const model::BodyDistanceShPtr& inHppBody)
-	{
-	  std::vector<CkcdObjectShPtr> innerObjectVector;
-	  inHppBody->body ()->mobileObjects(innerObjectVector);
-
-	  for (unsigned int iObj=0; iObj<innerObjectVector.size(); iObj++) {
-	    CkcdObjectShPtr object = innerObjectVector[iObj];
-
-	    CkppKCDPolyhedronShPtr kppPoly = KIT_DYNAMIC_PTR_CAST(CkppKCDPolyhedron, object);
-	    if (!kppPoly) {
-	      hppDout (error, ":attachSolidComponentsToJoint: Object is not a CkppKCDPolyhedron.");
-	      return KD_ERROR;
-	    }
-	    inKppJoint->addSolidComponentRef(CkppSolidComponentRef::create(kppPoly));
-	  }
-	  return KD_OK;
-	}
-
-	// ==========================================================================
-
 	static void localSetJointBounds(const CkwsJointShPtr& inKwsJoint,
 					const hpp::jointBoundSeq& inJointBound)
 	{
