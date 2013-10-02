@@ -210,8 +210,12 @@ namespace hpp
 	  }
 
 	unsigned int rank = 0;
-	polyhedronMap[polyhedronName]->CkcdPolyhedron::addPoint (x, y, z, rank);
-	return rank;
+	polyhedronMap[polyhedronName]->
+	  CkcdPolyhedron::addPoint (static_cast<kcdReal> (x),
+				    static_cast<kcdReal> (y),
+				    static_cast<kcdReal> (z),
+				    rank);
+	return static_cast<Short> (rank);
       }
 
       Short
@@ -241,7 +245,7 @@ namespace hpp
 	    return -1;
 	  }
 	polyhedron->addTriangle(pt1, pt2, pt3, rank);
-	return rank;
+	return static_cast<Short> (rank);
       }
 
 

@@ -559,7 +559,8 @@ namespace hpp
 	}
 
 
-	inLastPathId = planner_->getNbPaths(hppProblemId) - 1;
+	inLastPathId =
+	  static_cast<Short> (planner_->getNbPaths(hppProblemId) - 1);
 	if (inLastPathId > -1) {
 	  pathLength = planner_->getPath(hppProblemId, inLastPathId)->length();
 	}
@@ -727,7 +728,7 @@ namespace hpp
 	if (CkwsRoadmapBuilderShPtr rdmbuilder =
 	    planner_->roadmapBuilderIthProblem (hppProblemId))
 	  {
-	    return rdmbuilder->roadmap ()->countNodes ();
+	    return static_cast<Short> (rdmbuilder->roadmap ()->countNodes ());
 	  }
 	return -1;
       }
@@ -774,7 +775,7 @@ namespace hpp
 	if (CkwsRoadmapBuilderShPtr rdmbuilder =
 	    planner_->roadmapBuilderIthProblem (hppProblemId))
 	  {
-	    return rdmbuilder->roadmap ()->countEdges ();
+	    return static_cast<Short> (rdmbuilder->roadmap ()->countEdges ());
 	  }
 	return -1;
       }
@@ -789,7 +790,8 @@ namespace hpp
 	if (CkwsRoadmapBuilderShPtr rdmbuilder =
 	    planner_->roadmapBuilderIthProblem (hppProblemId))
 	  {
-	    return rdmbuilder->roadmap ()->countConnectedComponents ();
+	    return static_cast<Short>
+	      (rdmbuilder->roadmap ()->countConnectedComponents ());
 	  }
 	return -1;
       }

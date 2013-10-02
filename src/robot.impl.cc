@@ -823,7 +823,7 @@ namespace hpp
 	kppPolyhedron->CkcdPolyhedron::addPoint((kcdReal)x, (kcdReal)y,
 						(kcdReal)z, rank);
 
-	return rank;
+	return static_cast<Short> (rank);
       }
 
 
@@ -854,7 +854,7 @@ namespace hpp
 
 	kppPolyhedron->addTriangle(pt1, pt2, pt3, rank);
 
-	return rank;
+	return static_cast<Short> (rank);
       }
 
 
@@ -951,7 +951,7 @@ namespace hpp
 	  CkppDeviceComponentShPtr hppRobot = planner_->robotIthProblem(hppProblemId);
 
 
-	  outDeviceDim = hppRobot->countDofs ();
+	  outDeviceDim = static_cast<UShort> (hppRobot->countDofs ());
 	}
 	else{
 	  hppDout (error, "wrong robot Id");
