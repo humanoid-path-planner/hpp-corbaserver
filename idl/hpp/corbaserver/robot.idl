@@ -28,34 +28,8 @@ module hpp
    * \brief Creation of a ChppDevice, joints and bodies.
    */
   interface Robot {
-    /**
-       \name Create and register robot
-       @{
-    */
-
-    /** 
-     * \brief Create an empty device and store it temporarily before adding it in object hppPlanner.
-     \param inRobotName name of the robot (ChppDevice).
-
-     * Fails if another robot is already in construction.
-     */
-    short createRobot(in string inRobotName);
-    /** 
-     * \brief Once a robot is built, add it in object ChppciServer::hppPlanner.
-     * \param inRobotName name of the robot.
-     * \param inPenetration dynamic penetration allowed to validate direct paths.
-
-     * \return 0 if success, -1 if failure.
-     */
-    short addHppProblem(in string inRobotName, in double inPenetration);
-
-    /**
-     * \brief Set a joint as root joint to a robot.
-     * \param inRobotName name of the robot (ChppDevice).
-     * \param inJointName name of the joint.
-     */
-    short setRobotRootJoint(in string inRobotName, in string inJointName);
-
+    /// \name Load robot
+    /// @{
     /**
      * \brief Load HRP2 model by sending a Corba request to OpenHRP
 
@@ -96,16 +70,6 @@ module hpp
     */
 
     /**
-       \brief Create an extra dof for inseting in a device.
-       \param inDofName name of the extra dof.
-       \param inRevolute whether dof is revolute.
-       \param inValueMin minimal value of the dof.
-       \param inValueMax maximal value of the dof.
-       \note if inValueMax < inValueMin, the dof is not bounded.
-    */
-    short createExtraDof(in string inDofName, in boolean inRevolute, in double inValueMin, in double inValueMax);
-
-    /**
        \brief Set bound of degree of freedom
        
        \param inProblemId rank of robot in vector of robots. 
@@ -140,28 +104,6 @@ module hpp
        \name Joints
        @{
     */
-
-    /**
-       \brief Create joint.
-       \param inJointName name of the joint.
-       \param inJointType type of joint in {"anchor", "freeflyer", "plan", "rotation", "translation"}.
-       \param pos position of the joint.
-       \param inJointBound sequence of joint dof bounds in order [v0_min,v0_max,v1_min,v1_max,...]. 
-       \li If vi_min > vi_max, dof of rank i is not bounded and bounds (for random sampling) are set to [v_max, v_min].
-       \li If size of sequence is different from twice the number of dofs, no dof is bounded.
-       \param inDisplay Whether the path of the joint should be displayed in interface.
-
-       \return 0 if success, -1 if failure.
-    */
-    short createJoint(in string inJointName, in string inJointType, in Configuration pos, 
-		      in jointBoundSeq inJointBound, in boolean inDisplay);
-    /**
-     * \brief Add a child joint to a joint.
-     * \param inParentName name of the joint to which a child is added.
-     * \param inChildName name of the child joint added to the previous one.
-     * \return 0 if success, -1 if failure.
-     */
-    short addJoint(in string inParentName, in string inChildName);
 
     /**
        \brief set a bound for the joint
@@ -327,9 +269,65 @@ module hpp
      */
 
     /**
-       \name Polyhedra
+       \name Create and register robot
        @{
     */
+
+    /** 
+     * \brief Create an empty device and store it temporarily before adding it in object hppPlanner.
+     \param inRobotName name of the robot (ChppDevice).
+
+     * Fails if another robot is already in construction.
+     */
+    short createRobot(in string inRobotName);
+    /** 
+     * \brief Once a robot is built, add it in object ChppciServer::hppPlanner.
+     * \param inRobotName name of the robot.
+     * \param inPenetration dynamic penetration allowed to validate direct paths.
+
+    /**
+       \brief Create an extra dof for inseting in a device.
+       \param inDofName name of the extra dof.
+       \param inRevolute whether dof is revolute.
+       \param inValueMin minimal value of the dof.
+       \param inValueMax maximal value of the dof.
+       \note if inValueMax < inValueMin, the dof is not bounded.
+    */
+    short createExtraDof(in string inDofName, in boolean inRevolute,
+			 in double inValueMin, in double inValueMax);
+
+    /**
+       \brief Create joint.
+       \param inJointName name of the joint.
+       \param inJointType type of joint in {"anchor", "freeflyer", "plan", "rotation", "translation"}.
+       \param pos position of the joint.
+       \param inJointBound sequence of joint dof bounds in order [v0_min,v0_max,v1_min,v1_max,...]. 
+       \li If vi_min > vi_max, dof of rank i is not bounded and bounds (for random sampling) are set to [v_max, v_min].
+       \li If size of sequence is different from twice the number of dofs, no dof is bounded.
+       \param inDisplay Whether the path of the joint should be displayed in interface.
+
+       \return 0 if success, -1 if failure.
+    */
+    short createJoint(in string inJointName, in string inJointType, in Configuration pos, 
+		      in jointBoundSeq inJointBound, in boolean inDisplay);
+    /**
+     * \brief Add a child joint to a joint.
+     * \param inParentName name of the joint to which a child is added.
+     * \param inChildName name of the child joint added to the previous one.
+     * \return 0 if success, -1 if failure.
+     */
+    short addJoint(in string inParentName, in string inChildName);
+    
+    /// Add a robot to the Planner
+    /// \return 0 if success, -1 if failure.
+    short addHppProblem(in string inRobotName, in double inPenetration);
+
+    /**
+     * \brief Set a joint as root joint to a robot.
+     * \param inRobotName name of the robot (ChppDevice).
+     * \param inJointName name of the joint.
+     */
+    short setRobotRootJoint(in string inRobotName, in string inJointName);
 
     /**
      * \brief create an empty polyhedron.
