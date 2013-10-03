@@ -21,6 +21,7 @@
 #include <hpp/util/debug.hh>
 
 #include <hpp/model/urdf/util.hh>
+#include <hpp/model/joint.hh>
 
 #include "hpp/corbaserver/server.hh"
 
@@ -314,6 +315,39 @@ namespace hpp
       }
 
 
+      hpp::nameSeq* Robot::getJointNames (UShort problemId)
+      {
+	std::size_t rank = static_cast <std::size_t> (problemId);
+	hpp::model::DeviceShPtr robot =
+	  KIT_DYNAMIC_PTR_CAST (hpp::model::Device,
+				planner_->robotIthProblem (rank));
+	ULong size = static_cast <ULong> (robot->numberDof ());
+	char** nameList = hpp::nameSeq::allocbuf(size);
+	hpp::nameSeq *jointNames = new hpp::nameSeq (size, size, nameList);
+	CkwsDevice::TJointVector jointVector;
+	robot->getJointVector (jointVector);
+	std::size_t rankInConfig = 0;
+	for (std::size_t i = 0; i < jointVector.size (); ++i) {
+	  const CjrlJoint* jrlJoint = KIT_DYNAMIC_PTR_CAST
+	    (const hpp::model::Joint, jointVector [i])->jrlJoint ();
+	  std::string name = jrlJoint->getName ();
+	  std::size_t dimension = jrlJoint->numberDof ();
+	  if (dimension == 1) {
+	    nameList [rankInConfig] =
+	      (char*) malloc (sizeof(char)*(name.length ()+1));
+	    strcpy (nameList [rankInConfig], name.c_str ());
+	    ++rankInConfig;
+	  } else if (dimension > 1) {
+	    for (std::size_t j = 0; j < dimension; ++j) {
+	      nameList [rankInConfig] =
+		(char*) malloc (sizeof(char*)*(name.length ()+4));
+	      sprintf (nameList [rankInConfig], "%s_%d", name.c_str (), j);
+	      ++rankInConfig;
+	    }
+	  }
+	}
+	return jointNames;
+      }
 
       Short Robot::setJointBounds(UShort inProblemId, UShort inJointId,
 				  const hpp::jointBoundSeq& inJointBound)

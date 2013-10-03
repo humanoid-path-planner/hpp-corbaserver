@@ -128,6 +128,8 @@ namespace hpp
 	addJoint
 	(const char* parentName, const char* childName) throw (SystemException);
 
+	virtual hpp::nameSeq* getJointNames (UShort problemId);
+
 	virtual Short
 	setJointBounds
 	(UShort problemId, UShort inJointId, const hpp::jointBoundSeq& jointBound)

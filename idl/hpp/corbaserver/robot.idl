@@ -100,6 +100,11 @@ module hpp
        @{
     */
 
+    /// Get joint names in the same order as in the configuration
+    ///
+    /// \param problemId: Id of the problem containing the robot
+    nameSeq getJointNames (in unsigned short problemId);
+
     /**
        \brief set a bound for the joint
 
