@@ -30,15 +30,10 @@ module hpp
   interface Robot {
     /// \name Load robot
     /// @{
-    /**
-     * \brief Load HRP2 model by sending a Corba request to OpenHRP
-
-     * \param inPenetration dynamic penetration allowed to validate direct paths.
-
-     Send ChppciOpenHrpClient::loadHrp2Model() request to Modelloader.
-
-     */
-    short loadHrp2Model(in double inPenetration);
+    /// Load HRP2 model by calling loadRobotModel
+    /// \param penetration dynamic penetration allowed to validate direct paths.
+    ///
+    short loadHrp2Model(in double penetration);
 
     /// \brief Load robot model
     ///
