@@ -421,6 +421,7 @@ namespace hpp
 	    dofArray = new hpp::dofSeq();
 	    dofArray->length(deviceDim);
 
+	    config->isValidItself ();
 	    for(unsigned int i=0; i<deviceDim; i++){
 	      (*dofArray)[i] = config->dofValue(i);
 	    }
@@ -512,6 +513,7 @@ namespace hpp
 	    hpp::dofSeq dofArray;
 	    dofArray.length (deviceDim);
 
+	    config->isValidItself ();
 	    for (unsigned int j=0; j<deviceDim; j++)
 	      dofArray[j] = config->dofValue(j);
 	    (*configSequence) [i] = dofArray;
@@ -658,6 +660,7 @@ namespace hpp
 	  CkwsConfigShPtr inConfig ;
 	  inConfig = planner_->getPath(hppProblemId, pathId)->configAtDistance(atDistance) ;
 	  //convert the config in dofseq
+	  inConfig->isValidItself ();
 	  for ( unsigned int i = 0 ; i < inConfig->size() ; i++){
 	    DofList[i] =  inConfig->dofValue(i) ;
 	  }
@@ -754,6 +757,7 @@ namespace hpp
 	      hpp::dofSeq* dofSeq = new hpp::dofSeq(size, size, DofList, true);
 
 	      //convert the config in dofseq
+	      config.isValidItself ();
 	      for (unsigned int i = 0 ; i < config.size() ; i++) {
 		DofList[i] =  config.dofValue(i) ;
 	      }
