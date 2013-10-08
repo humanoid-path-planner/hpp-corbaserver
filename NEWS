@@ -1,3 +1,8 @@
+Release 2.1.2, 10/08/2013
+
+        1. Fix various warnings.
+        2. Synchronize cmake submodule.
+
 Release 2.1.1, 09/26/2013
 
 	1. Update dependency versions to preserve compatibility.
