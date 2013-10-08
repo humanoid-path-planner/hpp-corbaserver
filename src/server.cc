@@ -65,7 +65,7 @@ namespace hpp
       /// section of omniORB manual for more information.
       void logFunction (const char* msg);
 
-      void logFunction (const char* msg)
+      void logFunction (const char* hppDebugStatement (msg))
       {
 	hppDout (info, "omniORB: " << msg);
       }

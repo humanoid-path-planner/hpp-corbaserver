@@ -667,13 +667,12 @@ namespace hpp
       }
 
       /// \brief set tolerance to the objects in the planner
-      Short Problem::setObstacleTolerance(UShort problemId, Double tolerance)
+      Short Problem::setObstacleTolerance(UShort hppDebugStatement(problemId),
+					  Double tolerance)
 	throw(SystemException)
       {
 	// get the planner
-#ifdef HPP_DEBUG
-	unsigned int hppProblemId = (unsigned int)problemId;
-#endif
+	hppDebugStatement (unsigned int hppProblemId = (unsigned int)problemId);
 	// get object hppPlanner of Corba server.
 	if(!planner_)
 	  {
