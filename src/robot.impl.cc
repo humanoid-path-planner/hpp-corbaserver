@@ -748,10 +748,10 @@ namespace hpp
 
 	    CkwsBodyShPtr body = jointList[i]->attachedBody();
 
-	    CkitMat4 mat = body->absolutePosition();
-	    CkitMat4 matJoint = jointList[i]->currentPosition();
-	    CkitVect3 trans = mat.translation();
-	    CkitVect3 transJoint = matJoint.translation();
+	    hppDebugStatement (CkitMat4 mat = body->absolutePosition();
+			       CkitMat4 matJoint = jointList[i]->currentPosition();
+			       CkitVect3 trans = mat.translation();
+			       CkitVect3 transJoint = matJoint.translation());
 	    double dist=0;
 	    if (body->getEstimatedDistance(dist) == KD_ERROR) {
 	      hppDout (error, "failure in getting estimated distance");
