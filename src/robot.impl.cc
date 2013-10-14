@@ -499,7 +499,8 @@ namespace hpp
 	  return (short)planner_->robotCurrentConfIthProblem(hppProblemId, config);
 	}
 	else {
-	  hppDout (error, ":setCurrentConfig: wrong robot Id");
+	  hppDout (error, "wrong robot Id=" << hppProblemId
+		   << ", nb problems=" << nbProblems);
 	  return -1;
 	}
 	return 0;
@@ -581,7 +582,8 @@ namespace hpp
 	  }
 	else
 	  {
-	    hppDout (error, "wrong robot id");
+	    hppDout (error, "wrong robot Id=" << hppProblemId
+		     << ", nb problems=" << nbProblems);
 	    dofArray = new hpp::dofSeq (1);
 
 	    return dofArray;
@@ -679,7 +681,8 @@ namespace hpp
 	  planner_->penetration(inProblemId, inPenetration);
 	}
 	else{
-	  hppDout (error, "wrong robot id");
+	  hppDout (error, "wrong robot Id=" << hppProblemId
+		   << ", nb problems=" << nbProblems);
 	  return -1;
 	}
 	return 0;
@@ -695,7 +698,8 @@ namespace hpp
 	  outPenetration = planner_->penetration(inProblemId);
 	}
 	else{
-	  hppDout (error, "wrong robot Id");
+	  hppDout (error, "wrong robot Id=" << hppProblemId
+		   << ", nb problems=" << nbProblems);
 	  return -1;
 	}
 
@@ -877,7 +881,8 @@ namespace hpp
 	  }
 	}
 	else{
-	  hppDout (error, "wrong robot Id");
+	  hppDout (error, "wrong robot Id=" << hppProblemId
+		   << ", nb problems=" << nbProblems);
 	  return -1;
 	}
 	return 0;
@@ -915,7 +920,8 @@ namespace hpp
 	    dofList[dofId]->lockedValue(lockedValue);
 	}
 	else {
-	  hppDout (error, "wrong robot Id");
+	  hppDout (error, "wrong robot Id=" << hppRobotId
+		   << ", nb problems=" << nbRobots);
 	  return -1;
 	}
 	return 0;
@@ -939,7 +945,8 @@ namespace hpp
 	  outDeviceDim = static_cast<UShort> (hppRobot->countDofs ());
 	}
 	else{
-	  hppDout (error, "wrong robot Id");
+	  hppDout (error, "wrong robot Id=" << hppProblemId
+		   << ", nb problems=" << nbProblems);
 	  return -1;
 	}
 	return 0;
