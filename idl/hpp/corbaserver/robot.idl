@@ -254,15 +254,22 @@ module hpp
     */
     short getPenetration(in unsigned short inProblemId, out double outPenetration);
 
-    /** 
-	\brief Check whether the link is colliding.
+    /// Is current configuration valid
+    ///
+    /// Check whether current configuration of robot is valid by calling
+    /// CkwsDevice::collisionTest ().
+    /// \param problemId index of problem owning the robot,
+    /// \retval validity whether configuration is valid
+    short collisionTest (in unsigned short problemId, out boolean validity);
 
-	\param inProblemId index of problem owning the robot
-	\param inJointId index of the joint in robot
-	\retval outResult -1
-    */
-    short checkLinkCollision(in unsigned short inProblemId, in unsigned short inJointId, 
-			     out unsigned short outResult);
+    /// Is configuration valid
+    ///
+    /// Check whether current configuration of robot is valid
+    /// \param problemId index of problem owning the robot,
+    /// \param config: configuration to check
+    /// \retval validity whether configuration is valid
+    short isConfigValid (in unsigned short problemId, in dofSeq config,
+			 out boolean validity);
 
     /** 
      *@}

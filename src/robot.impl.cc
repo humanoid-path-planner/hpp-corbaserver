@@ -702,95 +702,46 @@ namespace hpp
 	return 0;
       }
 
-
-
-
-      Short
-      Robot::checkLinkCollision(UShort inProblemId, UShort jointId,
-				UShort& outResult)
-	throw (SystemException)
+      Short Robot::collisionTest
+      (UShort problemId, Boolean& validity) throw (SystemException)
       {
-	unsigned int hppProblemId = (unsigned int)inProblemId;
-	unsigned int hppJointId = (unsigned int)jointId;
-
-	unsigned int nbProblems = planner_->getNbHppProblems();
-
-
-	if (hppProblemId < nbProblems) {
-	  // Get robot in hppPlanner object.
-	  CkppDeviceComponentShPtr hppRobot = planner_->robotIthProblem(hppProblemId);
-
-	  // by Yoshida 06/08/25
-	  unsigned int deviceDim = hppRobot->countDofs ();
-
-	  if (hppJointId > deviceDim) {
-	    hppDout (error, "wrong joint Id");
-	    return -1;
-	  }
-
-	  // get joint
-	  CkwsDevice::TJointVector jointList;
-	  hppRobot->getJointVector(jointList);
-	  // get object
-	  CkwsBodyShPtr body = jointList[hppJointId]->attachedBody();
-
-	  // get result
-	  {
-	    double dist = 0.;
-	    body->isColliding (CkwsBody::CCollisionAnalysisParameters::ESTIMATED_DISTANCE, dist);
-	    outResult = (UShort) dist;
-	  }
-
-	  // debug
-	  hppDout (info, "=====================debugging collision detection ======================");
-
-	  for(unsigned int i=0; i<jointList.size(); i++){
-
-	    CkwsBodyShPtr body = jointList[i]->attachedBody();
-
-	    hppDebugStatement (CkitMat4 mat = body->absolutePosition();
-			       CkitMat4 matJoint = jointList[i]->currentPosition();
-			       CkitVect3 trans = mat.translation();
-			       CkitVect3 transJoint = matJoint.translation());
-	    double dist=0;
-	    if (body->getEstimatedDistance(dist) == KD_ERROR) {
-	      hppDout (error, "failure in getting estimated distance");
-	      return -1;
-	    }
-	    CkppJointComponentShPtr jointComponent
-	      = KIT_DYNAMIC_PTR_CAST(CkppJointComponent, jointList[i]);
-	    hppDout (info, "for joint " << jointComponent->name() << " body pos " << trans[0]
-		     << ", " << trans[1] << ", " << trans[2] <<" distance "<<dist);
-	    hppDout (info, "for joint " << jointComponent->name() << " joint pos " << transJoint[0]
-		     << ", " << transJoint[1] << ", " << transJoint[2]);
-#if DEBUG==2
-	    hppDout (info, "joint config:");
-	    for(unsigned int j = 0; j < 3; ++j)
-	      {
-		for(unsigned int k=0; k<3; k++)
-		  hppDout (info, "(" << j << ", " << k << ") = " << matJoint(j,k));
-	      }
-#endif
-	    // hppBody->printCollisionStatusFast();
-
-	    short res = 0;
-	    {
-	      double dist = 0.;
-	      body->isColliding (CkwsBody::CCollisionAnalysisParameters::ESTIMATED_DISTANCE, dist);
-	      res = (short) dist;
-	    }
-
-	    if(res == 0){
-	      hppDout (info, "Collision");
-
-	    }
-	  }
-	}
-	else{
-	  hppDout (error, "wrong robot Id");
+	validity = false;
+	std::size_t rank = static_cast <std::size_t> (problemId);
+	std::size_t nbProblems = static_cast <std::size_t>
+	  (planner_->getNbHppProblems ());
+	if (rank >= nbProblems) {
+	  hppDout (error, "wrong robot Id=" << rank
+		   << ", nb problems=" << nbProblems);
 	  return -1;
 	}
+	CkppDeviceComponentShPtr robot = planner_->robotIthProblem (rank);
+	validity = robot->collisionTest ();
+	return 0;
+      }
 
+      Short Robot::isConfigValid (UShort problemId, const hpp::dofSeq& dofArray,
+				  Boolean& validity)
+	throw (SystemException)
+      {
+	validity = false;
+	std::size_t rank = static_cast <std::size_t> (problemId);
+	std::size_t nbProblems = static_cast <std::size_t>
+	  (planner_->getNbHppProblems ());
+	if (rank >= nbProblems) {
+	  hppDout (error, "wrong robot Id=" << rank
+		   << ", nb problems=" << nbProblems);
+	  return -1;
+	}
+	CkppDeviceComponentShPtr robot = planner_->robotIthProblem (rank);
+	std::size_t dim = robot->countDofs ();
+
+	std::vector<double> dofVector (dim);
+	for (std::size_t i=0; i<dim; ++i) {
+	  dofVector [i] = dofArray [i];
+	}
+	CkwsConfig config (robot, dofVector);
+	robot->configValidators()->validate(config);
+	validity = config.isValid ();
 	return 0;
       }
 

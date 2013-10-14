@@ -183,9 +183,12 @@ namespace hpp
 	(UShort problemId, Double& penetration);
 
 	virtual Short
-	checkLinkCollision
-	(UShort problemId, UShort jointId, UShort& result)
+	collisionTest (UShort problemId, Boolean& validity)
 	  throw (SystemException);
+
+	virtual Short
+	isConfigValid (UShort problemId, const hpp::dofSeq& dofArray,
+		       Boolean& validity) throw (SystemException);
 
 	virtual Short
 	createPolyhedron
