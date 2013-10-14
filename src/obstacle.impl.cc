@@ -92,20 +92,27 @@ namespace hpp
       (const char* solidComponentName, const hpp::Configuration& cfg)
 	throw(SystemException)
       {
-	BOOST_FOREACH (CkcdObjectShPtr object, planner_->obstacleList ())
-	  {
-	    CkppSolidComponentShPtr solidComponent
-	      = KIT_DYNAMIC_PTR_CAST (CkppSolidComponent, object);
-	    if (solidComponent && solidComponentName == solidComponent->name ())
-	      {
-		hppDout (info, "found ``"
-			 << solidComponentName << "'' in the tree.");
-		CkitMat4 mat;
-		ConfigurationToCkitMat4 (cfg, mat);
-		solidComponent->setAbsolutePosition (mat);
-		return 0;
-	      }
+	std::vector <CkcdObjectShPtr> obstacleList (planner_->obstacleList ());
+	hppDout (info,
+		 "Number of obstacles: " << planner_->obstacleList ().size ());
+	for (std::vector <CkcdObjectShPtr>::iterator it = obstacleList.begin ();
+	     it != obstacleList.end (); it++) {
+	  CkcdObjectShPtr object = *it;
+	  CkppSolidComponentShPtr solidComponent
+	    = KIT_DYNAMIC_PTR_CAST (CkppSolidComponent, object);
+	  if (solidComponent) {
+	    hppDout (info, "obstacle Name: " << solidComponent->name ());
 	  }
+	  if (solidComponent && solidComponentName == solidComponent->name ())
+	    {
+	      hppDout (info, "found ``"
+		       << solidComponentName << "'' in the tree.");
+	      CkitMat4 mat;
+	      ConfigurationToCkitMat4 (cfg, mat);
+	      solidComponent->setAbsolutePosition (mat);
+	      return 0;
+	    }
+	}
 	hppDout (error, "failed to find ``"
 		 << solidComponentName << "'' in the tree.");
 	return -1;
