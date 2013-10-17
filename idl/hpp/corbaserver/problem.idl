@@ -168,6 +168,9 @@ module hpp
     */
     short interruptPathPlanning();
 
+    /// Get Number of path for a given problem
+    short countPaths (in unsigned short problemId);
+
     /**
        \brief Optimize a given path
        \param inProblemId Id of the problem owning the path.

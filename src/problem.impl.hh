@@ -39,6 +39,9 @@ namespace hpp
 	(UShort problemId, const char* diffusingNode);
 
 	virtual Short
+	countPaths (unsigned short problemId);
+
+	virtual Short
 	setPathOptimizer
 	(UShort problemId, const char* pathOptimizer, UShort maxNumberLoop);
 

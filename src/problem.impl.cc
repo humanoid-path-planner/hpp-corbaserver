@@ -586,6 +586,16 @@ namespace hpp
 	return 0;
       }
 
+      Short Problem::countPaths (UShort problemId)
+      {
+	unsigned int hppProblemId = (unsigned int)problemId;
+	if (hppProblemId > planner_->getNbHppProblems() - 1) {
+	  hppDout (error, ":optimizePath: wrong problem id");
+	  return -1;
+	}
+	return (Short) planner_->getNbPaths(hppProblemId);
+      }
+
       Short Problem::optimizePath(UShort problemId, UShort inPathId)
       {
 	unsigned int hppProblemId = (unsigned int)problemId;
