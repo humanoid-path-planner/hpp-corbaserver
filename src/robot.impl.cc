@@ -25,6 +25,7 @@
 
 #include "hpp/corbaserver/server.hh"
 
+#include <hpp/kwsio/configuration.hh>
 #include "robot.impl.hh"
 #include "tools.hh"
 
@@ -744,8 +745,18 @@ namespace hpp
 	  dofVector [i] = dofArray [i];
 	}
 	CkwsConfig config (robot, dofVector);
+	robot->setCurrentConfig (config);
 	robot->configValidators()->validate(config);
 	validity = config.isValid ();
+	if (!validity) {
+	  for (std::size_t i=0; i<config.countReports (true); ++i) {
+	    std::string validatorName;
+	    CkwsValidationReportConstShPtr report = config.report
+	      (i, validatorName, true);
+	    hppDout (info, "Validator " << validatorName
+		   << " has unvalidated the configuration " << config);
+	  }
+	}
 	return 0;
       }
 
