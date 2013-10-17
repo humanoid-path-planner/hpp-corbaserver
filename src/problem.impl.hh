@@ -22,6 +22,8 @@ namespace hpp
   {
     namespace impl
     {
+      using CORBA::Long;
+      using CORBA::ULong;
       /// \brief Implement CORBA interface ``Problem''.
       class Problem : public virtual POA_hpp::Problem
       {
@@ -99,10 +101,10 @@ namespace hpp
 	virtual Short loadPathFromFile
 	(const char* inFilename) throw (SystemException);
 
-	virtual Short countNodes (UShort problemId);
-	virtual hpp::dofSeq* node (UShort inProblemId, UShort inNodeId);
-	virtual Short countEdges (UShort problemId);
-	virtual Short countConnectedComponents (UShort problemId);
+	virtual Long countNodes (UShort problemId);
+	virtual hpp::dofSeq* node (UShort inProblemId, ULong inNodeId);
+	virtual Long countEdges (UShort problemId);
+	virtual Long countConnectedComponents (UShort problemId);
 	virtual Short clearRoadmaps ();
       private:
 	/// \brief Pointer to the Server owning this object

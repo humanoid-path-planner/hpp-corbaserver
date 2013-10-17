@@ -719,7 +719,7 @@ namespace hpp
 	return 0;
       }
 
-      Short Problem::countNodes (UShort problemId)
+      Long Problem::countNodes (UShort problemId)
       {
 	unsigned int hppProblemId = (unsigned int)problemId;
 
@@ -730,12 +730,12 @@ namespace hpp
 	if (CkwsRoadmapBuilderShPtr rdmbuilder =
 	    planner_->roadmapBuilderIthProblem (hppProblemId))
 	  {
-	    return static_cast<Short> (rdmbuilder->roadmap ()->countNodes ());
+	    return static_cast<Long> (rdmbuilder->roadmap ()->countNodes ());
 	  }
 	return -1;
       }
 
-      hpp::dofSeq* Problem::node (UShort problemId, UShort nodeId)
+      hpp::dofSeq* Problem::node (UShort problemId, ULong nodeId)
       {
 	unsigned int hppProblemId = (unsigned int)problemId;
 
@@ -767,7 +767,7 @@ namespace hpp
 	return new hpp::dofSeq(0, 0, NULL, true);
       }
 
-      Short Problem::countEdges (UShort problemId)
+      Long Problem::countEdges (UShort problemId)
       {
 	unsigned int hppProblemId = (unsigned int)problemId;
 
@@ -778,11 +778,11 @@ namespace hpp
 	if (CkwsRoadmapBuilderShPtr rdmbuilder =
 	    planner_->roadmapBuilderIthProblem (hppProblemId))
 	  {
-	    return static_cast<Short> (rdmbuilder->roadmap ()->countEdges ());
+	    return static_cast<Long> (rdmbuilder->roadmap ()->countEdges ());
 	  }
 	return -1;
       }
-      Short Problem::countConnectedComponents (UShort problemId)
+      Long Problem::countConnectedComponents (UShort problemId)
       {
 	unsigned int hppProblemId = (unsigned int)problemId;
 
@@ -793,7 +793,7 @@ namespace hpp
 	if (CkwsRoadmapBuilderShPtr rdmbuilder =
 	    planner_->roadmapBuilderIthProblem (hppProblemId))
 	  {
-	    return static_cast<Short>
+	    return static_cast<Long>
 	      (rdmbuilder->roadmap ()->countConnectedComponents ());
 	  }
 	return -1;
