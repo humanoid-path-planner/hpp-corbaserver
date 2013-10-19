@@ -813,6 +813,18 @@ namespace hpp
 	planner_->clearRoadmaps ();
 	return 0;
       }
+      void Problem::writeKineoLog ()
+      {
+	unsigned int nbmsg = CkitLogManager::countMessages ();
+	hppDout (info, "CkitLogManager::countMessages (): " << nbmsg);
+	for (unsigned int i=0; i<nbmsg; ++i) {
+	  std::string message;
+	  double time;
+	  CkitLogManager::EkitLogType type;
+	  CkitLogManager::getMessage (i, message, type, time);
+	  hppDout (info, message);
+	}
+      }
     }
   }
 }

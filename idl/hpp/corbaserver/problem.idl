@@ -220,6 +220,7 @@ module hpp
 
     /// \name exploring the roadmap
     /// \{
+
     /// Number of nodes
     long countNodes (in unsigned short inProblemId);
 
@@ -235,6 +236,10 @@ module hpp
     /// Clear the roadmaps
     short clearRoadmaps ();
     /// \}
+
+    /// Write Kineo log (in verbose mode)
+    /// Does nothing if hpp-corbaserver is not compiled with option HPP_DEBUG.
+    void writeKineoLog ();
   };
 };
 #endif

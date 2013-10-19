@@ -109,6 +109,8 @@ namespace hpp
 	virtual Long countEdges (UShort problemId);
 	virtual Long countConnectedComponents (UShort problemId);
 	virtual Short clearRoadmaps ();
+	virtual void writeKineoLog ();
+
       private:
 	/// \brief Pointer to the Server owning this object
 	corbaServer::Server* server_;
