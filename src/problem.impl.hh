@@ -84,6 +84,12 @@ namespace hpp
 	solveOneProblem
 	(UShort problemId, Short& inLastPathId, Double& pathLength);
 
+	virtual Short directPath (UShort problemId,
+				  const hpp::dofSeq& startConfig,
+				  const hpp::dofSeq& endConfig,
+				  CORBA::String_out message)
+	  throw (SystemException);
+
 	virtual Short solve ();
 
 	virtual Short interruptPathPlanning ();

@@ -160,6 +160,16 @@ module hpp
     */
     short solve();
 
+    /// Make direct connection between two configurations
+    /// \param problemId rank of problem in vector.
+    /// \param startConfig, endConfig: the configurations to link.
+    /// \retval message unvalidation message.
+    /// \return -1 if steering method fails to create a direct path of if
+    /// direct path is not valid
+    short directPath (in unsigned short problemId,
+		      in dofSeq startConfig, in dofSeq endConfig,
+		      out string message);
+
     /**
        \brief Interrupt path planning activity
 

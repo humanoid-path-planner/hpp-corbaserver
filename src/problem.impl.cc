@@ -11,6 +11,7 @@
 #include <iostream>
 
 #include <KineoWorks2/kwsIPPRdmBuilder.h>
+#include <KineoModel/kppSteeringMethodComponent.h>
 
 #include <hpp/kwsplus/direct-path/flic-steering-method.hh>
 #include <hpp/kwsplus/roadmap/vis-rdm-builder.hh>
@@ -565,6 +566,61 @@ namespace hpp
 	ktStatus status  = planner_->solve();
 	return (Short)status;
       }
+
+      Short Problem::directPath (UShort problemId,
+				 const hpp::dofSeq& startConfig,
+				 const hpp::dofSeq& endConfig,
+				 CORBA::String_out message)
+	throw (SystemException)
+      {
+	Short result = 0;
+	std::size_t rank = static_cast <std::size_t> (problemId);
+	message = "Success";
+	CkwsConfigShPtr start;
+	CkwsConfigShPtr end;
+	try {
+	  start = dofSeqToConfig (planner_, rank, startConfig);
+	  end = dofSeqToConfig (planner_, rank, endConfig);
+	} catch (const std::exception& exc) {
+	  hppDout (error, "directPath: " << exc.what ());
+	  message = exc.what ();
+	  return -1;
+	}
+	CkppSteeringMethodComponentShPtr smc =
+	  planner_->steeringMethodIthProblem (rank);
+	if (!smc) {
+	  message = "No steering method";
+	  return -1;
+	}
+	CkwsSteeringMethodShPtr sm = smc->kwsSteeringMethod ();
+	assert (sm);
+	CkwsDirectPathShPtr dp = sm->makeDirectPath (*start, *end);
+	if (!dp) {
+	  hppDout (error, "Failed to create direct path.");
+	  return -1;
+	}
+	// Validate path
+	CkwsValidatorSetConstShPtr dpValidators =
+	  planner_->robotIthProblem (rank)->directPathValidators();
+	dpValidators->validate(*dp);
+
+	if (!dp->isValid ()) {
+	  std::string msg ("Direct path invalid: (");
+	  std::string validatorName;
+	  for (unsigned int i=0; i<dp->countReports (); ++i) {
+	    dp->report (i, validatorName);
+	    msg += validatorName + ", ";
+	  }
+	  msg += ")";
+	  message = msg.c_str ();
+	  result = -1;
+	}
+	// Add Path in problem
+	CkwsPathShPtr path = CkwsPath::createWithDirectPath (dp);
+	planner_->addPath (rank, path);
+	return result;
+      }
+
 
       Short Problem::interruptPathPlanning()
       {
