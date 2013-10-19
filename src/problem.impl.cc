@@ -29,6 +29,43 @@ namespace hpp
   {
     namespace impl
     {
+      static CkwsConfigShPtr dofSeqToConfig (hpp::core::Planner* planner,
+					     std::size_t problemId,
+					     const hpp::dofSeq& dofArray)
+      {
+	unsigned int configDim = (unsigned int)dofArray.length();
+	std::vector<double> dofVector;
+	unsigned int nbProblems = planner->getNbHppProblems();
+
+	// Test that rank is less than number of robots in vector.
+	if (problemId >= nbProblems) {
+	  throw std::runtime_error ("wrong problem id.");
+	}
+	// Get robot in hppPlanner object.
+	CkppDeviceComponentShPtr robot =
+	  planner->robotIthProblem(problemId);
+
+	// Compare size of input array with number of degrees of freedom of
+	// robot.
+	if (configDim != robot->countDofs()) {
+	  hppDout (error, "robot nb dof is different from config size");
+	  throw std::runtime_error
+	    ("robot nb dof is different from config size");
+	}
+
+	// Fill dof vector with dof array.
+	for (unsigned int iDof=0; iDof<configDim; iDof++) {
+	  dofVector.push_back(dofArray[iDof]);
+	}
+	// Create a config for robot initialized with dof vector.
+	CkwsConfigShPtr config = CkwsConfig::create(robot, dofVector);
+	if (!config) {
+	  hppDout (error, "cannot create config");
+	  throw std::runtime_error ("cannot create config");
+	}
+	return config;
+      }
+
       Problem::Problem (corbaServer::Server* server)
 	: server_ (server),
 	  planner_ (server->planner ())
@@ -362,39 +399,16 @@ namespace hpp
 	return 0;
       }
 
-      Short Problem::setInitialConfig(UShort problemId, const hpp::dofSeq& dofArray)
+      Short Problem::setInitialConfig(UShort problemId,
+				      const hpp::dofSeq& dofArray)
       {
 	unsigned int hppProblemId = (unsigned int)problemId;
-	unsigned int configDim = (unsigned int)dofArray.length();
-	std::vector<double> dofVector;
-	unsigned int nbProblems = planner_->getNbHppProblems();
-
-	// Test that rank is less than nulber of robots in vector.
-	if (hppProblemId < nbProblems) {
-	  // Get robot in hppPlanner object.
-	  CkppDeviceComponentShPtr robot = planner_->robotIthProblem(hppProblemId);
-
-	  // Compare size of input array with number of degrees of freedom of robot.
-	  if (configDim != robot->countDofs()) {
-	    hppDout (error, ":setInitialConfig: robot nb dof is different from config size");
-	    return -1;
-	  }
-	  // Fill dof vector with dof array.
-	  for (unsigned int iDof=0; iDof<configDim; iDof++) {
-	    dofVector.push_back(dofArray[iDof]);
-	  }
-	  // Create a config for robot initialized with dof vector.
-	  CkwsConfigShPtr config = CkwsConfig::create(robot, dofVector);
-	  if (!config) {
-	    hppDout (error, ":setInitialConfig: cannot create config. Check that robot nb dof is equal to config size");
-	    return -1;
-	  }
-
+	try {
+	  CkwsConfigShPtr config =
+	    dofSeqToConfig (planner_, hppProblemId, dofArray);
 	  planner_->initConfIthProblem(hppProblemId, config);
-	  return 0;
-	}
-	else {
-	  hppDout (error, ":setInitialConfig: wrong problem Id");
+	} catch (const std::exception& exc) {
+	  hppDout (error, ":setInitialConfig: " << exc.what ());
 	  return -1;
 	}
 	return 0;
@@ -443,45 +457,17 @@ namespace hpp
 	return new hpp::dofSeq(1);
       }
 
-
       Short Problem::addGoalConfig(UShort problemId,
 				   const hpp::dofSeq& dofArray)
       {
-	unsigned int hppProblemId = (unsigned int)problemId;
-	unsigned int configDim = (unsigned int)dofArray.length();
-	std::vector<double> dofVector;
-	unsigned int nbProblems = planner_->getNbHppProblems();
-
-	// Test that rank is less than nulber of robots in vector.
-	if (hppProblemId < nbProblems) {
-	  // Get robot in hppPlanner object.
-	  CkppDeviceComponentShPtr robot =
-	    planner_->robotIthProblem(hppProblemId);
-
-	  // Compare size of input array with number of degrees of freedom of
-	  // robot.
-	  if (configDim != robot->countDofs()) {
-	    hppDout (error, ":setInitialConfig: robot nb dof is different from"
-		     " config size");
-	    return -1;
-	  }
-
-	  // Fill dof vector with dof array.
-	  for (unsigned int iDof=0; iDof<configDim; iDof++) {
-	    dofVector.push_back(dofArray[iDof]);
-	  }
-	  // Create a config for robot initialized with dof vector.
-	  CkwsConfigShPtr config = CkwsConfig::create(robot, dofVector);
-	  if (!config) {
-	    hppDout (error, ":setGoalConfig: cannot create config. Check that"
-		     " robot nb dof is equal to config size");
-	    return -1;
-	  }
+	std::size_t hppProblemId = (std::size_t) problemId;
+	try {
+	  CkwsConfigShPtr config = dofSeqToConfig (planner_, hppProblemId,
+						   dofArray);
 	  planner_->addGoalConfIthProblem (hppProblemId, config);
 	  return 0;
-	}
-	else {
-	  hppDout (error, ":setGoalConfig: wrong problem Id");
+	} catch (const std::exception& exc) {
+	  hppDout (error, ":addGoalConfig: " << exc.what ());
 	  return -1;
 	}
 	return 0;
