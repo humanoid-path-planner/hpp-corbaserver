@@ -20,6 +20,8 @@
 
 #include <hpp/util/debug.hh>
 
+#include <hpp/model/fwd.hh>
+#include <hpp/model/body-distance.hh>
 #include <hpp/model/urdf/util.hh>
 #include <hpp/model/joint.hh>
 
@@ -757,6 +759,100 @@ namespace hpp
 		   << " has unvalidated the configuration " << config);
 	  }
 	}
+	return 0;
+      }
+
+      Short Robot::distancesToCollision (UShort problemId,
+					 hpp::dofSeq_out distances,
+					 hpp::nameSeq_out bodies,
+					 hpp::dofSeqSeq_out bodyPoints,
+					 hpp::dofSeqSeq_out obstaclePoints)
+      {
+	using hpp::model::BodyDistanceShPtr;
+	std::size_t rank = static_cast <std::size_t> (problemId);
+	std::size_t nbProblems = static_cast <std::size_t>
+	  (planner_->getNbHppProblems ());
+	if (rank >= nbProblems) {
+	  hppDout (error, "wrong robot Id=" << rank
+		   << ", nb problems=" << nbProblems);
+	  distances = new hpp::dofSeq ();
+	  bodies = new hpp::nameSeq ();
+	  bodyPoints = new hpp::dofSeqSeq ();
+	  obstaclePoints = new hpp::dofSeqSeq ();
+	  return -1;
+	}
+	hpp::model::DeviceShPtr robot
+	  (KIT_DYNAMIC_PTR_CAST (hpp::model::Device,
+				 planner_->robotIthProblem (rank)));
+	if (!robot) {
+	  hppDout (error, "Robot is not of type hpp::model::Device");
+	  distances = new hpp::dofSeq ();
+	  bodies = new hpp::nameSeq ();
+	  bodyPoints = new hpp::dofSeqSeq ();
+	  obstaclePoints = new hpp::dofSeqSeq ();
+	  return -1;
+	}
+	const std::vector< BodyDistanceShPtr >& bodyDistances
+	  (robot->bodyDistances ());
+	// count distance computatin pairs
+	std::size_t nbDistPairs = 0;
+	for (std::vector< BodyDistanceShPtr >::const_iterator it=
+	       bodyDistances.begin (); it != bodyDistances.end (); it++) {
+	  nbDistPairs += (*it)->nbDistPairs ();
+	}
+	hpp::dofSeq* distances_ptr = new hpp::dofSeq ();
+	distances_ptr->length (nbDistPairs);
+	hpp::nameSeq* bodies_ptr = new hpp::nameSeq ();
+	bodies_ptr->length (nbDistPairs);
+	hpp::dofSeqSeq* bodyPoints_ptr = new hpp::dofSeqSeq ();
+	bodyPoints_ptr->length (nbDistPairs);
+	hpp::dofSeqSeq* obstaclePoints_ptr = new hpp::dofSeqSeq ();
+	obstaclePoints_ptr->length (nbDistPairs);
+	// Loop over distance computation pairs
+	std::size_t distPairId = 0;
+	for (std::vector< BodyDistanceShPtr >::const_iterator it=
+	       bodyDistances.begin (); it != bodyDistances.end (); it++) {
+	  BodyDistanceShPtr bodyDistance (*it);
+	  for (std::size_t i=0; i<bodyDistance->nbDistPairs (); ++i) {
+	    double distance;
+	    CkcdPoint pointBody;
+	    CkcdPoint pointObstacle;
+	    if (bodyDistance->distAndPairsOfPoints (i, distance, pointBody,
+						    pointObstacle) != KD_OK) {
+	      hppDout (error, "Failed to get distance and pairs of points for "
+		       << bodyDistance->name () << ", id = " << i);
+	      delete distances_ptr;
+	      delete bodies_ptr;
+	      delete bodyPoints_ptr;
+	      delete obstaclePoints_ptr;
+	      distances = new hpp::dofSeq ();
+	      bodies = new hpp::nameSeq ();
+	      bodyPoints = new hpp::dofSeqSeq ();
+	      obstaclePoints = new hpp::dofSeqSeq ();
+	      return -1;
+	    }
+	    distances_ptr->operator[] (distPairId) = distance;
+	    bodies_ptr->operator[] (distPairId) =
+	      bodyDistance->name ().c_str ();
+	    hpp::dofSeq pointBody_seq;
+	    pointBody_seq.length (3);
+	    hpp::dofSeq pointObstacle_seq;
+	    pointObstacle_seq.length (3);
+	    for (std::size_t j=0; j<3; ++j) {
+	      pointBody_seq [j] = pointBody [j];
+	      pointObstacle_seq [j] = pointObstacle [j];
+	    }
+	    bodyPoints_ptr->operator[] (distPairId) = pointBody_seq;
+	    obstaclePoints_ptr->operator[] (distPairId) = pointObstacle_seq;
+	    ++distPairId;
+	  }
+	  distances = distances_ptr;
+	  bodies = bodies_ptr;
+	  bodyPoints = bodyPoints_ptr;
+	  obstaclePoints = obstaclePoints_ptr;
+	}
+	
+	
 	return 0;
       }
 

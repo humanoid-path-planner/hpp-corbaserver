@@ -191,6 +191,12 @@ namespace hpp
 		       Boolean& validity) throw (SystemException);
 
 	virtual Short
+	distancesToCollision (UShort problemId, hpp::dofSeq_out distances,
+			      hpp::nameSeq_out bodies,
+			      hpp::dofSeqSeq_out bodyPoints,
+			      hpp::dofSeqSeq_out obstaclePoints);
+
+	virtual Short
 	createPolyhedron
 	(const char* polyhedronName) throw (SystemException);
 

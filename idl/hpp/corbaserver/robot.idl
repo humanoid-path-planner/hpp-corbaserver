@@ -218,7 +218,7 @@ module hpp
      */
 
     /**
-       \name Collision checking
+       \name Collision checking and distance computation
        @{
     */
 
@@ -270,6 +270,19 @@ module hpp
     /// \retval validity whether configuration is valid
     short isConfigValid (in unsigned short problemId, in dofSeq config,
 			 out boolean validity);
+
+    /// Compute distances between bodies and obstacles
+    ///
+    /// \param problemId rank of the problem containing the robot,
+    /// \retval distances list of distances,
+    /// \retval bodies names of the bodies the distances are computed for,
+    /// \retval bodyPoints closest points on the body,
+    /// \retval obstaclePoints closest points on the obstacles
+    /// \note another body can be an obstacle for a given body.
+    short distancesToCollision (in unsigned short problemId, 
+				out dofSeq distances, out nameSeq bodies,
+				out dofSeqSeq bodyPoints,
+				out dofSeqSeq obstaclePoints);
 
     /** 
      *@}
