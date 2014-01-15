@@ -8,20 +8,20 @@
 //
 // See the COPYING file for more information.
 
+#include <fcl/math/transform.h>
 #include "tools.hh"
 
 void
-ConfigurationToCkitMat4
-(const hpp::Configuration inConfig, CkitMat4& outMatrix4)
+ConfigurationToTransform3f
+(const hpp::Configuration inConfig, hpp::corbaServer::Transform3f& transform)
 {
+  fcl::Matrix3f R;
+  fcl::Vec3f T;
+  for(int i=0; i<3; i++) {
+    for(int j=0; j<3; j++)
+      R (i,j) = inConfig.rot[i*3+j];
+  }
   for(int i=0; i<3; i++)
-    {
-      for(int j=0; j<3; j++)
-	outMatrix4(i,j) = inConfig.rot[i*3+j];
-    }
-  for(int i=0; i<3; i++)
-    outMatrix4(i,3) = inConfig.trs[i];
-  for(int i=0; i<3; i++)
-    outMatrix4(3,i) = 0.0;
-  outMatrix4(3,3) = 1.0;
+    T [i] = inConfig.trs[i];
+  transform.setTransform (R, T);
 }

@@ -28,7 +28,7 @@ namespace hpp
 	~Server ();
 
 	/// \brief Create and activate the Corba servers.
-	ktStatus createAndActivateServers (corbaServer::Server* server);
+	void createAndActivateServers (corbaServer::Server* server);
 
       private:
 	CORBA::ORB_var orb_;
@@ -57,11 +57,10 @@ namespace hpp
 	CosNaming::NamingContext_var hppContext_;
 
 	/// \brief Create context.
-	bool createHppContext ();
+	void createHppContext ();
 
 	/// \brief Store objects in Corba name service.
-	bool
-	bindObjectToName
+	void bindObjectToName
 	(CORBA::Object_ptr objref, CosNaming::Name objectName);
 
 

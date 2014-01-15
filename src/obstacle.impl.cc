@@ -9,11 +9,10 @@
 // See the COPYING file for more information.
 
 #include <iostream>
-#include <boost/foreach.hpp>
-#include <KineoKCDModel/kppKCDBox.h>
-
 #include <hpp/util/debug.hh>
-
+#include <fcl/BVH/BVH_model.h>
+#include <fcl/shape/geometric_shapes.h>
+#include <hpp/model/collision-object.hh>
 #include "obstacle.impl.hh"
 #include "tools.hh"
 
@@ -27,134 +26,82 @@ namespace hpp
     {
       Obstacle::Obstacle (corbaServer::Server* server)
 	: server_ (server),
-	  planner_ (server->planner ())
+	  problemSolver_ (server->problemSolver ())
       {}
 
       Short
-      Obstacle::setObstacles (const char* listName)
-      {
-	// Check that collision list exists.
-	if (collisionListMap.count(listName) != 1)
-	  {
-	    hppDout (error, "collision list "
-		     << listName << " does not exist");
-	    return -1;
-	  }
-	planner_->obstacleList (collisionListMap[listName]);
-	return 0;
-      }
-
-      Short
-      Obstacle::addObstacle(const char* polyhedronName)
-      {
-	// Check that polyhedron exists.
-	if (polyhedronMap.count(polyhedronName) != 1)
-	  {
-	    hppDout (error, "polyhedron "
-		     << polyhedronName << " does not exist");
-	    return -1;
-	  }
-	CkppKCDPolyhedronShPtr hppPolyhedron = polyhedronMap[polyhedronName];
-
-	// Build collision entity for KCD.
-	hppPolyhedron->makeCollisionEntity(CkcdObject::IMMEDIATE_BUILD);
-	planner_->addObstacle(hppPolyhedron);
-	return 0;
-      }
-
-      Short
-      Obstacle::addObstacleConfig
-      (const char* polyhedronName, const hpp::Configuration& cfg)
-	throw(SystemException)
-      {
-	// Check that polyhedron exists.
-	if (polyhedronMap.count (polyhedronName) != 1)
-	  {
-	    hppDout(error, "polyhedron "
-		    << polyhedronName << " does not exist");
-	    return -1;
-	  }
-	CkppKCDPolyhedronShPtr polyhedron = polyhedronMap[polyhedronName];
-
-	// Build collision entity for KCD.
-	polyhedron->makeCollisionEntity(CkcdObject::IMMEDIATE_BUILD);
-
-	CkitMat4 mat;
-	ConfigurationToCkitMat4(cfg, mat);
-
-	polyhedron->setAbsolutePosition(mat);
-	planner_->addObstacle(polyhedron);
-	return 0;
-      }
-
-      Short
-      Obstacle::moveObstacleConfig
-      (const char* solidComponentName, const hpp::Configuration& cfg)
-	throw(SystemException)
-      {
-	std::vector <CkcdObjectShPtr> obstacleList (planner_->obstacleList ());
-	hppDout (info,
-		 "Number of obstacles: " << planner_->obstacleList ().size ());
-	for (std::vector <CkcdObjectShPtr>::iterator it = obstacleList.begin ();
-	     it != obstacleList.end (); it++) {
-	  CkcdObjectShPtr object = *it;
-	  CkppSolidComponentShPtr solidComponent
-	    = KIT_DYNAMIC_PTR_CAST (CkppSolidComponent, object);
-	  if (solidComponent) {
-	    hppDout (info, "obstacle Name: " << solidComponent->name ());
-	  }
-	  if (solidComponent && solidComponentName == solidComponent->name ())
-	    {
-	      hppDout (info, "found ``"
-		       << solidComponentName << "'' in the tree.");
-	      CkitMat4 mat;
-	      ConfigurationToCkitMat4 (cfg, mat);
-	      solidComponent->setAbsolutePosition (mat);
-	      return 0;
-	    }
-	}
-	hppDout (error, "failed to find ``"
-		 << solidComponentName << "'' in the tree.");
-	return -1;
-      }
-
-      Short
-      Obstacle::createCollisionList
-      (const char* listName) throw (SystemException)
-      {
-	if (collisionListMap.count (listName) != 0)
-	  {
-	    hppDout (error, "collision list " << listName << " already exists");
-	    return -1;
-	  }
-	collisionListMap[listName] = std::vector<CkcdObjectShPtr> ();
-	return 0;
-      }
-
-      Short
-      Obstacle::addPolyToCollList
-      (const char* listName, const char* polyhedronName)
+      Obstacle::addObstacle(const char* objectName, Boolean collision,
+			    Boolean distance)
 	throw (SystemException)
       {
-	if (collisionListMap.count (listName) != 1)
-	  {
-	    hppDout (error, "collision list "
-		     << listName << " does not exist");
-	    return -1;
-	  }
-
+	std::string objName (objectName);
+	CollisionGeometryPtr_t geometry;
 	// Check that polyhedron exists.
-	if (polyhedronMap.count (polyhedronName) != 1)
-	  {
-	    hppDout (error, "polyhedron "
-		     << polyhedronName << " does not exist");
+	VertexMap_t::const_iterator itVertex = vertexMap_.find(objName);
+	if (itVertex != vertexMap_.end ()) {
+	  PolyhedronPtr_t polyhedron = PolyhedronPtr_t (new Polyhedron_t);
+	  int res = polyhedron->beginModel ();
+	  if (res != fcl::BVH_OK) {
+	    hppDout (error, "fcl BVHReturnCode = " << res);
 	    return -1;
 	  }
 
-	CkppKCDPolyhedronShPtr polyhedron = polyhedronMap[polyhedronName];
-	polyhedron->makeCollisionEntity (CkcdObject::IMMEDIATE_BUILD);
-	collisionListMap[listName].push_back (polyhedron);
+	  polyhedron->addSubModel (itVertex->second, triangleMap_ [objName]);
+	  polyhedron->endModel ();
+	  geometry = polyhedron;
+	} else {
+	  ShapeMap_t::iterator itShape = shapeMap_.find (objName);
+	  if (itShape != shapeMap_.end ()) {
+	    geometry = itShape->second;
+	  }
+	}
+	if (!geometry) {
+	  hppDout (error, "Object " << objName << " does not exist.");
+	  return -1;
+	}
+
+	Transform3f pos; pos.setIdentity ();
+	CollisionObjectPtr_t collisionObject
+	  (new CollisionObject_t (geometry, pos, objName));
+	problemSolver_->addObstacle (collisionObject, collision, distance);
 	return 0;
+      }
+
+      Short
+      Obstacle::moveObstacle
+      (const char* objectName, const hpp::Configuration& cfg)
+	throw(SystemException)
+      {
+	const ObjectVector_t& collisionObstacles
+	  (problemSolver_->problem ()->collisionObstacles ());
+	for (ObjectVector_t::const_iterator it = collisionObstacles.begin ();
+	     it != collisionObstacles.end (); it++) {
+	  CollisionObjectPtr_t object = *it;
+	  if (object->name () == objectName) {
+	    hppDout (info, "found \""
+		     << object->name () << "\" in the obstacle list.");
+	    Transform3f mat;
+	    ConfigurationToTransform3f (cfg, mat);
+	    object->move (mat);
+	    return 0;
+	  }
+	}
+	const ObjectVector_t& distanceObstacles
+	  (problemSolver_->problem ()->distanceObstacles ());
+	for (ObjectVector_t::const_iterator it = distanceObstacles.begin ();
+	     it != distanceObstacles.end (); it++) {
+	  CollisionObjectPtr_t object = *it;
+	  if (object->name () == objectName) {
+	    hppDout (info, "found \""
+		     << object->name () << "\" in the obstacle list.");
+	    Transform3f mat;
+	    ConfigurationToTransform3f (cfg, mat);
+	    object->move (mat);
+	    return 0;
+	  }
+	}
+	hppDout (error, "failed to find ``" << objectName << "'' in the tree.");
+	return -1;
       }
 
       Short
@@ -162,45 +109,29 @@ namespace hpp
       (const char* polyhedronName) throw (SystemException)
       {
 	// Check that polyhedron does not already exist.
-	if (polyhedronMap.count(polyhedronName) != 0)
-	  {
-	    hppDout(error, "polyhedron "
-		    << polyhedronName << " already exists.");
-	    return -1;
-	  }
-
-	CkppKCDPolyhedronShPtr polyhedron =
-	  CkppKCDPolyhedron::create (polyhedronName);
-	if (!polyhedron)
-	  {
-	    hppDout (error, "failed to create polyhedron " << polyhedronName);
-	    return -1;
-	  }
-	polyhedronMap[polyhedronName] = polyhedron;
+	if (vertexMap_.find(polyhedronName) != vertexMap_.end ()) {
+	  hppDout (error, "polyhedron "	 << polyhedronName
+		   << " already exists.");
+	  return -1;
+	}
+	vertexMap_ [polyhedronName] = std::vector <fcl::Vec3f> ();
+	triangleMap_ [polyhedronName] = std::vector <fcl::Triangle> ();
 	return 0;
       }
 
-      Short
-      Obstacle::createBox
+      Short Obstacle::createBox
       (const char* boxName, Double x, Double y, Double z)
 	throw (SystemException)
       {
-	// Check that polyhedron does not already exist.
-	if (polyhedronMap.count(boxName) != 0)
-	  {
-	    hppDout (error, "polyhedron " << boxName << " already exists.");
-	    return -1;
-	  }
-
-	CkppKCDPolyhedronShPtr polyhedron =
-	  CkppKCDBox::create (boxName, x, y, z);
-
-	if (!polyhedron)
-	  {
-	    hppDout (error, "failed to create polyhedron " << boxName);
-	    return -1;
-	  }
-	polyhedronMap[boxName] = polyhedron;
+	std::string shapeName(boxName);
+	// Check that object does not already exist.
+	if (vertexMap_.find(shapeName) != vertexMap_.end () ||
+	    shapeMap_.find (shapeName) != shapeMap_.end ()) {
+	  hppDout (info, "object " << shapeName << " already exists.");
+	  return -1;
+	}
+	BasicShapePtr_t box (new fcl::Box ( x, y, z));
+	shapeMap_[shapeName] = box;
 	return 0;
       }
 
@@ -209,20 +140,14 @@ namespace hpp
 	throw (SystemException)
       {
 	// Check that polyhedron exists.
-	if (polyhedronMap.count(polyhedronName) != 1)
-	  {
-	    hppDout (error, "polyhedron "
-		     << polyhedronName << " does not exist");
-	    return -1;
-	  }
-
-	unsigned int rank = 0;
-	polyhedronMap[polyhedronName]->
-	  CkcdPolyhedron::addPoint (static_cast<kcdReal> (x),
-				    static_cast<kcdReal> (y),
-				    static_cast<kcdReal> (z),
-				    rank);
-	return static_cast<Short> (rank);
+	VertexMap_t::iterator itVertex = vertexMap_.find (polyhedronName);
+	if (itVertex == vertexMap_.end ()) {
+	  hppDout (error, "polyhedron " << polyhedronName
+		   << " does not exist.");
+	  return -1;
+	}
+	itVertex->second.push_back (fcl::Vec3f (x, y, z));
+	return static_cast<Short> (vertexMap_.size ());
       }
 
       Short
@@ -230,61 +155,17 @@ namespace hpp
       (const char* polyhedronName, ULong pt1, ULong pt2, ULong pt3)
 	throw (SystemException)
       {
-	if (polyhedronMap.count(polyhedronName) != 1)
-	  {
-	    hppDout (error, "polyhedron "
-		     << polyhedronName << " does not exist");
-	    return -1;
-	  }
+	// Check that polyhedron exists.
+	TriangleMap_t::iterator itTriangle = triangleMap_.find (polyhedronName);
+	if (itTriangle == triangleMap_.end ()) {
+	  hppDout (error, "polyhedron " << polyhedronName
+		   << " does not exist.");
+	  return -1;
+	}
 
-	CkppKCDPolyhedronShPtr polyhedron = polyhedronMap[polyhedronName];
-	unsigned int rank = 0;
-
-	// Test Kineo preconditions
-	if (pt1 == pt2
-	    || pt1 == pt3
-	    || pt2 == pt3
-	    || pt1 >= polyhedron->countPoints ()
-	    || pt2 >= polyhedron->countPoints ()
-	    || pt3 >= polyhedron->countPoints ())
-	  {
-	    hppDout (error, "invalid triangle");
-	    return -1;
-	  }
-	polyhedron->addTriangle(pt1, pt2, pt3, rank);
-	return static_cast<Short> (rank);
+	itTriangle->second.push_back (fcl::Triangle (pt1, pt2, pt3));
+	return static_cast<Short> (triangleMap_.size ());
       }
-
-
-      Short
-      Obstacle::setVisible
-      (const char* polyhedronName, Boolean visible) throw (SystemException)
-      {
-	if (polyhedronMap.count (polyhedronName) != 1)
-	  {
-	    hppDout (error, "collision list "
-		     << polyhedronName << " does not exist");
-	    return -1;
-	  }
-	polyhedronMap[polyhedronName]->isVisible (visible);
-	return 0;
-      }
-
-      Short
-      Obstacle::setTransparent
-      (const char* polyhedronName, Boolean transparent)
-	throw (SystemException)
-      {
-	if (polyhedronMap.count (polyhedronName) != 1)
-	  {
-	    hppDout (error, "collision list "
-		     << polyhedronName << " does not exist");
-	    return -1;
-	  }
-	polyhedronMap[polyhedronName]->isTransparent (transparent);
-	return 0;
-      }
-
     } // end of namespace implementation.
   } // end of namespace corbaServer.
 } // end of namespace hpp.

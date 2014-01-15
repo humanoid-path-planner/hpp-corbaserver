@@ -10,24 +10,18 @@
 
 #include <iostream>
 
-#include <KineoModel/kppAnchorJointComponent.h>
-#include <KineoModel/kppFreeFlyerJointComponent.h>
-#include <KineoModel/kppTranslationJointComponent.h>
-#include <KineoModel/kppRotationJointComponent.h>
-#include <KineoModel/kppSolidComponentRef.h>
-#include <KineoModel/kppExtraDofComponent.h>
-#include <KineoKCDModel/kppKCDBox.h>
+#include <fcl/BVH/BVH_model.h>
+#include <fcl/shape/geometric_shapes.h>
 
 #include <hpp/util/debug.hh>
-
 #include <hpp/model/fwd.hh>
-#include <hpp/model/body-distance.hh>
-#include <hpp/model/urdf/util.hh>
 #include <hpp/model/joint.hh>
+#include <hpp/model/urdf/util.hh>
+#include <hpp/model/object-factory.hh>
+#include <hpp/model/collision-object.hh>
+#include <hpp/core/weighed-distance.hh>
+#include <hpp/corbaserver/server.hh>
 
-#include "hpp/corbaserver/server.hh"
-
-#include <hpp/kwsio/configuration.hh>
 #include "robot.impl.hh"
 #include "tools.hh"
 
@@ -39,74 +33,74 @@ namespace hpp
     {
       namespace
       {
-	static void localSetJointBounds(const CkwsJointShPtr& inKwsJoint,
-					const hpp::jointBoundSeq& inJointBound)
+	static void localSetJointBounds(const JointPtr_t& joint,
+					const hpp::jointBoundSeq& jointBounds)
 	{
-	  unsigned int nbJointBounds = (unsigned int)inJointBound.length();
-	  unsigned int kwsJointNbDofs = inKwsJoint->countDofs();
+	  std::size_t nbJointBounds = (std::size_t)jointBounds.length();
+	  std::size_t kwsJointNbDofs = joint->configSize ();
 	  if (nbJointBounds == 2*kwsJointNbDofs) {
-	    for (unsigned int iDof=0; iDof<kwsJointNbDofs; iDof++) {
-	      double vMin = inJointBound[2*iDof];
-	      double vMax = inJointBound[2*iDof+1];
-	      CkwsDofShPtr dof = inKwsJoint->dof(iDof);
+	    for (std::size_t iDof=0; iDof<kwsJointNbDofs; iDof++) {
+	      double vMin = jointBounds[2*iDof];
+	      double vMax = jointBounds[2*iDof+1];
 	      if (vMin <= vMax) {
 		/* Dof is actually bounded */
-		dof->isBounded(true);
-		dof->bounds(vMin, vMax);
+		joint->isBounded(iDof, true);
+		joint->lowerBound(iDof, vMin);
+		joint->upperBound(iDof, vMax);
 	      }
 	      else {
 		/* Dof is not bounded */
-		dof->isBounded(false);
-		dof->bounds(vMax,vMin);
+		joint->isBounded(iDof, false);
 	      }
 	    }
 	  }
 	}
       } // end of namespace.
 
+      // --------------------------------------------------------------------
 
       Robot::Robot(corbaServer::Server* server) :
-	server_(server), planner_(server->planner())
+	server_(server), problemSolver_(server->problemSolver ())
       {
       }
 
-
+      // --------------------------------------------------------------------
 
       Short Robot::createRobot(const char* inRobotName)
 	throw (SystemException)
       {
-	std::string robotName(inRobotName);
+	std::string robotName (inRobotName);
 	// Check that no robot of this name already exists.
-	if (robotMap_.count(robotName) != 0) {
-	  hppDout (error, ":createRobot: robot " << robotName << " already exists.");
+	if (robotMap_.count (robotName) != 0) {
+	  hppDout (error, ":createRobot: robot " << robotName <<
+		   " already exists.");
 	  return -1;
 	}
 	// Try to create a robot.
-	CkppDeviceComponentShPtr hppDevice=CkppDeviceComponent::create(robotName);
-	if (!hppDevice) {
-	  hppDout (error, ":createRobot: failed to create a robot.");
-	  return -1;
-	}
+	DevicePtr_t robot = Device_t::create (robotName);
 	// Store robot in map.
-	robotMap_[robotName] = hppDevice;
+	robotMap_ [robotName] = robot;
 	return 0;
       }
 
-      Short Robot::addHppProblem(const char* inRobotName, double inPenetration)
-	throw (SystemException)
+      // --------------------------------------------------------------------
+
+      Short Robot::setRobot(const char* inRobotName) throw (SystemException)
       {
-	std::string robotName(inRobotName);
+	std::string robotName (inRobotName);
 	// Check that robot of this name exists.
-	if (robotMap_.count(robotName) != 1) {
-	  hppDout (error, ":addHppProblem: robot " << robotName << " does not exist.");
+	if (robotMap_.count (robotName) != 1) {
+	  hppDout (error, ":setRobot: robot " << robotName <<
+		   " does not exist.");
 	  return -1;
 	}
-	CkppDeviceComponentShPtr hppDevice = robotMap_[robotName];
+	DevicePtr_t robot = robotMap_ [robotName];
 	// Create a new problem with this robot.
-	planner_->addHppProblem(hppDevice, inPenetration);
-
+	problemSolver_->robot (robot);
 	return 0;
       }
+
+      // --------------------------------------------------------------------
 
       Short Robot::setRobotRootJoint(const char* inRobotName,
 				     const char* inJointName)
@@ -116,183 +110,130 @@ namespace hpp
 	std::string jointName(inJointName);
 
 	// Check that robot of this name exists.
-	if (robotMap_.count(robotName) != 1) {
-	  hppDout (error, ":setRobotRootJoint: robot " << robotName << " does not exist.");
+	if (robotMap_.count (robotName) != 1) {
+	  hppDout (error, ":setRobotRootJoint: robot " << robotName <<
+		   " does not exist.");
 	  return -1;
 	}
 	// Check that joint of this name exists.
-	if (jointMap_.count(jointName) != 1) {
-	  hppDout (error, ":setRobotRootJoint: joint " << jointName << " does not exist.");
+	if (jointMap_.count (jointName) != 1) {
+	  hppDout (error, ":setRobotRootJoint: joint " << jointName <<
+		   " does not exist.");
 	  return -1;
 	}
-	CkppDeviceComponentShPtr hppDevice = robotMap_[robotName];
-	CkppJointComponentShPtr kppJoint = jointMap_[jointName];
+	DevicePtr_t robot = robotMap_ [robotName];
+	JointPtr_t joint = jointMap_ [jointName];
 
-	if (hppDevice->rootJointComponent(kppJoint)!=KD_OK) {
-	  hppDout (error, ":setRobotRootJoint: failed to set joint "
-		   << jointName << " as root joint of robot " << robotName << ".");
-	  return -1;
-	}
+	robot->rootJoint (joint);
 	return 0;
       }
 
+      // --------------------------------------------------------------------
+
       Short Robot::loadRobotModel(const char* modelName,
-				  double penetration,
 				  const char* urdfSuffix,
 				  const char* srdfSuffix,
 				  const char* rcpdfSuffix)
       {
 	hpp::model::HumanoidRobotShPtr device;
-	bool result;
 	try {
-	  result =
-	    hpp::model::urdf::loadRobotModel (device,
-					      std::string (modelName),
-					      std::string (urdfSuffix),
-					      std::string (srdfSuffix),
-					      std::string (rcpdfSuffix));
+	  hpp::model::urdf::loadRobotModel (device,
+					    std::string (modelName),
+					    std::string (urdfSuffix),
+					    std::string (srdfSuffix),
+					    std::string (rcpdfSuffix));
 	} catch (const std::exception& exc) {
 	  hppDout (error, exc.what ());
 	  return -1;
 	}
-	if (!result) {
-	  return -1;
-	}
-
 	// Add device to the planner
-	if (planner_->addHppProblem (device, penetration) != KD_OK)
-	  {
-	    hppDout (error, "failed to add robot");
-	    return -1;
-	  }
-
+	problemSolver_->robot (device);
 	return 0;
       }
 
-      Short Robot::loadHrp2Model(double inPenetration)
-      {
-	return loadRobotModel("hrp2_14", inPenetration);
-      }
+      // --------------------------------------------------------------------
 
-      Short Robot::createExtraDof(const char* inDofName, Boolean inRevolute,
-				  Double inValueMin, Double inValueMax)
-	throw (SystemException)
+      Short Robot::getConfigSize () throw (SystemException)
       {
-	std::string dofName(inDofName);
-	// Check that extra dof of this name does not already exist.
-	if (extraDofMap_.count(dofName) != 0) {
-	  hppDout (error, ":createExtraDof: extra degree of freedom " << dofName << " already exists.");
+	try {
+	  return problemSolver_->robot ()->configSize ();
+	} catch (const std::exception& exc) {
+	  hppDout (error, exc.what ());
 	  return -1;
 	}
-	CkppExtraDofComponentShPtr extraDof = CkppExtraDofComponent::create(inRevolute, dofName);
-	// Check whether creation failed.
-	if (!extraDof) {
-	  hppDout (error, ":createExtraDof: failed to create extra degree of freedom " << dofName);
-	  return -1;
-	}
-	if (inValueMin <= inValueMax) {
-	  extraDof->CkppDofComponent::isBounded(true);
-	  extraDof->CkppDofComponent::bounds(inValueMin, inValueMax);
-	} else {
-	  extraDof->CkppDofComponent::isBounded(false);
-	}
-	// Store extra degree of freedom in map.
-	extraDofMap_[dofName] = extraDof;
-
-	return 0;
       }
 
-      Short Robot::createJoint(const char* inJointName,
-			       const char* inJointType, const hpp::Configuration& pos,
-			       const hpp::jointBoundSeq& inJointBound,
-			       Boolean inDisplay)
+      // --------------------------------------------------------------------
+
+      Short Robot::getNumberDof () throw (SystemException)
+      {
+	try {
+	  return problemSolver_->robot ()->numberDof ();
+	} catch (const std::exception& exc) {
+	  hppDout (error, exc.what ());
+	  return -1;
+	}
+      }
+
+      // --------------------------------------------------------------------
+
+      Short Robot::createJoint (const char* jointName,
+			        const char* jointType,
+				const hpp::Configuration& pos,
+				const hpp::jointBoundSeq& jointBounds)
 	throw (SystemException)
       {
-	std::string jointName(inJointName);
-	std::string jointType(inJointType);
+	std::string jn(jointName);
+	std::string jt(jointType);
 
 	// Check that joint of this name does not already exist.
-	if (jointMap_.count(jointName) != 0) {
-	  hppDout (error, ":createJoint: joint " << jointName  << " already exists.");
+	if (jointMap_.count(jn) != 0) {
+	  hppDout (error, ":createJoint: joint " << jn  <<
+		   " already exists.");
 	  return -1;
 	}
-
-	CkppJointComponentShPtr kppJoint;
-
+	JointPtr_t joint;
 	// Fill position matrix
-	CkitMat4 posMatrix;
-	ConfigurationToCkitMat4(pos, posMatrix);
-
-	hppDout (info, "Position matrix = (( " << posMatrix(0, 0) << ",\t " << posMatrix(0, 1) << ",\t " << posMatrix(0, 2) << ",\t " << posMatrix(0, 3) << " )");
-	hppDout (info, "                   ( " << posMatrix(1, 0) << ",\t " << posMatrix(1, 1) << ",\t " << posMatrix(1, 2) << ",\t " << posMatrix(1, 3) << " )");
-	hppDout (info, "                   ( " << posMatrix(2, 0) << ",\t " << posMatrix(2, 1) << ",\t " << posMatrix(2, 2) << ",\t " << posMatrix(2, 3) << " )");
-	hppDout (info, "                   ( " << posMatrix(3, 0) << ",\t " << posMatrix(3, 1) << ",\t " << posMatrix(3, 2) << ",\t " << posMatrix(3, 3) << " ))");
+	Transform3f posMatrix;
+	ConfigurationToTransform3f (pos, posMatrix);
 
 	// Determine type of joint.
-	if (jointType == "anchor") {
-	  CkppAnchorJointComponentShPtr kppAnchorJoint
-	    = CkppAnchorJointComponent::createWithDefaultBodyFactory
-	    (std::string(inJointName));
-	  kppAnchorJoint->setCurrentPosition(posMatrix);
-	  kppJoint = kppAnchorJoint;
+	if (jt == "anchor") {
+	  joint = objectFactory_.createJointAnchor (posMatrix);
 	}
-	else if (jointType == "freeflyer") {
-	  CkppFreeFlyerJointComponentShPtr kppFreeFlyerJoint
-	    = CkppFreeFlyerJointComponent::createWithDefaultBodyFactory
-	    (std::string(inJointName));
-	  kppFreeFlyerJoint->setCurrentPosition(posMatrix);
-	  kppJoint = kppFreeFlyerJoint;
+	else if (jt == "SO3") {
+	  joint =
+	    objectFactory_.createJointSO3 (posMatrix);
 	}
-	else if (jointType == "plan") {
-	  CkppFreeFlyerJointComponentShPtr kppFreeFlyerJoint
-	    = CkppFreeFlyerJointComponent::createWithDefaultBodyFactory
-	    (std::string(inJointName));
-	  kppFreeFlyerJoint->dof(2)->isLocked(true);
-	  kppFreeFlyerJoint->dof(3)->isLocked(true);
-	  kppFreeFlyerJoint->dof(4)->isLocked(true);
-
-	  kppFreeFlyerJoint->setCurrentPosition(posMatrix);
-	  kppJoint = kppFreeFlyerJoint;
+	else if (jt == "rotation") {
+	  joint = objectFactory_.createJointRotation (posMatrix);
 	}
-	else if (jointType == "rotation") {
-	  CkppRotationJointComponentShPtr kppRotationJoint
-	    = CkppRotationJointComponent::createWithDefaultBodyFactory
-	    (std::string(inJointName));
-	  kppRotationJoint->setCurrentPosition(posMatrix);
-	  kppJoint = kppRotationJoint;
-	}
-	else if (jointType == "translation") {
-	  CkppTranslationJointComponentShPtr kppTranslationJoint
-	    = CkppTranslationJointComponent::createWithDefaultBodyFactory
-	    (std::string(inJointName));
-	  kppTranslationJoint->setCurrentPosition(posMatrix);
-	  kppJoint = kppTranslationJoint;
+	else if (jt == "translation") {
+	  joint =
+	    objectFactory_.createJointTranslation (posMatrix);
 	}
 	else {
-	  hppDout (error, ":createJoint: joint type " << jointType  << " does not exist.");
+	  hppDout (error, ":createJoint: joint type " << jt
+		   << " does not exist.");
 	  return -1;
 	}
 	// Check whether creation failed.
-	if (!kppJoint) {
-	  hppDout (error, ":createJoint: failed to create joint " << jointName);
+	if (!joint) {
+	  hppDout (error, ":createJoint: failed to create joint " << jn);
 	  return -1;
 	}
-
 	// Set the bounds of the joint
 	// Bound joint if needed.
-	CkwsJointShPtr kwsJoint = KIT_DYNAMIC_PTR_CAST(CkwsJoint, kppJoint);
-	localSetJointBounds(kwsJoint, inJointBound);
-
-	kppJoint->doesDisplayPath(inDisplay);
-	kppJoint->isVisible(false);
+	localSetJointBounds(joint, jointBounds);
+	BodyPtr_t body = objectFactory_.createBody ();
+	joint->setLinkedBody (body);
 	// Store joint in jointMap_.
-	jointMap_[jointName] = kppJoint;
-
+	jointMap_[jn] = joint;
+	joint->name (jn);
 	return 0;
       }
 
-
-
+      // --------------------------------------------------------------------
 
       Short Robot::addJoint(const char* inParentName,
 			    const char* inChildName)
@@ -300,561 +241,351 @@ namespace hpp
       {
 	// Check that joint of this name exists.
 	if (jointMap_.count(inParentName) != 1) {
-	  hppDout (error, ":addJoint: joint " << inParentName  << " does not exist.");
+	  hppDout (error, ":addJoint: joint " << inParentName  <<
+		   " does not exist.");
 	  return -1;
 	}
 	// Check that joint of this name does not already exist.
 	if (jointMap_.count(inChildName) != 1) {
-	  hppDout (error, ":addJoint: joint " << inChildName  << " does not exist.");
+	  hppDout (error, ":addJoint: joint " << inChildName  <<
+		   " does not exist.");
 	  return -1;
 	}
-	CkppJointComponentShPtr parentJoint = jointMap_[inParentName];
-	CkppJointComponentShPtr childJoint = jointMap_[inChildName];
-	if (parentJoint->addChildJointComponent(childJoint) != KD_OK) {
-	  hppDout (error, ":addJoint: failed to attach joint " << inChildName << " to joint " << inParentName);
-	  return -1;
-	}
+	JointPtr_t parentJoint = jointMap_ [inParentName];
+	JointPtr_t childJoint = jointMap_ [inChildName];
+	parentJoint->addChildJoint (childJoint);
 	return 0;
       }
 
+      // --------------------------------------------------------------------
 
-      hpp::nameSeq* Robot::getJointNames (UShort problemId)
+      hpp::nameSeq* Robot::getJointNames ()
       {
-	std::size_t rank = static_cast <std::size_t> (problemId);
-	hpp::model::DeviceShPtr robot =
-	  KIT_DYNAMIC_PTR_CAST (hpp::model::Device,
-				planner_->robotIthProblem (rank));
-	ULong size = static_cast <ULong> (robot->numberDof ());
+	DevicePtr_t robot = problemSolver_->robot ();
+	// Compute number of real urdf joints
+	ULong size = 0;
+	JointVector_t jointVector = robot->getJointVector ();
+	for (JointVector_t::const_iterator it = jointVector.begin ();
+	     it != jointVector.end (); it++) {
+	  if ((*it)->numberDof () != 0) size ++;
+	}
 	char** nameList = hpp::nameSeq::allocbuf(size);
 	hpp::nameSeq *jointNames = new hpp::nameSeq (size, size, nameList);
-	CkwsDevice::TJointVector jointVector;
-	robot->getJointVector (jointVector);
 	std::size_t rankInConfig = 0;
 	for (std::size_t i = 0; i < jointVector.size (); ++i) {
-	  const CjrlJoint* jrlJoint = KIT_DYNAMIC_PTR_CAST
-	    (const hpp::model::Joint, jointVector [i])->jrlJoint ();
-	  std::string name = jrlJoint->getName ();
-	  std::size_t dimension = jrlJoint->numberDof ();
-	  if (dimension == 1) {
+	  const JointPtr_t joint = jointVector [i];
+	  std::string name = joint->name ();
+	  std::size_t dimension = joint->numberDof ();
+	  if (dimension != 0) {
 	    nameList [rankInConfig] =
 	      (char*) malloc (sizeof(char)*(name.length ()+1));
 	    strcpy (nameList [rankInConfig], name.c_str ());
 	    ++rankInConfig;
-	  } else if (dimension > 1) {
-	    for (std::size_t j = 0; j < dimension; ++j) {
-	      nameList [rankInConfig] =
-		(char*) malloc (sizeof(char*)*(name.length ()+4));
-	      sprintf (nameList [rankInConfig], "%s_%d", name.c_str (), j);
-	      ++rankInConfig;
-	    }
 	  }
 	}
 	return jointNames;
       }
 
-      Short Robot::setJointBounds(UShort inProblemId, UShort inJointId,
-				  const hpp::jointBoundSeq& inJointBound)
+      // --------------------------------------------------------------------
+
+      Short Robot::setJointBounds (UShort jointId,
+				   const hpp::jointBoundSeq& jointBounds)
 	throw (SystemException)
       {
-	unsigned int hppProblemId = (unsigned int)inProblemId;
-	unsigned int jointId = (unsigned int)inJointId;
-
-	unsigned int nbProblems = planner_->getNbHppProblems();
-
-	// Test that rank is less than number of robots in vector.
-	if (hppProblemId < nbProblems) {
+	try  {
 	  // Get robot in hppPlanner object.
-	  CkppDeviceComponentShPtr hppRobot = planner_->robotIthProblem(hppProblemId);
+	  DevicePtr_t robot = problemSolver_->robot ();
 
 	  // get joint
-	  CkwsDevice::TJointVector jointVector;
-	  hppRobot->getJointVector (jointVector);
-	  if (jointId < jointVector.size()) {
-	    CkwsJointShPtr kwsJoint = jointVector[jointId];
-	    localSetJointBounds(kwsJoint, inJointBound);
-	  }
-	  else {
-	    hppDout (error, ":setJointBounds: jointId="  << jointId  <<
-		     " should be smaller than number of joints=" << jointVector.size());
-	    return -1;
-	  }
-	}
-	else {
-	  hppDout (error, ":setJointBounds: inProblemId="  << hppProblemId  <<
-		   " should be smaller than number of problems="
-		   << nbProblems);
+	  JointVector_t jointVector = robot->getJointVector ();
+	  JointPtr_t kwsJoint = jointVector[jointId];
+	  localSetJointBounds(kwsJoint, jointBounds);
+	} catch (const std::exception& exc) {
+	  hppDout (error, exc.what ());
 	  return -1;
 	}
 	return 0;
       }
 
+      // --------------------------------------------------------------------
 
-
-      Short Robot::setJointVisible(UShort inProblemId, UShort inJointId,
-				   Boolean inVisible)
+      Short Robot::setCurrentConfig(const hpp::floatSeq& dofArray)
 	throw (SystemException)
       {
-	unsigned int hppProblemId = (unsigned int)inProblemId;
-	unsigned int jointId = (unsigned int)inJointId;
-
-	unsigned int nbProblems = planner_->getNbHppProblems();
-
-	// Test that rank is less than number of robots in vector.
-	if (hppProblemId < nbProblems) {
-	  // Get robot in hppPlanner object.
-	  CkppDeviceComponentShPtr hppRobot = planner_->robotIthProblem(hppProblemId);
-	  CkppJointComponentShPtr kppJoint = hppRobot->jointComponent(jointId);
-
-	  if (kppJoint) {
-	    kppJoint->isVisible(inVisible);
-	    return 0;
-	  }
-	}
-	return -1;
-      }
-
-
-
-      Short Robot::setJointTransparent(UShort inProblemId, UShort inJointId,
-				       Boolean inTransparent)
-	throw (SystemException)
-      {
-	unsigned int hppProblemId = (unsigned int)inProblemId;
-	unsigned int jointId = (unsigned int)inJointId;
-
-	unsigned int nbProblems = planner_->getNbHppProblems();
-
-	// Test that rank is less than number of robots in vector.
-	if (hppProblemId < nbProblems) {
-	  // Get robot in hppPlanner object.
-	  CkppDeviceComponentShPtr hppRobot = planner_->robotIthProblem(hppProblemId);
-	  CkppJointComponentShPtr kppJoint = hppRobot->jointComponent(jointId);
-
-	  if (kppJoint) {
-	    kppJoint->isTransparent(inTransparent);
-	    return 0;
-	  }
-	}
-	return -1;
-      }
-
-      Short Robot::setJointDisplayPath(UShort inProblemId, UShort inJointId,
-				       Boolean inDisplayPath)
-	throw (SystemException)
-      {
-	unsigned int hppProblemId = (unsigned int)inProblemId;
-	unsigned int jointId = (unsigned int)inJointId;
-
-	unsigned int nbProblems = planner_->getNbHppProblems();
-
-	// Test that rank is less than number of robots in vector.
-	if (hppProblemId < nbProblems) {
-	  // Get robot in hppPlanner object.
-	  CkppDeviceComponentShPtr hppRobot = planner_->robotIthProblem(hppProblemId);
-	  CkppJointComponentShPtr kppJoint = hppRobot->jointComponent(jointId);
-
-	  if (kppJoint) {
-	    kppJoint->doesDisplayPath(inDisplayPath);
-	    return 0;
-	  }
-	}
-	return -1;
-      }
-
-      Short Robot::setCurrentConfig(UShort inProblemId,
-				    const hpp::dofSeq& dofArray)
-	throw (SystemException)
-      {
-	unsigned int hppProblemId = (unsigned int)inProblemId;
-	unsigned int configDim = (unsigned int)dofArray.length();
-
+	std::size_t configDim = (std::size_t)dofArray.length();
 	std::vector<double> dofVector;
-
-	unsigned int nbProblems = planner_->getNbHppProblems();
-
-	// Test that rank is less than number of robots in vector.
-	if (hppProblemId < nbProblems) {
+	try {
 	  // Get robot in hppPlanner object.
-	  CkppDeviceComponentShPtr hppRobot = planner_->robotIthProblem(hppProblemId);
-
+	  DevicePtr_t robot = problemSolver_->robot ();
 	  // by Yoshida 06/08/25
-	  unsigned int deviceDim = hppRobot->countDofs ();
-
-
+	  std::size_t deviceDim = robot->configSize ();
 	  // Fill dof vector with dof array.
-	  for (unsigned int iDof=0; iDof<configDim; iDof++) {
-	    dofVector.push_back(dofArray[iDof]);
+	  vector_t config; config.resize (configDim);
+	  for (std::size_t iDof = 0; iDof < configDim; iDof++) {
+	    config [iDof] = dofArray[iDof];
 	  }
-
-	  // by Yoshida 06/08/25
 	  // fill the vector by zero
-	  hppDout (info, "robot id "<<hppProblemId<<", configDim "<<configDim<<",  deviceDim "<<deviceDim);
+	  hppDout (info, "config dimension: " <<configDim
+		   <<",  deviceDim "<<deviceDim);
 	  if(configDim != deviceDim){
 	    hppDout (error, ":setCurrentConfig: dofVector Does not match");
 	    return -1;
-
-	    // dofVector.resize(deviceDim, 0);
 	  }
-
 	  // Create a config for robot initialized with dof vector.
-	  CkwsConfig config(hppRobot, dofVector);
-
-	  return (short)planner_->robotCurrentConfIthProblem(hppProblemId, config);
-	}
-	else {
-	  hppDout (error, "wrong robot Id=" << hppProblemId
-		   << ", nb problems=" << nbProblems);
+	  problemSolver_->robot ()->currentConfiguration (config);
+	  problemSolver_->robot ()->computeForwardKinematics ();
+	  return 0;
+	} catch (const std::exception& exc) {
+	  hppDout (error, exc.what ());
 	  return -1;
 	}
 	return 0;
       }
 
-#if WITH_OPENHRP
+      // --------------------------------------------------------------------
 
-#define LARM_JOINT0_OPENHRP 29
-#define RHAND_JOINT0_OPENHRP 36
-#define LARM_JOINT0_KINEO 34
-#define RHAND_JOINT0_KINEO 29
-
-      /// \brief the config is in the order of OpenHRP Joints  RARM, LARM, RHAND, LHAND
-      Short Robot::setCurrentConfigOpenHRP(UShort inProblemId, const hpp::dofSeq& dofArray)
-	throw (SystemException)
+      hpp::floatSeq* Robot::getCurrentConfig() throw (SystemException)
       {
-	hpp::dofSeq dofArrayKineo(dofArray);
-
-	// LARM
-	for(unsigned int i=0; i<7; i++){
-	  dofArrayKineo[LARM_JOINT0_KINEO+i] = dofArray[LARM_JOINT0_OPENHRP+i];
+	hpp::floatSeq *dofArray;
+	try {
+	  // Get robot in hppPlanner object.
+	  DevicePtr_t robot = problemSolver_->robot ();
+	  vector_t config = robot->currentConfiguration ();
+	  std::size_t deviceDim = robot->configSize ();
+	  dofArray = new hpp::floatSeq();
+	  dofArray->length(deviceDim);
+	  for(std::size_t i=0; i<deviceDim; i++)
+	    (*dofArray)[i] = config [i];
+	  return dofArray;
+	} catch (const std::exception& exc) {
+	  hppDout (error, exc.what ());
+	  dofArray = new hpp::floatSeq (1);
+	  return dofArray;
 	}
-	// RHAND
-	for(unsigned int i=0; i<5; i++){
-	  dofArrayKineo[RHAND_JOINT0_KINEO+i] = dofArray[RHAND_JOINT0_OPENHRP+i];
-	}
-
-	return setCurrentConfig(inProblemId, dofArrayKineo);
+	return new hpp::floatSeq (1);
       }
+      // --------------------------------------------------------------------
 
-      /// \brief Comment in interface hpp::Robot::getCurrentConfig
-      hpp::dofSeq* Robot::getCurrentConfigOpenHRP(UShort inProblemId)
-	throw (SystemException)
+      hpp::nameSeq* Robot::getJointInnerObjects (const char* jointName)
       {
-	hpp::dofSeq *dofArray = getCurrentConfig(inProblemId);
-
-	hpp::dofSeq dofArrayKineo(*dofArray);
-
-	// LARM
-	for(unsigned int i=0; i<7; i++){
-	  (*dofArray)[LARM_JOINT0_OPENHRP+i] = dofArrayKineo[LARM_JOINT0_KINEO+i];
-	}
-	// RHAND
-	for(unsigned int i=0; i<5; i++){
-	  (*dofArray)[RHAND_JOINT0_OPENHRP+i] = dofArrayKineo[RHAND_JOINT0_KINEO+i];
-	}
-
-	return dofArray;
-      }
-
-#endif
-
-      /// \brief Comment in interface hpp::Robot::getCurrentConfig
-      hpp::dofSeq* Robot::getCurrentConfig(UShort inProblemId)
-	throw (SystemException)
-      {
-	unsigned int hppProblemId = (unsigned int)inProblemId;
-	hpp::dofSeq *dofArray;
-
-	unsigned int nbProblems = planner_->getNbHppProblems();
-
-	if (hppProblemId < nbProblems)
-	  {
-	    // Get robot in hppPlanner object.
-	    CkppDeviceComponentShPtr hppRobot = planner_->robotIthProblem(hppProblemId);
-
-	    std::vector<double> dofVector;
-	    hppRobot->getCurrentDofValues(dofVector);
-
-	    unsigned int deviceDim = hppRobot->countDofs ();
-
-	    dofArray = new hpp::dofSeq();
-	    dofArray->length(deviceDim);
-
-	    for(unsigned int i=0; i<deviceDim; i++)
-	      (*dofArray)[i] = dofVector[i];
-
-	    return dofArray;
+	hpp::nameSeq *innerObjectSeq = 0x0;
+	JointPtr_t joint (0x0);
+	try {
+	  DevicePtr_t robot = problemSolver_->robot ();
+	  joint = robot->getJointByName (std::string (jointName));
+	  if (!joint) {
+	    hppDout (error, "No joint with name " << jointName);
+	    innerObjectSeq = new hpp::nameSeq (0);
+	    return innerObjectSeq;
 	  }
-	else
-	  {
-	    hppDout (error, "wrong robot Id=" << hppProblemId
-		     << ", nb problems=" << nbProblems);
-	    dofArray = new hpp::dofSeq (1);
-
-	    return dofArray;
+	  BodyPtr_t body = joint->linkedBody ();
+	  if (!body) {
+	    hppDout (error, "Joint " << jointName << " has no body.");
+	    innerObjectSeq = new hpp::nameSeq (0);
+	    return innerObjectSeq;
 	  }
-	return new hpp::dofSeq (1);
-      }
 
-      hpp::nameSeq* Robot::getJointInnerObject(const char* inBodyName)
-      {
-	std::string bodyName(inBodyName);
-
-	hpp::nameSeq *innerObjectSeq = NULL;
-	// Find the body corresponding to the name in core::Planner object.
-	CkwsKCDBodyAdvancedConstShPtr kcdBody
-	  = planner_->findBodyByJointName(bodyName);;
-
-	if (kcdBody) {
-	  std::vector<CkcdObjectShPtr> innerObjectList = kcdBody->mobileObjects();
-	  if (innerObjectList.size() > 0) {
-	    unsigned int nbObjects = innerObjectList.size();
+	  ObjectVector_t objects = body->innerObjects (model::COLLISION);
+	  if (objects.size() > 0) {
+	    std::size_t nbObjects = objects.size();
 	    // Allocate result now that the size is known.
 	    ULong size = (ULong)nbObjects;
 	    char** nameList = hpp::nameSeq::allocbuf(size);
 	    innerObjectSeq = new hpp::nameSeq(size, size, nameList);
-
-	    for (unsigned int iObject=0; iObject < nbObjects; iObject++) {
-	      CkcdObjectShPtr kcdObject = innerObjectList[iObject];
-	      // Cast object into CkppKCDPolyhedron.
-	      if (CkppGeometryComponentShPtr kppGeometry =
-		  KIT_DYNAMIC_PTR_CAST(CkppGeometryComponent, kcdObject)) {
-		// Get name of geometry and add it into the list.
-		std::string geometryName = kppGeometry->name();
-		nameList[iObject] =
-		  (char*)malloc(sizeof(char)*(geometryName.length()+1));
-		strcpy(nameList[iObject], geometryName.c_str());
-	      }
+	    for (std::size_t iObject=0; iObject < nbObjects; iObject++) {
+	      CollisionObjectPtr_t object = objects[iObject];
+	      std::string geometryName = object->name();
+	      nameList[iObject] =
+		(char*)malloc(sizeof(char)*(geometryName.length()+1));
+	      strcpy(nameList[iObject], geometryName.c_str());
 	    }
+	  } else {
+	    innerObjectSeq = new hpp::nameSeq (0);
 	  }
-	}
-	else {
-	  hppDout (error, "body of name " << " not found.");
-	}
-
-	if (!innerObjectSeq)
+	  return innerObjectSeq;
+	} catch (const std::exception& exc) {
+	  hppDout (error, exc.what ());
 	  innerObjectSeq = new hpp::nameSeq (0);
-
-	return innerObjectSeq;
+	  return innerObjectSeq;
+	}
       }
 
-      hpp::nameSeq* Robot::getJointOuterObject(const char* inBodyName)
+      // --------------------------------------------------------------------
+
+      hpp::nameSeq* Robot::getJointOuterObjects (const char* jointName)
       {
-	std::string bodyName(inBodyName);
+	hpp::nameSeq *outerObjectSeq = 0x0;
+	JointPtr_t joint (0x0);
 
-	hpp::nameSeq *outerObjectSeq = NULL;
-	// Find the body corresponding to the name in core::Planner object.
-	CkwsKCDBodyAdvancedConstShPtr kcdBody
-	  = planner_->findBodyByJointName(bodyName);
+	try {
+	  DevicePtr_t robot = problemSolver_->robot ();
+	  joint = robot->getJointByName (std::string (jointName));
+	  if (!joint) {
+	    hppDout (error, "No joint with name " << jointName);
+	    outerObjectSeq = new hpp::nameSeq (0);
+	    return outerObjectSeq;
+	  }
+	  BodyPtr_t body = joint->linkedBody ();
+	  if (!body) {
+	    hppDout (error, "Joint " << jointName << " has no body.");
+	    outerObjectSeq = new hpp::nameSeq (0);
+	    return outerObjectSeq;
+	  }
 
-	if (kcdBody) {
-	  std::vector<CkcdObjectShPtr> outerObjectList = kcdBody->obstacleObjects();
-	  if (outerObjectList.size() > 0) {
-	    unsigned int nbObjects = outerObjectList.size();
+	  ObjectVector_t objects = body->outerObjects (model::COLLISION);
+	  if (objects.size() > 0) {
+	    std::size_t nbObjects = objects.size();
 	    // Allocate result now that the size is known.
 	    ULong size = (ULong)nbObjects;
 	    char** nameList = hpp::nameSeq::allocbuf(size);
 	    outerObjectSeq = new hpp::nameSeq(size, size, nameList);
-	    for (unsigned int iObject=0; iObject < nbObjects; iObject++) {
-	      CkcdObjectShPtr kcdObject = outerObjectList[iObject];
-	      // Cast object into CkppKCDPolyhedron.
-	      if (CkppGeometryComponentShPtr kppGeometry =
-		  KIT_DYNAMIC_PTR_CAST(CkppGeometryComponent, kcdObject)) {
-		// Get name of geometry and add it into the list.
-		std::string geometryName = kppGeometry->name();
-		nameList[iObject] = (char*)malloc(sizeof(char)*(geometryName.length()+1));
-		strcpy(nameList[iObject], geometryName.c_str());
-	      }
+	    for (std::size_t iObject=0; iObject < nbObjects; iObject++) {
+	      CollisionObjectPtr_t object = objects[iObject];
+	      std::string geometryName = object->name();
+	      nameList[iObject] =
+		(char*)malloc(sizeof(char)*(geometryName.length()+1));
+	      strcpy(nameList[iObject], geometryName.c_str());
 	    }
+	  } else {
+	    outerObjectSeq = new hpp::nameSeq (0);
 	  }
-	} else {
-	  hppDout (error, "body of name " << " not found.");
+	  return outerObjectSeq;
+	} catch (const std::exception& exc) {
+	  hppDout (error, exc.what ());
+	  outerObjectSeq = new hpp::nameSeq (0);
+	  return outerObjectSeq;
 	}
-	if (!outerObjectSeq) {
-	  outerObjectSeq = new hpp::nameSeq(0);
-	}
-	return outerObjectSeq;
       }
 
-      Short Robot::setPenetration(UShort inProblemId,
-				  Double inPenetration)
-      {
-	unsigned int hppProblemId = (unsigned int)inProblemId;
-	unsigned int nbProblems = planner_->getNbHppProblems();
+      // --------------------------------------------------------------------
 
-	if (hppProblemId < nbProblems) {
-	  planner_->penetration(inProblemId, inPenetration);
-	}
-	else{
-	  hppDout (error, "wrong robot Id=" << hppProblemId
-		   << ", nb problems=" << nbProblems);
-	  return -1;
-	}
-	return 0;
-      }
-
-      Short Robot::getPenetration(UShort inProblemId,
-				  Double& outPenetration)
-      {
-	unsigned int hppProblemId = (unsigned int)inProblemId;
-	unsigned int nbProblems = planner_->getNbHppProblems();
-
-	if (hppProblemId < nbProblems) {
-	  outPenetration = planner_->penetration(inProblemId);
-	}
-	else{
-	  hppDout (error, "wrong robot Id=" << hppProblemId
-		   << ", nb problems=" << nbProblems);
-	  return -1;
-	}
-
-	return 0;
-      }
-
-      Short Robot::collisionTest
-      (UShort problemId, Boolean& validity) throw (SystemException)
+      Short Robot::collisionTest (Boolean& validity) throw (SystemException)
       {
 	validity = false;
-	std::size_t rank = static_cast <std::size_t> (problemId);
-	std::size_t nbProblems = static_cast <std::size_t>
-	  (planner_->getNbHppProblems ());
-	if (rank >= nbProblems) {
-	  hppDout (error, "wrong robot Id=" << rank
-		   << ", nb problems=" << nbProblems);
-	  return -1;
+	try {
+	  DevicePtr_t robot = problemSolver_->robot ();
+	  validity = robot->collisionTest ();
+	  return 0;
+	} catch (const std::exception& exc) {
+	  hppDout (error, exc.what ());
 	}
-	CkppDeviceComponentShPtr robot = planner_->robotIthProblem (rank);
-	validity = robot->collisionTest ();
-	return 0;
+	return -1;
       }
 
-      Short Robot::isConfigValid (UShort problemId, const hpp::dofSeq& dofArray,
-				  Boolean& validity)
-	throw (SystemException)
-      {
-	validity = false;
-	std::size_t rank = static_cast <std::size_t> (problemId);
-	std::size_t nbProblems = static_cast <std::size_t>
-	  (planner_->getNbHppProblems ());
-	if (rank >= nbProblems) {
-	  hppDout (error, "wrong robot Id=" << rank
-		   << ", nb problems=" << nbProblems);
-	  return -1;
-	}
-	CkppDeviceComponentShPtr robot = planner_->robotIthProblem (rank);
-	std::size_t dim = robot->countDofs ();
+      // --------------------------------------------------------------------
 
-	std::vector<double> dofVector (dim);
-	for (std::size_t i=0; i<dim; ++i) {
-	  dofVector [i] = dofArray [i];
-	}
-	CkwsConfig config (robot, dofVector);
-	robot->setCurrentConfig (config);
-	robot->configValidators()->validate(config);
-	validity = config.isValid ();
-	if (!validity) {
-	  for (std::size_t i=0; i<config.countReports (true); ++i) {
-	    std::string validatorName;
-	    CkwsValidationReportConstShPtr report = config.report
-	      (i, validatorName, true);
-	    hppDout (info, "Validator " << validatorName
-		   << " has unvalidated the configuration " << config);
-	  }
-	}
-	return 0;
-      }
-
-      Short Robot::distancesToCollision (UShort problemId,
-					 hpp::dofSeq_out distances,
-					 hpp::nameSeq_out bodies,
-					 hpp::dofSeqSeq_out bodyPoints,
-					 hpp::dofSeqSeq_out obstaclePoints)
+      Short
+      Robot::distancesToCollision (hpp::floatSeq_out distances,
+				   hpp::nameSeq_out innerObjects,
+				   hpp::nameSeq_out outerObjects,
+				   hpp::floatSeqSeq_out innerPoints,
+				   hpp::floatSeqSeq_out outerPoints)
       {
-	using hpp::model::BodyDistanceShPtr;
-	std::size_t rank = static_cast <std::size_t> (problemId);
-	std::size_t nbProblems = static_cast <std::size_t>
-	  (planner_->getNbHppProblems ());
-	if (rank >= nbProblems) {
-	  hppDout (error, "wrong robot Id=" << rank
-		   << ", nb problems=" << nbProblems);
-	  distances = new hpp::dofSeq ();
-	  bodies = new hpp::nameSeq ();
-	  bodyPoints = new hpp::dofSeqSeq ();
-	  obstaclePoints = new hpp::dofSeqSeq ();
-	  return -1;
-	}
-	hpp::model::DeviceShPtr robot
-	  (KIT_DYNAMIC_PTR_CAST (hpp::model::Device,
-				 planner_->robotIthProblem (rank)));
-	if (!robot) {
-	  hppDout (error, "Robot is not of type hpp::model::Device");
-	  distances = new hpp::dofSeq ();
-	  bodies = new hpp::nameSeq ();
-	  bodyPoints = new hpp::dofSeqSeq ();
-	  obstaclePoints = new hpp::dofSeqSeq ();
-	  return -1;
-	}
-	const std::vector< BodyDistanceShPtr >& bodyDistances
-	  (robot->bodyDistances ());
-	// count distance computatin pairs
-	std::size_t nbDistPairs = 0;
-	for (std::vector< BodyDistanceShPtr >::const_iterator it=
-	       bodyDistances.begin (); it != bodyDistances.end (); it++) {
-	  nbDistPairs += (*it)->nbDistPairs ();
-	}
-	hpp::dofSeq* distances_ptr = new hpp::dofSeq ();
-	distances_ptr->length (nbDistPairs);
-	hpp::nameSeq* bodies_ptr = new hpp::nameSeq ();
-	bodies_ptr->length (nbDistPairs);
-	hpp::dofSeqSeq* bodyPoints_ptr = new hpp::dofSeqSeq ();
-	bodyPoints_ptr->length (nbDistPairs);
-	hpp::dofSeqSeq* obstaclePoints_ptr = new hpp::dofSeqSeq ();
-	obstaclePoints_ptr->length (nbDistPairs);
-	// Loop over distance computation pairs
-	std::size_t distPairId = 0;
-	for (std::vector< BodyDistanceShPtr >::const_iterator it=
-	       bodyDistances.begin (); it != bodyDistances.end (); it++) {
-	  BodyDistanceShPtr bodyDistance (*it);
-	  for (std::size_t i=0; i<bodyDistance->nbDistPairs (); ++i) {
-	    double distance;
-	    CkcdPoint pointBody;
-	    CkcdPoint pointObstacle;
-	    if (bodyDistance->distAndPairsOfPoints (i, distance, pointBody,
-						    pointObstacle) != KD_OK) {
-	      hppDout (error, "Failed to get distance and pairs of points for "
-		       << bodyDistance->name () << ", id = " << i);
-	      delete distances_ptr;
-	      delete bodies_ptr;
-	      delete bodyPoints_ptr;
-	      delete obstaclePoints_ptr;
-	      distances = new hpp::dofSeq ();
-	      bodies = new hpp::nameSeq ();
-	      bodyPoints = new hpp::dofSeqSeq ();
-	      obstaclePoints = new hpp::dofSeqSeq ();
-	      return -1;
-	    }
-	    distances_ptr->operator[] (distPairId) = distance;
-	    bodies_ptr->operator[] (distPairId) =
-	      bodyDistance->name ().c_str ();
-	    hpp::dofSeq pointBody_seq;
+	try {
+	  DevicePtr_t robot = problemSolver_->robot ();
+	  robot->computeDistances ();
+	  const DistanceResults_t& dr = robot->distanceResults ();
+	  std::size_t nbDistPairs = dr.size ();
+	  hpp::floatSeq* distances_ptr = new hpp::floatSeq ();
+	  distances_ptr->length (nbDistPairs);
+	  hpp::nameSeq* innerObjects_ptr = new hpp::nameSeq ();
+	  innerObjects_ptr->length (nbDistPairs);
+	  hpp::nameSeq* outerObjects_ptr = new hpp::nameSeq ();
+	  outerObjects_ptr->length (nbDistPairs);
+	  hpp::floatSeqSeq* innerPoints_ptr = new hpp::floatSeqSeq ();
+	  innerPoints_ptr->length (nbDistPairs);
+	  hpp::floatSeqSeq* outerPoints_ptr = new hpp::floatSeqSeq ();
+	  outerPoints_ptr->length (nbDistPairs);
+	  std::size_t distPairId = 0;
+	  for (DistanceResults_t::const_iterator itDistance = dr.begin ();
+	       itDistance != dr.end (); itDistance++) {
+	    (*distances_ptr) [distPairId] = itDistance->fcl.min_distance;
+	    (*innerObjects_ptr) [distPairId] =
+	      itDistance->innerObject->name ().c_str ();
+	    (*outerObjects_ptr) [distPairId] =
+	      itDistance->outerObject->name ().c_str ();
+	    hpp::floatSeq pointBody_seq;
 	    pointBody_seq.length (3);
-	    hpp::dofSeq pointObstacle_seq;
+	    hpp::floatSeq pointObstacle_seq;
 	    pointObstacle_seq.length (3);
 	    for (std::size_t j=0; j<3; ++j) {
-	      pointBody_seq [j] = pointBody [j];
-	      pointObstacle_seq [j] = pointObstacle [j];
+	      pointBody_seq [j] = itDistance->fcl.nearest_points [0][j];
+	      pointObstacle_seq [j] = itDistance->fcl.nearest_points [1][j];
 	    }
-	    bodyPoints_ptr->operator[] (distPairId) = pointBody_seq;
-	    obstaclePoints_ptr->operator[] (distPairId) = pointObstacle_seq;
+	    (*innerPoints_ptr) [distPairId] = pointBody_seq;
+	    (*outerPoints_ptr) [distPairId] = pointObstacle_seq;
 	    ++distPairId;
 	  }
 	  distances = distances_ptr;
-	  bodies = bodies_ptr;
-	  bodyPoints = bodyPoints_ptr;
-	  obstaclePoints = obstaclePoints_ptr;
+	  innerObjects = innerObjects_ptr;
+	  outerObjects = outerObjects_ptr;
+	  innerPoints = innerPoints_ptr;
+	  outerPoints = outerPoints_ptr;
+	  return 0;
+	} catch (const std::exception& exc) {
+	  hppDout (error, exc.what ());
+	  distances = new hpp::floatSeq ();
+	  innerObjects = new hpp::nameSeq ();
+	  outerObjects = new hpp::nameSeq ();
+	  innerPoints = new hpp::floatSeqSeq ();
+	  outerPoints = new hpp::floatSeqSeq ();
+	  return -1;
 	}
-	
-	
 	return 0;
       }
+
+      // --------------------------------------------------------------------
+
+      Double Robot::getMass ()
+      {
+	try {
+	  return problemSolver_->robot ()->mass ();
+	} catch (const std::exception& exc) {
+	  hppDout (error, exc.what ());
+	  return -1;
+	}
+      }
+
+      // --------------------------------------------------------------------
+
+      hpp::floatSeq* Robot::getCenterOfMass ()
+      {
+	hpp::floatSeq* res = new hpp::floatSeq;
+	try {
+	  vector3_t com = problemSolver_->robot ()->positionCenterOfMass ();
+	  res->length (3);
+	  (*res) [0] = com [0]; (*res) [1] = com [1]; (*res) [2] = com [2];
+	} catch (const std::exception& exc) {
+	  hppDout (error, exc.what ());
+	  res->length (0);
+	}
+	return res;
+      }
+
+      // --------------------------------------------------------------------
+
+      hpp::floatSeqSeq* Robot::getJacobianCenterOfMass ()
+      {
+	hpp::floatSeqSeq* res = new hpp::floatSeqSeq;
+	try {
+	  const ComJacobian_t& jacobian =
+	    problemSolver_->robot ()->jacobianCenterOfMass ();
+	  res->length (jacobian.rows ());
+	  for (std::size_t i=0; i<jacobian.rows (); ++i) {
+	    hpp::floatSeq row; row.length (jacobian.cols ());
+	    for (std::size_t j=0; j<jacobian.cols (); ++j) {
+	      row [j] = jacobian (i, j);
+	    }
+	    (*res) [i] = row;
+	  }
+	} catch (const std::exception& exc) {
+	  hppDout (error, exc.what ());
+	  res->length (0);
+	}
+	return res;
+      }
+
+      // --------------------------------------------------------------------
 
       Short Robot::createPolyhedron(const char* inPolyhedronName)
 	throw (SystemException)
@@ -862,235 +593,132 @@ namespace hpp
 	std::string polyhedronName(inPolyhedronName);
 
 	// Check that polyhedron does not already exist.
-	if (polyhedronMap_.count(polyhedronName) != 0) {
-	  hppDout (error, "polyhedron "	 << polyhedronName << " already exists.");
+	if (vertexMap_.find(polyhedronName) != vertexMap_.end ()) {
+	  hppDout (error, "polyhedron "	 << polyhedronName
+		   << " already exists.");
 	  return -1;
 	}
-	CkppKCDPolyhedronShPtr kppPolyhedron = CkppKCDPolyhedron::create(polyhedronName);
-
-	if (!kppPolyhedron) {
-	  hppDout (error, "failed to create polyhedron "	 << polyhedronName);
-	  return -1;
-	}
-	polyhedronMap_[polyhedronName] = kppPolyhedron;
+	vertexMap_ [polyhedronName] = std::vector <fcl::Vec3f> ();
+	triangleMap_ [polyhedronName] = std::vector <fcl::Triangle> ();
 	return 0;
       }
 
 
-      Short Robot::createBox(const char* inBoxName,
+      // --------------------------------------------------------------------
+
+      Short Robot::createBox(const char* name,
 			     Double x, Double y,
 			     Double z)
 	throw (SystemException)
       {
-	//  server_->waitForMutex(std::string("hpp::Obstacle_impl::createBox"));
-	std::string polyhedronName(inBoxName);
-	// Check that polyhedron does not already exist.
-	if (polyhedronMap_.count(polyhedronName) != 0) {
-	  hppDout (info, "polyhedron "	 << polyhedronName << " already exists.");
+	std::string shapeName(name);
+	// Check that object does not already exist.
+	if (vertexMap_.find(shapeName) != vertexMap_.end () ||
+	    shapeMap_.find (shapeName) != shapeMap_.end ()) {
+	  hppDout (info, "object " << shapeName << " already exists.");
 	  return -1;
 	}
-	CkppKCDPolyhedronShPtr kppPolyhedron = CkppKCDBox::create(polyhedronName, x, y, z);
-
-	if (!kppPolyhedron) {
-	  hppDout (info, "failed to create polyhedron "	 << polyhedronName);
-	  return -1;
-	}
-	polyhedronMap_[polyhedronName] = kppPolyhedron;
-
+	BasicShapePtr_t box (new fcl::Box (x, y, z));
+	shapeMap_ [shapeName] = box;
 	return 0;
       }
 
+      // --------------------------------------------------------------------
 
+      Short Robot::createSphere (const char* name, Double radius)
+	throw (SystemException)
+      {
+	if (vertexMap_.find(name) != vertexMap_.end () ||
+	    shapeMap_.find (name) != shapeMap_.end ()) {
+	  hppDout (info, "object " << name << " already exists.");
+	  return -1;
+	}
+	BasicShapePtr_t sphere (new fcl::Sphere (radius));
+	shapeMap_ [name] = sphere;
+	return 0;
 
-      Short Robot::addPoint(const char* inPolyhedronName,
-			    Double x, Double y,
+      }
+
+      // --------------------------------------------------------------------
+
+      Short Robot::addPoint(const char* polyhedronName, Double x, Double y,
 			    Double z)
 	throw (SystemException)
       {
-	std::string polyhedronName(inPolyhedronName);
-
 	// Check that polyhedron exists.
-	if (polyhedronMap_.count(polyhedronName) != 1) {
-	  hppDout (error, "polyhedron " << polyhedronName	 << " does not exist.");
+	VertexMap_t::iterator itVertex = vertexMap_.find (polyhedronName);
+	if (itVertex == vertexMap_.end ()) {
+	  hppDout (error, "polyhedron " << polyhedronName
+		   << " does not exist.");
 	  return -1;
 	}
-	CkppKCDPolyhedronShPtr kppPolyhedron = polyhedronMap_[polyhedronName];
-	unsigned int rank;
-	kppPolyhedron->CkcdPolyhedron::addPoint((kcdReal)x, (kcdReal)y,
-						(kcdReal)z, rank);
-
-	return static_cast<Short> (rank);
+	itVertex->second.push_back (fcl::Vec3f (x, y, z));
+	return static_cast<Short> (vertexMap_.size ());
       }
 
+      // --------------------------------------------------------------------
 
-
-      Short Robot::addTriangle(const char* inPolyhedronName,
+      Short Robot::addTriangle(const char* polyhedronName,
 			       ULong pt1, ULong pt2, ULong pt3)
 	throw (SystemException)
       {
-	std::string polyhedronName(inPolyhedronName);
-
 	// Check that polyhedron exists.
-	if (polyhedronMap_.count(polyhedronName) != 1) {
-	  hppDout (error, "polyhedron " << polyhedronName	 << " does not exist.");
-	  return -1;
-	}
-	CkppKCDPolyhedronShPtr kppPolyhedron = polyhedronMap_[polyhedronName];
-	unsigned int rank;
-	/*
-	  Test Kineo preconditions
-	*/
-	if (pt1==pt2 || pt1==pt3 || pt2==pt3 ||
-	    pt1 >= kppPolyhedron->countPoints() ||
-	    pt2 >= kppPolyhedron->countPoints() ||
-	    pt3 >= kppPolyhedron->countPoints()) {
-	  hppDout (error, "wrong triangle");
+	TriangleMap_t::iterator itTriangle = triangleMap_.find (polyhedronName);
+	if (itTriangle == triangleMap_.end ()) {
+	  hppDout (error, "polyhedron " << polyhedronName
+		   << " does not exist.");
 	  return -1;
 	}
 
-	kppPolyhedron->addTriangle(pt1, pt2, pt3, rank);
-
-	return static_cast<Short> (rank);
+	itTriangle->second.push_back (fcl::Triangle (pt1, pt2, pt3));
+	return static_cast<Short> (triangleMap_.size ());
       }
 
+      // --------------------------------------------------------------------
 
-
-      Short Robot::setDofBounds(UShort inProblemId, UShort inDofId,
-				Double inMinValue, Double inMaxValue)
+      Short Robot::addObjectToJoint (const char* jointName,
+				     const char* objectName,
+				     const hpp::Configuration& inConfig)
 	throw (SystemException)
       {
-	unsigned int hppProblemId = (unsigned int)inProblemId;
-	unsigned int nbProblems = planner_->getNbHppProblems();
-	unsigned int dofId = (unsigned int) inDofId;
-
-	// Test that rank is less than number of robots in vector.
-	if (hppProblemId < nbProblems) {
-	  // Get robot in hppPlanner object.
-	  CkppDeviceComponentShPtr hppRobot = planner_->robotIthProblem(hppProblemId);
-
-	  unsigned int deviceDim = hppRobot->countDofs();
-	  if (dofId < deviceDim) {
-	    if (inMinValue <= inMaxValue) {
-	      hppRobot->dof(dofId)->isBounded(true);
-	      hppRobot->dof(dofId)->bounds(inMinValue, inMaxValue);
-	    }
-	    else {
-	      hppRobot->dof(dofId)->isBounded(false);
-	      hppRobot->dof(dofId)->bounds(inMaxValue, inMinValue);
-	    }
-	  }
-	  else {
-	    hppDout (error,
-		     "dofId = " << dofId
-		     << "should be smaller than device dim="
-		     << deviceDim);
-	    return -1;
-	  }
-	}
-	else{
-	  hppDout (error, "wrong robot Id=" << hppProblemId
-		   << ", nb problems=" << nbProblems);
-	  return -1;
-	}
-	return 0;
-      }
-
-
-
-      Short Robot::setDofLocked(UShort inProblemId, UShort inDofId,
-				Boolean locked, Double lockedValue)
-	throw (SystemException)
-      {
-	unsigned int hppRobotId = (unsigned int)inProblemId;
-	unsigned int nbRobots = planner_->getNbHppProblems();
-	unsigned int dofId = (unsigned int) inDofId;
-
-	// Test that rank is less than number of robots in vector.
-	if (hppRobotId < nbRobots) {
-	  // Get robot in hppPlanner object.
-	  CkppDeviceComponentShPtr hppRobot = planner_->robotIthProblem(hppRobotId);
-
-	  // get joint
-	  CkwsDevice::TDofVector dofList;
-	  hppRobot->getDofVector(dofList);
-
-	  if(dofId >= (unsigned short) dofList.size())
-	    {
-	      hppDout (error, "joint Id " << dofId
-		       << " is larger than total size " << dofList.size());
+	try {
+	  JointPtr_t joint = jointMap_ [jointName];
+	  CollisionGeometryPtr_t geometry;
+	  // Check that polyhedron exists.
+	  VertexMap_t::const_iterator itVertex = vertexMap_.find(objectName);
+	  if (itVertex != vertexMap_.end ()) {
+	    PolyhedronPtr_t polyhedron = PolyhedronPtr_t (new Polyhedron_t);
+	    int res = polyhedron->beginModel ();
+	    if (res != fcl::BVH_OK) {
+	      hppDout (error, "fcl BVHReturnCode = " << res);
 	      return -1;
 	    }
 
-	  dofList[dofId]->isLocked(locked);
+	    polyhedron->addSubModel (itVertex->second,
+				     triangleMap_ [objectName]);
+	    polyhedron->endModel ();
+	    geometry = polyhedron;
+	  } else {
+	    ShapeMap_t::const_iterator itShape = shapeMap_.find (objectName);
+	    if (itShape != shapeMap_.end ()) {
+	      geometry = itShape->second;
+	    }
+	  }
+	  if (!geometry) {
+	    hppDout (error, "Object " << objectName << " does not exist.");
+	    return -1;
+	  }
 
-	  if(locked)
-	    dofList[dofId]->lockedValue(lockedValue);
-	}
-	else {
-	  hppDout (error, "wrong robot Id=" << hppRobotId
-		   << ", nb problems=" << nbRobots);
+	  Transform3f pos;
+	  ConfigurationToTransform3f (inConfig, pos);
+	  CollisionObjectPtr_t collisionObject
+	    (new CollisionObject_t (geometry, pos, objectName));
+	  joint->linkedBody ()->addInnerObject(collisionObject, true, true);
+	  return 0;
+	} catch (const std::exception& exc) {
+	  hppDout (error, exc.what ());
 	  return -1;
 	}
-	return 0;
-      }
-
-
-
-      Short Robot::getDeviceDim(UShort inProblemId, UShort& outDeviceDim)
-	throw (SystemException)
-      {
-	unsigned int hppProblemId = (unsigned int)inProblemId;
-
-	unsigned int nbProblems = planner_->getNbHppProblems();
-
-	// Test that rank is less than number of robots in vector.
-	if (hppProblemId < nbProblems) {
-	  // Get robot in hppPlanner object.
-	  CkppDeviceComponentShPtr hppRobot = planner_->robotIthProblem(hppProblemId);
-
-
-	  outDeviceDim = static_cast<UShort> (hppRobot->countDofs ());
-	}
-	else{
-	  hppDout (error, "wrong robot Id=" << hppProblemId
-		   << ", nb problems=" << nbProblems);
-	  return -1;
-	}
-	return 0;
-      }
-
-
-
-      Short Robot::addPolyToBody(const char* inBodyName, const char* inPolyhedronName,
-				 const hpp::Configuration& inConfig)
-	throw (SystemException)
-      {
-	std::string bodyName(inBodyName);
-	std::string polyhedronName(inPolyhedronName);
-
-	// Check that body of this name exits.
-	if (bodyMap_.count(bodyName) != 1) {
-	  hppDout (error, "body " << bodyName << " does not exist.");
-	  return -1;
-	}
-	// Check that polyhedron exists.
-	if (polyhedronMap_.count(polyhedronName) != 1) {
-	  hppDout (error, "polyhedron "	 << polyhedronName << " does not exist.");
-	  return -1;
-	}
-
-	model::BodyDistanceShPtr hppBody = bodyMap_[bodyName];
-	CkppKCDPolyhedronShPtr kppPolyhedron = polyhedronMap_[polyhedronName];
-
-	// Set polyhedron in given configuration.
-	CkitMat4 pos;
-	ConfigurationToCkitMat4(inConfig, pos);
-
-	if (!hppBody->addInnerObject(CkppSolidComponentRef::create(kppPolyhedron), pos)) {
-	  return -1;
-	}
-	return 0;
-
       }
 
     } // end of namespace impl.

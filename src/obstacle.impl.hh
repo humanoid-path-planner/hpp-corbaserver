@@ -13,9 +13,7 @@
 # include <map>
 # include <string>
 
-# include <KineoKCDModel/kppKCDPolyhedron.h>
-
-# include <hpp/core/planner.hh>
+# include <hpp/core/problem-solver.hh>
 # include <hpp/corbaserver/fwd.hh>
 # include <obstacle.hh>
 
@@ -31,26 +29,13 @@ namespace hpp
       public:
 	Obstacle (corbaServer::Server* server);
 
-	Short setObstacles (const char* listName);
-	Short addObstacle (const char* polyhedronName);
-
-	virtual Short
-	addObstacleConfig
-	(const char* polyName, const Configuration& cfg)
+	virtual	Short
+	addObstacle (const char* polyhedronName, Boolean collision,
+		     Boolean distance)
 	  throw (SystemException);
 
 	virtual Short
-	moveObstacleConfig (const char* polyName, const Configuration& cfg)
-	  throw (SystemException);
-
-	virtual Short
-	createCollisionList
-	(const char* listName)
-	  throw (SystemException);
-
-	virtual Short
-	addPolyToCollList
-	(const char* listName, const char* polyhedronName)
+	moveObstacle (const char* polyName, const Configuration& cfg)
 	  throw (SystemException);
 
 	virtual Short
@@ -71,28 +56,22 @@ namespace hpp
 	(const char* polyhedronName, ULong pt1, ULong pt2, ULong pt3)
 	  throw(SystemException);
 
-	/// \brief Comment in interface Obstacle::setVisible.
-	virtual Short
-	setVisible(const char* polyname, Boolean visible)
-	  throw(SystemException);
-
-	/// \brief Comment in interface Obstacle::setTransparent.
-	virtual Short
-	setTransparent(const char* polyname, Boolean transparent)
-	  throw(SystemException);
-
       private:
-	/// \brief map of collision lists in construction.
-	std::map<std::string, std::vector<CkcdObjectShPtr> > collisionListMap;
-
-	/// \brief map of polyhedra in construction.
-	std::map<std::string, CkppKCDPolyhedronShPtr> polyhedronMap;
+	typedef std::map <std::string, std::vector <fcl::Vec3f> > VertexMap_t;
+	typedef std::map <std::string, std::vector <fcl::Triangle> >
+	TriangleMap_t;
+	typedef std::map <std::string, BasicShapePtr_t> ShapeMap_t;
+	/// Map of polyhedra in construction.
+	VertexMap_t vertexMap_;
+	TriangleMap_t triangleMap_;
+	/// Map of basic shapes
+	ShapeMap_t shapeMap_;
 
 	/// \brief Pointer to the hpp::corbaServer::Server owning this object.
 	corbaServer::Server* server_;
 
 	/// \brief Pointer to hppPlanner object of hpp::corbaServer::Server.
-	core::Planner* planner_;
+	core::ProblemSolverPtr_t problemSolver_;
       };
 
     } // end of namespace implementation.

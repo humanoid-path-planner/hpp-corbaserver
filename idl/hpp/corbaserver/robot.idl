@@ -1,4 +1,5 @@
-// Copyright (C) 2009, 2010 by Florent Lamiraux, Thomas Moulard, JRL.
+// Copyright (C) 2009, 2010, 2011, 2012, 1013, 2014 CNRS
+// Authors:  Florent Lamiraux, Thomas Moulard.
 //
 // This file is part of the hpp-corbaserver.
 //
@@ -14,32 +15,17 @@
 
 module hpp
 {
-  /**
-   * \brief Array of joint bounds.in order [v1_min,v1_max,v2_min,v2_max,...].
-   */
+  /// Array of joint bounds.in order [v1_min,v1_max,v2_min,v2_max,...].
   typedef sequence<double> jointBoundSeq;
 
-  /**
-   * \brief Sequence of names
-   */
+  /// Sequence of names
   typedef sequence<string> nameSeq;
 
-  /**
-   * \brief Creation of a ChppDevice, joints and bodies.
-   */
+  /// Creation of a device, joints and bodies.
   interface Robot {
-    /// \name Load robot
-    /// @{
-    /// Load HRP2 model by calling loadRobotModel
-    /// \param penetration dynamic penetration allowed to validate direct paths.
-    ///
-    short loadHrp2Model(in double penetration);
-
-    /// \brief Load robot model
+    ///  Load robot model
     ///
     /// \param modelName robot model name.
-    ///
-    /// \param penetration dynamic penetration allowed to validate direct paths.
     ///
     /// \param urdfSuffix suffix for urdf file,
     /// e.g. ${modelName}${urdfSuffix}.urdf
@@ -50,352 +36,186 @@ module hpp
     /// \param rcpdfSuffix suffix for urdf file,
     /// e.g. ${modelName}${urdfSuffix}.rcpdf
     short loadRobotModel(in string modelName,
-			 in double penetration,
 			 in string urdfSuffix,
 			 in string srdfSuffix,
 			 in string rcpdfSuffix);
 
-    /** 
-     *@}
-     */
+    /// \}
 
-    /**
-       \name Degrees of freedom
-       @{
-    */
+    /// \name Degrees of freedom
+    /// \{
 
-    /**
-       \brief Set bound of degree of freedom
-       
-       \param inProblemId rank of robot in vector of robots. 
-     * \param inDofId id of the degree of freedom.
-       \param inMinValue, inMaxValue values of degree of freedom bounds
+    /// Get size of configuration
+    /// \param configSize size of configuration
+    short getConfigSize ();
 
-       \note If inMinValue > inMaxValue, dof is not bounded and bounds (for random sampling) are set to [inMaxValue, inMinValue].
+    /// Get size of velocity
+    /// \param numberDof size of velocity
+    short getNumberDof ();
 
-    */
-    short setDofBounds(in unsigned short inProblemId, in unsigned short inDofId, in double inMinValue, in double inMaxValue);
-
-    /**
-     * \brief set locking/unlocking  for the joint
-     * \param inProblemId id of the problem containing the robot.
-     * \param inDofId id of the degree of freedom.
-     * \param locked true (locked)  false (unlocked)
-     * \param lockedValue (if locked) give the value
-     */
-    short setDofLocked(in unsigned short inProblemId, in unsigned short inDofId, in boolean locked, in double lockedValue);
-
-    /** \brief Get number of dof of robot in ProblemId 
-	\param inProblemId rank of robot in vector of robots. 
-	\param outDeviceDim TODO
-    */
-    short getDeviceDim(in unsigned short inProblemId, out unsigned short outDeviceDim);
-
-    /** 
-     *@}
-     */
-
-    /**
-       \name Joints
-       @{
-    */
+    /// \}
+    /// \name Joints
+    /// \{
 
     /// Get joint names in the same order as in the configuration
-    ///
-    /// \param problemId: Id of the problem containing the robot
-    nameSeq getJointNames (in unsigned short problemId);
+    nameSeq getJointNames ();
 
-    /**
-       \brief set a bound for the joint
+    ///  set a bound for the joint
 
-       \param inJointId index of the joint in the robot.
-       \param inJointBound sequence of joint dof bounds in order [v0_min,v0_max,v1_min,v1_max,...]. 
-       \li If vi_min > vi_max, dof of rank i is not bounded and bounds (for random sampling) are set to [v_max, v_min].
-       \li If size of sequence is different from twice the number of dofs, no dof is bounded.
-       \param inProblemId Id of the problem containing the robot.
-     */
-    short setJointBounds(in unsigned short inProblemId, in unsigned short inJointId, in jointBoundSeq inJointBound);
+    /// \param inJointId index of the joint in the robot.
+    /// \param inJointBound sequence of joint dof bounds in order
+    ///        [v0_min,v0_max,v1_min,v1_max,...].
+    /// \li If vi_min > vi_max, dof of rank i is not bounded and bounds
+    ///     (for random sampling) are set to [v_max, v_min].
+    /// \li If size of sequence is different from twice the number of dofs,
+    ///     no dof is bounded.
+    short setJointBounds(in unsigned short inJointId,
+			 in jointBoundSeq inJointBound);
 
-    /**
-     * \brief Set whether a joint is visible.
+    /// \}
 
-     * \param inProblemId Id of the problem containing the robot.
-     * \param inJointId index of the joint in the robot.
-     * \param inVisible wether the joint should be visible in the interface.
-     *
-     * \note When running without interface, this request has no effect.
-     */
-    short setJointVisible(in unsigned short inProblemId, in unsigned short inJointId, in boolean inVisible);
+    /// \name Configuration
+    /// \{
 
-    /**
-     * \brief Set whether a joint is transparent.
+    /// Get current configuration
+    /// \return dofArray Array of degrees of freedom.
+    floatSeq getCurrentConfig();
 
-     * \param inProblemId Id of the problem containing the robot.
-     * \param inJointId index of the joint in the robot.
-     * \param inTransparent wether the joint should be transparent in the interface.
-     *
-     * \note When running without interface, this request has no effect.
-     */
-    short setJointTransparent(in unsigned short inProblemId, in unsigned short inJointId, in boolean inTransparent);
+    /// Set current configuration of specified robot,
+    /// \param dofArray Array of degrees of freedom /
+    short setCurrentConfig(in floatSeq dofArray);
 
-    /**
-     * \brief Set whether paths of a joint should be displayed.
+    /// \}
 
-     * \param inProblemId Id of the problem containing the robot.
-     * \param inJointId index of the joint in the robot.
-     * \param inDisplayPath wether paths of the joint should be displayed in the interface.
-     *
-     * \note When running without interface, this request has no effect.
-     */
-    short setJointDisplayPath(in unsigned short inProblemId, in unsigned short inJointId, in boolean inDisplayPath);
+    /// \name Bodies
+    /// \{
 
-    /** 
-     *@}
-     */
-
-    /**
-       \name Configuration
-       @{
-    */
-
-    /** 
-	\brief get current configuration of specified robot in ChppPlanner::robotVector.
-	\param inProblemId rank of problem in vector of hppProblems.
-	\return dofArray Array of degrees of freedom 
-    */
-    dofSeq getCurrentConfig(in unsigned short inProblemId);
-
-#if WITH_OPENHRP
-    /** 
-	\brief get current configuration of specified robot in ChppPlanner::robotVector.
-	\brief in the order of the joints in OpenHRP.
-	\param inProblemId rank of problem in vector of hppProblems.
-	\return dofArray Array of degrees of freedom in the order of joints in OpenHRP (RARM, LARM, RHAND, LHAND)
-    */
-    dofSeq getCurrentConfigOpenHRP(in unsigned short inProblemId);
-
-    /** \brief set current configuration of specified robot in ChppPlanner::robotVector
-	\brief in the order of the joints in OpenHRP.
-	\param inProblemId rank of problem in vector of hppProblems.
-	\param dofArray Array of degrees of freedom in the order of joints in OpenHRP (RARM, LARM, RHAND, LHAND)
-    */
-    short setCurrentConfigOpenHRP(in unsigned short inProblemId, in dofSeq dofArray);
-
-#endif
-
-    /** \brief set current configuration of specified robot in ChppPlanner::robotVector.
-	\param inProblemId rank of problem in vector of hppProblems.
-	\param dofArray Array of degrees of freedom */
-    short setCurrentConfig(in unsigned short inProblemId, in dofSeq dofArray);
-
-    /** 
-     *@}
-     */
+    ///  Get the list of objects attached to a joint.
+    /// \param inJointName name of the joint.
+    /// \return list of names of CollisionObject attached to the body.
+    nameSeq getJointInnerObjects (in string jointName);
 
 
-    /**
-       \name Bodies
-       @{
-    */
+    ///  Get list of collision objects tested with the body attached to a joint
+    /// \param inJointName name of the joint.
+    /// \return list of names of CollisionObject
+    nameSeq getJointOuterObjects (in string jointName);
 
-    /**
-       \brief Get the list of objects attached to a joint.
-       \param inJointName name of the joint.
-       \return list of names of KCDobject attached to the body.
-    */
-    nameSeq getJointInnerObject(in string inJointName);
+    /// \}
 
-    /**
-       \brief Get the list of objects tested for collision with the body 
-	attached to a joint
-       \param inJointName name of the joint.
-       \return list of names of KCDobject that are tested for collision with the body.
-    */
-    nameSeq getJointOuterObject(in string inJointName);
+    /// \name Collision checking and distance computation
+    /// \{
 
-    /** 
-     *@}
-     */
-
-    /**
-       \name Collision checking and distance computation
-       @{
-    */
-
-    /**
-       \brief Set dynamic penetration of robot
-
-       \param inProblemId index of problem owning the robot
-       \param inPenetration dynamic penetration
-       \return 0 is success, -1 if error.
-
-       Dynamic penetration is the penetration allowed when checking a
-       path for collision.
-
-       \note setting this parameter equal to the \link
-       hppCorbaServer::ChppciProblem::setObstacleTolerance tolerance\endlink of
-       obstacles ensures that paths will be collision-free.
-    */
-    short setPenetration(in unsigned short inProblemId, in double inPenetration);
-
-    /**
-       \brief Set dynamic penetration of robot
-
-       \param inProblemId index of problem owning the robot.
-       \retval outPenetration dynamic penetration.
-       \return 0 is success, -1 if error.
-
-       Dynamic penetration is the penetration allowed when checking a
-       path for collision.
-
-       \note setting this parameter equal to the \link
-       hppCorbaServer::ChppciProblem::setObstacleTolerance tolerance\endlink of
-       obstacles ensures that paths will be collision-free.
-    */
-    short getPenetration(in unsigned short inProblemId, out double outPenetration);
-
-    /// Is current configuration valid
+    /// Test collision with obstacles and auto-collision.
     ///
     /// Check whether current configuration of robot is valid by calling
     /// CkwsDevice::collisionTest ().
-    /// \param problemId index of problem owning the robot,
     /// \retval validity whether configuration is valid
-    short collisionTest (in unsigned short problemId, out boolean validity);
-
-    /// Is configuration valid
-    ///
-    /// Check whether current configuration of robot is valid
-    /// \param problemId index of problem owning the robot,
-    /// \param config: configuration to check
-    /// \retval validity whether configuration is valid
-    short isConfigValid (in unsigned short problemId, in dofSeq config,
-			 out boolean validity);
+    short collisionTest (out boolean validity);
 
     /// Compute distances between bodies and obstacles
     ///
-    /// \param problemId rank of the problem containing the robot,
     /// \retval distances list of distances,
-    /// \retval bodies names of the bodies the distances are computed for,
-    /// \retval bodyPoints closest points on the body,
-    /// \retval obstaclePoints closest points on the obstacles
-    /// \note another body can be an obstacle for a given body.
-    short distancesToCollision (in unsigned short problemId, 
-				out dofSeq distances, out nameSeq bodies,
-				out dofSeqSeq bodyPoints,
-				out dofSeqSeq obstaclePoints);
+    /// \retval innerObjects names of the objects belonging to a body
+    /// \retval outerObjects names of the objects tested with inner objects,
+    /// \retval innerPoints closest points on the body,
+    /// \retval outerPoints closest points on the obstacles
+    /// \note outer objects for a body can also be inner objects of another
+    /// body.
+    short distancesToCollision (out floatSeq distances,
+				out nameSeq innerObjects,
+				out nameSeq outerObjects,
+				out floatSeqSeq innerPoints,
+				out floatSeqSeq outerPoints);
 
-    /** 
-     *@}
-     */
+    /// \}
 
-    /**
-       \name Create and register robot
-       @{
-    */
+    /// \name Mass and inertia
+    /// \{
 
-    /** 
-     * \brief Create an empty device and store it temporarily before adding it in object hppPlanner.
-     \param inRobotName name of the robot (ChppDevice).
+    /// Get mass of robot
+    double getMass ();
 
-     * Fails if another robot is already in construction.
-     */
-    short createRobot(in string inRobotName);
-    /** 
-     * \brief Once a robot is built, add it in object ChppciServer::hppPlanner.
-     * \param inRobotName name of the robot.
-     * \param inPenetration dynamic penetration allowed to validate direct paths.
+    /// Get position of center of mass
+    floatSeq getCenterOfMass ();
 
-    /**
-       \brief Create an extra dof for inseting in a device.
-       \param inDofName name of the extra dof.
-       \param inRevolute whether dof is revolute.
-       \param inValueMin minimal value of the dof.
-       \param inValueMax maximal value of the dof.
-       \note if inValueMax < inValueMin, the dof is not bounded.
-    */
-    short createExtraDof(in string inDofName, in boolean inRevolute,
-			 in double inValueMin, in double inValueMax);
+    /// Get Jacobian of the center of mass
+    floatSeqSeq getJacobianCenterOfMass ();
 
-    /**
-       \brief Create joint.
-       \param inJointName name of the joint.
-       \param inJointType type of joint in {"anchor", "freeflyer", "plan", "rotation", "translation"}.
-       \param pos position of the joint.
-       \param inJointBound sequence of joint dof bounds in order [v0_min,v0_max,v1_min,v1_max,...]. 
-       \li If vi_min > vi_max, dof of rank i is not bounded and bounds (for random sampling) are set to [v_max, v_min].
-       \li If size of sequence is different from twice the number of dofs, no dof is bounded.
-       \param inDisplay Whether the path of the joint should be displayed in interface.
+    /// \}
 
-       \return 0 if success, -1 if failure.
-    */
-    short createJoint(in string inJointName, in string inJointType, in Configuration pos, 
-		      in jointBoundSeq inJointBound, in boolean inDisplay);
-    /**
-     * \brief Add a child joint to a joint.
-     * \param inParentName name of the joint to which a child is added.
-     * \param inChildName name of the child joint added to the previous one.
-     * \return 0 if success, -1 if failure.
-     */
-    short addJoint(in string inParentName, in string inChildName);
-    
-    /// Add a robot to the Planner
+    /// \name Create and register robot
+    /// \{
+
+    /// Create an empty device and store it temporarily
+    /// \param robotName name of the robot.
+    ///  Fails if another robot is already in construction.
+    short createRobot(in string robotName);
+
+    /// Create a new joint
+    /// \param jointName name of the joint,
+    /// \param jointType among ["anchor", "SO3", "rotation",
+    ///                         "translation"]
+    /// \param pos initial position of the joint
+    /// \param joinBounds bounds of the joint. See setJointBounds for details.
+    short createJoint(in string jointName, in string jointType,
+		      in Configuration pos, in jointBoundSeq jointBounds);
+
+    ///  Add a child joint to a joint.
+    /// \param inParentName name of the joint to which a child is added.
+    /// \param inChildName name of the child joint added to the previous one.
     /// \return 0 if success, -1 if failure.
-    short addHppProblem(in string inRobotName, in double inPenetration);
+    short addJoint(in string inParentName, in string inChildName);
 
-    /**
-     * \brief Set a joint as root joint to a robot.
-     * \param inRobotName name of the robot (ChppDevice).
-     * \param inJointName name of the joint.
-     */
+    /// Add a robot to the ProblemSolver
+    /// \return 0 if success, -1 if failure.
+    short setRobot (in string inRobotName);
+
+    ///  Set a joint as root joint to a robot.
+    /// \param inRobotName name of the robot (ChppDevice).
+    /// \param inJointName name of the joint.
     short setRobotRootJoint(in string inRobotName, in string inJointName);
 
-    /**
-     * \brief create an empty polyhedron.
-     * \param inPolyName name of the polyhedron.
-     * \return 0 if success, -1 if failure.
-     */
+    ///  create an empty polyhedron.
+    /// \param inPolyName name of the polyhedron.
+    /// \return 0 if success, -1 if failure.
     short createPolyhedron(in string inPolyName);
-    /**
-       \brief Create a box
-       \param inBoxName name of the box
-       \param x, y, z Size of the box
-    */
-    short createBox(in string inBoxName, in double x, in double y, in double z);
-    /**
-     * \brief Add a point to a polyhedron
-     * \param inPolyName the name of the polyhedron.
-     * \param x coordinate of the point. 
-     * \param y coordinate of the point. 
-     * \param z coordinate of the point. 
-     * \return rank of point in polyhedron or -1 if failure.
-     */
+
+    ///  Create a box
+    /// \param name name of the box
+    /// \param x, y, z Size of the box
+    short createBox (in string name, in double x, in double y, in double z);
+
+    ///  Create a sphere
+    /// \param name name of the sphere
+    /// \param radius radius of the sphere
+    short createSphere (in string name, in double radius);
+
+    ///  Add a point to a polyhedron
+    /// \param inPolyName the name of the polyhedron.
+    /// \param x coordinate of the point.
+    /// \param y coordinate of the point.
+    /// \param z coordinate of the point.
+    /// \return rank of point in polyhedron or -1 if failure.
     short addPoint(in string inPolyName, in double x, in double y, in double z);
-    /**
-     * \brief Add a point to a polyhedron
-     * \param inPolyName the name of the polyhedron.
-     * \param pt1 rank of first point in polyhedron. 
-     * \param pt2 rank of second point in polyhedron. 
-     * \param pt3 rank of third point in polyhedron. 
-     * \return rank of triangle in polyhedron or -1 if failure.
-     */
-    short addTriangle(in string inPolyName, in unsigned long pt1, 
-	in unsigned long pt2, in unsigned long pt3);
 
-    /**
-       \brief Attach a polyhedron to a body.
+    ///  Add a point to a polyhedron
+    /// \param inPolyName the name of the polyhedron.
+    /// \param pt1 rank of first point in polyhedron.
+    /// \param pt2 rank of second point in polyhedron.
+    /// \param pt3 rank of third point in polyhedron.
+    /// \return rank of triangle in polyhedron or -1 if failure.
+    short addTriangle(in string inPolyName, in unsigned long pt1,
+		      in unsigned long pt2, in unsigned long pt3);
 
-       \param inBodyName name of the body
-       \param inPolyhedronName name of the polyhedron
-       \param inConfig relative position of the polyhedron in the body
-
-       \note The body must be attached to a joint.
-    */
-
-    short addPolyToBody(in string inBodyName, in string inPolyhedronName, in Configuration inConfig);
-    /** 
-     *@}
-     */
+    ///  Attach an object to a joint.
+    /// \param jointName name of the body
+    /// \param objectName name of the object
+    /// \param pos relative position of the polyhedron in the body
+    short addObjectToJoint(in string jointName, in string objectName,
+			   in Configuration pos);
+    /// \}
   };
 };
 
-#endif //! HPP_CORBASERVER_ROBOT_SERVER_IDL
+#endif // HPP_CORBASERVER_ROBOT_SERVER_IDL

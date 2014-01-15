@@ -9,10 +9,7 @@
 // See the COPYING file for more information.
 
 #include <iostream>
-#include <KineoModel/kppLicense.h>
-
 #include <hpp/util/debug.hh>
-
 #include "hpp/corbaserver/server.hh"
 
 using hpp::corbaServer::Server;
@@ -20,13 +17,9 @@ using hpp::corbaServer::Server;
 int
 main (int argc, const char* argv[])
 {
-  if (!CkppLicense::initialize ())
-    hppDoutFatal (error, "failed to get a Kineo license");
+  hpp::core::ProblemSolverPtr_t problemSolver = new hpp::core::ProblemSolver;
+  Server server (problemSolver, argc, argv, true);
 
-  hpp::core::Planner* hppPlanner = new hpp::core::Planner;
-  Server server (hppPlanner, argc, argv, true);
-
-  if (server.startCorbaServer () < 0)
-    hppDoutFatal (error, "failed to start CORBA server");
+  server.startCorbaServer ();
   server.processRequest(true);
 }

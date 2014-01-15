@@ -119,7 +119,5 @@ ADD_EXECUTABLE (hppcorbaserver hpp-corbaserver.cc)
 TARGET_LINK_LIBRARIES (hppcorbaserver ${LIBRARY_NAME})
 PKG_CONFIG_USE_DEPENDENCY(hppcorbaserver hpp-core)
 PKG_CONFIG_USE_DEPENDENCY(hppcorbaserver hpp-model-urdf)
-KINEO_STANDALONE(hppcorbaserver)
 
 INSTALL (TARGETS hppcorbaserver DESTINATION bin)
-INSTALL (FILES ${CMAKE_CURRENT_BINARY_DIR}/hppcorbaserver.kab DESTINATION bin)

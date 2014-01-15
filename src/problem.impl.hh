@@ -31,98 +31,55 @@ namespace hpp
 	Problem (corbaServer::Server* server);
 
 	virtual Short
-	setRoadmapbuilder
-	(UShort problemId, const char* roadmapBuilder, Boolean display);
+	setInitialConfig (const hpp::floatSeq& dofArray);
+
+	virtual hpp::floatSeq*
+	getInitialConfig () throw (SystemException);
 
 	virtual Short
-	setDiffusingNode
-	(UShort problemId, const char* diffusingNode);
+	addGoalConfig (const hpp::floatSeq& dofArray);
+
+	virtual hpp::floatSeqSeq*	getGoalConfigs () throw (SystemException);
 
 	virtual Short
-	countPaths (unsigned short problemId);
+	resetGoalConfigs ()  throw (SystemException);
 
-	virtual Short
-	setPathOptimizer
-	(UShort problemId, const char* pathOptimizer, UShort maxNumberLoop);
-
-	virtual Short
-	setConfigExtractor
-	(UShort problemId, Double minRadius, Double maxRadius, Double scaleFactor);
-
-	virtual Short
-	setDistanceFunction
-	(UShort problemId, const char* distanceName, Boolean oriented);
-
-	virtual Short
-	setDiffusionNodePicker
-	(UShort problemId, const char* diffusionNodePickerName);
-
-	virtual Short
-	setDiffusionShooter
-	(UShort problemId, const char* diffusionShooterName);
-
-	virtual Short
-	setInitialConfig
-	(UShort problemId, const hpp::dofSeq& dofArray);
-
-	virtual hpp::dofSeq*
-	getInitialConfig (UShort problemId) throw (SystemException);
-
-	virtual Short
-	addGoalConfig
-	(UShort problemId, const hpp::dofSeq& dofArray);
-
-	virtual hpp::dofSeqSeq*
-	getGoalConfig (UShort problemId) throw (SystemException);
-
-	virtual Short
-	resetGoalConfig (UShort problemId)  throw (SystemException);
-
-	virtual Short initializeProblem ();
-
-	virtual Short
-	solveOneProblem
-	(UShort problemId, Short& inLastPathId, Double& pathLength);
-
-	virtual Short directPath (UShort problemId,
-				  const hpp::dofSeq& startConfig,
-				  const hpp::dofSeq& endConfig,
-				  CORBA::String_out message)
-	  throw (SystemException);
+	virtual Short applyConstraints (const hpp::floatSeq& input,
+					hpp::floatSeq_out output);
 
 	virtual Short solve ();
 
+	virtual Short directPath (const hpp::floatSeq& startConfig,
+				  const hpp::floatSeq& endConfig,
+				  CORBA::String_out message)
+	  throw (SystemException);
+
 	virtual Short interruptPathPlanning ();
 
-	virtual Short optimizePath (UShort problemId, UShort pathId);
+	virtual Short numberPaths ();
 
-	virtual Double pathLength (UShort problemId, UShort pathId);
+	virtual Short optimizePath (UShort pathId);
 
-	virtual hpp::dofSeq* configAtDistance
-	(UShort problemId, UShort pathId, Double atDistance);
+	virtual Double pathLength (UShort pathId);
 
-	virtual Short setObstacleTolerance
-	(UShort problemId, Double tolerance) throw (SystemException);
+	virtual hpp::floatSeq* configAtDistance (UShort pathId,
+					       Double atDistance);
 
-	virtual Short parseFile
-	(const char* inFilename) throw (SystemException);
-
-	virtual Short loadPathFromFile
-	(const char* inFilename) throw (SystemException);
-
-	virtual Long countNodes (UShort problemId);
-	virtual hpp::dofSeq* node (UShort inProblemId, ULong inNodeId);
-	virtual Long countEdges (UShort problemId);
-	virtual Long countConnectedComponents (UShort problemId);
-	virtual Short clearRoadmaps ();
-	virtual void writeKineoLog ();
+	virtual hpp::floatSeqSeq* nodes ();
+	virtual Long numberEdges ();
+	virtual Short
+	edge (ULong edgeId, hpp::floatSeq_out q1, hpp::floatSeq_out q2);
+	virtual Long numberConnectedComponents ();
+	virtual hpp::floatSeqSeq*
+	nodesConnectedComponent (ULong connectedComponentId);
+	virtual Short clearRoadmap ();
 
       private:
 	/// \brief Pointer to the Server owning this object
 	corbaServer::Server* server_;
 	/// \brief Pointer to hppPlanner object of hpp::corbaServer::Server.
 	/// Instantiated at construction.
-	core::Planner* planner_;
+	core::ProblemSolverPtr_t problemSolver_;
       };
     } // end of namespace impl.
   } // end of namespace corbaServer.

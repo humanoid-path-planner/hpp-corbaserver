@@ -17,239 +17,92 @@ module hpp
   /// \brief To define and solve a path planning problem.
   interface Problem
   {
-    /** \brief Set roadmap builder of specified robot in ChppPlanner::robotVector.
-	\param inProblemId rank of problem in vector of hppProblems.
-	\param inRoadmapBuilderName name of the roadmap builder in {"basic", "diffusing", "IPP", "visibility", "PCA<diffusing>"}.
-	\param inDisplay whether the roadmap should be displayed in the interface.
-	\return 0 if success, -1 if failure.
-    */
-    short setRoadmapbuilder(in unsigned short inProblemId, in string inRoadmapBuilderName, in boolean inDisplay);
-
-    /**
-       \brief Define which nodes are expanded by roadmap builder
-
-       \param inProblemId rank of problem in vector of hppProblems.
-       \param inDiffusingNode "start", "goal" or "start and goal"
-       \return 0 if success, -1 if failure. Roadmap builder should be of type diffusing.
-    */
-    short setDiffusingNode(in unsigned short inProblemId, in string inDiffusingNode);
-
-    /** \brief Set path optimizer of specified robot in ChppPlanner::robotVector.
-	\param inProblemId rank of problem in vector of hppProblems.
-	\param inPathOptimizerName name of the path optimizer in {"clear", "adaptiveShortcut", "random", "none"}.
-	\param inMaxNumberLoop maximal number of loop for loop optimizers.
-	\return 0 if success, -1 if failure.
-    */
-    short setPathOptimizer(in unsigned short inProblemId, in string inPathOptimizerName,
-			   in unsigned short inMaxNumberLoop);
-
-    /**
-       \brief Set configuration extractor
-
-       \param inProblemId Rank of problem in vector of hppProblems.
-       \param inMinRadius Initial size of the neighborhood to explore
-       \param inMaxRadius Maximum size of the neighborhood to explore
-       \param inScaleFactor Growth rate of the neighborhood size
-
-       If inMinRadius = 0 remove configuration extractor from problem.
-
-       \return 0 if success, -1 if failure.
-    */
-    short setConfigExtractor(in unsigned short inProblemId, in double inMinRadius,
-			     in double inMaxRadius, in double inScaleFactor);
-
-
-    /** \brief Set distance function used by roadmap builder
-	\param inProblemId Rank of problem in vector of hppProblems.
-	\param inDistanceName Name of the distance function.
-	\param inOriented whether distance corresponds to an oriented local method.
-
-	\note Distance function is given to the device, to the roadmap builder,
-	and path optimizer if any.
-
-	\return 0 if success, -1 if failure.
-
-	The distance functions implemented by ChppciServer are
-	\li "linear": distance related to linear steering method.
-	\li "flic": Approximation of length of direct path CflicDirectPath between two configurations.
-	\li "rs": Length of Reeds and Shepp optimal curves (radius = 1) between two configurations.
-	Other distance functions can be added using function ChppciServer::addDistanceFactory.
-    */
-    short setDistanceFunction(in unsigned short inProblemId, in string inDistanceName, in boolean inOriented);
-
-    /** \brief Set diffusion node picker used by roadmap builder
-	\param inProblemId Rank of problem in vector of hppProblems.
-	\param inDiffusionNodePickerName Name of the diffusion node picker.
-
-	\note diffusion node picker is stored in the roadmap builder. Resetting the roadmap builder
-	will therefore discard the diffusion node picker.
-
-	\return 0 if success, -1 if failure. Roadmap builder should be of type diffusing.
-
-	The diffusion node pickers implemented by ChppciServer are
-	\li "basic": CkwsPickerBasic (see KineoWorks documentation)
-	\li "smallestTree": CkwsPickerSmallestTree (see KineoWorks documentation)
-	Other diffusion node pickers can be added using function ChppciServer::addDiffusionNodePickerFactory.
-    */
-    short setDiffusionNodePicker(in unsigned short inProblemId, in string inDiffusionNodePickerName);
-
-    /** \brief Set diffusion shooter used by roadmap builder
-	\param inProblemId Rank of problem in vector of hppProblems.
-	\param inDiffusionShooterName Name of the diffusion shooter.
-
-	\note diffusion shooter is stored in the roadmap builder. Resetting the roadmap builder
-	will therefore discard the diffusion shooter.
-
-	\return 0 if success, -1 if failure. Roadmap builder should be of type diffusing.
-
-	The diffusion shooters implemented by ChppciServer are
-	\li "config space": CkwsShooterConfigSpace (see KineoWorks documentation)
-	\li "roadmap box": CkwsShooterRoadmapBox (see KineoWorks documentation)
-	\li "roadmap node": CkwsShooterRoadmapNodes (see KineoWorks documentation)
-	Other diffusion shooters can be added using function ChppciServer::addDiffusionShooterFactory.
-    */
-    short setDiffusionShooter(in unsigned short inProblemId, in string inDiffusionShooterName);
-
     /// Set initial configuration of specified problem.
-    ///	\param inProblemId rank of robot in vector of robots.
     ///	\param dofArray Array of degrees of freedom
     ///	\return 0 if success, -1 if failure.
-    short setInitialConfig (in unsigned short inProblemId, in dofSeq dofArray);
+    short setInitialConfig (in floatSeq dofArray);
 
     /// Get initial configuration of specified problem.
-    ///	\param inProblemId rank of robot in vector of robots.
     ///	\return Array of degrees of freedom
-     dofSeq getInitialConfig (in unsigned short inProblemId);
+     floatSeq getInitialConfig ();
 
     /// \brief Add goal configuration to specified problem.
-    ///	\param inProblemId rank of robot in vector of robots.
     ///	\param dofArray Array of degrees of freedom
     ///	\return 0 if success, -1 if failure.
-    short addGoalConfig (in unsigned short inProblemId, in dofSeq dofArray);
+    short addGoalConfig (in floatSeq dofArray);
 
     /// Get goal configurations of specified problem.
-    ///	\param inProblemId rank of robot in vector of robots.
     ///	\return Array of degrees of freedom
-    dofSeqSeq getGoalConfig (in unsigned short inProblemId);
+    floatSeqSeq getGoalConfigs ();
 
     /// Reset goal configurations
-    ///	\param inProblemId rank of robot in vector of robots.
-    short resetGoalConfig (in unsigned short inProblemId);
+    short resetGoalConfigs ();
 
-    /** \brief Solve specified problem in ChppPlanner::robotVector.
-	\param inProblemId rank of robot in vector of robots.
-	\param outLastPathId rank of the last path created
-	\param pathLength : length of inLastPathId
-	\return 0 if success, -1 if failure.
-	\note  HOW TO USE IN PYTHON SCRIPT :
-	the python script doesn't allow you to call the function by the following prototype :
-	short solveOneProblem(in unsigned short inProblemId, out short inLastPathId, out double pathLength)
-	in python script the function is use as follow :
-	(short, short inLastPathId, double pathLength ) = solveOneProblem(in unsigned short inProblemId)
-	which return a list of all the return parameter
-    */
-    short solveOneProblem(in unsigned short inProblemId, out short outLastPathId, out double pathLength);
-    /**
-       \brief Initialize the path planning problem
-       \return 0 if success, -1 if failure.
-    */
-    short initializeProblem();
-    /**
-       \brief Solve the problem of corresponding ChppPlanner object
-       \return 0 if success, -1 if failure.
-    */
+    /// Apply constaints to a configuration
+    ///
+    /// constraints are stored in ProblemSolver object
+    short applyConstraints (in floatSeq input, out floatSeq output);
+
+    // \brief Solve the problem of corresponding ChppPlanner object
+    // \return 0 if success, -1 if failure.
     short solve();
 
     /// Make direct connection between two configurations
-    /// \param problemId rank of problem in vector.
     /// \param startConfig, endConfig: the configurations to link.
     /// \retval message unvalidation message.
     /// \return -1 if steering method fails to create a direct path of if
     /// direct path is not valid
-    short directPath (in unsigned short problemId,
-		      in dofSeq startConfig, in dofSeq endConfig,
+    short directPath (in floatSeq startConfig, in floatSeq endConfig,
 		      out string message);
 
-    /**
-       \brief Interrupt path planning activity
-
-       \note this request is effective only when multi-thread policy is used by CORBA server.
-       See constructor ChppciServer::ChppciServer for details.
-    */
+    /// \brief Interrupt path planning activity
+    /// \note this request is effective only when multi-thread policy is used
+    ///       by CORBA server.
+    /// See constructor of class Server for details.
     short interruptPathPlanning();
 
-    /// Get Number of path for a given problem
-    short countPaths (in unsigned short problemId);
+    /// Get Number of paths
+    short numberPaths ();
 
-    /**
-       \brief Optimize a given path
-       \param inProblemId Id of the problem owning the path.
-       \param inPathId Id of the path in this problem.
-       \return 0 if success, -1 if failure.
-    */
-    short optimizePath(in unsigned short inProblemId, in unsigned short inPathId);
+    // Optimize a given path
+    // \param inPathId Id of the path in this problem.
+    // \return 0 if success, -1 if failure.
+    short optimizePath(in unsigned short inPathId);
 
-    /**
-       \brief Get length of path
+    // Get length of path
+    // \param inPathId rank of the path in the problem
+    // \return length of path if path exists, -1 otherwise
+    double pathLength(in unsigned short inPathId);
 
-       \param inProblemId rank of robot in vector of robots.
-       \param inPathId rank of the path in the problem
-       \return length of path if path exists, -1 otherwise
-    */
-    double pathLength(in unsigned short inProblemId, in unsigned short inPathId);
-
-    /** \brief get the robot's config at param on the a path
-
-	\param inProblemId rank of robot in vector of robots.
-	\param inPathId rank of the path in the problem
-	\param atDistance : the user parameter choice
-	\return dofseq : the config at param
-    */
-    dofSeq configAtDistance(in unsigned short inProblemId, in unsigned short inPathId, in double atDistance);
-
-    /** \brief set tolerance of the obstacles registered in the planner
-	\param inProblemId: rank of robot in vector of robots.
-	\param tolerance: tolerance set to the obstacles
-	if there are no obstacles nothing is done.
-	\return 0 if success, -1 if failure.
-    */
-    short setObstacleTolerance(in unsigned short inProblemId, in double tolerance);
-    /** \brief Load and parse a kxml file
-	\param filename file name.
-
-	Binds ChppPlanner::parseFile method.
-    */
-    short parseFile(in string inFilename);
-
-    /** \brief Load a path from a kxml file
-	\param filename file name.
-
-	Binds ChppPlanner::loadPathFromFile method.
-    */
-    short loadPathFromFile(in string inFilename);
+     // Get the robot's config at param on the a path
+     // \param inPathId rank of the path in the problem
+     // \param atDistance : the user parameter choice
+     // \return dofseq : the config at param
+    floatSeq configAtDistance(in unsigned short inPathId, in double atDistance);
 
     /// \name exploring the roadmap
     /// \{
 
-    /// Number of nodes
-    long countNodes (in unsigned short inProblemId);
-
-    /// Node at given rank
-    dofSeq node (in unsigned short inProblemId, in unsigned long inNodeId);
+    /// Nodes of the roadmap
+    floatSeqSeq nodes ();
 
     /// Number of edges
-    long countEdges (in unsigned short inProblemId);
+    long numberEdges ();
+
+    /// Edge at given rank
+    short edge (in unsigned long edgeId, out floatSeq q1, out floatSeq q2);
 
     /// Number of connected components
-    long countConnectedComponents (in unsigned short inProblemId);
+    long numberConnectedComponents ();
 
-    /// Clear the roadmaps
-    short clearRoadmaps ();
+    /// Nodes of a connected component
+    /// \param connectedComponentId index of connected component in roadmap
+    /// \return list of nodes of the connected component.
+    floatSeqSeq nodesConnectedComponent (in unsigned long connectedComponentId);
+
+    /// Clear the roadmap
+    short clearRoadmap ();
     /// \}
-
-    /// Write Kineo log (in verbose mode)
-    /// Does nothing if hpp-corbaserver is not compiled with option HPP_DEBUG.
-    void writeKineoLog ();
-  };
-};
+  }; // interface Problem
+}; // module hpp
 #endif

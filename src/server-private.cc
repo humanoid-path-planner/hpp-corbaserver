@@ -17,25 +17,6 @@
 #include "robot.impl.hh"
 #include "server-private.hh"
 
-//FIXME: remove me.
-#define HPPCI_CATCH(msg, ret)						\
-  catch(CORBA::SystemException&) {					\
-    hppDout (error, "hppCorbaServer: CORBA::SystemException: " << msg);	\
-    return ret;								\
-  }									\
-  catch(CORBA::Exception&) {						\
-    hppDout (error, "hppCorbaServer: CORBA::Exception: " << msg);	\
-    return ret;								\
-  }									\
-  catch(omniORB::fatalException& fe) {					\
-    hppDout (error, "hppCorbaServer: CORBA::fatalException: " << msg);	\
-    return ret;								\
-  }									\
-  catch(...) {								\
-    hppDout (error, "hppCorbaServer: unknown exception: " << msg);	\
-    return ret;								\
-  }
-
 namespace hpp
 {
   namespace corbaServer
@@ -60,41 +41,15 @@ namespace hpp
 	delete obstacleServantid_;
       }
 
-      ktStatus
+      void
       Server::createAndActivateServers (corbaServer::Server* inServer)
       {
-	try {
-	  robotServant_ = new Robot (inServer);
-	}
-	HPPCI_CATCH("failed to create implementation of hpp::Robot", KD_ERROR)
-
-	  try {
-	    obstacleServant_ = new Obstacle (inServer);
-	  }
-	HPPCI_CATCH("failed to create implementation of hpp::Obstacle", KD_ERROR)
-
-	  try {
-	    problemServant_ = new Problem (inServer);
-	  }
-	HPPCI_CATCH("failed to create implementation of hpp::Problem", KD_ERROR)
-
-	  try {
-
-	    robotServantid_ = poa_->activate_object(robotServant_);
-	  }
-	HPPCI_CATCH("failed to activate implementation of hpp::Robot", KD_ERROR)
-
-	  try {
-	    obstacleServantid_ = poa_->activate_object(obstacleServant_);
-	  }
-	HPPCI_CATCH("failed to activate implementation of hpp::Obstacle", KD_ERROR)
-
-	  try {
-	    problemServantid_ = poa_->activate_object(problemServant_);
-	  }
-	HPPCI_CATCH("failed to activate implementation of hpp::Problem", KD_ERROR)
-
-	  return KD_OK;
+	robotServant_ = new Robot (inServer);
+	obstacleServant_ = new Obstacle (inServer);
+	problemServant_ = new Problem (inServer);
+	robotServantid_ = poa_->activate_object(robotServant_);
+	obstacleServantid_ = poa_->activate_object(obstacleServant_);
+	problemServantid_ = poa_->activate_object(problemServant_);
       }
 
       void Server::deactivateAndDestroyServers()
@@ -114,108 +69,76 @@ namespace hpp
       }
 
 
-      bool Server::createHppContext ()
+      void Server::createHppContext ()
       {
 	CosNaming::NamingContext_var rootContext;
 	Object_var localObj;
 	CosNaming::Name contextName;
 
-	try {
-	  // Obtain a reference to the root context of the Name service:
-	  localObj = orb_->resolve_initial_references("NameService");
-	}
-	HPPCI_CATCH("failed to get the name service", false);
-
+	// Obtain a reference to the root context of the Name service:
+	localObj = orb_->resolve_initial_references("NameService");
 	try {
 	  // Narrow the reference returned.
 	  rootContext = CosNaming::NamingContext::_narrow(localObj);
 	  if( is_nil(rootContext) ) {
-	    hppDout (error, "Failed to narrow the root naming context.");
-	    return false;
+	    std::string msg ("Failed to narrow the root naming context.");
+	    hppDout (error, msg.c_str ());
+	    throw std::runtime_error (msg.c_str ());
 	  }
 	}
 	catch(InvalidName& ex) {
 	  // This should not happen!
-	  hppDout (error, "Service required is invalid [does not exist].");
-	  return false;
+	  std::string msg ("Service required is invalid [does not exist].");
+	  hppDout (error, msg.c_str ());
+	  throw std::runtime_error (msg.c_str ());
 	}
-	HPPCI_CATCH("failed to narrow the root naming context.", false);
+	// Bind a context called "hpp" to the root context:
+	contextName.length(1);
+	contextName[0].id   = (const char*) "hpp";       // string copied
+	contextName[0].kind = (const char*) "plannerContext"; // string copied
+	// Note on kind: The kind field is used to indicate the type
+	// of the object. This is to avoid conventions such as that used
+	// by files (name.type -- e.g. hpp.ps = postscript etc.)
 
 	try {
-	  // Bind a context called "hpp" to the root context:
-
-	  contextName.length(1);
-	  contextName[0].id   = (const char*) "hpp";       // string copied
-	  contextName[0].kind = (const char*) "plannerContext"; // string copied
-	  // Note on kind: The kind field is used to indicate the type
-	  // of the object. This is to avoid conventions such as that used
-	  // by files (name.type -- e.g. hpp.ps = postscript etc.)
-
-	  try {
-	    // Bind the context to root.
-	    hppContext_ = rootContext->bind_new_context(contextName);
-	  }
-	  catch(CosNaming::NamingContext::AlreadyBound& ex) {
-	    // If the context already exists, this exception will be raised.
-	    // In this case, just resolve the name and assign hppContext
-	    // to the object returned:
-	    Object_var localObj;
-	    localObj = rootContext->resolve(contextName);
-	    hppContext_ = CosNaming::NamingContext::_narrow(localObj);
-	    if( is_nil(hppContext_) ) {
-	      hppDout (error, "Failed to narrow naming context.");
-	      return false;
-	    }
+	  // Bind the context to root.
+	  hppContext_ = rootContext->bind_new_context(contextName);
+	}
+	catch(CosNaming::NamingContext::AlreadyBound& ex) {
+	  // If the context already exists, this exception will be raised.
+	  // In this case, just resolve the name and assign hppContext
+	  // to the object returned:
+	  Object_var localObj;
+	  localObj = rootContext->resolve(contextName);
+	  hppContext_ = CosNaming::NamingContext::_narrow(localObj);
+	  if( is_nil(hppContext_) ) {
+	    std::string msg ("Failed to narrow naming context.");
+	    hppDout (error, msg.c_str ());
+	    throw std::runtime_error (msg.c_str ());
 	  }
 	}
-	catch(COMM_FAILURE& ex) {
-	  hppDout (error, "Caught system exception COMM_FAILURE -- unable to contact the "
-		   << "naming service.");
-	  return false;
-	}
-	catch(SystemException&) {
-	  hppDout (error, "Caught a SystemException while creating the context.");
-	  return false;
-	}
-
-	return true;
       }
 
-      bool Server::bindObjectToName(Object_ptr objref,
-						 CosNaming::Name objectName)
+      void Server::bindObjectToName(Object_ptr objref,
+				    CosNaming::Name objectName)
       {
 	try {
-	  try {
-	    hppContext_->bind(objectName, objref);
-	  }
-	  catch(CosNaming::NamingContext::AlreadyBound& ex)
-	    {
-	      hppContext_->rebind(objectName, objref);
-	    }
-	  // Note: Using rebind() will overwrite any Object previously bound
-	  //       to /hpp/RobotConfig with localObj.
-	  //       Alternatively, bind() can be used, which will raise a
-	  //       CosNaming::NamingContext::AlreadyBound exception if the name
-	  //       supplied is already bound to an object.
+	  hppContext_->bind(objectName, objref);
+	}
+	catch(CosNaming::NamingContext::AlreadyBound& ex) {
+	  hppContext_->rebind(objectName, objref);
+	}
+	// Note: Using rebind() will overwrite any Object previously bound
+	//       to /hpp/RobotConfig with localObj.
+	//       Alternatively, bind() can be used, which will raise a
+	//       CosNaming::NamingContext::AlreadyBound exception if the name
+	//       supplied is already bound to an object.
 
-	  // Amendment: When using OrbixNames, it is necessary to first try bind
-	  // and then rebind, as rebind on it's own will throw a NotFoundexception if
-	  // the Name has not already been bound. [This is incorrect behaviour -
-	  // it should just bind].
-	}
-	catch(COMM_FAILURE& ex) {
-	  hppDout (error, "Caught system exception COMM_FAILURE -- unable to contact the "
-		   << "naming service.");
-	  return false;
-	}
-	catch(SystemException&) {
-	  hppDout (error, "Caught a SystemException while binding object to name service.");
-	  return false;
-	}
-
-	return true;
+	// Amendment: When using OrbixNames, it is necessary to first
+	// try bind and then rebind, as rebind on it's own will throw
+	// a NotFoundexception if the Name has not already been
+	// bound. [This is incorrect behaviour - it should just bind].
       }
-
     } // end of namespace impl.
   } // end of namespace corbaServer.
 } // end of namespace hpp.
