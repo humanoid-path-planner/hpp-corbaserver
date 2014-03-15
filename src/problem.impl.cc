@@ -15,6 +15,7 @@
 
 #include <hpp/core/connected-component.hh>
 #include <hpp/core/edge.hh>
+#include <hpp/core/locked-dof.hh>
 #include <hpp/core/node.hh>
 #include <hpp/core/path-planner.hh>
 #include <hpp/core/path-optimizer.hh>
@@ -191,6 +192,31 @@ namespace hpp
 	}
 	output = q_ptr;
 	return 0;
+      }
+
+      // ---------------------------------------------------------------
+
+      Short Problem::resetConstraints ()
+      {
+	try {
+	  problemSolver_->resetConstraints ();
+	} catch (const std::exception& exc) {
+	  hppDout (error, exc.what ());
+	  return -1;
+	}
+	return 0;
+      }
+
+      // ---------------------------------------------------------------
+
+      Short Problem::lockDof (UShort dofId, Double value)
+      {
+	std::ostringstream oss ("locked dof, index: ");
+	oss << dofId << ", value: " << value;
+	  
+	LockedDofPtr_t lockedDof (LockedDof::create (oss.str (),
+						     dofId, value));
+	problemSolver_->addConstraint (lockedDof);
       }
 
       // ---------------------------------------------------------------

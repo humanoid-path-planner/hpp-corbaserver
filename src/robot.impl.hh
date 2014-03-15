@@ -83,6 +83,9 @@ namespace hpp
 
 	virtual hpp::nameSeq* getJointNames ();
 
+	virtual Short getJointNumberDof (const char* jointName);
+	virtual Short getJointConfigSize (const char* jointName);
+
 	virtual Short
 	setJointBounds
 	(UShort inJointId, const hpp::jointBoundSeq& jointBound)

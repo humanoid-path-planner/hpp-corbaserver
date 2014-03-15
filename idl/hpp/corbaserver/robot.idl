@@ -60,6 +60,16 @@ module hpp
     /// Get joint names in the same order as in the configuration
     nameSeq getJointNames ();
 
+    /// Get joint number degrees of freedom
+    /// \param jointName name of the joint
+    /// \return -1 if robot is not set or if joint does not exist.
+    short getJointNumberDof (in string jointName);
+
+    /// Get joint number config size
+    /// \param jointName name of the joint
+    /// \return -1 if robot is not set or if joint does not exist.
+    short getJointConfigSize (in string jointName);
+
     ///  set a bound for the joint
 
     /// \param inJointId index of the joint in the robot.

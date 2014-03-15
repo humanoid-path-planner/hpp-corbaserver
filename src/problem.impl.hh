@@ -46,7 +46,8 @@ namespace hpp
 
 	virtual Short applyConstraints (const hpp::floatSeq& input,
 					hpp::floatSeq_out output);
-
+	virtual Short resetConstraints ();
+	virtual Short lockDof (UShort dofId, Double value);
 	virtual Short solve ();
 
 	virtual Short directPath (const hpp::floatSeq& startConfig,

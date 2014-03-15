@@ -288,6 +288,40 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
+      Short Robot::getJointNumberDof (const char* jointName)
+      {
+	DevicePtr_t robot = problemSolver_->robot ();
+	if (!robot) {
+	  hppDout (error, "No robot");
+	  return -1;
+	}
+	JointPtr_t joint = robot->getJointByName (jointName);
+	if (!joint) {
+	  hppDout (error, "Robot has no joint with name " << jointName);
+	  return -1;
+	}
+	return joint->numberDof ();
+      }
+      
+      // --------------------------------------------------------------------
+
+      Short Robot::getJointConfigSize (const char* jointName)
+      {
+	DevicePtr_t robot = problemSolver_->robot ();
+	if (!robot) {
+	  hppDout (error, "No robot");
+	  return -1;
+	}
+	JointPtr_t joint = robot->getJointByName (jointName);
+	if (!joint) {
+	  hppDout (error, "Robot has no joint with name " << jointName);
+	  return -1;
+	}
+	return joint->configSize ();
+      }
+
+      // --------------------------------------------------------------------
+
       Short Robot::setJointBounds (UShort jointId,
 				   const hpp::jointBoundSeq& jointBounds)
 	throw (SystemException)

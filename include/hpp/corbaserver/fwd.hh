@@ -49,6 +49,8 @@ namespace hpp
     typedef model::Joint Joint_t;
     typedef model::Joint* JointPtr_t;
     typedef model::JointVector_t JointVector_t;
+    typedef core::LockedDof LockedDof;
+    typedef core::LockedDofPtr_t LockedDofPtr_t;
     typedef core::Nodes_t Nodes_t;
     typedef model::ObjectVector_t ObjectVector_t;
     typedef core::PathPtr_t PathPtr_t;
