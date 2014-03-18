@@ -111,6 +111,7 @@ INSTALL(
 INSTALL(
   FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/hpp/corbaserver/client.py
+  ${CMAKE_CURRENT_SOURCE_DIR}/hpp/corbaserver/robot.py
   DESTINATION ${PYTHON_SITELIB}/hpp/corbaserver
   )
 
