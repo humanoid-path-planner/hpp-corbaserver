@@ -211,8 +211,8 @@ namespace hpp
 
       Short Problem::lockDof (UShort dofId, Double value)
       {
-	std::ostringstream oss ("locked dof, index: ");
-	oss << dofId << ", value: " << value;
+	std::ostringstream oss;
+	oss << "locked dof, index: " << dofId << ", value: " << value;
 	  
 	LockedDofPtr_t lockedDof (LockedDof::create (oss.str (),
 						     dofId, value));
