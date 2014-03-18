@@ -54,6 +54,7 @@ module hpp
     short getNumberDof ();
 
     /// \}
+
     /// \name Joints
     /// \{
 
