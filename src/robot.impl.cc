@@ -132,16 +132,14 @@ namespace hpp
 
       Short Robot::loadRobotModel(const char* modelName,
 				  const char* urdfSuffix,
-				  const char* srdfSuffix,
-				  const char* rcpdfSuffix)
+				  const char* srdfSuffix)
       {
 	hpp::model::HumanoidRobotShPtr device;
 	try {
 	  hpp::model::urdf::loadRobotModel (device,
 					    std::string (modelName),
 					    std::string (urdfSuffix),
-					    std::string (srdfSuffix),
-					    std::string (rcpdfSuffix));
+					    std::string (srdfSuffix));
 	} catch (const std::exception& exc) {
 	  hppDout (error, exc.what ());
 	  return -1;

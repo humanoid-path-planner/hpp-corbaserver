@@ -63,9 +63,8 @@ namespace hpp
 	  throw (SystemException);
 
 	virtual Short loadRobotModel (const char* modelName,
-				      const char* urdfSuffix = "",
-				      const char* srdfSuffix = "",
-				      const char* rcpdfSuffix = "");
+				      const char* urdfSuffix,
+				      const char* srdfSuffix);
 
 	virtual Short getConfigSize () throw (SystemException);
 
