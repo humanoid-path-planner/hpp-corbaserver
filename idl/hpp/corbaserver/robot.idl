@@ -26,16 +26,16 @@ module hpp
     ///  Load robot model
     ///
     /// \param modelName robot model name.
-    ///
+    /// \param rootJointType type of root joint among "anchor", "freeflyer",
+    /// "planar",
     /// \param urdfSuffix suffix for urdf file,
     /// e.g. ${modelName}${urdfSuffix}.urdf
     ///
     /// \param srdfSuffix suffix for urdf file,
     /// e.g. ${modelName}${urdfSuffix}.srdf
     ///
-    short loadRobotModel(in string modelName,
-			 in string urdfSuffix,
-			 in string srdfSuffix);
+    short loadRobotModel (in string rootJointType, in string modelName,
+			 in string urdfSuffix, in string srdfSuffix);
 
     /// \}
 

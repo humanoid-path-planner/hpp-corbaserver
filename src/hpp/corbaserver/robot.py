@@ -20,9 +20,11 @@ from hpp.corbaserver import Client
 
 class Robot (object):
     """Helper class to enhance corba interface"""
-    def __init__ (self, robotName, urdfSuffix = "", srdfSuffix = ""):
+    def __init__ (self, rootJointType, robotName, urdfSuffix = "",
+                  srdfSuffix = ""):
         self.client = Client ()
-        self.client.robot.loadRobotModel (robotName, urdfSuffix, srdfSuffix)
+        self.client.robot.loadRobotModel (rootJointType, robotName,
+                                          urdfSuffix, srdfSuffix)
         self.jointNames = self.client.robot.getJointNames ()
         self.rankInConfiguration = dict ()
         self.rankInVelocity = dict ()
