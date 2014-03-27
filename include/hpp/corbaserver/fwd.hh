@@ -33,7 +33,7 @@ namespace hpp
     typedef fcl::CollisionGeometry CollisionGeometry_t;
     typedef boost::shared_ptr <CollisionGeometry_t> CollisionGeometryPtr_t;
     typedef model::CollisionObject CollisionObject_t;
-    typedef model::CollisionObjectShPtr CollisionObjectPtr_t;
+    typedef model::CollisionObjectPtr_t CollisionObjectPtr_t;
     typedef model::Configuration_t Configuration_t;
     typedef core::ConfigurationPtr_t ConfigurationPtr_t;
     typedef core::ConfigIterator_t ConfigIterator_t;
@@ -42,12 +42,12 @@ namespace hpp
     typedef core::ConnectedComponents_t ConnectedComponents_t;
     typedef core::ConnectedComponentPtr_t ConnectedComponentPtr_t;
     typedef model::Device Device_t;
-    typedef model::DeviceShPtr DevicePtr_t;
+    typedef model::DevicePtr_t DevicePtr_t;
     typedef model::DistanceResult DistanceResult_t;
     typedef model::DistanceResults_t DistanceResults_t;
     typedef core::Edges_t Edges_t;
     typedef model::Joint Joint_t;
-    typedef model::Joint* JointPtr_t;
+    typedef model::JointPtr_t JointPtr_t;
     typedef model::JointVector_t JointVector_t;
     typedef core::LockedDof LockedDof;
     typedef core::LockedDofPtr_t LockedDofPtr_t;
