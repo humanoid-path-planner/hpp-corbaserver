@@ -135,7 +135,7 @@ namespace hpp
 				  const char* urdfSuffix,
 				  const char* srdfSuffix)
       {
-	hpp::model::HumanoidRobotShPtr device;
+	hpp::model::HumanoidRobotPtr_t device;
 	try {
 	  hpp::model::urdf::loadRobotModel (device,
 					    std::string (rootJointType),
