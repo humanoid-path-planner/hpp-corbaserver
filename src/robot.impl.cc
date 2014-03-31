@@ -746,7 +746,7 @@ namespace hpp
 	  Transform3f pos;
 	  ConfigurationToTransform3f (inConfig, pos);
 	  CollisionObjectPtr_t collisionObject
-	    (new CollisionObject_t (geometry, pos, objectName));
+	    (CollisionObject_t::create (geometry, pos, objectName));
 	  joint->linkedBody ()->addInnerObject(collisionObject, true, true);
 	  return 0;
 	} catch (const std::exception& exc) {

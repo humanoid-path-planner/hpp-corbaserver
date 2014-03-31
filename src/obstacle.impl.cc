@@ -62,7 +62,7 @@ namespace hpp
 
 	Transform3f pos; pos.setIdentity ();
 	CollisionObjectPtr_t collisionObject
-	  (new CollisionObject_t (geometry, pos, objName));
+	  (CollisionObject_t::create (geometry, pos, objName));
 	problemSolver_->addObstacle (collisionObject, collision, distance);
 	return 0;
       }
