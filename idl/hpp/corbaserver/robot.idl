@@ -25,9 +25,9 @@ module hpp
   interface Robot {
     ///  Load robot model
     ///
-    /// \param modelName robot model name.
     /// \param rootJointType type of root joint among "anchor", "freeflyer",
     /// "planar",
+    /// \param modelName robot model name.
     /// \param urdfSuffix suffix for urdf file,
     /// e.g. ${modelName}${urdfSuffix}.urdf
     ///
