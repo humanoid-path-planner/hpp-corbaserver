@@ -16,3 +16,18 @@ Dependencies:
 
   - ros-hydro
   - humanoid-path-planner
+
+Start:
+
+  In seperate terminals do
+```
+  roslaunch hpp_ros hpp_ros.launch
+```
+```
+  ${DEVEL_SRC}/install/bin/hpp-wholebody-step-server
+```
+```
+  cd irreducible-configuration-space/scripts
+  ipython
+  >>> execfile('test_robot_movement.py')
+```
