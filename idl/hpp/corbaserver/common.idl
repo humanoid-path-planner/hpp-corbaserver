@@ -18,13 +18,13 @@ module hpp
   typedef sequence<double> floatSeq;
   typedef sequence<floatSeq> floatSeqSeq;
 
-  typedef double Translation[3];
-  typedef double Rotation[9];
+  typedef double Translation [3];
+  typedef double Quaternion [4];
 
   struct Configuration
   {
     Translation trs;
-    Rotation rot;
+    Quaternion quat;
   };
 };
 

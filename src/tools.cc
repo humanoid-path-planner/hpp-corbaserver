@@ -15,13 +15,8 @@ void
 ConfigurationToTransform3f
 (const hpp::Configuration inConfig, hpp::corbaServer::Transform3f& transform)
 {
-  fcl::Matrix3f R;
-  fcl::Vec3f T;
-  for(int i=0; i<3; i++) {
-    for(int j=0; j<3; j++)
-      R (i,j) = inConfig.rot[i*3+j];
-  }
-  for(int i=0; i<3; i++)
-    T [i] = inConfig.trs[i];
-  transform.setTransform (R, T);
+  fcl::Quaternion3f Q (inConfig.quat [0], inConfig.quat [1],
+		     inConfig.quat [2], inConfig.quat [3]);
+  fcl::Vec3f T (inConfig.trs [0], inConfig.trs [1], inConfig.trs [2]);
+  transform.setTransform (Q, T);
 }
