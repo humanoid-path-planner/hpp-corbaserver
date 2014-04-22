@@ -18,18 +18,20 @@ module hpp
   ///
   interface Obstacle
   {
-    /// \brief Add an obstacle to the set of obstacles of object
-    ///        ChppPlanner Server::hppPlanner.
+    /// \brief Add an obstacle to the set of obstacles
     ///
-    /// \param objectName name of the polyhedron.
+    /// \param objectName name of the object.
     /// \param collision whether collision with object should be computed
     /// \param distance whether distance to object should be computed
     /// \return 0 if success, -1 if failure.
     ///
-    /// \note The obstacle is not added to local map
-    /// impl::Obstacle::collisionListMap.
+    /// \note The obstacle should have been built using one of methods
+    ///   \li hpp::Obstacle::createPolyhedron,
+    ///   \li hpp::Obstacle::createBox
+    ///   \li hpp::Obstacle::addPoint
+    ///   \li hpp::Obstacle::addTriangle.
     ///
-    /// \note Build the collision entity of polyhedron for KCD.
+    /// \note Build the bounding volume hierarchy of the object if needed.
     short addObstacle (in string objectName, in boolean collision,
 		       in boolean distance);
 
