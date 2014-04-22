@@ -29,6 +29,10 @@ namespace hpp
       public:
 	Obstacle (corbaServer::Server* server);
 
+	virtual Short loadObstacleModel (const char* modelName,
+					 const char* urdfSuffix)
+	  throw (SystemException);
+
 	virtual	Short
 	addObstacle (const char* polyhedronName, Boolean collision,
 		     Boolean distance)

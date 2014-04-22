@@ -18,6 +18,18 @@ module hpp
   ///
   interface Obstacle
   {
+    /// Load obstacle from urdf file
+    ///
+    /// \param modelName Name of the package containing the model
+    /// \param urdfSuffix suffix for urdf file,
+    ///
+    /// The ros url is built as follows:
+    /// "package://${modelName}_description/urdf/${modelName}${urdfSuffix}.urdf"
+    ///
+    /// The kinematic structure of the urdf file is ignored. Only the geometric
+    /// objects are loaded as obstacles.
+    short loadObstacleModel (in string modelName, in string urdfSuffix);
+
     /// \brief Add an obstacle to the set of obstacles
     ///
     /// \param objectName name of the object.

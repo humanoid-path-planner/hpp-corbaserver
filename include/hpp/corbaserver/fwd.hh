@@ -53,6 +53,7 @@ namespace hpp
     typedef core::LockedDofPtr_t LockedDofPtr_t;
     typedef core::Nodes_t Nodes_t;
     typedef model::ObjectVector_t ObjectVector_t;
+    typedef model::ObjectIterator ObjectIterator;
     typedef core::PathPtr_t PathPtr_t;
     typedef core::PathVector PathVector_t;
     typedef core::PathVectorPtr_t PathVectorPtr_t;

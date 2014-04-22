@@ -13,6 +13,7 @@
 #include <fcl/BVH/BVH_model.h>
 #include <fcl/shape/geometric_shapes.h>
 #include <hpp/model/collision-object.hh>
+#include <hpp/model/urdf/util.hh>
 #include "obstacle.impl.hh"
 #include "tools.hh"
 
@@ -28,6 +29,30 @@ namespace hpp
 	: server_ (server),
 	  problemSolver_ (server->problemSolver ())
       {}
+
+      Short Obstacle::loadObstacleModel (const char* modelName,
+					 const char* urdfSuffix)
+	throw (SystemException)
+      {
+	hpp::model::HumanoidRobotPtr_t device;
+	try {
+	  hpp::model::urdf::loadUrdfModel (device,
+					   "anchor",
+					   std::string (modelName),
+					   std::string (urdfSuffix));
+	  // Detach objects from joints
+	  for (ObjectIterator itObj = device->objectIterator
+		 (hpp::model::COLLISION); itObj != device->objectIteratorEnd
+		 (hpp::model::COLLISION); ++itObj) {
+	    (*itObj)->joint (0x0);
+	    problemSolver_->addObstacle (*itObj, true, true);
+	  }
+	} catch (const std::exception& exc) {
+	  hppDout (error, exc.what ());
+	  return -1;
+	}
+	return 0;
+      }
 
       Short
       Obstacle::addObstacle(const char* objectName, Boolean collision,
