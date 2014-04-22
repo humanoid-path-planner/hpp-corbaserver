@@ -38,6 +38,11 @@ namespace hpp
 	moveObstacle (const char* polyName, const Configuration& cfg)
 	  throw (SystemException);
 
+
+	virtual Short getObstaclePosition (const char* objectName,
+					   Configuration& cfg)
+	  throw (SystemException);
+
 	virtual Short
 	createPolyhedron (const char* polyhedronName)
 	  throw (SystemException);
@@ -56,17 +61,20 @@ namespace hpp
 	(const char* polyhedronName, ULong pt1, ULong pt2, ULong pt3)
 	  throw(SystemException);
 
+
       private:
 	typedef std::map <std::string, std::vector <fcl::Vec3f> > VertexMap_t;
 	typedef std::map <std::string, std::vector <fcl::Triangle> >
 	TriangleMap_t;
+	
 	typedef std::map <std::string, BasicShapePtr_t> ShapeMap_t;
 	/// Map of polyhedra in construction.
 	VertexMap_t vertexMap_;
 	TriangleMap_t triangleMap_;
 	/// Map of basic shapes
 	ShapeMap_t shapeMap_;
-
+    CollisionObjectPtr_t getObstacleByName (const char* name);
+    
 	/// \brief Pointer to the hpp::corbaServer::Server owning this object.
 	corbaServer::Server* server_;
 

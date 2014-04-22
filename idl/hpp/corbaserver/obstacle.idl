@@ -46,6 +46,12 @@ module hpp
     /// \note Build the collision entity of polyhedron for KCD.
     short moveObstacle (in string objectName, in Configuration cfg);
 
+    /// Get the position of an obstacle
+    ///
+    /// \param objectName name of the polyhedron.
+    /// \retval cfg Position of the obstacle.
+    /// \return 0 if success, -1 if failure.
+    short getObstaclePosition (in string objectName, out Configuration cfg);
     /// \}
 
     /// \name Polyhedra

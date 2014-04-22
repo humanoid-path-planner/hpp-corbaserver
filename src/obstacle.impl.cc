@@ -67,42 +67,63 @@ namespace hpp
 	return 0;
       }
 
+      CollisionObjectPtr_t Obstacle::getObstacleByName (const char* name)
+      {
+	const ObjectVector_t& collisionObstacles
+	  //(problemSolver_->problem ()->collisionObstacles ()); // seg fault since the problem is not defined yet
+	  (problemSolver_->collisionObstacles ());
+	for (ObjectVector_t::const_iterator it = collisionObstacles.begin ();
+	     it != collisionObstacles.end (); it++) {
+	  CollisionObjectPtr_t object = *it;
+	  if (object->name () == name) {
+	    hppDout (info, "found \""
+		     << object->name () << "\" in the obstacle list.");
+	    return object;
+	  }
+	}
+	const ObjectVector_t& distanceObstacles
+	  //(problemSolver_->problem ()->distanceObstacles ()); // seg fault since the problem is not defined yet
+	  (problemSolver_->distanceObstacles ());
+	for (ObjectVector_t::const_iterator it = distanceObstacles.begin ();
+	     it != distanceObstacles.end (); it++) {
+	  CollisionObjectPtr_t object = *it;
+	  if (object->name () == name) {
+	    hppDout (info, "found \""
+		     << object->name () << "\" in the obstacle list.");
+	    return object;
+	  }
+	}
+	return CollisionObjectPtr_t ();
+      }
+
       Short
       Obstacle::moveObstacle
       (const char* objectName, const hpp::Configuration& cfg)
 	throw(SystemException)
       {
-	const ObjectVector_t& collisionObstacles
-	  (problemSolver_->problem ()->collisionObstacles ());
-	for (ObjectVector_t::const_iterator it = collisionObstacles.begin ();
-	     it != collisionObstacles.end (); it++) {
-	  CollisionObjectPtr_t object = *it;
-	  if (object->name () == objectName) {
-	    hppDout (info, "found \""
-		     << object->name () << "\" in the obstacle list.");
-	    Transform3f mat;
-	    ConfigurationToTransform3f (cfg, mat);
-	    object->move (mat);
-	    return 0;
-	  }
+	CollisionObjectPtr_t object = getObstacleByName (objectName);
+	if (object) {
+	  Transform3f mat;
+	  ConfigurationToTransform3f (cfg, mat);
+	  object->move (mat);
+	  return 0;
 	}
-	const ObjectVector_t& distanceObstacles
-	  (problemSolver_->problem ()->distanceObstacles ());
-	for (ObjectVector_t::const_iterator it = distanceObstacles.begin ();
-	     it != distanceObstacles.end (); it++) {
-	  CollisionObjectPtr_t object = *it;
-	  if (object->name () == objectName) {
-	    hppDout (info, "found \""
-		     << object->name () << "\" in the obstacle list.");
-	    Transform3f mat;
-	    ConfigurationToTransform3f (cfg, mat);
-	    object->move (mat);
-	    return 0;
-	  }
-	}
-	hppDout (error, "failed to find ``" << objectName << "'' in the tree.");
 	return -1;
       }
+
+      Short Obstacle::getObstaclePosition (const char* objectName,
+					   Configuration& cfg)
+	  throw (SystemException)
+      {
+	CollisionObjectPtr_t object = getObstacleByName (objectName);
+	if (object) {
+	  //Transform3f transform = object->fcl ()->getTransform (); // new method instead this
+	  Transform3f transform = object->getTransform ();
+	  Transform3fToConfiguration (transform, cfg);
+	  return 0;
+	}
+	return -1;
+      }   
 
       Short
       Obstacle::createPolyhedron
