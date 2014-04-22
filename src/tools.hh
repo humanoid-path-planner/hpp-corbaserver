@@ -16,10 +16,10 @@
 # include "common.hh"
 
 HPP_CORBASERVER_LOCAL void
-ConfigurationToTransform3f (const hpp::Configuration inConfig,
+ConfigurationToTransform3f (const hpp::Configuration& inConfig,
 			    hpp::corbaServer::Transform3f& outMatrix4);
 
 HPP_CORBASERVER_LOCAL void
 Transform3fToConfiguration (const hpp::corbaServer::Transform3f& transform,
-			    hpp::Configuration config);
+			    hpp::Configuration& config);
 #endif //! HPPCORBASERVER_TOOLS_HH

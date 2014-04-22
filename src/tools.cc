@@ -13,7 +13,7 @@
 
 void
 ConfigurationToTransform3f
-(const hpp::Configuration inConfig, hpp::corbaServer::Transform3f& transform)
+(const hpp::Configuration& inConfig, hpp::corbaServer::Transform3f& transform)
 {
   fcl::Quaternion3f Q (inConfig.quat [0], inConfig.quat [1],
 		     inConfig.quat [2], inConfig.quat [3]);
@@ -23,7 +23,7 @@ ConfigurationToTransform3f
 
 void
 Transform3fToConfiguration (const hpp::corbaServer::Transform3f& transform,
-			    hpp::Configuration config)
+			    hpp::Configuration& config)
 {
   fcl::Quaternion3f Q = transform.getQuatRotation ();
   fcl::Vec3f T = transform.getTranslation ();
