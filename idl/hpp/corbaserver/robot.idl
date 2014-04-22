@@ -27,12 +27,12 @@ module hpp
     ///
     /// \param rootJointType type of root joint among "anchor", "freeflyer",
     /// "planar",
-    /// \param modelName robot model name.
+    /// \param modelName Name of the package containing the model
     /// \param urdfSuffix suffix for urdf file,
-    /// e.g. ${modelName}${urdfSuffix}.urdf
     ///
-    /// \param srdfSuffix suffix for urdf file,
-    /// e.g. ${modelName}${urdfSuffix}.srdf
+    /// The ros url are built as follows:
+    /// "package://${modelName}_description/urdf/${modelName}${urdfSuffix}.urdf"
+    /// "package://${modelName}_description/srdf/${modelName}${srdfSuffix}.srdf"
     ///
     short loadRobotModel (in string rootJointType, in string modelName,
 			 in string urdfSuffix, in string srdfSuffix);
