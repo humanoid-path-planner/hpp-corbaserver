@@ -211,12 +211,18 @@ namespace hpp
 
       Short Problem::lockDof (UShort dofId, Double value)
       {
-	std::ostringstream oss;
-	oss << "locked dof, index: " << dofId << ", value: " << value;
-	  
-	LockedDofPtr_t lockedDof (LockedDof::create (oss.str (),
-						     dofId, value));
-	problemSolver_->addConstraint (lockedDof);
+	try {
+	  std::ostringstream oss;
+	  oss << "locked dof, index: " << dofId << ", value: " << value;
+
+	  LockedDofPtr_t lockedDof (LockedDof::create (oss.str (),
+						       dofId, value));
+	  problemSolver_->addConstraint (lockedDof);
+	} catch (const std::exception& exc) {
+	  hppDout (error, exc.what ());
+	  return -1;
+	}
+	return 0;
       }
 
       // ---------------------------------------------------------------
