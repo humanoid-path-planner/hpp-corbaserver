@@ -30,22 +30,22 @@ namespace hpp
 	  problemSolver_ (server->problemSolver ())
       {}
 
-      Short Obstacle::loadObstacleModel (const char* modelName,
-					 const char* urdfSuffix)
+      Short Obstacle::loadObstacleModel (const char* package,
+					 const char* filename)
 	throw (SystemException)
       {
-	hpp::model::HumanoidRobotPtr_t device;
+	hpp::model::DevicePtr_t device;
 	try {
 	  hpp::model::urdf::loadUrdfModel (device,
 					   "anchor",
-					   std::string (modelName),
-					   std::string (urdfSuffix));
+					   std::string (package),
+					   std::string (filename));
 	  // Detach objects from joints
 	  for (ObjectIterator itObj = device->objectIterator
-		 (hpp::model::COLLISION); itObj != device->objectIteratorEnd
-		 (hpp::model::COLLISION); ++itObj) {
+		 (hpp::model::COLLISION); !itObj.isEnd (); ++itObj) {
 	    (*itObj)->joint (0x0);
 	    problemSolver_->addObstacle (*itObj, true, true);
+	    hppDout (info, "Adding obstacle " << (*itObj)->name ());
 	  }
 	} catch (const std::exception& exc) {
 	  hppDout (error, exc.what ());

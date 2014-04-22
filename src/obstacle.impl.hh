@@ -29,8 +29,8 @@ namespace hpp
       public:
 	Obstacle (corbaServer::Server* server);
 
-	virtual Short loadObstacleModel (const char* modelName,
-					 const char* urdfSuffix)
+	virtual Short loadObstacleModel (const char* package,
+					 const char* filename)
 	  throw (SystemException);
 
 	virtual	Short
