@@ -63,6 +63,7 @@ namespace hpp
 	  throw (SystemException);
 
 	virtual Short loadRobotModel (const char* rootJointType,
+				      const char* packageName,
 				      const char* modelName,
 				      const char* urdfSuffix,
 				      const char* srdfSuffix);

@@ -131,6 +131,7 @@ namespace hpp
       // --------------------------------------------------------------------
 
       Short Robot::loadRobotModel(const char* rootJointType,
+				  const char* packageName,
 				  const char* modelName,
 				  const char* urdfSuffix,
 				  const char* srdfSuffix)
@@ -139,6 +140,7 @@ namespace hpp
 	try {
 	  hpp::model::urdf::loadRobotModel (device,
 					    std::string (rootJointType),
+					    std::string (packageName),
 					    std::string (modelName),
 					    std::string (urdfSuffix),
 					    std::string (srdfSuffix));
