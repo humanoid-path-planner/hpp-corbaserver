@@ -115,6 +115,15 @@ INSTALL(
   DESTINATION ${PYTHON_SITELIB}/hpp/corbaserver
   )
 
+INSTALL(
+  FILES
+  ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/common.idl
+  ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/obstacle.idl
+  ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/problem.idl
+  ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/robot.idl
+  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/idl/hpp/corbaserver
+)
+
 # Standalone corba server
 ADD_EXECUTABLE (hppcorbaserver hpp-corbaserver.cc)
 TARGET_LINK_LIBRARIES (hppcorbaserver ${LIBRARY_NAME})
