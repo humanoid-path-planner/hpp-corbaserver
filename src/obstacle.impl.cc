@@ -34,9 +34,9 @@ namespace hpp
 					 const char* filename)
 	throw (SystemException)
       {
-	hpp::model::DevicePtr_t device;
 	try {
-	  hpp::model::urdf::loadUrdfModel (device,
+	hpp::model::DevicePtr_t device =
+	  hpp::model::urdf::loadUrdfModel (std::string (filename),
 					   "anchor",
 					   std::string (package),
 					   std::string (filename));

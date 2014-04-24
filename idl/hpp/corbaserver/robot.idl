@@ -25,6 +25,7 @@ module hpp
   interface Robot {
     ///  Load robot model
     ///
+    /// \param robotName Name of the robot that is constructed,
     /// \param rootJointType type of root joint among "anchor", "freeflyer",
     /// "planar",
     /// \param packageName Name of the ROS package containing the model,
@@ -35,9 +36,26 @@ module hpp
     /// "package://${packageName}/urdf/${modelName}${urdfSuffix}.urdf"
     /// "package://${packageName}/srdf/${modelName}${srdfSuffix}.srdf"
     ///
-    short loadRobotModel (in string rootJointType, in string modelName,
-			  in string packageName,
+    short loadRobotModel (in string robotName, in string rootJointType,
+			  in string modelName, in string packageName,
 			  in string urdfSuffix, in string srdfSuffix);
+
+    ///  Load humanoid robot model
+    ///
+    /// \param robotName Name of the robot that is constructed,
+    /// \param rootJointType type of root joint among "anchor", "freeflyer",
+    /// "planar",
+    /// \param packageName Name of the ROS package containing the model,
+    /// \param modelName Name of the package containing the model
+    /// \param urdfSuffix suffix for urdf file,
+    ///
+    /// The ros url are built as follows:
+    /// "package://${packageName}/urdf/${modelName}${urdfSuffix}.urdf"
+    /// "package://${packageName}/srdf/${modelName}${srdfSuffix}.srdf"
+    ///
+    short loadHumanoidModel (in string robotName, in string rootJointType,
+			     in string modelName, in string packageName,
+			     in string urdfSuffix, in string srdfSuffix);
 
     /// \}
 

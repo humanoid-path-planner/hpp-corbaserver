@@ -130,26 +130,53 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      Short Robot::loadRobotModel(const char* rootJointType,
+      Short Robot::loadRobotModel(const char* robotName,
+				  const char* rootJointType,
 				  const char* packageName,
 				  const char* modelName,
 				  const char* urdfSuffix,
 				  const char* srdfSuffix)
       {
-	hpp::model::HumanoidRobotPtr_t device;
 	try {
-	  hpp::model::urdf::loadRobotModel (device,
-					    std::string (rootJointType),
-					    std::string (packageName),
-					    std::string (modelName),
-					    std::string (urdfSuffix),
-					    std::string (srdfSuffix));
+	  hpp::model::DevicePtr_t device = 
+	    hpp::model::urdf::loadRobotModel (std::string (robotName),
+					      std::string (rootJointType),
+					      std::string (packageName),
+					      std::string (modelName),
+					      std::string (urdfSuffix),
+					      std::string (srdfSuffix));
+	  // Add device to the planner
+	  problemSolver_->robot (device);
 	} catch (const std::exception& exc) {
 	  hppDout (error, exc.what ());
 	  return -1;
 	}
-	// Add device to the planner
-	problemSolver_->robot (device);
+	return 0;
+      }
+
+      // --------------------------------------------------------------------
+
+      Short Robot::loadHumanoidModel(const char* robotName,
+				     const char* rootJointType,
+				     const char* packageName,
+				     const char* modelName,
+				     const char* urdfSuffix,
+				     const char* srdfSuffix)
+      {
+	try {
+	  hpp::model::HumanoidRobotPtr_t device = 
+	    hpp::model::urdf::loadHumanoidModel (std::string (robotName),
+						 std::string (rootJointType),
+						 std::string (packageName),
+						 std::string (modelName),
+						 std::string (urdfSuffix),
+						 std::string (srdfSuffix));
+	  // Add device to the planner
+	  problemSolver_->robot (device);
+	} catch (const std::exception& exc) {
+	  hppDout (error, exc.what ());
+	  return -1;
+	}
 	return 0;
       }
 

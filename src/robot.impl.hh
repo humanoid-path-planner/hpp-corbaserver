@@ -62,11 +62,19 @@ namespace hpp
 	setRobotRootJoint(const char* robotName, const char* jointName)
 	  throw (SystemException);
 
-	virtual Short loadRobotModel (const char* rootJointType,
+	virtual Short loadRobotModel (const char* robotName,
+				      const char* rootJointType,
 				      const char* packageName,
 				      const char* modelName,
 				      const char* urdfSuffix,
 				      const char* srdfSuffix);
+
+	virtual Short loadHumanoidModel (const char* robotName,
+					 const char* rootJointType,
+					 const char* packageName,
+					 const char* modelName,
+					 const char* urdfSuffix,
+					 const char* srdfSuffix);
 
 	virtual Short getConfigSize () throw (SystemException);
 

@@ -23,8 +23,8 @@ class Robot (object):
     def __init__ (self, rootJointType, packageName, robotName, urdfSuffix = "",
                   srdfSuffix = ""):
         self.client = Client ()
-        self.client.robot.loadRobotModel (rootJointType, packageName, robotName,
-                                          urdfSuffix, srdfSuffix)
+        self.client.robot.loadRobotModel (robotName, rootJointType, packageName,
+                                          robotName, urdfSuffix, srdfSuffix)
         self.jointNames = self.client.robot.getJointNames ()
         self.rankInConfiguration = dict ()
         self.rankInVelocity = dict ()
