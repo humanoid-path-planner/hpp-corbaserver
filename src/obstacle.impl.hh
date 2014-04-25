@@ -29,48 +29,48 @@ namespace hpp
       public:
 	Obstacle (corbaServer::Server* server);
 
-	virtual Short loadObstacleModel (const char* package,
+	virtual void loadObstacleModel (const char* package,
 					 const char* filename)
-	  throw (SystemException);
+	  throw (hpp::Error);
 
-	virtual	Short
+	virtual	void
 	addObstacle (const char* polyhedronName, Boolean collision,
 		     Boolean distance)
-	  throw (SystemException);
+	  throw (hpp::Error);
 
-	virtual Short
+	virtual void
 	moveObstacle (const char* polyName, const Configuration& cfg)
-	  throw (SystemException);
+	  throw (hpp::Error);
 
 
-	virtual Short getObstaclePosition (const char* objectName,
+	virtual void getObstaclePosition (const char* objectName,
 					   Configuration& cfg)
-	  throw (SystemException);
+	  throw (hpp::Error);
 
-	virtual Short
+	virtual void
 	createPolyhedron (const char* polyhedronName)
-	  throw (SystemException);
+	  throw (hpp::Error);
 
-	virtual Short createBox
+	virtual void createBox
 	(const char* boxName, Double x, Double y, Double z)
-	  throw(SystemException);
+	  throw(hpp::Error);
 
 	virtual Short
 	addPoint
 	(const char* polyhedronName, Double x, Double y, Double z)
-	  throw(SystemException);
+	  throw(hpp::Error);
 
 	virtual Short
 	addTriangle
 	(const char* polyhedronName, ULong pt1, ULong pt2, ULong pt3)
-	  throw(SystemException);
+	  throw(hpp::Error);
 
 
       private:
 	typedef std::map <std::string, std::vector <fcl::Vec3f> > VertexMap_t;
 	typedef std::map <std::string, std::vector <fcl::Triangle> >
 	TriangleMap_t;
-	
+
 	typedef std::map <std::string, BasicShapePtr_t> ShapeMap_t;
 	/// Map of polyhedra in construction.
 	VertexMap_t vertexMap_;
@@ -78,7 +78,7 @@ namespace hpp
 	/// Map of basic shapes
 	ShapeMap_t shapeMap_;
     CollisionObjectPtr_t getObstacleByName (const char* name);
-    
+
 	/// \brief Pointer to the hpp::corbaServer::Server owning this object.
 	corbaServer::Server* server_;
 

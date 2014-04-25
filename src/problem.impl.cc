@@ -65,23 +65,22 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      Short Problem::setInitialConfig (const hpp::floatSeq& dofArray)
+      void Problem::setInitialConfig (const hpp::floatSeq& dofArray)
+	throw (hpp::Error)
       {
 	try {
 	  ConfigurationPtr_t config = floatSeqToConfig (problemSolver_,
 							dofArray);
 	  problemSolver_->initConfig (config);
 	} catch (const std::exception& exc) {
-	  hppDout (error, ":setInitialConfig: " << exc.what ());
-	  return -1;
+	  throw hpp::Error (exc.what ());
 	}
-	return 0;
       }
 
       // ---------------------------------------------------------------
 
       hpp::floatSeq* Problem::getInitialConfig()
-	throw(SystemException)
+	throw(hpp::Error)
       {
 	hpp::floatSeq *dofArray;
 
@@ -100,33 +99,27 @@ namespace hpp
 	  return dofArray;
 	}
 	else {
-	  hppDout (error,
-		   ":getInitialConfig: no initial configuration defined");
-	  dofArray = new hpp::floatSeq(1);
-	  return dofArray;
+	  throw hpp::Error ("no initial configuration defined");
 	}
-	return new hpp::floatSeq(1);
       }
 
       // ---------------------------------------------------------------
 
-      Short Problem::addGoalConfig (const hpp::floatSeq& dofArray)
+      void Problem::addGoalConfig (const hpp::floatSeq& dofArray)
+	throw (hpp::Error)
       {
 	try {
 	  ConfigurationPtr_t config = floatSeqToConfig (problemSolver_,
 							dofArray);
 	  problemSolver_->addGoalConfig (config);
-	  return 0;
 	} catch (const std::exception& exc) {
-	  hppDout (error, ":addGoalConfig: " << exc.what ());
-	  return -1;
+	  throw hpp::Error (exc.what ());
 	}
-	return 0;
       }
 
       // ---------------------------------------------------------------
 
-      hpp::floatSeqSeq* Problem::getGoalConfigs () throw(SystemException)
+      hpp::floatSeqSeq* Problem::getGoalConfigs () throw(hpp::Error)
       {
 	try {
 	  hpp::floatSeqSeq *configSequence;
@@ -148,40 +141,31 @@ namespace hpp
 	  }
 	  return configSequence;
 	} catch (const std::exception& exc) {
-	  hppDout (error, exc.what ());
+	  throw hpp::Error (exc.what ());
 	}
-	return new hpp::floatSeqSeq (1);
       }
 
       // ---------------------------------------------------------------
 
-      Short Problem::resetGoalConfigs () throw (SystemException)
+      void Problem::resetGoalConfigs () throw (hpp::Error)
       {
 	problemSolver_->resetGoalConfigs ();
-	return 0;
       }
 
 
       // ---------------------------------------------------------------
 
-      Short Problem::applyConstraints (const hpp::floatSeq& input,
-					hpp::floatSeq_out output)
+      void Problem::applyConstraints (const hpp::floatSeq& input,
+				      hpp::floatSeq_out output)
+	throw (hpp::Error)
       {
 	ConfigurationPtr_t config = floatSeqToConfig (problemSolver_, input);
 	try {
 	  if (!problemSolver_->constraints ()->apply (*config)) {
-	    hppDout (error, "Failed to apply constraint");
-	    hpp::floatSeq* q_ptr = new hpp::floatSeq ();
-	    q_ptr->length (0);
-	    output = q_ptr;
-	    return -1;
+	    throw hpp::Error ("Failed to apply constraint");
 	  }
 	} catch (const std::exception& exc) {
-	  hppDout (error, exc.what ());
-	  hpp::floatSeq* q_ptr = new hpp::floatSeq ();
-	  q_ptr->length (0);
-	  output = q_ptr;
-	  return -1;
+	  throw hpp::Error (exc.what ());
 	}
 	ULong size = (ULong) config->size ();
 	hpp::floatSeq* q_ptr = new hpp::floatSeq ();
@@ -191,25 +175,22 @@ namespace hpp
 	  (*q_ptr) [i] = (*config) [i];
 	}
 	output = q_ptr;
-	return 0;
       }
 
       // ---------------------------------------------------------------
 
-      Short Problem::resetConstraints ()
+      void Problem::resetConstraints ()	throw (hpp::Error)
       {
 	try {
 	  problemSolver_->resetConstraints ();
 	} catch (const std::exception& exc) {
-	  hppDout (error, exc.what ());
-	  return -1;
+	  throw hpp::Error (exc.what ());
 	}
-	return 0;
       }
 
       // ---------------------------------------------------------------
 
-      Short Problem::lockDof (UShort dofId, Double value)
+      void Problem::lockDof (UShort dofId, Double value) throw (hpp::Error)
       {
 	try {
 	  std::ostringstream oss;
@@ -219,33 +200,27 @@ namespace hpp
 						       dofId, value));
 	  problemSolver_->addConstraint (lockedDof);
 	} catch (const std::exception& exc) {
-	  hppDout (error, exc.what ());
-	  return -1;
+	  throw hpp::Error (exc.what ());
 	}
-	return 0;
       }
 
       // ---------------------------------------------------------------
 
-      Short Problem::solve ()
+      void Problem::solve () throw (hpp::Error)
       {
 	try {
 	  problemSolver_->solve();
 	} catch (const std::exception& exc) {
-	  hppDout (error, exc.what ());
-	  return -1;
+	  throw hpp::Error (exc.what ());
 	}
-	return 0;
       }
 
       // ---------------------------------------------------------------
 
-      Short Problem::directPath (const hpp::floatSeq& startConfig,
-				 const hpp::floatSeq& endConfig,
-				 CORBA::String_out message)
-	throw (SystemException)
+      void Problem::directPath (const hpp::floatSeq& startConfig,
+				const hpp::floatSeq& endConfig)
+	throw (hpp::Error)
       {
-	message = "Success";
 	ConfigurationPtr_t start;
 	ConfigurationPtr_t end;
 	try {
@@ -261,64 +236,58 @@ namespace hpp
 	  path->appendPath (dp);
 	  problemSolver_->addPath (path);
 	} catch (const std::exception& exc) {
-	  hppDout (error, "directPath: " << exc.what ());
-	  message = exc.what ();
-	  return -1;
+	  throw hpp::Error (exc.what ());
 	}
-	return 0;
       }
 
       // ---------------------------------------------------------------
 
-      Short Problem::interruptPathPlanning()
+      void Problem::interruptPathPlanning() throw (hpp::Error)
       {
 	problemSolver_->pathPlanner ()->interrupt ();
-	return 0;
       }
 
       // ---------------------------------------------------------------
 
-      Short Problem::numberPaths ()
+      Short Problem::numberPaths () throw (hpp::Error)
       {
 	try {
 	  return (Short) problemSolver_->paths ().size ();
 	} catch (std::exception& exc) {
-	  hppDout (error, exc.what ());
+	  throw hpp::Error (exc.what ());
 	}
-	return -1;
       }
 
       // ---------------------------------------------------------------
 
-      Short Problem::optimizePath(UShort pathId)
+      void Problem::optimizePath(UShort pathId) throw (hpp::Error)
       {
 	try {
 	  PathVectorPtr_t initial = problemSolver_->paths () [pathId];
 	  PathVectorPtr_t optimized =
 	    problemSolver_->pathOptimizer ()-> optimize (initial);
 	  problemSolver_->addPath (optimized);
-	  return 0;
 	} catch (const std::exception& exc) {
-	  return -1;
+	  throw hpp::Error (exc.what ());
 	}
       }
 
       // ---------------------------------------------------------------
 
-      Double Problem::pathLength(UShort pathId)
+      Double Problem::pathLength (UShort pathId) throw (hpp::Error)
       {
 	try {
 	  return problemSolver_->paths () [pathId]->length ();
 	} catch (std::exception& exc) {
-	  hppDout (error, exc.what ());
+	  throw hpp::Error (exc.what ());
 	}
-	return -1.;
       }
 
       // ---------------------------------------------------------------
 
       hpp::floatSeq* Problem::configAtDistance (UShort inPathId,
 					      Double atDistance)
+	throw (hpp::Error)
       {
 	try {
 	  PathPtr_t path = problemSolver_->paths () [inPathId];
@@ -333,14 +302,13 @@ namespace hpp
 	  }
 	  return floatSeq;
 	} catch (const std::exception& exc) {
-	  hppDout (error, exc.what ());
+	  throw hpp::Error (exc.what ());
 	}
-	return new hpp::floatSeq(0, 0, NULL, true);
       }
 
       // ---------------------------------------------------------------
 
-      hpp::floatSeqSeq* Problem::nodes ()
+      hpp::floatSeqSeq* Problem::nodes () throw (hpp::Error)
       {
 	hpp::floatSeqSeq* res;
 	try {
@@ -363,23 +331,22 @@ namespace hpp
 	    ++i;
 	  }
 	} catch (const std::exception& exc) {
-	  hppDout (error, exc.what ());
-	  res->length (0);
+	  throw hpp::Error (exc.what ());
 	}
 	return res;
       }
 
       // ---------------------------------------------------------------
 
-      Long Problem::numberEdges ()
+      Long Problem::numberEdges () throw (hpp::Error)
       {
 	return problemSolver_->roadmap ()->edges ().size ();
       }
 
       // ---------------------------------------------------------------
 
-      Short Problem::edge (ULong edgeId, hpp::floatSeq_out q1,
-			   hpp::floatSeq_out q2)
+      void Problem::edge (ULong edgeId, hpp::floatSeq_out q1,
+			  hpp::floatSeq_out q2) throw (hpp::Error)
       {
 	try {
 	  const Edges_t & edges
@@ -404,16 +371,14 @@ namespace hpp
 	  }
 	  q1 = q1_ptr;
 	  q2 = q2_ptr;
-	  return 0;
 	} catch (const std::exception& exc) {
-	  hppDout (error, exc.what ());
-	  return -1;
+	  throw hpp::Error (exc.what ());
 	}
       }
 
       // ---------------------------------------------------------------
 
-      Long Problem::numberConnectedComponents ()
+      Long Problem::numberConnectedComponents () throw (hpp::Error)
       {
 	return
 	  problemSolver_->roadmap ()->connectedComponents ().size ();
@@ -423,6 +388,7 @@ namespace hpp
 
       hpp::floatSeqSeq*
       Problem::nodesConnectedComponent (ULong connectedComponentId)
+	throw (hpp::Error)
       {
 	hpp::floatSeqSeq* res;
 	try {
@@ -452,23 +418,20 @@ namespace hpp
 	    ++i;
 	  }
 	} catch (const std::exception& exc) {
-	  hppDout (error, exc.what ());
-	  res->length (0);
+	  throw hpp::Error (exc.what ());
 	}
 	return res;
       }
 
       // ---------------------------------------------------------------
 
-      Short Problem::clearRoadmap ()
+      void Problem::clearRoadmap () throw (hpp::Error)
       {
 	try {
 	  problemSolver_->roadmap ()->clear ();
 	} catch (const std::exception& exc) {
-	  hppDout (error, exc.what ());
-	  return -1;
+	  throw hpp::Error (exc.what ());
 	}
-	return 0;
       }
     } // namespace impl
   } // namespace corbaServer

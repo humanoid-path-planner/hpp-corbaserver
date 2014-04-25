@@ -22,24 +22,24 @@ module hpp
 
     /// Set initial configuration of specified problem.
     ///	\param dofArray Array of degrees of freedom
-    ///	\return 0 if success, -1 if failure.
-    short setInitialConfig (in floatSeq dofArray);
+    ///	\throw Error.
+    void setInitialConfig (in floatSeq dofArray) raises (Error);
 
     /// Get initial configuration of specified problem.
     ///	\return Array of degrees of freedom
-     floatSeq getInitialConfig ();
+     floatSeq getInitialConfig () raises (Error);
 
     /// \brief Add goal configuration to specified problem.
     ///	\param dofArray Array of degrees of freedom
-    ///	\return 0 if success, -1 if failure.
-    short addGoalConfig (in floatSeq dofArray);
+    ///	\throw Error.
+    void addGoalConfig (in floatSeq dofArray) raises (Error);
 
     /// Get goal configurations of specified problem.
     ///	\return Array of degrees of freedom
-    floatSeqSeq getGoalConfigs ();
+    floatSeqSeq getGoalConfigs () raises (Error);
 
     /// Reset goal configurations
-    short resetGoalConfigs ();
+    void resetGoalConfigs () raises (Error);
 
     /// \}
 
@@ -49,15 +49,16 @@ module hpp
     /// Apply constaints to a configuration
     ///
     /// constraints are stored in ProblemSolver object
-    short applyConstraints (in floatSeq input, out floatSeq output);
+    void applyConstraints (in floatSeq input, out floatSeq output)
+      raises (Error);
 
     /// Reset constraints
-    short resetConstraints ();
+    void resetConstraints () raises (Error);
 
     /// Lock degree of freedom with given value
     /// \param dofId rank of the degree of freedom in configuration vector,
     /// \param value value of the locked degree of freedom.
-    short lockDof (in unsigned short dofId, in double value);
+    void lockDof (in unsigned short dofId, in double value) raises (Error);
 
     /// \}
 
@@ -65,35 +66,35 @@ module hpp
     /// \{
 
     // \brief Solve the problem of corresponding ChppPlanner object
-    // \return 0 if success, -1 if failure.
-    short solve();
+    // \throw Error.
+    void solve() raises (Error);
 
     /// Make direct connection between two configurations
     /// \param startConfig, endConfig: the configurations to link.
-    /// \retval message unvalidation message.
-    /// \return -1 if steering method fails to create a direct path of if
+    /// \throw Error if steering method fails to create a direct path of if
     /// direct path is not valid
-    short directPath (in floatSeq startConfig, in floatSeq endConfig,
-		      out string message);
+    void directPath (in floatSeq startConfig, in floatSeq endConfig)
+      raises (Error);
 
     /// Get Number of paths
-    short numberPaths ();
+    short numberPaths () raises (Error);
 
     // Optimize a given path
     // \param inPathId Id of the path in this problem.
-    // \return 0 if success, -1 if failure.
-    short optimizePath(in unsigned short inPathId);
+    // \throw Error.
+    void optimizePath(in unsigned short inPathId) raises (Error);
 
     // Get length of path
     // \param inPathId rank of the path in the problem
-    // \return length of path if path exists, -1 otherwise
-    double pathLength(in unsigned short inPathId);
+    // \return length of path if path exists.
+    double pathLength(in unsigned short inPathId) raises (Error);
 
      // Get the robot's config at param on the a path
      // \param inPathId rank of the path in the problem
      // \param atDistance : the user parameter choice
      // \return dofseq : the config at param
-    floatSeq configAtDistance(in unsigned short inPathId, in double atDistance);
+    floatSeq configAtDistance(in unsigned short inPathId, in double atDistance)
+      raises (Error);
 
     /// \}
 
@@ -104,20 +105,21 @@ module hpp
     /// \note this request is effective only when multi-thread policy is used
     ///       by CORBA server.
     /// See constructor of class Server for details.
-    short interruptPathPlanning();
+    void interruptPathPlanning() raises (Error);
     ///\}
 
     /// \name exploring the roadmap
     /// \{
 
     /// Nodes of the roadmap
-    floatSeqSeq nodes ();
+    floatSeqSeq nodes () raises (Error);
 
     /// Number of edges
-    long numberEdges ();
+    long numberEdges () raises (Error);
 
     /// Edge at given rank
-    short edge (in unsigned long edgeId, out floatSeq q1, out floatSeq q2);
+    void edge (in unsigned long edgeId, out floatSeq q1, out floatSeq q2)
+      raises (Error);
 
     /// Number of connected components
     long numberConnectedComponents ();
@@ -125,10 +127,11 @@ module hpp
     /// Nodes of a connected component
     /// \param connectedComponentId index of connected component in roadmap
     /// \return list of nodes of the connected component.
-    floatSeqSeq nodesConnectedComponent (in unsigned long connectedComponentId);
+    floatSeqSeq nodesConnectedComponent (in unsigned long connectedComponentId)
+      raises (Error);
 
     /// Clear the roadmap
-    short clearRoadmap ();
+    void clearRoadmap () raises (Error);
     /// \}
   }; // interface Problem
 }; // module hpp

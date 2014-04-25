@@ -30,9 +30,9 @@ namespace hpp
 	  problemSolver_ (server->problemSolver ())
       {}
 
-      Short Obstacle::loadObstacleModel (const char* package,
-					 const char* filename)
-	throw (SystemException)
+      void Obstacle::loadObstacleModel (const char* package,
+					const char* filename)
+	throw (hpp::Error)
       {
 	try {
 	hpp::model::DevicePtr_t device =
@@ -48,16 +48,14 @@ namespace hpp
 	    hppDout (info, "Adding obstacle " << (*itObj)->name ());
 	  }
 	} catch (const std::exception& exc) {
-	  hppDout (error, exc.what ());
-	  return -1;
+	  throw hpp::Error (exc.what ());
 	}
-	return 0;
       }
 
-      Short
+      void
       Obstacle::addObstacle(const char* objectName, Boolean collision,
 			    Boolean distance)
-	throw (SystemException)
+	throw (hpp::Error)
       {
 	std::string objName (objectName);
 	CollisionGeometryPtr_t geometry;
@@ -67,8 +65,9 @@ namespace hpp
 	  PolyhedronPtr_t polyhedron = PolyhedronPtr_t (new Polyhedron_t);
 	  int res = polyhedron->beginModel ();
 	  if (res != fcl::BVH_OK) {
-	    hppDout (error, "fcl BVHReturnCode = " << res);
-	    return -1;
+	    std::ostringstream oss ("fcl BVHReturnCode = ");
+	    oss << res;
+	    throw hpp::Error (oss.str ().c_str ());
 	  }
 
 	  polyhedron->addSubModel (itVertex->second, triangleMap_ [objName]);
@@ -81,21 +80,20 @@ namespace hpp
 	  }
 	}
 	if (!geometry) {
-	  hppDout (error, "Object " << objName << " does not exist.");
-	  return -1;
+	  std::ostringstream oss ("Object ");
+	  oss << objName << " does not exist.";
+	  throw hpp::Error (oss.str ().c_str ());
 	}
 
 	Transform3f pos; pos.setIdentity ();
 	CollisionObjectPtr_t collisionObject
 	  (CollisionObject_t::create (geometry, pos, objName));
 	problemSolver_->addObstacle (collisionObject, collision, distance);
-	return 0;
       }
 
       CollisionObjectPtr_t Obstacle::getObstacleByName (const char* name)
       {
 	const ObjectVector_t& collisionObstacles
-	  //(problemSolver_->problem ()->collisionObstacles ()); // seg fault since the problem is not defined yet
 	  (problemSolver_->collisionObstacles ());
 	for (ObjectVector_t::const_iterator it = collisionObstacles.begin ();
 	     it != collisionObstacles.end (); it++) {
@@ -107,7 +105,6 @@ namespace hpp
 	  }
 	}
 	const ObjectVector_t& distanceObstacles
-	  //(problemSolver_->problem ()->distanceObstacles ()); // seg fault since the problem is not defined yet
 	  (problemSolver_->distanceObstacles ());
 	for (ObjectVector_t::const_iterator it = distanceObstacles.begin ();
 	     it != distanceObstacles.end (); it++) {
@@ -121,76 +118,74 @@ namespace hpp
 	return CollisionObjectPtr_t ();
       }
 
-      Short
-      Obstacle::moveObstacle
+      void Obstacle::moveObstacle
       (const char* objectName, const hpp::Configuration& cfg)
-	throw(SystemException)
+	throw(hpp::Error)
       {
 	CollisionObjectPtr_t object = getObstacleByName (objectName);
 	if (object) {
 	  Transform3f mat;
 	  ConfigurationToTransform3f (cfg, mat);
 	  object->move (mat);
-	  return 0;
 	}
-	return -1;
+	std::ostringstream oss ("Object ");
+	oss << objectName <<  " not found";
+	throw hpp::Error (oss.str ().c_str ());
       }
 
-      Short Obstacle::getObstaclePosition (const char* objectName,
-					   Configuration& cfg)
-	  throw (SystemException)
+      void Obstacle::getObstaclePosition (const char* objectName,
+					  Configuration& cfg)
+	  throw (hpp::Error)
       {
 	CollisionObjectPtr_t object = getObstacleByName (objectName);
 	if (object) {
-	  //Transform3f transform = object->fcl ()->getTransform (); // new method instead this
 	  Transform3f transform = object->getTransform ();
 	  Transform3fToConfiguration (transform, cfg);
-	  return 0;
 	}
-	return -1;
-      }   
+	std::ostringstream oss ("Object ");
+	oss << objectName <<  " not found";
+	throw hpp::Error (oss.str ().c_str ());
+      }
 
-      Short
-      Obstacle::createPolyhedron
-      (const char* polyhedronName) throw (SystemException)
+      void Obstacle::createPolyhedron
+      (const char* polyhedronName) throw (hpp::Error)
       {
 	// Check that polyhedron does not already exist.
 	if (vertexMap_.find(polyhedronName) != vertexMap_.end ()) {
-	  hppDout (error, "polyhedron "	 << polyhedronName
-		   << " already exists.");
-	  return -1;
+	  std::ostringstream oss ("polyhedron ");
+	  oss << polyhedronName << " already exists.";
+	  throw hpp::Error (oss.str ().c_str ());
 	}
 	vertexMap_ [polyhedronName] = std::vector <fcl::Vec3f> ();
 	triangleMap_ [polyhedronName] = std::vector <fcl::Triangle> ();
-	return 0;
       }
 
-      Short Obstacle::createBox
+      void Obstacle::createBox
       (const char* boxName, Double x, Double y, Double z)
-	throw (SystemException)
+	throw (hpp::Error)
       {
 	std::string shapeName(boxName);
 	// Check that object does not already exist.
 	if (vertexMap_.find(shapeName) != vertexMap_.end () ||
 	    shapeMap_.find (shapeName) != shapeMap_.end ()) {
-	  hppDout (info, "object " << shapeName << " already exists.");
-	  return -1;
+	  std::ostringstream oss ("object ");
+	  oss << shapeName << " already exists.";
+	  throw hpp::Error (oss.str ().c_str ());
 	}
 	BasicShapePtr_t box (new fcl::Box ( x, y, z));
 	shapeMap_[shapeName] = box;
-	return 0;
       }
 
       Short Obstacle::addPoint
       (const char* polyhedronName, Double x, Double y, Double z)
-	throw (SystemException)
+	throw (hpp::Error)
       {
 	// Check that polyhedron exists.
 	VertexMap_t::iterator itVertex = vertexMap_.find (polyhedronName);
 	if (itVertex == vertexMap_.end ()) {
-	  hppDout (error, "polyhedron " << polyhedronName
-		   << " does not exist.");
-	  return -1;
+	  std::ostringstream oss ("polyhedron ");
+	  oss << polyhedronName << " does not exist.";
+	  throw hpp::Error (oss.str ().c_str ());
 	}
 	itVertex->second.push_back (fcl::Vec3f (x, y, z));
 	return static_cast<Short> (vertexMap_.size ());
@@ -199,14 +194,14 @@ namespace hpp
       Short
       Obstacle::addTriangle
       (const char* polyhedronName, ULong pt1, ULong pt2, ULong pt3)
-	throw (SystemException)
+	throw (hpp::Error)
       {
 	// Check that polyhedron exists.
 	TriangleMap_t::iterator itTriangle = triangleMap_.find (polyhedronName);
 	if (itTriangle == triangleMap_.end ()) {
-	  hppDout (error, "polyhedron " << polyhedronName
-		   << " does not exist.");
-	  return -1;
+	  std::ostringstream oss ("polyhedron ");
+	  oss << polyhedronName << " does not exist.";
+	  throw hpp::Error (oss.str ().c_str ());
 	}
 
 	itTriangle->second.push_back (fcl::Triangle (pt1, pt2, pt3));

@@ -52,104 +52,110 @@ namespace hpp
       public:
 	Robot (corbaServer::Server* server);
 
-	virtual Short
-	createRobot (const char* robotName) throw (SystemException);
+	virtual void
+	createRobot (const char* robotName) throw (hpp::Error);
 
-	virtual Short
-	setRobot(const char* robotName) throw (SystemException);
+	virtual void
+	setRobot(const char* robotName) throw (hpp::Error);
 
-	virtual Short
+	virtual void
 	setRobotRootJoint(const char* robotName, const char* jointName)
-	  throw (SystemException);
+	  throw (hpp::Error);
 
-	virtual Short loadRobotModel (const char* robotName,
-				      const char* rootJointType,
-				      const char* packageName,
-				      const char* modelName,
-				      const char* urdfSuffix,
-				      const char* srdfSuffix);
+	virtual void loadRobotModel (const char* robotName,
+				     const char* rootJointType,
+				     const char* packageName,
+				     const char* modelName,
+				     const char* urdfSuffix,
+				     const char* srdfSuffix) throw (hpp::Error);
 
-	virtual Short loadHumanoidModel (const char* robotName,
+	virtual void loadHumanoidModel (const char* robotName,
 					 const char* rootJointType,
 					 const char* packageName,
 					 const char* modelName,
 					 const char* urdfSuffix,
-					 const char* srdfSuffix);
+					 const char* srdfSuffix)
+	  throw (hpp::Error);
 
-	virtual Short getConfigSize () throw (SystemException);
+	virtual Short getConfigSize () throw (hpp::Error);
 
-	virtual Short getNumberDof () throw (SystemException);
+	virtual Short getNumberDof () throw (hpp::Error);
 
-	virtual Short
+	virtual void
 	createJoint
 	(const char* jointName, const char* jointType,
 	 const  hpp::Configuration& pos, const hpp::jointBoundSeq& jointBound)
-	  throw (SystemException);
+	  throw (hpp::Error);
 
-	virtual Short
+	virtual void
 	addJoint
-	(const char* parentName, const char* childName) throw (SystemException);
+	(const char* parentName, const char* childName) throw (hpp::Error);
 
-	virtual hpp::nameSeq* getJointNames ();
+	virtual hpp::nameSeq* getJointNames () throw (hpp::Error);
 
-	virtual Short getJointNumberDof (const char* jointName);
-	virtual Short getJointConfigSize (const char* jointName);
+	virtual Short getJointNumberDof (const char* jointName)
+	  throw (hpp::Error);
+	virtual Short getJointConfigSize (const char* jointName)
+	  throw (hpp::Error);
 
-	virtual Short
+	virtual void
 	setJointBounds
 	(UShort inJointId, const hpp::jointBoundSeq& jointBound)
-	  throw (SystemException);
+	  throw (hpp::Error);
 
-	virtual Short setCurrentConfig
-	(const hpp::floatSeq& dofArray) throw (SystemException);
+	virtual void setCurrentConfig
+	(const hpp::floatSeq& dofArray) throw (hpp::Error);
 
-	virtual hpp::floatSeq* getCurrentConfig() throw (SystemException);
+	virtual hpp::floatSeq* getCurrentConfig() throw (hpp::Error);
 
-	virtual hpp::nameSeq* getJointInnerObjects (const char* bodyName);
+	virtual hpp::nameSeq* getJointInnerObjects (const char* bodyName)
+	  throw (hpp::Error);
 
-	virtual hpp::nameSeq* getJointOuterObjects (const char* bodyName);
+	virtual hpp::nameSeq* getJointOuterObjects (const char* bodyName)
+	  throw (hpp::Error);
 
-	virtual Short
-	collisionTest (Boolean& validity) throw (SystemException);
+	virtual void
+	collisionTest (Boolean& validity) throw (hpp::Error);
 
-	virtual Short
+	virtual void
 	distancesToCollision (hpp::floatSeq_out distances,
 			      hpp::nameSeq_out innerObjects,
 			      hpp::nameSeq_out outerObjects,
 			      hpp::floatSeqSeq_out innerPoints,
-			      hpp::floatSeqSeq_out outerPoints);
+			      hpp::floatSeqSeq_out outerPoints)
+	  throw (hpp::Error);
 
-	virtual Double getMass ();
+	virtual Double getMass () throw (hpp::Error);
 
-	virtual hpp::floatSeq* getCenterOfMass ();
+	virtual hpp::floatSeq* getCenterOfMass () throw (hpp::Error);
 
-	virtual hpp::floatSeqSeq* getJacobianCenterOfMass ();
+	virtual hpp::floatSeqSeq* getJacobianCenterOfMass () throw (hpp::Error);
 
-	virtual Short
+	virtual void
 	createPolyhedron
-	(const char* polyhedronName) throw (SystemException);
+	(const char* polyhedronName) throw (hpp::Error);
 
-	virtual Short
+	virtual void
 	createBox (const char* name, Double x, Double y, Double z)
-	  throw (SystemException);
+	  throw (hpp::Error);
 
-	virtual Short
+	virtual void
 	createSphere (const char* name, Double radius)
-	  throw (SystemException);
+	  throw (hpp::Error);
 
 	virtual Short
 	addPoint (const char* polyhedronName, Double x, Double y, Double z)
-	  throw (SystemException);
+	  throw (hpp::Error);
 
 	virtual Short
 	addTriangle
 	(const char* polyhedronName, ULong pt1, ULong pt2, ULong pt3)
-	  throw (SystemException);
+	  throw (hpp::Error);
 
-	virtual Short
+	virtual void
 	addObjectToJoint (const char* bodyName, const char* objectName,
 			  const hpp::Configuration& config)
-	  throw (SystemException);
+	  throw (hpp::Error);
 
       private:
 	typedef std::map <std::string, JointPtr_t> JointMap_t;

@@ -14,7 +14,12 @@
 /// \brief main CORBA module.
 module hpp
 {
-  /// \brief Robot configuration is defined by a sequence of dof value.
+  /// Corba exception travelling through the Corba channel
+  exception Error
+  {
+    string msg;
+  };
+  /// Robot configuration is defined by a sequence of dof value.
   typedef sequence<double> floatSeq;
   typedef sequence<floatSeq> floatSeqSeq;
 

@@ -20,11 +20,9 @@ from hpp.corbaserver import Client
 
 class Robot (object):
     """Helper class to enhance corba interface"""
-    def __init__ (self, rootJointType, packageName, robotName, urdfSuffix = "",
-                  srdfSuffix = ""):
+    def __init__ (self, robotName, rootJointType):
         self.client = Client ()
-        self.client.robot.loadRobotModel (robotName, rootJointType, packageName,
-                                          robotName, urdfSuffix, srdfSuffix)
+        self.loadModel (robotName, rootJointType)
         self.jointNames = self.client.robot.getJointNames ()
         self.rankInConfiguration = dict ()
         self.rankInVelocity = dict ()
@@ -35,7 +33,21 @@ class Robot (object):
             self.rankInVelocity [j] = rankInVelocity
             rankInVelocity += self.client.robot.getJointNumberDof (j)
 
+    def loadModel (self, robotName, rootJointType):
+        self.client.robot.loadRobotModel (robotName, rootJointType,
+                                          self.packageName, self.urdfName,
+                                          self.urdfSuffix, self.srdfSuffix)
+
     def setTranslationBounds (self, xmin, xmax, ymin, ymax, zmin, zmax):
         self.client.robot.setJointBounds (0, [xmin, xmax])
         self.client.robot.setJointBounds (1, [ymin, ymax])
         self.client.robot.setJointBounds (2, [zmin, zmax])
+
+class HumanoidRobot (Robot):
+
+    def __init__ (self, robotName, rootJointType):
+        Robot.__init__ (self, robotName, rootJointType)
+    def loadModel (self, robotName, rootJointType):
+        self.client.robot.loadHumanoidModel (robotName, rootJointType,
+                                          self.packageName, self.urdfName,
+                                          self.urdfSuffix, self.srdfSuffix)

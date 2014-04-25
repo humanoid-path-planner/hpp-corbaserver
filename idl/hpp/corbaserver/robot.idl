@@ -36,9 +36,10 @@ module hpp
     /// "package://${packageName}/urdf/${modelName}${urdfSuffix}.urdf"
     /// "package://${packageName}/srdf/${modelName}${srdfSuffix}.srdf"
     ///
-    short loadRobotModel (in string robotName, in string rootJointType,
-			  in string modelName, in string packageName,
-			  in string urdfSuffix, in string srdfSuffix);
+    void loadRobotModel (in string robotName, in string rootJointType,
+			 in string packageName, in string modelName,
+			 in string urdfSuffix, in string srdfSuffix)
+      raises (Error);
 
     ///  Load humanoid robot model
     ///
@@ -53,9 +54,10 @@ module hpp
     /// "package://${packageName}/urdf/${modelName}${urdfSuffix}.urdf"
     /// "package://${packageName}/srdf/${modelName}${srdfSuffix}.srdf"
     ///
-    short loadHumanoidModel (in string robotName, in string rootJointType,
-			     in string modelName, in string packageName,
-			     in string urdfSuffix, in string srdfSuffix);
+    void loadHumanoidModel (in string robotName, in string rootJointType,
+			    in string packageName, in string modelName,
+			    in string urdfSuffix, in string srdfSuffix)
+      raises (Error);
 
     /// \}
 
@@ -64,11 +66,11 @@ module hpp
 
     /// Get size of configuration
     /// \param configSize size of configuration
-    short getConfigSize ();
+    short getConfigSize () raises (Error);
 
     /// Get size of velocity
     /// \param numberDof size of velocity
-    short getNumberDof ();
+    short getNumberDof () raises (Error);
 
     /// \}
 
@@ -76,17 +78,17 @@ module hpp
     /// \{
 
     /// Get joint names in the same order as in the configuration
-    nameSeq getJointNames ();
+    nameSeq getJointNames () raises (Error);
 
     /// Get joint number degrees of freedom
     /// \param jointName name of the joint
-    /// \return -1 if robot is not set or if joint does not exist.
-    short getJointNumberDof (in string jointName);
+    /// \throw Error if robot is not set or if joint does not exist.
+    short getJointNumberDof (in string jointName) raises (Error);
 
     /// Get joint number config size
     /// \param jointName name of the joint
-    /// \return -1 if robot is not set or if joint does not exist.
-    short getJointConfigSize (in string jointName);
+    /// \throw Error if robot is not set or if joint does not exist.
+    short getJointConfigSize (in string jointName) raises (Error);
 
     ///  set a bound for the joint
 
@@ -97,8 +99,9 @@ module hpp
     ///     (for random sampling) are set to [v_max, v_min].
     /// \li If size of sequence is different from twice the number of dofs,
     ///     no dof is bounded.
-    short setJointBounds(in unsigned short inJointId,
-			 in jointBoundSeq inJointBound);
+    void setJointBounds(in unsigned short inJointId,
+			in jointBoundSeq inJointBound)
+      raises (Error);
 
     /// \}
 
@@ -107,11 +110,11 @@ module hpp
 
     /// Get current configuration
     /// \return dofArray Array of degrees of freedom.
-    floatSeq getCurrentConfig();
+    floatSeq getCurrentConfig() raises (Error);
 
     /// Set current configuration of specified robot,
     /// \param dofArray Array of degrees of freedom /
-    short setCurrentConfig(in floatSeq dofArray);
+    void setCurrentConfig(in floatSeq dofArray) raises (Error);
 
     /// \}
 
@@ -121,13 +124,13 @@ module hpp
     ///  Get the list of objects attached to a joint.
     /// \param inJointName name of the joint.
     /// \return list of names of CollisionObject attached to the body.
-    nameSeq getJointInnerObjects (in string jointName);
+    nameSeq getJointInnerObjects (in string jointName) raises (Error);
 
 
     ///  Get list of collision objects tested with the body attached to a joint
     /// \param inJointName name of the joint.
     /// \return list of names of CollisionObject
-    nameSeq getJointOuterObjects (in string jointName);
+    nameSeq getJointOuterObjects (in string jointName) raises (Error);
 
     /// \}
 
@@ -139,7 +142,7 @@ module hpp
     /// Check whether current configuration of robot is valid by calling
     /// CkwsDevice::collisionTest ().
     /// \retval validity whether configuration is valid
-    short collisionTest (out boolean validity);
+    void collisionTest (out boolean validity) raises (Error);
 
     /// Compute distances between bodies and obstacles
     ///
@@ -150,11 +153,11 @@ module hpp
     /// \retval outerPoints closest points on the obstacles
     /// \note outer objects for a body can also be inner objects of another
     /// body.
-    short distancesToCollision (out floatSeq distances,
-				out nameSeq innerObjects,
-				out nameSeq outerObjects,
-				out floatSeqSeq innerPoints,
-				out floatSeqSeq outerPoints);
+    void distancesToCollision (out floatSeq distances,
+			       out nameSeq innerObjects,
+			       out nameSeq outerObjects,
+			       out floatSeqSeq innerPoints,
+			       out floatSeqSeq outerPoints) raises (Error);
 
     /// \}
 
@@ -162,13 +165,13 @@ module hpp
     /// \{
 
     /// Get mass of robot
-    double getMass ();
+    double getMass () raises (Error);
 
     /// Get position of center of mass
-    floatSeq getCenterOfMass ();
+    floatSeq getCenterOfMass () raises (Error);
 
     /// Get Jacobian of the center of mass
-    floatSeqSeq getJacobianCenterOfMass ();
+    floatSeqSeq getJacobianCenterOfMass () raises (Error);
 
     /// \}
 
@@ -178,7 +181,7 @@ module hpp
     /// Create an empty device and store it temporarily
     /// \param robotName name of the robot.
     ///  Fails if another robot is already in construction.
-    short createRobot(in string robotName);
+    void createRobot(in string robotName) raises (Error);
 
     /// Create a new joint
     /// \param jointName name of the joint,
@@ -186,62 +189,68 @@ module hpp
     ///                         "translation"]
     /// \param pos initial position of the joint
     /// \param joinBounds bounds of the joint. See setJointBounds for details.
-    short createJoint(in string jointName, in string jointType,
-		      in Configuration pos, in jointBoundSeq jointBounds);
+    void createJoint(in string jointName, in string jointType,
+		     in Configuration pos, in jointBoundSeq jointBounds)
+      raises (Error);
 
     ///  Add a child joint to a joint.
     /// \param inParentName name of the joint to which a child is added.
     /// \param inChildName name of the child joint added to the previous one.
-    /// \return 0 if success, -1 if failure.
-    short addJoint(in string inParentName, in string inChildName);
+    /// \throw Error.
+    void addJoint(in string inParentName, in string inChildName)
+      raises (Error);
 
     /// Add a robot to the ProblemSolver
-    /// \return 0 if success, -1 if failure.
-    short setRobot (in string inRobotName);
+    /// \throw Error.
+    void setRobot (in string inRobotName) raises (Error);
 
     ///  Set a joint as root joint to a robot.
     /// \param inRobotName name of the robot (ChppDevice).
     /// \param inJointName name of the joint.
-    short setRobotRootJoint(in string inRobotName, in string inJointName);
+    void setRobotRootJoint(in string inRobotName, in string inJointName)
+      raises (Error);
 
     ///  create an empty polyhedron.
     /// \param inPolyName name of the polyhedron.
-    /// \return 0 if success, -1 if failure.
-    short createPolyhedron(in string inPolyName);
+    /// \throw Error.
+    void createPolyhedron(in string inPolyName) raises (Error);
 
     ///  Create a box
     /// \param name name of the box
     /// \param x, y, z Size of the box
-    short createBox (in string name, in double x, in double y, in double z);
+    void createBox (in string name, in double x, in double y, in double z)
+      raises (Error);
 
     ///  Create a sphere
     /// \param name name of the sphere
     /// \param radius radius of the sphere
-    short createSphere (in string name, in double radius);
+    void createSphere (in string name, in double radius) raises (Error);
 
     ///  Add a point to a polyhedron
     /// \param inPolyName the name of the polyhedron.
     /// \param x coordinate of the point.
     /// \param y coordinate of the point.
     /// \param z coordinate of the point.
-    /// \return rank of point in polyhedron or -1 if failure.
-    short addPoint(in string inPolyName, in double x, in double y, in double z);
+    /// \return rank of point in polyhedron
+    short addPoint(in string inPolyName, in double x, in double y, in double z)
+      raises (Error);
 
     ///  Add a point to a polyhedron
     /// \param inPolyName the name of the polyhedron.
     /// \param pt1 rank of first point in polyhedron.
     /// \param pt2 rank of second point in polyhedron.
     /// \param pt3 rank of third point in polyhedron.
-    /// \return rank of triangle in polyhedron or -1 if failure.
+    /// \return rank of triangle in polyhedron
     short addTriangle(in string inPolyName, in unsigned long pt1,
-		      in unsigned long pt2, in unsigned long pt3);
+		      in unsigned long pt2, in unsigned long pt3)
+      raises (Error);
 
     ///  Attach an object to a joint.
     /// \param jointName name of the body
     /// \param objectName name of the object
     /// \param pos relative position of the polyhedron in the body
-    short addObjectToJoint(in string jointName, in string objectName,
-			   in Configuration pos);
+    void addObjectToJoint(in string jointName, in string objectName,
+			  in Configuration pos) raises (Error);
     /// \}
   };
 };

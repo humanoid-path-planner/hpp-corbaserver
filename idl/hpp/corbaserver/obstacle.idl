@@ -29,14 +29,15 @@ module hpp
     ///
     /// The kinematic structure of the urdf file is ignored. Only the geometric
     /// objects are loaded as obstacles.
-    short loadObstacleModel (in string package, in string filename);
+    void loadObstacleModel (in string package, in string filename)
+      raises (Error);
 
     /// \brief Add an obstacle to the set of obstacles
     ///
     /// \param objectName name of the object.
     /// \param collision whether collision with object should be computed
     /// \param distance whether distance to object should be computed
-    /// \return 0 if success, -1 if failure.
+    /// \throw Error.
     ///
     /// \note The obstacle should have been built using one of methods
     ///   \li hpp::Obstacle::createPolyhedron,
@@ -45,26 +46,28 @@ module hpp
     ///   \li hpp::Obstacle::addTriangle.
     ///
     /// \note Build the bounding volume hierarchy of the object if needed.
-    short addObstacle (in string objectName, in boolean collision,
-		       in boolean distance);
+    void addObstacle (in string objectName, in boolean collision,
+		      in boolean distance) raises (Error);
 
     /// \brief Move an obstacle to a given configuration.
     /// \param objectName name of the polyhedron.
     /// \param cfg the configuration of the obstacle.
-    /// \return 0 if success, -1 if failure.
+    /// \throw Error.
     ///
     /// \note The obstacle is not added to local map
     /// impl::Obstacle::collisionListMap.
     ///
     /// \note Build the collision entity of polyhedron for KCD.
-    short moveObstacle (in string objectName, in Configuration cfg);
+    void moveObstacle (in string objectName, in Configuration cfg)
+      raises (Error);
 
     /// Get the position of an obstacle
     ///
     /// \param objectName name of the polyhedron.
     /// \retval cfg Position of the obstacle.
-    /// \return 0 if success, -1 if failure.
-    short getObstaclePosition (in string objectName, out Configuration cfg);
+    /// \throw Error.
+    void getObstaclePosition (in string objectName, out Configuration cfg)
+      raises (Error);
     /// \}
 
     /// \name Polyhedra
@@ -72,33 +75,34 @@ module hpp
 
     /// \brief create an empty polyhedron.
     /// \param polyName name of the polyhedron.
-    /// \return 0 if success, -1 if failure.
-    short createPolyhedron (in string polyName);
+    /// \throw Error.
+    void createPolyhedron (in string polyName)
+      raises (Error);
 
     /// \brief Create a box
     /// \param inBoxName name of the box
     /// \param x, y, z Size of the box
-    short createBox
-    (in string inBoxName, in double x, in double y, in double z);
+    void createBox (in string inBoxName, in double x, in double y, in double z)
+      raises (Error);
 
     /// \brief Add a point to a polyhedron
     /// \param polyName the name of the polyhedron.
     /// \param x coordinate of the point.
     /// \param y coordinate of the point.
     /// \param z coordinate of the point.
-    /// \return rank of point in polyhedron or -1 if failure.
-    short addPoint
-    (in string polyName, in double x, in double y, in double z);
+    /// \return rank of point in polyhedron.
+    short addPoint (in string polyName, in double x, in double y, in double z)
+      raises (Error);
 
     /// \brief Add a point to a polyhedron
     /// \param polyName the name of the polyhedron.
     /// \param pt1 rank of first point in polyhedron.
     /// \param pt2 rank of second point in polyhedron.
     /// \param pt3 rank of third point in polyhedron.
-    /// \return rank of triangle in polyhedron or -1 if failure.
+    /// \return rank of triangle in polyhedron.
     short addTriangle
     (in string polyName, in unsigned long pt1,
-     in unsigned long pt2, in unsigned long pt3);
+     in unsigned long pt2, in unsigned long pt3) raises (Error);
 
     /// \}
   };

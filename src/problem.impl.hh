@@ -30,50 +30,51 @@ namespace hpp
       public:
 	Problem (corbaServer::Server* server);
 
-	virtual Short
-	setInitialConfig (const hpp::floatSeq& dofArray);
+	virtual void
+	setInitialConfig (const hpp::floatSeq& dofArray) throw (hpp::Error);
 
 	virtual hpp::floatSeq*
-	getInitialConfig () throw (SystemException);
+	getInitialConfig () throw (hpp::Error);
 
-	virtual Short
-	addGoalConfig (const hpp::floatSeq& dofArray);
+	virtual void
+	addGoalConfig (const hpp::floatSeq& dofArray) throw (hpp::Error);
 
-	virtual hpp::floatSeqSeq*	getGoalConfigs () throw (SystemException);
+	virtual hpp::floatSeqSeq*	getGoalConfigs () throw (hpp::Error);
 
-	virtual Short
-	resetGoalConfigs ()  throw (SystemException);
+	virtual void
+	resetGoalConfigs ()  throw (hpp::Error);
 
-	virtual Short applyConstraints (const hpp::floatSeq& input,
-					hpp::floatSeq_out output);
-	virtual Short resetConstraints ();
-	virtual Short lockDof (UShort dofId, Double value);
-	virtual Short solve ();
+	virtual void applyConstraints (const hpp::floatSeq& input,
+				       hpp::floatSeq_out output)
+	  throw (hpp::Error);
+	virtual void resetConstraints () throw (hpp::Error);
+	virtual void lockDof (UShort dofId, Double value) throw (hpp::Error);
+	virtual void solve () throw (hpp::Error);
 
-	virtual Short directPath (const hpp::floatSeq& startConfig,
-				  const hpp::floatSeq& endConfig,
-				  CORBA::String_out message)
-	  throw (SystemException);
+	virtual void directPath (const hpp::floatSeq& startConfig,
+				  const hpp::floatSeq& endConfig)
+	  throw (hpp::Error);
 
-	virtual Short interruptPathPlanning ();
+	virtual void interruptPathPlanning () throw (hpp::Error);
 
-	virtual Short numberPaths ();
+	virtual Short numberPaths () throw (hpp::Error);
 
-	virtual Short optimizePath (UShort pathId);
+	virtual void optimizePath (UShort pathId) throw (hpp::Error);
 
-	virtual Double pathLength (UShort pathId);
+	virtual Double pathLength (UShort pathId) throw (hpp::Error);
 
 	virtual hpp::floatSeq* configAtDistance (UShort pathId,
-					       Double atDistance);
+						 Double atDistance)
+	  throw (hpp::Error);
 
-	virtual hpp::floatSeqSeq* nodes ();
-	virtual Long numberEdges ();
-	virtual Short
-	edge (ULong edgeId, hpp::floatSeq_out q1, hpp::floatSeq_out q2);
-	virtual Long numberConnectedComponents ();
+	virtual hpp::floatSeqSeq* nodes () throw (hpp::Error);
+	virtual Long numberEdges () throw (hpp::Error);
+	virtual void edge (ULong edgeId, hpp::floatSeq_out q1,
+			   hpp::floatSeq_out q2) throw (hpp::Error);
+	virtual Long numberConnectedComponents () throw (hpp::Error);
 	virtual hpp::floatSeqSeq*
-	nodesConnectedComponent (ULong connectedComponentId);
-	virtual Short clearRoadmap ();
+	nodesConnectedComponent (ULong connectedComponentId) throw (hpp::Error);
+	virtual void clearRoadmap () throw (hpp::Error);
 
       private:
 	/// \brief Pointer to the Server owning this object
