@@ -35,8 +35,9 @@ namespace hpp
 	throw (hpp::Error)
       {
 	try {
-	hpp::model::DevicePtr_t device =
-	  hpp::model::urdf::loadUrdfModel (std::string (filename),
+	  model::DevicePtr_t device (model::Device::create
+				     (std::string (filename)));
+	  hpp::model::urdf::loadUrdfModel (device,
 					   "anchor",
 					   std::string (package),
 					   std::string (filename));
