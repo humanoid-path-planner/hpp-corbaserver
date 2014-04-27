@@ -460,8 +460,6 @@ namespace hpp
 	  return innerObjectSeq;
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
-	  innerObjectSeq = new hpp::nameSeq (0);
-	  return innerObjectSeq;
 	}
       }
 
@@ -508,8 +506,6 @@ namespace hpp
 	  return outerObjectSeq;
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
-	  outerObjectSeq = new hpp::nameSeq (0);
-	  return outerObjectSeq;
 	}
       }
 
