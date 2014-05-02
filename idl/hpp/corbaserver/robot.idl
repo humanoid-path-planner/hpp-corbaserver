@@ -15,6 +15,7 @@
 
 module hpp
 {
+  module corbaserver {
   /// Array of joint bounds.in order [v1_min,v1_max,v2_min,v2_max,...].
   typedef sequence<double> jointBoundSeq;
 
@@ -252,6 +253,7 @@ module hpp
     void addObjectToJoint(in string jointName, in string objectName,
 			  in Configuration pos) raises (Error);
     /// \}
+  };
   };
 };
 

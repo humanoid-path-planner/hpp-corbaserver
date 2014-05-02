@@ -47,7 +47,7 @@ namespace hpp
       /// \brief Implementation of corba interface hpp::Robot.
       ///
       /// The construction of a
-      class Robot : public virtual POA_hpp::Robot
+      class Robot : public virtual POA_hpp::corbaserver::Robot
       {
       public:
 	Robot (corbaServer::Server* server);
@@ -84,14 +84,15 @@ namespace hpp
 	virtual void
 	createJoint
 	(const char* jointName, const char* jointType,
-	 const  hpp::Configuration& pos, const hpp::jointBoundSeq& jointBound)
+	 const  hpp::Configuration& pos,
+	 const hpp::corbaserver::jointBoundSeq& jointBound)
 	  throw (hpp::Error);
 
 	virtual void
 	addJoint
 	(const char* parentName, const char* childName) throw (hpp::Error);
 
-	virtual hpp::nameSeq* getJointNames () throw (hpp::Error);
+	virtual hpp::corbaserver::nameSeq* getJointNames () throw (hpp::Error);
 
 	virtual Short getJointNumberDof (const char* jointName)
 	  throw (hpp::Error);
@@ -100,7 +101,7 @@ namespace hpp
 
 	virtual void
 	setJointBounds
-	(UShort inJointId, const hpp::jointBoundSeq& jointBound)
+	(UShort inJointId, const hpp::corbaserver::jointBoundSeq& jointBound)
 	  throw (hpp::Error);
 
 	virtual void setCurrentConfig
@@ -108,10 +109,12 @@ namespace hpp
 
 	virtual hpp::floatSeq* getCurrentConfig() throw (hpp::Error);
 
-	virtual hpp::nameSeq* getJointInnerObjects (const char* bodyName)
+	virtual hpp::corbaserver::nameSeq* getJointInnerObjects
+	(const char* bodyName)
 	  throw (hpp::Error);
 
-	virtual hpp::nameSeq* getJointOuterObjects (const char* bodyName)
+	virtual hpp::corbaserver::nameSeq* getJointOuterObjects
+	(const char* bodyName)
 	  throw (hpp::Error);
 
 	virtual void
@@ -119,8 +122,8 @@ namespace hpp
 
 	virtual void
 	distancesToCollision (hpp::floatSeq_out distances,
-			      hpp::nameSeq_out innerObjects,
-			      hpp::nameSeq_out outerObjects,
+			      hpp::corbaserver::nameSeq_out innerObjects,
+			      hpp::corbaserver::nameSeq_out outerObjects,
 			      hpp::floatSeqSeq_out innerPoints,
 			      hpp::floatSeqSeq_out outerPoints)
 	  throw (hpp::Error);

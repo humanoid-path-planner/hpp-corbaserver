@@ -5,7 +5,7 @@ create client to wanted HPP services.
 from omniORB import CORBA
 import CosNaming
 
-import hpp_corbaserver.hpp
+import hpp.corbaserver
 
 class CorbaError(Exception):
   """
@@ -28,8 +28,8 @@ class Client:
     Create a client to a new CORBA service and add it to this class.
     """
     serviceName = serviceName.lower ()
-    name = [CosNaming.NameComponent ("hpp", "plannerContext"),
-            CosNaming.NameComponent (serviceName + 's', "servant")]
+    name = [CosNaming.NameComponent ("hpp", "corbaserver"),
+            CosNaming.NameComponent ("basic", serviceName)]
 
     try:
       obj = self.rootContext.resolve (name)
@@ -38,7 +38,7 @@ class Client:
         'failed to find the service ``{0}\'\''.format (serviceName))
 
     try:
-      client = obj._narrow (hpp_corbaserver.hpp.__dict__[serviceName.capitalize ()])
+      client = obj._narrow (hpp.corbaserver.__dict__[serviceName.capitalize ()])
     except KeyError:
       raise CorbaError ('invalid service name ``{0}\'\''.format (serviceName))
 

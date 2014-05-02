@@ -68,19 +68,19 @@ FOREACH (IDL ${IDL_SOURCES})
     OUTPUT
     ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/${IDL}_idl.py
     COMMAND ${OMNIIDL}
-    ARGS -bpython -Wbpackage="hpp_corbaserver" -I${CMAKE_SOURCE_DIR}/idl
+    ARGS -bpython -Wbpackage="" -I${CMAKE_SOURCE_DIR}/idl
     ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/${IDL}.idl
     MAIN_DEPENDENCY
     ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/${IDL}.idl
     )
   SET_SOURCE_FILES_PROPERTIES(
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp_corbaserver/${IDL}_idl.py
+    ${CMAKE_CURRENT_BINARY_DIR}/${IDL}_idl.py
     GENERATED=ON
     )
   INSTALL(
     FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp_corbaserver/${IDL}_idl.py
-    DESTINATION ${PYTHON_SITELIB}/hpp_corbaserver
+    ${CMAKE_CURRENT_BINARY_DIR}/${IDL}_idl.py
+    DESTINATION ${PYTHON_SITELIB}/hpp/corbaserver
     )
 ENDFOREACH()
 INSTALL(
@@ -92,21 +92,6 @@ INSTALL(
   FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/hpp/corbaserver/__init__.py
   DESTINATION ${PYTHON_SITELIB}/hpp/corbaserver
-  )
-INSTALL(
-  FILES
-  ${CMAKE_CURRENT_BINARY_DIR}/hpp_corbaserver/__init__.py
-  DESTINATION ${PYTHON_SITELIB}/hpp_corbaserver
-  )
-INSTALL(
-  FILES
-  ${CMAKE_CURRENT_BINARY_DIR}/hpp_corbaserver/hpp/__init__.py
-  DESTINATION ${PYTHON_SITELIB}/hpp_corbaserver/hpp
-  )
-INSTALL(
-  FILES
-  ${CMAKE_CURRENT_BINARY_DIR}/hpp_corbaserver/hpp__POA/__init__.py
-  DESTINATION ${PYTHON_SITELIB}/hpp_corbaserver/hpp__POA
   )
 INSTALL(
   FILES

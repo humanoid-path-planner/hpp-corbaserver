@@ -95,7 +95,7 @@ namespace hpp
 	// Bind a context called "hpp" to the root context:
 	contextName.length(1);
 	contextName[0].id   = (const char*) "hpp";       // string copied
-	contextName[0].kind = (const char*) "plannerContext"; // string copied
+	contextName[0].kind = (const char*) "corbaserver"; // string copied
 	// Note on kind: The kind field is used to indicate the type
 	// of the object. This is to avoid conventions such as that used
 	// by files (name.type -- e.g. hpp.ps = postscript etc.)

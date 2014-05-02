@@ -16,7 +16,7 @@
 # hpp-corbaserver.  If not, see
 # <http://www.gnu.org/licenses/>.
 
-from hpp.corbaserver import Client
+from hpp.corbaserver.client import Client
 
 class Robot (object):
     """Helper class to enhance corba interface"""

@@ -1,15 +1,10 @@
-# Import all CORBA IDLs.
-import hpp_corbaserver.hpp
+import omniORB
+omniORB.updateModule("hpp.corbaserver")
 
-from hpp.corbaserver.client import *
+import robot_idl
+import common_idl
+import obstacle_idl
+import problem_idl
 
-def parseOptions ():
-    '''Parse command line options.'''
-    from optparse import OptionParser
-    usage = "usage: %prog [-p N]"
-    parser = OptionParser (usage=usage)
-    parser.add_option ("-p", "--problem", dest="problem",
-                       help="solve only one problem", type="int")
-
-    (options, args) = parser.parse_args ()
-    return options.problem
+from client import Client
+Configuration = common_idl._0_hpp.Configuration

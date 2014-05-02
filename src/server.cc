@@ -127,24 +127,24 @@ namespace hpp
       // Bind robotObj with name Robot to the hppContext:
       CosNaming::Name objectName;
       objectName.length(1);
-      objectName[0].id   = (const char*) "robots";   // string copied
-      objectName[0].kind = (const char*) "servant"; // string copied
+      objectName[0].id   = (const char*) "basic";   // string copied
+      objectName[0].kind = (const char*) "robot"; // string copied
 
       private_->bindObjectToName(robotObj, objectName);
       private_->robotServant_->_remove_ref();
 
       // Bind obstacleObj with name Obstacle to the hppContext:
       objectName.length(1);
-      objectName[0].id   = (const char*) "obstacles";   // string copied
-      objectName[0].kind = (const char*) "servant"; // string copied
+      objectName[0].id   = (const char*) "basic"; // string copied
+      objectName[0].kind = (const char*) "obstacle";   // string copied
 
       private_->bindObjectToName(obstacleObj, objectName);
       private_->obstacleServant_->_remove_ref();
 
       // Bind problemObj with name Problem to the hppContext:
       objectName.length(1);
-      objectName[0].id   = (const char*) "problems";   // string copied
-      objectName[0].kind = (const char*) "servant"; // string copied
+      objectName[0].id   = (const char*) "basic"; // string copied
+      objectName[0].kind = (const char*) "problem";   // string copied
 
       private_->bindObjectToName(problemObj, objectName);
       private_->problemServant_->_remove_ref();

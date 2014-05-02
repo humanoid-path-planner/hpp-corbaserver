@@ -33,8 +33,12 @@ namespace hpp
     {
       namespace
       {
+	using hpp::corbaserver::jointBoundSeq;
+	using hpp::corbaserver::nameSeq;
+	using hpp::corbaserver::nameSeq_out;
+
 	static void localSetJointBounds(const JointPtr_t& joint,
-					const hpp::jointBoundSeq& jointBounds)
+					const jointBoundSeq& jointBounds)
 	{
 	  std::size_t nbJointBounds = (std::size_t)jointBounds.length();
 	  std::size_t kwsJointNbDofs = joint->configSize ();
@@ -209,7 +213,7 @@ namespace hpp
       void Robot::createJoint (const char* jointName,
 			        const char* jointType,
 				const hpp::Configuration& pos,
-				const hpp::jointBoundSeq& jointBounds)
+				const jointBoundSeq& jointBounds)
 	throw (hpp::Error)
       {
 	std::string jn(jointName);
@@ -283,7 +287,7 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      hpp::nameSeq* Robot::getJointNames () throw (hpp::Error)
+      nameSeq* Robot::getJointNames () throw (hpp::Error)
       {
 	try {
 	  DevicePtr_t robot = problemSolver_->robot ();
@@ -294,8 +298,8 @@ namespace hpp
 	       it != jointVector.end (); it++) {
 	    if ((*it)->numberDof () != 0) size ++;
 	  }
-	  char** nameList = hpp::nameSeq::allocbuf(size);
-	  hpp::nameSeq *jointNames = new hpp::nameSeq (size, size, nameList);
+	  char** nameList = nameSeq::allocbuf(size);
+	  nameSeq *jointNames = new nameSeq (size, size, nameList);
 	  std::size_t rankInConfig = 0;
 	  for (std::size_t i = 0; i < jointVector.size (); ++i) {
 	    const JointPtr_t joint = jointVector [i];
@@ -353,7 +357,7 @@ namespace hpp
       // --------------------------------------------------------------------
 
       void Robot::setJointBounds (UShort jointId,
-				   const hpp::jointBoundSeq& jointBounds)
+				   const jointBoundSeq& jointBounds)
 	throw (hpp::Error)
       {
 	try  {
@@ -421,23 +425,23 @@ namespace hpp
       }
       // --------------------------------------------------------------------
 
-      hpp::nameSeq* Robot::getJointInnerObjects (const char* jointName)
+      nameSeq* Robot::getJointInnerObjects (const char* jointName)
 	throw (hpp::Error)
       {
-	hpp::nameSeq *innerObjectSeq = 0x0;
+	nameSeq *innerObjectSeq = 0x0;
 	JointPtr_t joint (0x0);
 	try {
 	  DevicePtr_t robot = problemSolver_->robot ();
 	  joint = robot->getJointByName (std::string (jointName));
 	  if (!joint) {
 	    hppDout (error, "No joint with name " << jointName);
-	    innerObjectSeq = new hpp::nameSeq (0);
+	    innerObjectSeq = new nameSeq (0);
 	    return innerObjectSeq;
 	  }
 	  BodyPtr_t body = joint->linkedBody ();
 	  if (!body) {
 	    hppDout (error, "Joint " << jointName << " has no body.");
-	    innerObjectSeq = new hpp::nameSeq (0);
+	    innerObjectSeq = new nameSeq (0);
 	    return innerObjectSeq;
 	  }
 
@@ -446,8 +450,8 @@ namespace hpp
 	    std::size_t nbObjects = objects.size();
 	    // Allocate result now that the size is known.
 	    ULong size = (ULong)nbObjects;
-	    char** nameList = hpp::nameSeq::allocbuf(size);
-	    innerObjectSeq = new hpp::nameSeq(size, size, nameList);
+	    char** nameList = nameSeq::allocbuf(size);
+	    innerObjectSeq = new nameSeq(size, size, nameList);
 	    for (std::size_t iObject=0; iObject < nbObjects; iObject++) {
 	      CollisionObjectPtr_t object = objects[iObject];
 	      std::string geometryName = object->name();
@@ -456,7 +460,7 @@ namespace hpp
 	      strcpy(nameList[iObject], geometryName.c_str());
 	    }
 	  } else {
-	    innerObjectSeq = new hpp::nameSeq (0);
+	    innerObjectSeq = new nameSeq (0);
 	  }
 	  return innerObjectSeq;
 	} catch (const std::exception& exc) {
@@ -466,10 +470,10 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      hpp::nameSeq* Robot::getJointOuterObjects (const char* jointName)
+      nameSeq* Robot::getJointOuterObjects (const char* jointName)
 	throw (hpp::Error)
       {
-	hpp::nameSeq *outerObjectSeq = 0x0;
+	nameSeq *outerObjectSeq = 0x0;
 	JointPtr_t joint (0x0);
 
 	try {
@@ -477,13 +481,13 @@ namespace hpp
 	  joint = robot->getJointByName (std::string (jointName));
 	  if (!joint) {
 	    hppDout (error, "No joint with name " << jointName);
-	    outerObjectSeq = new hpp::nameSeq (0);
+	    outerObjectSeq = new nameSeq (0);
 	    return outerObjectSeq;
 	  }
 	  BodyPtr_t body = joint->linkedBody ();
 	  if (!body) {
 	    hppDout (error, "Joint " << jointName << " has no body.");
-	    outerObjectSeq = new hpp::nameSeq (0);
+	    outerObjectSeq = new nameSeq (0);
 	    return outerObjectSeq;
 	  }
 
@@ -492,8 +496,8 @@ namespace hpp
 	    std::size_t nbObjects = objects.size();
 	    // Allocate result now that the size is known.
 	    ULong size = (ULong)nbObjects;
-	    char** nameList = hpp::nameSeq::allocbuf(size);
-	    outerObjectSeq = new hpp::nameSeq(size, size, nameList);
+	    char** nameList = nameSeq::allocbuf(size);
+	    outerObjectSeq = new nameSeq(size, size, nameList);
 	    for (std::size_t iObject=0; iObject < nbObjects; iObject++) {
 	      CollisionObjectPtr_t object = objects[iObject];
 	      std::string geometryName = object->name();
@@ -502,7 +506,7 @@ namespace hpp
 	      strcpy(nameList[iObject], geometryName.c_str());
 	    }
 	  } else {
-	    outerObjectSeq = new hpp::nameSeq (0);
+	    outerObjectSeq = new nameSeq (0);
 	  }
 	  return outerObjectSeq;
 	} catch (const std::exception& exc) {
@@ -527,8 +531,8 @@ namespace hpp
 
       void
       Robot::distancesToCollision (hpp::floatSeq_out distances,
-				   hpp::nameSeq_out innerObjects,
-				   hpp::nameSeq_out outerObjects,
+				   nameSeq_out innerObjects,
+				   nameSeq_out outerObjects,
 				   hpp::floatSeqSeq_out innerPoints,
 				   hpp::floatSeqSeq_out outerPoints)
 	throw (hpp::Error)
@@ -540,9 +544,9 @@ namespace hpp
 	  std::size_t nbDistPairs = dr.size ();
 	  hpp::floatSeq* distances_ptr = new hpp::floatSeq ();
 	  distances_ptr->length (nbDistPairs);
-	  hpp::nameSeq* innerObjects_ptr = new hpp::nameSeq ();
+	  nameSeq* innerObjects_ptr = new nameSeq ();
 	  innerObjects_ptr->length (nbDistPairs);
-	  hpp::nameSeq* outerObjects_ptr = new hpp::nameSeq ();
+	  nameSeq* outerObjects_ptr = new nameSeq ();
 	  outerObjects_ptr->length (nbDistPairs);
 	  hpp::floatSeqSeq* innerPoints_ptr = new hpp::floatSeqSeq ();
 	  innerPoints_ptr->length (nbDistPairs);

@@ -24,7 +24,7 @@ namespace hpp
   {
     namespace impl
     {
-      class Obstacle : public virtual POA_hpp::Obstacle
+      class Obstacle : public virtual POA_hpp::corbaserver::Obstacle
       {
       public:
 	Obstacle (corbaServer::Server* server);

@@ -25,7 +25,7 @@ namespace hpp
       using CORBA::Long;
       using CORBA::ULong;
       /// \brief Implement CORBA interface ``Problem''.
-      class Problem : public virtual POA_hpp::Problem
+      class Problem : public virtual POA_hpp::corbaserver::Problem
       {
       public:
 	Problem (corbaServer::Server* server);
