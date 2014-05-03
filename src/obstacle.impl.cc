@@ -120,13 +120,13 @@ namespace hpp
       }
 
       void Obstacle::moveObstacle
-      (const char* objectName, const hpp::Configuration& cfg)
+      (const char* objectName, const CORBA::Double* cfg)
 	throw(hpp::Error)
       {
 	CollisionObjectPtr_t object = getObstacleByName (objectName);
 	if (object) {
 	  Transform3f mat;
-	  ConfigurationToTransform3f (cfg, mat);
+	  hppTransformToTransform3f (cfg, mat);
 	  object->move (mat);
 	  return;
 	}
@@ -136,13 +136,13 @@ namespace hpp
       }
 
       void Obstacle::getObstaclePosition (const char* objectName,
-					  Configuration& cfg)
+					  Double* cfg)
 	  throw (hpp::Error)
       {
 	CollisionObjectPtr_t object = getObstacleByName (objectName);
 	if (object) {
 	  Transform3f transform = object->getTransform ();
-	  Transform3fToConfiguration (transform, cfg);
+	  Transform3fTohppTransform (transform, cfg);
 	  return;
 	}
 	std::ostringstream oss ("Object ");

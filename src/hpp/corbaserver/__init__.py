@@ -7,4 +7,4 @@ import obstacle_idl
 import problem_idl
 
 from client import Client
-Configuration = common_idl._0_hpp.Configuration
+Transform = common_idl._0_hpp.Transform

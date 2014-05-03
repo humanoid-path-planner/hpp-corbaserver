@@ -39,12 +39,12 @@ namespace hpp
 	  throw (hpp::Error);
 
 	virtual void
-	moveObstacle (const char* polyName, const Configuration& cfg)
+	moveObstacle (const char* polyName, const Double* cfg)
 	  throw (hpp::Error);
 
 
 	virtual void getObstaclePosition (const char* objectName,
-					   Configuration& cfg)
+					  Double* cfg)
 	  throw (hpp::Error);
 
 	virtual void

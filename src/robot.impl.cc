@@ -212,7 +212,7 @@ namespace hpp
 
       void Robot::createJoint (const char* jointName,
 			        const char* jointType,
-				const hpp::Configuration& pos,
+				const Double* pos,
 				const jointBoundSeq& jointBounds)
 	throw (hpp::Error)
       {
@@ -229,7 +229,7 @@ namespace hpp
 	JointPtr_t joint;
 	// Fill position matrix
 	Transform3f posMatrix;
-	ConfigurationToTransform3f (pos, posMatrix);
+	hppTransformToTransform3f (pos, posMatrix);
 
 	// Determine type of joint.
 	if (jt == "anchor") {
@@ -718,7 +718,7 @@ namespace hpp
 
       void Robot::addObjectToJoint (const char* jointName,
 				     const char* objectName,
-				     const hpp::Configuration& inConfig)
+				     const Double* inConfig)
 	throw (hpp::Error)
       {
 	try {
@@ -751,7 +751,7 @@ namespace hpp
 	  }
 
 	  Transform3f pos;
-	  ConfigurationToTransform3f (inConfig, pos);
+	  hppTransformToTransform3f (inConfig, pos);
 	  CollisionObjectPtr_t collisionObject
 	    (CollisionObject_t::create (geometry, pos, objectName));
 	  joint->linkedBody ()->addInnerObject(collisionObject, true, true);

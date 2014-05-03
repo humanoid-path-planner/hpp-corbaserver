@@ -84,7 +84,7 @@ namespace hpp
 	virtual void
 	createJoint
 	(const char* jointName, const char* jointType,
-	 const  hpp::Configuration& pos,
+	 const  Double* pos,
 	 const hpp::corbaserver::jointBoundSeq& jointBound)
 	  throw (hpp::Error);
 
@@ -157,7 +157,7 @@ namespace hpp
 
 	virtual void
 	addObjectToJoint (const char* bodyName, const char* objectName,
-			  const hpp::Configuration& config)
+			  const Double* config)
 	  throw (hpp::Error);
 
       private:

@@ -191,7 +191,7 @@ module hpp
     /// \param pos initial position of the joint
     /// \param joinBounds bounds of the joint. See setJointBounds for details.
     void createJoint(in string jointName, in string jointType,
-		     in Configuration pos, in jointBoundSeq jointBounds)
+		     in Transform pos, in jointBoundSeq jointBounds)
       raises (Error);
 
     ///  Add a child joint to a joint.
@@ -251,7 +251,7 @@ module hpp
     /// \param objectName name of the object
     /// \param pos relative position of the polyhedron in the body
     void addObjectToJoint(in string jointName, in string objectName,
-			  in Configuration pos) raises (Error);
+			  in Transform pos) raises (Error);
     /// \}
   };
   };

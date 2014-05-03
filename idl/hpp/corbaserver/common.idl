@@ -23,14 +23,8 @@ module hpp
   typedef sequence<double> floatSeq;
   typedef sequence<floatSeq> floatSeqSeq;
 
-  typedef double Translation [3];
-  typedef double Quaternion [4];
-
-  struct Configuration
-  {
-    Translation trs;
-    Quaternion quat;
-  };
+  /// Element of SE(3) represented by a vector and a unit quaternion
+  typedef double Transform [7];
 };
 
 #endif //! HPP_CORBASERVER_SERVER_IDL

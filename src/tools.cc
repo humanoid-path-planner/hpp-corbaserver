@@ -12,18 +12,18 @@
 #include "tools.hh"
 
 void
-ConfigurationToTransform3f
-(const hpp::Configuration& inConfig, hpp::corbaServer::Transform3f& transform)
+hppTransformToTransform3f
+(const CORBA::Double* inConfig, hpp::corbaServer::Transform3f& transform)
 {
-  fcl::Quaternion3f Q (inConfig.quat [0], inConfig.quat [1],
-		     inConfig.quat [2], inConfig.quat [3]);
-  fcl::Vec3f T (inConfig.trs [0], inConfig.trs [1], inConfig.trs [2]);
+  fcl::Quaternion3f Q (inConfig [3], inConfig [4],
+		       inConfig [5], inConfig [6]);
+  fcl::Vec3f T (inConfig [0], inConfig [1], inConfig [2]);
   transform.setTransform (Q, T);
 }
 
 void
-Transform3fToConfiguration (const hpp::corbaServer::Transform3f& transform,
-			    hpp::Configuration& config)
+Transform3fTohppTransform (const hpp::corbaServer::Transform3f& transform,
+			   CORBA::Double* config)
 {
   fcl::Quaternion3f Q = transform.getQuatRotation ();
   fcl::Vec3f T = transform.getTranslation ();
@@ -34,8 +34,8 @@ Transform3fToConfiguration (const hpp::corbaServer::Transform3f& transform,
   }
   */
   for(int i=0; i<4; i++) {
-    config.quat [i] = Q [i];
+    config [i+3] = Q [i];
   }
   for(int i=0; i<3; i++)
-    config.trs[i] = T [i];
+    config [i] = T [i];
 }
