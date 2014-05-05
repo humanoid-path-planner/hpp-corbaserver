@@ -128,6 +128,7 @@ namespace hpp
 	  Transform3f mat;
 	  ConfigurationToTransform3f (cfg, mat);
 	  object->move (mat);
+	  return;
 	}
 	std::ostringstream oss ("Object ");
 	oss << objectName <<  " not found";
@@ -142,6 +143,7 @@ namespace hpp
 	if (object) {
 	  Transform3f transform = object->getTransform ();
 	  Transform3fToConfiguration (transform, cfg);
+	  return;
 	}
 	std::ostringstream oss ("Object ");
 	oss << objectName <<  " not found";
