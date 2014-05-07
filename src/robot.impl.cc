@@ -759,6 +759,21 @@ namespace hpp
 	  throw hpp::Error (exc.what ());
 	}
       }
+      // --------------------------------------------------------------------
+      Short Robot::computeVolume () throw (hpp::Error)
+      {
+	try {
+	  DevicePtr_t robot = problemSolver_->robot ();
+	  vector_t config = robot->currentConfiguration ();
+	  std::size_t deviceDim = robot->configSize ();
+          //compute volume from config q
+
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+        return problemSolver_->robot ()->numberDof ();
+      }
+      // --------------------------------------------------------------------
 
     } // end of namespace impl.
   } // end of namespace corbaServer.

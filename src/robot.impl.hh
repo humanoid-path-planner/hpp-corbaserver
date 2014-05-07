@@ -160,6 +160,8 @@ namespace hpp
 			  const Double* config)
 	  throw (hpp::Error);
 
+	virtual Short computeVolume () throw (hpp::Error);
+
       private:
 	typedef std::map <std::string, JointPtr_t> JointMap_t;
 	// Store devices, joints and bodies in construction.
