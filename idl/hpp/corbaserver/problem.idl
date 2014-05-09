@@ -57,9 +57,9 @@ module hpp
     void resetConstraints () raises (Error);
 
     /// Lock degree of freedom with given value
-    /// \param dofId rank of the degree of freedom in configuration vector,
+    /// \param jointName name of the joint
     /// \param value value of the locked degree of freedom.
-    void lockDof (in unsigned short dofId, in double value) raises (Error);
+    void lockDof (in string jointName, in double value) raises (Error);
 
     /// \}
 

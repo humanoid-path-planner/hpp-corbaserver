@@ -72,7 +72,7 @@ namespace hpp
     typedef model::vector_t vector_t;
     typedef model::vector3_t vector3_t;
     typedef model::ComJacobian_t ComJacobian_t;
-
+    typedef model::size_type size_type;
     namespace impl
     {
       using CORBA::Boolean;

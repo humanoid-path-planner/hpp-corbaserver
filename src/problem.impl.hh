@@ -48,7 +48,8 @@ namespace hpp
 				       hpp::floatSeq_out output)
 	  throw (hpp::Error);
 	virtual void resetConstraints () throw (hpp::Error);
-	virtual void lockDof (UShort dofId, Double value) throw (hpp::Error);
+	virtual void lockDof (const char* jointName, Double value)
+	  throw (hpp::Error);
 	virtual void solve () throw (hpp::Error);
 
 	virtual void directPath (const hpp::floatSeq& startConfig,

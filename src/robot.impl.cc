@@ -356,8 +356,8 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      void Robot::setJointBounds (UShort jointId,
-				   const jointBoundSeq& jointBounds)
+      void Robot::setJointBounds (const char* jointName,
+				  const jointBoundSeq& jointBounds)
 	throw (hpp::Error)
       {
 	try  {
@@ -365,9 +365,8 @@ namespace hpp
 	  DevicePtr_t robot = problemSolver_->robot ();
 
 	  // get joint
-	  JointVector_t jointVector = robot->getJointVector ();
-	  JointPtr_t kwsJoint = jointVector[jointId];
-	  localSetJointBounds(kwsJoint, jointBounds);
+	  JointPtr_t joint = robot->getJointByName (jointName);
+	  localSetJointBounds(joint, jointBounds);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}

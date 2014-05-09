@@ -99,10 +99,9 @@ namespace hpp
 	virtual Short getJointConfigSize (const char* jointName)
 	  throw (hpp::Error);
 
-	virtual void
-	setJointBounds
-	(UShort inJointId, const hpp::corbaserver::jointBoundSeq& jointBound)
-	  throw (hpp::Error);
+	virtual void setJointBounds
+	(const char* jointName,
+	 const hpp::corbaserver::jointBoundSeq& jointBound) throw (hpp::Error);
 
 	virtual void setCurrentConfig
 	(const hpp::floatSeq& dofArray) throw (hpp::Error);

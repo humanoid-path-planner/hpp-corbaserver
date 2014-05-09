@@ -190,9 +190,14 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::lockDof (UShort dofId, Double value) throw (hpp::Error)
+      void Problem::lockDof (const char* jointName, Double value)
+	throw (hpp::Error)
       {
 	try {
+	  // Get robot in hppPlanner object.
+	  DevicePtr_t robot = problemSolver_->robot ();
+	  JointPtr_t joint = robot->getJointByName (jointName);
+	  size_type dofId = joint->rankInConfiguration ();
 	  std::ostringstream oss;
 	  oss << "locked dof, index: " << dofId << ", value: " << value;
 
