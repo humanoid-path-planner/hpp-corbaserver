@@ -50,6 +50,9 @@ namespace hpp
 	virtual void resetConstraints () throw (hpp::Error);
 	virtual void lockDof (const char* jointName, Double value)
 	  throw (hpp::Error);
+	virtual void setErrorThreshold (Double threshold) throw (Error);
+	virtual void setMaxIterations (UShort iterations) throw (Error);
+
 	virtual void solve () throw (hpp::Error);
 
 	virtual void directPath (const hpp::floatSeq& startConfig,

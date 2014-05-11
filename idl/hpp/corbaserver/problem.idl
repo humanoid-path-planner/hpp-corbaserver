@@ -61,6 +61,12 @@ module hpp
     /// \param value value of the locked degree of freedom.
     void lockDof (in string jointName, in double value) raises (Error);
 
+    /// Set error threshold in numerical constraint resolution
+    void setErrorThreshold (in double threshold) raises (Error);
+
+    /// Set maximal number of iterations in numerical constraint resolution
+    void setMaxIterations (in unsigned short iterations) raises (Error);
+
     /// \}
 
     /// \name Solve problem and get paths

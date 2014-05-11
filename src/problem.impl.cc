@@ -211,6 +211,19 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+      void Problem::setErrorThreshold (Double threshold) throw (Error)
+      {
+	problemSolver_->errorThreshold (threshold);
+      }
+
+      // ---------------------------------------------------------------
+      void Problem::setMaxIterations (UShort iterations) throw (Error)
+      {
+	problemSolver_->maxIterations (iterations);
+      }
+
+      // ---------------------------------------------------------------
+
       void Problem::solve () throw (hpp::Error)
       {
 	try {
