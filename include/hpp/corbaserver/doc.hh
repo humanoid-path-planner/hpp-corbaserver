@@ -4,9 +4,9 @@
 
 This package implements a Corba interface with hppCore package. Corba requests can be sent to trigger actions in a hpp::core::ProblemSolver object. 
 Three main Corba interfaces are implemented:
-\li hpp::Robot: to build a hpp::model::Device and to insert it in a hpp::core::ProblemSolver object,
-\li hpp::Obstacle: to build obstacles and insert them in a hpp::core::ProblemSolver object,
-\li hpp::Problem: to define a path planning problem and solve it.
+\li hpp::corbaserver::Robot: to build a hpp::model::Device and to insert it in a hpp::core::ProblemSolver object,
+\li hpp::corbaserver::Obstacle: to build obstacles and insert them in a hpp::core::ProblemSolver object,
+\li hpp::corbaserver::Problem: to define a path planning problem and solve it.
 
 However, the main interface classes for users of this package are
 \li hpp::corbaServer::Server that implements the above Corba interfaces
