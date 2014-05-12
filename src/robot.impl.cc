@@ -320,36 +320,44 @@ namespace hpp
 
       Short Robot::getJointNumberDof (const char* jointName) throw (hpp::Error)
       {
-	DevicePtr_t robot = problemSolver_->robot ();
-	if (!robot) {
-	  throw hpp::Error ("no robot");
+	try {
+	  DevicePtr_t robot = problemSolver_->robot ();
+	  if (!robot) {
+	    throw hpp::Error ("no robot");
+	  }
+	  JointPtr_t joint = robot->getJointByName (jointName);
+	  if (!joint) {
+	    std::ostringstream oss ("Robot has no joint with name ");
+	    oss  << jointName;
+	    hppDout (error, oss.str ());
+	    throw hpp::Error (oss.str ().c_str ());
+	  }
+	  return joint->numberDof ();
+	} catch (const std::exception& exc) {
+	  throw Error (exc.what ());
 	}
-	JointPtr_t joint = robot->getJointByName (jointName);
-	if (!joint) {
-	  std::ostringstream oss ("Robot has no joint with name ");
-	  oss  << jointName;
-	  hppDout (error, oss.str ());
-	  throw hpp::Error (oss.str ().c_str ());
-	}
-	return joint->numberDof ();
       }
 
       // --------------------------------------------------------------------
 
       Short Robot::getJointConfigSize (const char* jointName) throw (hpp::Error)
       {
-	DevicePtr_t robot = problemSolver_->robot ();
-	if (!robot) {
-	  throw hpp::Error ("no robot");
+	try {
+	  DevicePtr_t robot = problemSolver_->robot ();
+	  if (!robot) {
+	    throw hpp::Error ("no robot");
+	  }
+	  JointPtr_t joint = robot->getJointByName (jointName);
+	  if (!joint) {
+	    std::ostringstream oss ("Robot has no joint with name ");
+	    oss  << jointName;
+	    hppDout (error, oss.str ());
+	    throw hpp::Error (oss.str ().c_str ());
+	  }
+	  return joint->configSize ();
+	} catch (const std::exception& exc) {
+	  throw Error (exc.what ());
 	}
-	JointPtr_t joint = robot->getJointByName (jointName);
-	if (!joint) {
-	  std::ostringstream oss ("Robot has no joint with name ");
-	  oss  << jointName;
-	  hppDout (error, oss.str ());
-	  throw hpp::Error (oss.str ().c_str ());
-	}
-	return joint->configSize ();
       }
 
       // --------------------------------------------------------------------
