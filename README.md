@@ -16,6 +16,7 @@ Dependencies:
 
   - ros-hydro
   - humanoid-path-planner
+  - scipy
 
 Start:
 
