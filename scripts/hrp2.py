@@ -19,9 +19,10 @@
 from hpp.corbaserver.robot import Robot as Parent
 
 class Robot (Parent):
-    urdfName = "hrp2_14"
+    urdfName = "hrp2_14_capsule"
     urdfSuffix = ""
     srdfSuffix = ""
+    packageName = "hrp2_14_description"
     halfSitting = \
         {"base_joint_x": 0.0,
          "base_joint_y": 0.0,
@@ -70,8 +71,7 @@ class Robot (Parent):
          }
 
     def __init__ (self):
-        Parent.__init__ (self, "freeflyer", self.urdfName, self.urdfSuffix,
-                         self.srdfSuffix)
+        Parent.__init__ (self,  self.urdfName, "freeflyer")
 
     def getInitialConfig (self):
         q = []
