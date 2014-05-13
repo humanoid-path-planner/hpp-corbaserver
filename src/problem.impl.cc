@@ -46,7 +46,7 @@ namespace hpp
 	// Compare size of input array with number of degrees of freedom of
 	// robot.
 	if (configDim != robot->configSize ()) {
-	  hppDout (error, "robot nb dof is different from config size");
+	  hppDout (error, "robot nb dof=" << configDim << " is different from config size=" << robot->configSize());
 	  throw std::runtime_error
 	    ("robot nb dof is different from config size");
 	}
