@@ -3,7 +3,7 @@ import time
 from projected_volume import ProjectedVolume
 
 pv = ProjectedVolume()
-pv.setConfig(pv.q1)
+pv.setConfig(pv.q2)
 pv.compute()
-pv.display()
+pv.displayRobot()
 pv.computeConvexHull()

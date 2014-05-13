@@ -51,7 +51,8 @@ class ProjectedVolume ():
                 #                        0.01,
                 #                        0.01)
 
-                self.scene_publisher.addPolygon(self.distanceToProjection, self.hull)
+                #self.scene_publisher.addPolygon(self.distanceToProjection, self.hull)
+                self.scene_publisher.addPolygonFilled(self.distanceToProjection, self.hull)
                 self.scene_publisher.publishObjects()
                 r.sleep()
                 r.sleep()
@@ -65,6 +66,11 @@ class ProjectedVolume ():
                         #capsule containts x,y,z,radius,length
                         self.capsule[ctr] = numpy.array(capsulePos[i:i+5])
                         ctr+=1
+
+        def displayRobot(self):
+                r = rospy.Rate(1)
+                r.sleep()
+                self.scene_publisher(self.q)
 
         def display(self):
                 r = rospy.Rate(1)
