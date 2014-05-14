@@ -154,8 +154,31 @@ namespace hpp
 
 
       // ---------------------------------------------------------------
+      void Problem::createPositionConstraints (const hpp::floatSeq& input,
+				      hpp::floatSeq_out output)
+	throw (hpp::Error)
+      {
+	ConfigurationPtr_t config = floatSeqToConfig (problemSolver_, input);
+	try {
+	  if (!problemSolver_->constraints ()->apply (*config)) {
+	    throw hpp::Error ("Failed to apply constraint");
+	  }
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+	ULong size = (ULong) config->size ();
+	hpp::floatSeq* q_ptr = new hpp::floatSeq ();
+	q_ptr->length (size);
 
-      void Problem::applyConstraints (const hpp::floatSeq& input,
+	for (std::size_t i=0; i<size; ++i) {
+	  (*q_ptr) [i] = (*config) [i];
+	}
+	output = q_ptr;
+	}
+      // ---------------------------------------------------------------
+      
+
+	void Problem::applyConstraints (const hpp::floatSeq& input,
 				      hpp::floatSeq_out output)
 	throw (hpp::Error)
       {
