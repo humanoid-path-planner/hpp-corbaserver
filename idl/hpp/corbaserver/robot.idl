@@ -254,7 +254,8 @@ module hpp
 			  in Transform pos) raises (Error);
 
     ///  Compute Projected Volume of the robot body
-    short computeVolume() raises (Error);
+    /// \return position of capsules
+    floatSeq computeVolume() raises (Error);
 
     /// \}
   };

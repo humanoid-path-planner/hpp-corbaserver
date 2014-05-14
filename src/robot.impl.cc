@@ -760,19 +760,122 @@ namespace hpp
 	}
       }
       // --------------------------------------------------------------------
-      Short Robot::computeVolume () throw (hpp::Error)
+
+	//try {
+	//  //DevicePtr_t robot = problemSolver_->robot ();
+	//  //vector_t config = robot->currentConfiguration ();
+	//  //std::size_t configSize = robot->configSize ();
+	//  //std::size_t Ndof = robot->numberDof ();
+        //  ////compute volume from config q
+	//  //for (ObjectIterator itJoints = robot->objectIterator
+	//         //(hpp::model::COLLISION); !itJoints.isEnd (); ++itJoints) {
+        //        //hppDout (info, "[JOINT.NAME] " << (*itJoints)->name ());
+	//  //}
+
+	//} catch (const std::exception& exc) {
+	//  throw hpp::Error (exc.what ());
+	//}
+        //return problemSolver_->robot ()->numberDof ();
+
+      hpp::floatSeq* Robot::computeVolume () throw (hpp::Error)
       {
 	try {
-	  DevicePtr_t robot = problemSolver_->robot ();
-	  vector_t config = robot->currentConfiguration ();
-	  std::size_t deviceDim = robot->configSize ();
-          //compute volume from config q
+                using namespace std;
+                using namespace fcl;
+                hppDout (notice, "Computing Volume");
+                DevicePtr_t robot = problemSolver_->robot ();
+                hpp::floatSeq* capsPos = new hpp::floatSeq;
+                std::vector<double> capsulePoints;
 
+                nameSeq *innerObjectSeq = 0x0;
+                JointVector_t jointVec = robot->getJointVector();
+                std::stringstream stream;
+
+                for(uint i = 0; i<jointVec.size(); i++){
+                        //-----------------------------------------------
+                        JointPtr_t joint = jointVec.at(i);
+                        stream << "JOINT " << joint->name () << endl;
+                        //-----------------------------------------------
+                        BodyPtr_t body = joint->linkedBody();
+                        if (!body) {
+                                stream << "JOINT has no body" << endl;
+                                continue;
+                        }
+                        stream << "BODY " << body->name () << endl;
+                        //-----------------------------------------------
+                        ObjectVector_t objects = body->innerObjects (model::COLLISION);
+                        if (objects.size() > 0) {
+                                std::size_t nbObjects = objects.size();
+                                for (std::size_t iObject=0; iObject < nbObjects; iObject++) {
+                                        //-----------------------------------------------
+                                        CollisionObjectPtr_t object = objects[iObject];
+                                        std::string geometryName = object->name();
+                                        stream << "OBJECT " << geometryName << endl;
+                                        //-----------------------------------------------
+                                        fcl::CollisionObjectPtr_t fco = object->fcl();
+                                        //-----------------------------------------------
+                                        const fcl::NODE_TYPE nodeType = fco->getNodeType();
+                                        const fcl::OBJECT_TYPE objectType = fco->getObjectType();
+                                        //safety check the right node type:
+                                        // geometry -- capsules
+                                        if(objectType != OT_GEOM){
+                                                hppDout(error, "OBJECT_TYPE " << objectType << " not handled by function");
+                                        }
+                                        if(nodeType != GEOM_CAPSULE){
+                                                hppDout(error, "NODE_TYPE " << nodeType << " not handled by function");
+                                        }
+                                        const fcl::Capsule *capsule = static_cast<const fcl::Capsule*>(fco->getCollisionGeometry());
+
+                                        double length = capsule->lz;
+                                        double radius = capsule->radius;
+                                        //-----------------------------------------------
+                                        //compute the outer points of the
+                                        //capsule: ( x1 -----o----- x2 )
+                                        //here, o depicts the center of the
+                                        //capsule, which is given by aabb_center
+                                        fcl::Vec3f center = capsule->aabb_center;
+                                        fcl::Transform3f T = fco->getTransform();
+
+
+                                        //create points all along the axis of
+                                        //the capsule and project them under the
+                                        //given transformation
+                                        double l = -length/2;
+                                        double dl = length/2;
+                                        while( l<=length/2 ){
+                                                fcl::Vec3f x(0,0,l);
+                                                fcl::Transform3f Tx;
+                                                Tx.setTranslation(x);
+                                                Tx = T*Tx;
+                                                x = Tx.getTranslation();
+                                                capsulePoints.push_back(x[0]);
+                                                capsulePoints.push_back(x[1]);
+                                                capsulePoints.push_back(x[2]);
+                                                capsulePoints.push_back(radius);
+                                                capsulePoints.push_back(length);
+                                                l = l+dl;
+                                        }
+                                        //-----------------------------------------------
+                                        //fcl::AABB aabb = fco->getAABB();
+                                        //stream << aabb.width() << " " << aabb.height() << endl;
+                                }
+                        }
+                }
+                capsPos->length (capsulePoints.size());
+                uint cur_point = 0;
+                for(uint i=0;i<capsulePoints.size();i++){
+                        (*capsPos)[cur_point++] = capsulePoints.at(i);
+                }
+
+                hppDout(notice, stream.str());
+
+                return capsPos;
 	} catch (const std::exception& exc) {
+	  hppDout (error, exc.what ());
 	  throw hpp::Error (exc.what ());
 	}
-        return problemSolver_->robot ()->numberDof ();
       }
+
       // --------------------------------------------------------------------
 
     } // end of namespace impl.
