@@ -53,6 +53,13 @@ module hpp
     void applyConstraints (in floatSeq input, out floatSeq output)
       raises (Error);
 
+
+    /// Apply position constraints to a configuration
+    ///
+    /// constraints are stored in ProblemSolver object
+    void createPositionConstraints (in floatSeq input, out floatSeq output)
+      raises (Error);
+
     /// Reset constraints
     void resetConstraints () raises (Error);
 
