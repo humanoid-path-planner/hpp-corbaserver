@@ -29,7 +29,7 @@ class ProjectedVolume ():
         def setRandomConfig(self):
                 self.robot.setCurrentConfig(qrand)
 
-        def computeConvexHull(self):
+        def displayConvexHullProjection(self):
                 from scipy.spatial.qhull import Delaunay
                 from convex_hull import convex_hull
 
@@ -50,14 +50,33 @@ class ProjectedVolume ():
                 #                        0.5,
                 #                        0.01,
                 #                        0.01)
-
                 #self.scene_publisher.addPolygon(self.distanceToProjection, self.hull)
                 self.scene_publisher.addPolygonFilled(self.distanceToProjection, self.hull)
                 self.scene_publisher.publishObjects()
                 r.sleep()
                 r.sleep()
 
-        def compute(self):
+        def computeConvexHullProjection(self):
+                self.q_grad = self.robot.gradientConfigurationWrtProjection (self.q)
+                self.q_grad.insert(3,0)
+                self.q_grad[0]=0
+                self.q_grad[1]=0
+                self.q_grad[2]=0
+                #make sure that quaternions are not changed
+                self.q_grad[3]=0
+                self.q_grad[4]=0
+                self.q_grad[5]=0
+                self.q_grad[6]=0
+                self.q_new = [x+y for x,y in zip(self.q,self.q_grad)]
+                print self.q_new[0:8]
+                self.setConfig(self.q_new)
+                self.displayRobot()
+                
+        def displayRobot(self):
+                r = rospy.Rate(1)
+                r.sleep()
+                self.scene_publisher(self.q)
+        def computeCapsuleProjection(self):
                 capsulePos = self.robot.computeVolume()
                 #access 3 elements at a time (x,y,z)
                 self.capsule = numpy.empty((len(capsulePos)/5, 5))
@@ -67,12 +86,7 @@ class ProjectedVolume ():
                         self.capsule[ctr] = numpy.array(capsulePos[i:i+5])
                         ctr+=1
 
-        def displayRobot(self):
-                r = rospy.Rate(1)
-                r.sleep()
-                self.scene_publisher(self.q)
-
-        def display(self):
+        def displayCapsuleProjection(self):
                 r = rospy.Rate(1)
                 r.sleep()
                 self.scene_publisher(self.q)

@@ -4,6 +4,11 @@ from projected_volume import ProjectedVolume
 
 pv = ProjectedVolume()
 pv.setConfig(pv.q2)
-pv.compute()
-pv.displayRobot()
-pv.computeConvexHull()
+#pv.compute()
+#pv.displayRobot()
+#pv.computeConvexHull()
+pv.computeConvexHullProjection()
+
+pv.computeCapsuleProjection()
+pv.displayConvexHullProjection()
+pv.displayCapsuleProjection()
