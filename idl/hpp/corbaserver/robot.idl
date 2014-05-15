@@ -63,11 +63,11 @@ module hpp
     /// \{
 
     /// Get size of configuration
-    /// \param configSize size of configuration
+    /// \return size of configuration
     short getConfigSize () raises (Error);
 
     /// Get size of velocity
-    /// \param numberDof size of velocity
+    /// \return size of velocity
     short getNumberDof () raises (Error);
 
     /// \}
