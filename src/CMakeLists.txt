@@ -114,5 +114,6 @@ ADD_EXECUTABLE (hppcorbaserver hpp-corbaserver.cc)
 TARGET_LINK_LIBRARIES (hppcorbaserver ${LIBRARY_NAME})
 PKG_CONFIG_USE_DEPENDENCY(hppcorbaserver hpp-core)
 PKG_CONFIG_USE_DEPENDENCY(hppcorbaserver hpp-model-urdf)
+PKG_CONFIG_USE_DEPENDENCY(hppcorbaserver hpp-constraints)
 
 INSTALL (TARGETS hppcorbaserver DESTINATION bin)

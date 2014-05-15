@@ -870,7 +870,7 @@ namespace convexhull{
           std::vector<std::vector<double> > capsulePoints;
           std::vector<hpp::model::JointJacobian_t > capsuleJacobian;
 
-          nameSeq *innerObjectSeq = 0x0;
+          //nameSeq *innerObjectSeq = 0x0;
           JointVector_t jointVec = robot->getJointVector();
           std::stringstream stream;
 
@@ -997,7 +997,7 @@ namespace convexhull{
                 hpp::floatSeq* capsPos = new hpp::floatSeq;
                 std::vector<double> capsulePoints;
 
-                nameSeq *innerObjectSeq = 0x0;
+          //      nameSeq *innerObjectSeq = 0x0;
                 JointVector_t jointVec = robot->getJointVector();
                 std::stringstream stream;
 

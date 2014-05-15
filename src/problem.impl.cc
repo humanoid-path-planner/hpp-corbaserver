@@ -27,6 +27,33 @@
 
 #include "problem.impl.hh"
 
+
+// ajout Nassime ////////////////////////////////////////////////////////////
+#include <hpp/constraints/position.hh>
+#include <hpp/core/config-projector.hh>
+#include <hpp/model/humanoid-robot.hh>
+#include <hpp/model/joint.hh>
+#include <hpp/core/config-projector.hh>
+#include <hpp/constraints/orientation.hh>
+#include <hpp/constraints/position.hh>
+#include <hpp/constraints/relative-com.hh>
+#include <hpp/constraints/relative-orientation.hh>
+#include <hpp/constraints/relative-position.hh>
+#include <hpp/wholebody-step/static-stability-constraint.hh>
+    using hpp::constraints::Orientation;
+    using hpp::constraints::OrientationPtr_t;
+    using hpp::constraints::Position;
+    using hpp::constraints::PositionPtr_t;
+    using hpp::constraints::RelativeOrientation;
+    using hpp::constraints::RelativeComPtr_t;
+    using hpp::constraints::RelativeCom;
+    using hpp::constraints::RelativeOrientationPtr_t;
+    using hpp::constraints::RelativePosition;
+    using hpp::constraints::RelativePositionPtr_t;
+/////////////////////////////////////////////////////////////////////////////
+
+
+
 namespace hpp
 {
   namespace corbaServer
@@ -158,6 +185,42 @@ namespace hpp
 				      hpp::floatSeq_out output)
 	throw (hpp::Error)
       {
+
+                //Params
+                JointPtr_t joint1 = problemSolver_->robot()->getJointByName("LARM_JOINT4");
+                JointPtr_t joint2 = problemSolver_->robot()->getJointByName("RARM_JOINT3");
+                vector3_t local1;
+                vector3_t local2;
+                local1.setZero();
+
+
+                const Transform3f& transfo1 = joint1->currentTransformation ();
+                const Transform3f& transfo2 = joint2->currentTransformation ();
+                hpp::model::matrix3_t rot1 (transfo1.getRotation ());
+                hpp::model::matrix3_t rot2 (transfo2.getRotation ());
+                //hpp::model::matrix3_t reference = rot1 * rot2;        
+                hpp::model::matrix3_t rotNulle;
+                rotNulle.setZero();
+                const hpp::model::matrix3_t& pRotNulle = rotNulle;
+
+
+                //local2 = rot2 * (transfo1.getTranslation() - transfo2.getTranslation ());
+                local2.setZero();
+                //local2.setValue(0,0,0.0);
+
+
+
+
+                // Adding constraints into projector
+		//problemSolver_->constraints()->configProjector()->addConstraint(
+		//	RelativePosition::create(problemSolver_->robot(), joint1, joint2, local1, local2));
+		//problemSolver_->constraints()->configProjector()->addConstraint(RelativeOrientation::create(problemSolver_->robot(), joint1, joint2, pRotNulle, false));
+
+
+
+
+
+
 	ConfigurationPtr_t config = floatSeqToConfig (problemSolver_, input);
 	try {
 	  if (!problemSolver_->constraints ()->apply (*config)) {
