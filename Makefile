@@ -4,7 +4,7 @@ SRC_DIR=${DEVEL_DIR}/src
 HPP_SERVER=${DEVEL_DIR}/install/bin/hpp-wholebody-step-server
 BUILD_TYPE=Debug
 
-hpp-corbaserver_branch=master
+hpp-corbaserver_branch=nassime
 hpp-corbaserver_repository=${HPP_REPO_FORK}
 hpp_ros_branch=master
 hpp_ros_repository=${HPP_REPO_FORK}
@@ -19,6 +19,7 @@ restartserver:
 	gdb -ex run ${HPP_SERVER}
 
 %.install: %.update %.build
+	echo "successful installed"
 
 %.update:
 	cd ${DEVEL_DIR}/src/hpp-corbaserver

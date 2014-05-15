@@ -1,0 +1,137 @@
+Release 2.2.1, 10/08/2013
+
+        1. Fix warnings.
+        2. Synchronize cmake submodule.
+
+Release 2.2, 10/03/2015
+
+        1. Add an interface to get the list of joint names in the same
+           order as in config.
+        2. Fix various warnings.
+
+
+Release 2.1.1, 09/26/2013
+
+	1. Update dependency versions to preserve compatibility.
+
+Release 2.1, 09/26/2013
+
+	1. Update to Kitelab 2.07,
+	2. Remove bindings that allowed creating and adding bodies,
+	3. Update to hpp-kwsplus v2.3.
+
+Release 2.0, 07/31/2013
+
+	1. Replace dependency to OpenHRP by dependency to ROS for loading
+	   robot models,
+        2. Use hpp-util logging machinery
+	3. Implement a python client making hpp-python obsolete
+	4. Use cmake to build package
+
+Release 1.16, 06/18/2012
+
+	1. Method Problem::resetGoalConfig returns 0,
+	2. add idl services in order to cound node edges and connected
+	   components in the roadmap,
+	3. add idl service to bind hpp::core::Planner::clearRoadmaps.
+
+Release 1.15, 02/11/2011
+
+	* Update to modifications in hpp-core version 2.4.
+	   - modify idl functions that handle goal configurations.
+
+Release 1.13, 12/20/2011
+
+	* Compatibility with kitelab-2.06.
+
+Release 1.12, 09/30/2011
+
+	* Compatibility with hpp-model-2.0
+
+Release 1.11, 09/01/2011
+
+	* Adapt to hrp2 package new name.
+	* Autotools packaging has been cleaned up. Package passes distcheck.
+
+Release 1.9.1, 12/09/2010
+
+	* correct a bug in polyhedron creation
+
+Release 1.9, 12/08/2010
+
+	* --with-openhrp configuration option has been replaced by
+	--enable-openhrp
+	* package has been cleaned-up to fit new HPP coding style.
+	* Problem interface has now a parseFile() method to load a kxml file.
+
+Release 1.8.0, 10/31/2009
+
+	* Autotools packaging has been cleaned up. Package pass distcheck.
+
+Release 1.7.4, 05/28/2009
+
+Interface to ModelLoader implemented by class ChppciOpenHrpClient have been 
+homogeneized:
+
+  1. deprecated functions have been removed,
+
+  2. ktStatus loadHrp2Model(double inPenetration, const char *model=NULL)
+
+     has been replaced by
+
+     ktStatus 
+     loadHrp2Model(double inPenetration, 
+                   const std::string &inModel=
+                   std::string("OPENHRP_PREFIX/Controller/IOserver/robot/HRP2JRL/model/HRP2JRLmain.wrl"))
+
+     where OPENHRP_PREFIX is the installation prefix of OpenHRP resolved at
+     configuration.
+
+  3. ktStatus loadHrp2Model(ChppHumanoidRobotShPtr &outDevice, 
+                            const char *model=NULL)
+     has been replaced by
+
+     ktStatus 
+     loadHrp2Model(ChppHumanoidRobotShPtr &outDevice, 
+                   const std::string &inModel=
+                   std::string("OPENHRP_PREFIX/Controller/IOserver/robot/HRP2JRL/model/HRP2JRLmain.wrl"))
+
+     where OPENHRP_PREFIX is the installation prefix of OpenHRP resolved at
+     configuration.
+
+  4. ktStatus 
+     loadRobotModel(std::string inFilename, std::string inDeviceName, 
+                    ChppDeviceShPtr &outDevice, 
+                    std::string inOpenHrpPrefix=
+                    std::string("OPENHRP_PREFIX"))
+
+     has been replaced by
+
+     ktStatus 
+     loadRobotModel(std::string inFilename, std::string inDeviceName, 
+                    ChppDeviceShPtr &outDevice, 
+                    std::string inDirectory=
+                    std::string("OPENHRP_PREFIX")+std::string("/etc"))
+     where OPENHRP_PREFIX is the installation prefix of OpenHRP resolved at
+     configuration.
+
+  5. ktStatus
+     loadObstacleModel(std::string inFilename, std::string inObstacleName, 
+                       CkppKCDPolyhedronShPtr &outPolyhedron, 
+                       std::string inOpenHrpPrefix=
+                       std::string("OPENHRP_PREFIX"))
+
+     has been replaced by
+
+     ktStatus 
+     loadObstacleModel(std::string inFilename, std::string inObstacleName, 
+                       CkppKCDPolyhedronShPtr& outPolyhedron,
+                       std::string inDirectory=
+                       std::string("@OPENHRP_PREFIX@")+std::string("/etc/"));
+
+     where OPENHRP_PREFIX is the installation prefix of OpenHRP resolved at
+     configuration.
+
+
+     In Changes 2, 3, 4, and 5, using the default argument to specify paths
+     yields the same behavior as formerly.

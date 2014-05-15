@@ -1,0 +1,6 @@
+FILE_PATTERNS          = *.idl *.hh
+
+INPUT                  = @CMAKE_SOURCE_DIR@/include \
+                         @CMAKE_SOURCE_DIR@/idl	  \
+                         @CMAKE_SOURCE_DIR@/doc
+TAGFILES		 = @HPP_CORE_DOXYGENDOCDIR@/hpp-core.doxytag=@HPP_CORE_DOXYGENDOCDIR@

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 irreducible-configuration-space
 ===============================
 
@@ -32,3 +33,6 @@ Start:
   ipython
   >>> execfile('test_robot_movement.py')
 ```
+=======
+Corba server for Humanoid Path Planner applications.
+>>>>>>> 27f1f361e1fbebeda2043f4c03cc24588e9d08f7
