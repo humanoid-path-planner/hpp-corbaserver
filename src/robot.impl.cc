@@ -187,7 +187,7 @@ namespace hpp
       Short Robot::getConfigSize () throw (hpp::Error)
       {
 	try {
-	  return problemSolver_->robot ()->configSize ();
+	  return (Short) problemSolver_->robot ()->configSize ();
 	} catch (const std::exception& exc) {
 	  hppDout (error, exc.what ());
 	  throw hpp::Error (exc.what ());
@@ -199,7 +199,7 @@ namespace hpp
       Short Robot::getNumberDof () throw (hpp::Error)
       {
 	try {
-	  return problemSolver_->robot ()->numberDof ();
+	  return (Short) problemSolver_->robot ()->numberDof ();
 	} catch (const std::exception& exc) {
 	  hppDout (error, exc.what ());
 	  throw hpp::Error (exc.what ());
@@ -364,7 +364,7 @@ namespace hpp
 	    hppDout (error, oss.str ());
 	    throw hpp::Error (oss.str ().c_str ());
 	  }
-	  return joint->numberDof ();
+	  return (Short)joint->numberDof ();
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
@@ -386,7 +386,7 @@ namespace hpp
 	    hppDout (error, oss.str ());
 	    throw hpp::Error (oss.str ().c_str ());
 	  }
-	  return joint->configSize ();
+	  return (Short) joint->configSize ();
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
@@ -654,9 +654,9 @@ namespace hpp
 	  const ComJacobian_t& jacobian =
 	    problemSolver_->robot ()->jacobianCenterOfMass ();
 	  res->length (jacobian.rows ());
-	  for (std::size_t i=0; i<jacobian.rows (); ++i) {
+	  for (size_type i=0; i<jacobian.rows (); ++i) {
 	    hpp::floatSeq row; row.length (jacobian.cols ());
-	    for (std::size_t j=0; j<jacobian.cols (); ++j) {
+	    for (size_type j=0; j<jacobian.cols (); ++j) {
 	      row [j] = jacobian (i, j);
 	    }
 	    (*res) [i] = row;
