@@ -226,7 +226,8 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::lockDof (const char* jointName, Double value)
+      void Problem::lockDof (const char* jointName, Double value,
+			     UShort rankInConfiguration, UShort rankInVelocity)
 	throw (hpp::Error)
       {
 	try {
@@ -237,8 +238,10 @@ namespace hpp
 	  std::ostringstream oss;
 	  oss << "locked dof, index: " << dofId << ", value: " << value;
 
-	  LockedDofPtr_t lockedDof (LockedDof::create (oss.str (),
-						       dofId, value));
+	  LockedDofPtr_t lockedDof (LockedDof::create (oss.str (), joint,
+						       value,
+						       rankInConfiguration,
+						       rankInVelocity));
 	  problemSolver_->addConstraint (lockedDof);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());

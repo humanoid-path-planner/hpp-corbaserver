@@ -67,8 +67,17 @@ module hpp
     
     /// Lock degree of freedom with given value
     /// \param jointName name of the joint
-    /// \param value value of the locked degree of freedom.
-    void lockDof (in string jointName, in double value) raises (Error);
+    /// \param value value of the locked degree of freedom,
+    /// \param rankInConfiguration rank of the locked dof in the joint
+    ///        configuration vector (should be 0 for rotation and translation
+    ///        joints)
+    /// \param rankInVelocity rank of the locked dof in the joint
+    ///        velocity vector (should be 0 for rotation and translation
+    ///        joints)
+    void lockDof (in string jointName, in double value,
+		  in unsigned short rankInConfiguration,
+		  in unsigned short rankInVelocity)
+      raises (Error);
 
     /// Set error threshold in numerical constraint resolution
     void setErrorThreshold (in double threshold) raises (Error);
