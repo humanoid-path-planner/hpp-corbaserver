@@ -27,6 +27,33 @@
 
 #include "problem.impl.hh"
 
+
+// ajout Nassime ////////////////////////////////////////////////////////////
+#include <hpp/constraints/position.hh>
+#include <hpp/core/config-projector.hh>
+#include <hpp/model/humanoid-robot.hh>
+#include <hpp/model/joint.hh>
+#include <hpp/core/config-projector.hh>
+#include <hpp/constraints/orientation.hh>
+#include <hpp/constraints/position.hh>
+#include <hpp/constraints/relative-com.hh>
+#include <hpp/constraints/relative-orientation.hh>
+#include <hpp/constraints/relative-position.hh>
+#include <hpp/wholebody-step/static-stability-constraint.hh>
+    using hpp::constraints::Orientation;
+    using hpp::constraints::OrientationPtr_t;
+    using hpp::constraints::Position;
+    using hpp::constraints::PositionPtr_t;
+    using hpp::constraints::RelativeOrientation;
+    using hpp::constraints::RelativeComPtr_t;
+    using hpp::constraints::RelativeCom;
+    using hpp::constraints::RelativeOrientationPtr_t;
+    using hpp::constraints::RelativePosition;
+    using hpp::constraints::RelativePositionPtr_t;
+/////////////////////////////////////////////////////////////////////////////
+
+
+
 namespace hpp
 {
   namespace corbaServer
@@ -46,7 +73,7 @@ namespace hpp
 	// Compare size of input array with number of degrees of freedom of
 	// robot.
 	if (configDim != robot->configSize ()) {
-	  hppDout (error, "robot nb dof is different from config size");
+	  hppDout (error, "robot nb dof=" << configDim << " is different from config size=" << robot->configSize());
 	  throw std::runtime_error
 	    ("robot nb dof is different from config size");
 	}
@@ -154,8 +181,82 @@ namespace hpp
 
 
       // ---------------------------------------------------------------
+      void Problem::createPositionConstraints (const hpp::floatSeq& input,
+				      hpp::floatSeq_out output)
+	throw (hpp::Error)
+      {
 
-      void Problem::applyConstraints (const hpp::floatSeq& input,
+                //Params
+                JointPtr_t joint1 = problemSolver_->robot()->getJointByName("RLEG_JOINT4");
+                JointPtr_t joint2 = problemSolver_->robot()->getJointByName("RARM_JOINT4");
+                vector3_t local1;
+                vector3_t local2;
+                local1.setZero();
+
+
+		fcl::Vec3f v(0,0,0);
+		const fcl::Vec3f& vr(v);
+
+                const Transform3f& transfo1 = joint1->currentTransformation ();
+                const Transform3f& transfo2 = joint2->currentTransformation ();
+                hpp::model::matrix3_t rot1 (transfo1.getRotation ());
+                hpp::model::matrix3_t rot2 (transfo2.getRotation ());
+		hpp::model::matrix3_t reference = rot1 * rot2;
+                hpp::model::matrix3_t rotNulle;
+		rotNulle.setZero();
+		
+		Transform3f transfo3;
+		transfo3.setTranslation(vr);
+
+		
+		//const hpp::model::matrix3_t& pRotNulle = rotNulle;
+
+                //local2 = rot2 * (transfo1.getTranslation() - transfo2.getTranslation ());
+                //local2.setZero();
+                //local2.setValue(0,0,0.0);
+
+		local2.setZero();
+		//local2 = (transfo1.getTranslation() - transfo2.getTranslation ());
+
+
+                // Adding constraints into projector
+//		problemSolver_->constraints()->configProjector()->addConstraint(
+//			RelativePosition::create(problemSolver_->robot(), joint1, joint2, local1, local2));
+//		problemSolver_->constraints()->configProjector()->addConstraint(
+//			RelativeOrientation::create(problemSolver_->robot(), joint1, joint2, rotNulle, false) );
+
+
+	problemSolver_->constraints()->configProjector()->addConstraint(
+		RelativePosition::create (problemSolver_->robot(), joint1, joint2, 
+				local1,
+			 	vector3_t (0, 0, 0.8))
+	);
+
+
+
+
+
+	ConfigurationPtr_t config = floatSeqToConfig (problemSolver_, input);
+	try {
+	  if (!problemSolver_->constraints ()->apply (*config)) {
+	    throw hpp::Error ("Failed to apply constraint");
+	  }
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+	ULong size = (ULong) config->size ();
+	hpp::floatSeq* q_ptr = new hpp::floatSeq ();
+	q_ptr->length (size);
+
+	for (std::size_t i=0; i<size; ++i) {
+	  (*q_ptr) [i] = (*config) [i];
+	}
+	output = q_ptr;
+	}
+      // ---------------------------------------------------------------
+      
+
+	void Problem::applyConstraints (const hpp::floatSeq& input,
 				      hpp::floatSeq_out output)
 	throw (hpp::Error)
       {
@@ -190,9 +291,52 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::lockDof (UShort dofId, Double value) throw (hpp::Error)
+      void Problem::setNumericalConstraints
+      (const char* constraintName, const Names_t& constraintNames)
+	throw (Error)
+      {
+	   throw Error ("NOT YET IMPLEMENTED");
+        /*
+	using core::ConstraintSetPtr_t;
+	using core::ConfigProjector;
+	using core::ConfigProjectorPtr_t;
+	try {
+	  const ConstraintSetPtr_t& constraints
+	    (problemSolver_->constraints ());
+	  const DevicePtr_t& robot (problemSolver_->robot ());
+	  if (!robot) {
+	    throw Error ("You should set the robot before defining"
+			 " constraints.");
+	  }
+	  ConfigProjectorPtr_t  configProjector =
+	    constraints->configProjector ();
+	  if (!configProjector) {
+	    configProjector = ConfigProjector::create
+	      (robot, constraintName, problemSolver_->errorThreshold (),
+	       problemSolver_->maxIterations ());
+	    constraints->addConstraint (configProjector);
+	  }
+	  for (CORBA::ULong i=0; i<constraintNames.length (); ++i) {
+	    std::string name (constraintNames [i]);
+	    configProjector->addConstraint (problemSolver_->numericalConstraint
+					    (name));
+	  }
+	} catch (const std::exception& exc) {
+	  throw Error (exc.what ());
+	}
+        */
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::lockDof (const char* jointName, Double value)
+	throw (hpp::Error)
       {
 	try {
+	  // Get robot in hppPlanner object.
+	  DevicePtr_t robot = problemSolver_->robot ();
+	  JointPtr_t joint = robot->getJointByName (jointName);
+	  size_type dofId = joint->rankInConfiguration ();
 	  std::ostringstream oss;
 	  oss << "locked dof, index: " << dofId << ", value: " << value;
 
@@ -203,6 +347,21 @@ namespace hpp
 	  throw hpp::Error (exc.what ());
 	}
       }
+
+      // ---------------------------------------------------------------
+
+      /*
+      void Problem::setErrorThreshold (Double threshold) throw (Error)
+      {
+	problemSolver_->errorThreshold (threshold);
+      }
+
+      // ---------------------------------------------------------------
+      void Problem::setMaxIterations (UShort iterations) throw (Error)
+      {
+	problemSolver_->maxIterations (iterations);
+      }
+      */
 
       // ---------------------------------------------------------------
 

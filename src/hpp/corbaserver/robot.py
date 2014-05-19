@@ -39,9 +39,9 @@ class Robot (object):
                                           self.urdfSuffix, self.srdfSuffix)
 
     def setTranslationBounds (self, xmin, xmax, ymin, ymax, zmin, zmax):
-        self.client.robot.setJointBounds (0, [xmin, xmax])
-        self.client.robot.setJointBounds (1, [ymin, ymax])
-        self.client.robot.setJointBounds (2, [zmin, zmax])
+        self.client.robot.setJointBounds ("base_joint_x", [xmin, xmax])
+        self.client.robot.setJointBounds ("base_joint_y", [ymin, ymax])
+        self.client.robot.setJointBounds ("base_joint_z", [zmin, zmax])
 
 class HumanoidRobot (Robot):
 

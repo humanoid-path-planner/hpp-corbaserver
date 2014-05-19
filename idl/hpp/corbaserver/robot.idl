@@ -19,9 +19,6 @@ module hpp
   /// Array of joint bounds.in order [v1_min,v1_max,v2_min,v2_max,...].
   typedef sequence<double> jointBoundSeq;
 
-  /// Sequence of names
-  typedef sequence<string> nameSeq;
-
   /// Creation of a device, joints and bodies.
   interface Robot {
     ///  Load robot model
@@ -79,7 +76,7 @@ module hpp
     /// \{
 
     /// Get joint names in the same order as in the configuration
-    nameSeq getJointNames () raises (Error);
+    Names_t getJointNames () raises (Error);
 
     /// Get joint number degrees of freedom
     /// \param jointName name of the joint
@@ -93,14 +90,14 @@ module hpp
 
     ///  set a bound for the joint
 
-    /// \param inJointId index of the joint in the robot.
+    /// \param jointName name of the joint
     /// \param inJointBound sequence of joint dof bounds in order
     ///        [v0_min,v0_max,v1_min,v1_max,...].
     /// \li If vi_min > vi_max, dof of rank i is not bounded and bounds
     ///     (for random sampling) are set to [v_max, v_min].
     /// \li If size of sequence is different from twice the number of dofs,
     ///     no dof is bounded.
-    void setJointBounds(in unsigned short inJointId,
+    void setJointBounds(in string jointName,
 			in jointBoundSeq inJointBound)
       raises (Error);
 
@@ -125,13 +122,13 @@ module hpp
     ///  Get the list of objects attached to a joint.
     /// \param inJointName name of the joint.
     /// \return list of names of CollisionObject attached to the body.
-    nameSeq getJointInnerObjects (in string jointName) raises (Error);
+    Names_t getJointInnerObjects (in string jointName) raises (Error);
 
 
     ///  Get list of collision objects tested with the body attached to a joint
     /// \param inJointName name of the joint.
     /// \return list of names of CollisionObject
-    nameSeq getJointOuterObjects (in string jointName) raises (Error);
+    Names_t getJointOuterObjects (in string jointName) raises (Error);
 
     /// \}
 
@@ -155,8 +152,8 @@ module hpp
     /// \note outer objects for a body can also be inner objects of another
     /// body.
     void distancesToCollision (out floatSeq distances,
-			       out nameSeq innerObjects,
-			       out nameSeq outerObjects,
+			       out Names_t innerObjects,
+			       out Names_t outerObjects,
 			       out floatSeqSeq innerPoints,
 			       out floatSeqSeq outerPoints) raises (Error);
 

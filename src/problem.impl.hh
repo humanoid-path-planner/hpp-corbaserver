@@ -44,11 +44,22 @@ namespace hpp
 	virtual void
 	resetGoalConfigs ()  throw (hpp::Error);
 
+	virtual void createPositionConstraints (const hpp::floatSeq& input,
+				       hpp::floatSeq_out output)
+	  throw (hpp::Error);
+
 	virtual void applyConstraints (const hpp::floatSeq& input,
 				       hpp::floatSeq_out output)
 	  throw (hpp::Error);
 	virtual void resetConstraints () throw (hpp::Error);
-	virtual void lockDof (UShort dofId, Double value) throw (hpp::Error);
+	virtual void setNumericalConstraints
+	(const char* constraintName, const hpp::Names_t& constraintNames)
+	  throw (Error);
+	virtual void lockDof (const char* jointName, Double value)
+	  throw (hpp::Error);
+	//virtual void setErrorThreshold (Double threshold) throw (Error);
+	//virtual void setMaxIterations (UShort iterations) throw (Error);
+
 	virtual void solve () throw (hpp::Error);
 
 	virtual void directPath (const hpp::floatSeq& startConfig,

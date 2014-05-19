@@ -14,6 +14,8 @@
 /// \brief main CORBA module.
 module hpp
 {
+  /// Sequence of names
+  typedef sequence <string> Names_t;
   /// Corba exception travelling through the Corba channel
   exception Error
   {

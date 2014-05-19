@@ -35,8 +35,6 @@ namespace hpp
       namespace
       {
 	using hpp::corbaserver::jointBoundSeq;
-	using hpp::corbaserver::nameSeq;
-	using hpp::corbaserver::nameSeq_out;
 
 	static void localSetJointBounds(const JointPtr_t& joint,
 					const jointBoundSeq& jointBounds)
@@ -288,7 +286,7 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      nameSeq* Robot::getJointNames () throw (hpp::Error)
+      Names_t* Robot::getJointNames () throw (hpp::Error)
       {
 	try {
 	  DevicePtr_t robot = problemSolver_->robot ();
@@ -299,8 +297,8 @@ namespace hpp
 	       it != jointVector.end (); it++) {
 	    if ((*it)->numberDof () != 0) size ++;
 	  }
-	  char** nameList = nameSeq::allocbuf(size);
-	  nameSeq *jointNames = new nameSeq (size, size, nameList);
+	  char** nameList = Names_t::allocbuf(size);
+	  Names_t *jointNames = new Names_t (size, size, nameList);
 	  std::size_t rankInConfig = 0;
 	  for (std::size_t i = 0; i < jointVector.size (); ++i) {
 	    const JointPtr_t joint = jointVector [i];
@@ -323,42 +321,50 @@ namespace hpp
 
       Short Robot::getJointNumberDof (const char* jointName) throw (hpp::Error)
       {
-	DevicePtr_t robot = problemSolver_->robot ();
-	if (!robot) {
-	  throw hpp::Error ("no robot");
+	try {
+	  DevicePtr_t robot = problemSolver_->robot ();
+	  if (!robot) {
+	    throw hpp::Error ("no robot");
+	  }
+	  JointPtr_t joint = robot->getJointByName (jointName);
+	  if (!joint) {
+	    std::ostringstream oss ("Robot has no joint with name ");
+	    oss  << jointName;
+	    hppDout (error, oss.str ());
+	    throw hpp::Error (oss.str ().c_str ());
+	  }
+	  return joint->numberDof ();
+	} catch (const std::exception& exc) {
+	  throw Error (exc.what ());
 	}
-	JointPtr_t joint = robot->getJointByName (jointName);
-	if (!joint) {
-	  std::ostringstream oss ("Robot has no joint with name ");
-	  oss  << jointName;
-	  hppDout (error, oss.str ());
-	  throw hpp::Error (oss.str ().c_str ());
-	}
-	return joint->numberDof ();
       }
 
       // --------------------------------------------------------------------
 
       Short Robot::getJointConfigSize (const char* jointName) throw (hpp::Error)
       {
-	DevicePtr_t robot = problemSolver_->robot ();
-	if (!robot) {
-	  throw hpp::Error ("no robot");
+	try {
+	  DevicePtr_t robot = problemSolver_->robot ();
+	  if (!robot) {
+	    throw hpp::Error ("no robot");
+	  }
+	  JointPtr_t joint = robot->getJointByName (jointName);
+	  if (!joint) {
+	    std::ostringstream oss ("Robot has no joint with name ");
+	    oss  << jointName;
+	    hppDout (error, oss.str ());
+	    throw hpp::Error (oss.str ().c_str ());
+	  }
+	  return joint->configSize ();
+	} catch (const std::exception& exc) {
+	  throw Error (exc.what ());
 	}
-	JointPtr_t joint = robot->getJointByName (jointName);
-	if (!joint) {
-	  std::ostringstream oss ("Robot has no joint with name ");
-	  oss  << jointName;
-	  hppDout (error, oss.str ());
-	  throw hpp::Error (oss.str ().c_str ());
-	}
-	return joint->configSize ();
       }
 
       // --------------------------------------------------------------------
 
-      void Robot::setJointBounds (UShort jointId,
-				   const jointBoundSeq& jointBounds)
+      void Robot::setJointBounds (const char* jointName,
+				  const jointBoundSeq& jointBounds)
 	throw (hpp::Error)
       {
 	try  {
@@ -366,9 +372,8 @@ namespace hpp
 	  DevicePtr_t robot = problemSolver_->robot ();
 
 	  // get joint
-	  JointVector_t jointVector = robot->getJointVector ();
-	  JointPtr_t kwsJoint = jointVector[jointId];
-	  localSetJointBounds(kwsJoint, jointBounds);
+	  JointPtr_t joint = robot->getJointByName (jointName);
+	  localSetJointBounds(joint, jointBounds);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -426,23 +431,23 @@ namespace hpp
       }
       // --------------------------------------------------------------------
 
-      nameSeq* Robot::getJointInnerObjects (const char* jointName)
+      Names_t* Robot::getJointInnerObjects (const char* jointName)
 	throw (hpp::Error)
       {
-	nameSeq *innerObjectSeq = 0x0;
+	Names_t *innerObjectSeq = 0x0;
 	JointPtr_t joint (0x0);
 	try {
 	  DevicePtr_t robot = problemSolver_->robot ();
 	  joint = robot->getJointByName (std::string (jointName));
 	  if (!joint) {
 	    hppDout (error, "No joint with name " << jointName);
-	    innerObjectSeq = new nameSeq (0);
+	    innerObjectSeq = new Names_t (0);
 	    return innerObjectSeq;
 	  }
 	  BodyPtr_t body = joint->linkedBody ();
 	  if (!body) {
 	    hppDout (error, "Joint " << jointName << " has no body.");
-	    innerObjectSeq = new nameSeq (0);
+	    innerObjectSeq = new Names_t (0);
 	    return innerObjectSeq;
 	  }
 
@@ -451,8 +456,8 @@ namespace hpp
 	    std::size_t nbObjects = objects.size();
 	    // Allocate result now that the size is known.
 	    ULong size = (ULong)nbObjects;
-	    char** nameList = nameSeq::allocbuf(size);
-	    innerObjectSeq = new nameSeq(size, size, nameList);
+	    char** nameList = Names_t::allocbuf(size);
+	    innerObjectSeq = new Names_t(size, size, nameList);
 	    for (std::size_t iObject=0; iObject < nbObjects; iObject++) {
 	      CollisionObjectPtr_t object = objects[iObject];
 	      std::string geometryName = object->name();
@@ -461,7 +466,7 @@ namespace hpp
 	      strcpy(nameList[iObject], geometryName.c_str());
 	    }
 	  } else {
-	    innerObjectSeq = new nameSeq (0);
+	    innerObjectSeq = new Names_t (0);
 	  }
 	  return innerObjectSeq;
 	} catch (const std::exception& exc) {
@@ -471,10 +476,10 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      nameSeq* Robot::getJointOuterObjects (const char* jointName)
+      Names_t* Robot::getJointOuterObjects (const char* jointName)
 	throw (hpp::Error)
       {
-	nameSeq *outerObjectSeq = 0x0;
+	Names_t *outerObjectSeq = 0x0;
 	JointPtr_t joint (0x0);
 
 	try {
@@ -482,13 +487,13 @@ namespace hpp
 	  joint = robot->getJointByName (std::string (jointName));
 	  if (!joint) {
 	    hppDout (error, "No joint with name " << jointName);
-	    outerObjectSeq = new nameSeq (0);
+	    outerObjectSeq = new Names_t (0);
 	    return outerObjectSeq;
 	  }
 	  BodyPtr_t body = joint->linkedBody ();
 	  if (!body) {
 	    hppDout (error, "Joint " << jointName << " has no body.");
-	    outerObjectSeq = new nameSeq (0);
+	    outerObjectSeq = new Names_t (0);
 	    return outerObjectSeq;
 	  }
 
@@ -497,8 +502,8 @@ namespace hpp
 	    std::size_t nbObjects = objects.size();
 	    // Allocate result now that the size is known.
 	    ULong size = (ULong)nbObjects;
-	    char** nameList = nameSeq::allocbuf(size);
-	    outerObjectSeq = new nameSeq(size, size, nameList);
+	    char** nameList = Names_t::allocbuf(size);
+	    outerObjectSeq = new Names_t(size, size, nameList);
 	    for (std::size_t iObject=0; iObject < nbObjects; iObject++) {
 	      CollisionObjectPtr_t object = objects[iObject];
 	      std::string geometryName = object->name();
@@ -507,7 +512,7 @@ namespace hpp
 	      strcpy(nameList[iObject], geometryName.c_str());
 	    }
 	  } else {
-	    outerObjectSeq = new nameSeq (0);
+	    outerObjectSeq = new Names_t (0);
 	  }
 	  return outerObjectSeq;
 	} catch (const std::exception& exc) {
@@ -532,8 +537,8 @@ namespace hpp
 
       void
       Robot::distancesToCollision (hpp::floatSeq_out distances,
-				   nameSeq_out innerObjects,
-				   nameSeq_out outerObjects,
+				   Names_t_out innerObjects,
+				   Names_t_out outerObjects,
 				   hpp::floatSeqSeq_out innerPoints,
 				   hpp::floatSeqSeq_out outerPoints)
 	throw (hpp::Error)
@@ -545,9 +550,9 @@ namespace hpp
 	  std::size_t nbDistPairs = dr.size ();
 	  hpp::floatSeq* distances_ptr = new hpp::floatSeq ();
 	  distances_ptr->length (nbDistPairs);
-	  nameSeq* innerObjects_ptr = new nameSeq ();
+	  Names_t* innerObjects_ptr = new Names_t ();
 	  innerObjects_ptr->length (nbDistPairs);
-	  nameSeq* outerObjects_ptr = new nameSeq ();
+	  Names_t* outerObjects_ptr = new Names_t ();
 	  outerObjects_ptr->length (nbDistPairs);
 	  hpp::floatSeqSeq* innerPoints_ptr = new hpp::floatSeqSeq ();
 	  innerPoints_ptr->length (nbDistPairs);
@@ -871,7 +876,7 @@ namespace convexhull{
           std::vector<std::vector<double> > capsulePoints;
           std::vector<hpp::model::JointJacobian_t > capsuleJacobian;
 
-          nameSeq *innerObjectSeq = 0x0;
+          //nameSeq *innerObjectSeq = 0x0;
           JointVector_t jointVec = robot->getJointVector();
           std::stringstream stream;
 
@@ -1024,7 +1029,7 @@ namespace convexhull{
                 hpp::floatSeq* capsPos = new hpp::floatSeq;
                 std::vector<double> capsulePoints;
 
-                nameSeq *innerObjectSeq = 0x0;
+          //      nameSeq *innerObjectSeq = 0x0;
                 JointVector_t jointVec = robot->getJointVector();
                 std::stringstream stream;
 

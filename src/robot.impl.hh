@@ -92,28 +92,27 @@ namespace hpp
 	addJoint
 	(const char* parentName, const char* childName) throw (hpp::Error);
 
-	virtual hpp::corbaserver::nameSeq* getJointNames () throw (hpp::Error);
+	virtual Names_t* getJointNames () throw (hpp::Error);
 
 	virtual Short getJointNumberDof (const char* jointName)
 	  throw (hpp::Error);
 	virtual Short getJointConfigSize (const char* jointName)
 	  throw (hpp::Error);
 
-	virtual void
-	setJointBounds
-	(UShort inJointId, const hpp::corbaserver::jointBoundSeq& jointBound)
-	  throw (hpp::Error);
+	virtual void setJointBounds
+	(const char* jointName,
+	 const hpp::corbaserver::jointBoundSeq& jointBound) throw (hpp::Error);
 
 	virtual void setCurrentConfig
 	(const hpp::floatSeq& dofArray) throw (hpp::Error);
 
 	virtual hpp::floatSeq* getCurrentConfig() throw (hpp::Error);
 
-	virtual hpp::corbaserver::nameSeq* getJointInnerObjects
+	virtual Names_t* getJointInnerObjects
 	(const char* bodyName)
 	  throw (hpp::Error);
 
-	virtual hpp::corbaserver::nameSeq* getJointOuterObjects
+	virtual Names_t* getJointOuterObjects
 	(const char* bodyName)
 	  throw (hpp::Error);
 
@@ -122,8 +121,8 @@ namespace hpp
 
 	virtual void
 	distancesToCollision (hpp::floatSeq_out distances,
-			      hpp::corbaserver::nameSeq_out innerObjects,
-			      hpp::corbaserver::nameSeq_out outerObjects,
+			      Names_t_out innerObjects,
+			      Names_t_out outerObjects,
 			      hpp::floatSeqSeq_out innerPoints,
 			      hpp::floatSeqSeq_out outerPoints)
 	  throw (hpp::Error);
