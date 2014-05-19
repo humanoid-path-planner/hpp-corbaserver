@@ -21,6 +21,7 @@
 #include <hpp/model/collision-object.hh>
 #include <hpp/core/weighed-distance.hh>
 #include <hpp/corbaserver/server.hh>
+#include "../../hpp-core/src/basic-configuration-shooter.hh"
 
 #include "robot.impl.hh"
 #include "tools.hh"
@@ -829,8 +830,8 @@ namespace convexhull{
         std::vector<std::vector<double> > hull_vec;
         for(uint i=0; i<capsules.size(); i++){
           convexhull::Point pt;
-          pt.x = capsules.at(i).at(1); //y
-          pt.y = capsules.at(i).at(2); //z
+          pt.x = capsules.at(i).at(0);
+          pt.y = capsules.at(i).at(1);
           pt.idx = i;
           P.push_back(pt);
         }
@@ -849,17 +850,22 @@ namespace convexhull{
 }//namespace convexhull
 
 //###################################################################
+
       hpp::floatSeq* Robot::gradientConfigurationWrtProjection (const hpp::floatSeq& dofArray) 
+        throw (hpp::Error){
+          //###################################################################
+          //## set new configuration, so that capsules have the right transform
+          //###################################################################
+          this->setCurrentConfig(dofArray);
+          return gradientConfigurationWrtProjection ();
+      }
+
+      hpp::floatSeq* Robot::gradientConfigurationWrtProjection () 
         throw (hpp::Error)
       {
         // set new configuration, compute projected points of capsules, get convex projected hull, 
         // compute jacobian of outer points of convex hull
         try {
-          //###################################################################
-          //## set new configuration, so that capsules have the right transform
-          //###################################################################
-	  std::size_t Ndof = (std::size_t)dofArray.length();
-          this->setCurrentConfig(dofArray);
 
           //###################################################################
           //## compute projected points of capsules
@@ -923,13 +929,24 @@ namespace convexhull{
                 Tx = T*Tx;
                 x = Tx.getTranslation();
                 std::vector<double> pt;
-                pt.push_back(x[0]);
                 pt.push_back(x[1]);
                 pt.push_back(x[2]);
                 pt.push_back(radius);
                 pt.push_back(length);
                 capsulePoints.push_back(pt);
                 capsuleJacobian.push_back(jjacobian);
+                //compute outer points of capsule points 
+                // which are at a distance of radius away
+                double t_step = M_PI/6;
+                for(double theta = 0; theta <= 2*M_PI; theta+=t_step){
+                  std::vector<double> pt_out;
+                  pt_out.push_back(cos(theta)*radius+x[1]);
+                  pt_out.push_back(sin(theta)*radius+x[2]);
+                  pt_out.push_back(radius);
+                  pt_out.push_back(length);
+                  capsulePoints.push_back(pt);
+                  capsuleJacobian.push_back(jjacobian);
+                }
                 l = l+dl;
               }
             }
@@ -951,19 +968,21 @@ namespace convexhull{
           //## compute gradient of configuration q from outer jacobians
           //###################################################################
           //JointJacobian_t is Eigen::Matrix<double, 6, Eigen::Dynamic> 
-          vector_t qgrad(Ndof-1);
+          vector_t qgrad(robot->numberDof());
+          qgrad.setZero();
+
           hppDout(notice, "gradient computation from outer jacobians");
           for(uint i=0; i<hullJacobian.size(); i++){
             vector_t cvx_pt_eigen(6);
-            cvx_pt_eigen << hullPoints.at(i).at(0),hullPoints.at(i).at(1),0,0,0,0;
+            cvx_pt_eigen << 0,hullPoints.at(i).at(0),hullPoints.at(i).at(1),0,0,0;
             vector_t qi = hullJacobian.at(i).transpose()*cvx_pt_eigen;
-            qgrad = qgrad + qi;
+            qgrad = qgrad - 0.1*qi;
           }
-          hppDout(notice, "convert gradient to flaotSeq and return");
+          hppDout(notice, "convert gradient to floatSeq and return");
 
           hpp::floatSeq* q_proj = new hpp::floatSeq;
-          q_proj->length (Ndof-1);
-          for(uint i=0;i<Ndof-1;i++){
+          q_proj->length (robot->numberDof());
+          for(uint i=0;i<robot->numberDof();i++){
             (*q_proj)[i] = qgrad[i];
           }
           hppDout(notice, stream.str());
@@ -973,13 +992,26 @@ namespace convexhull{
           throw hpp::Error (exc.what ());
         }
       }
+      hpp::floatSeq* Robot::getRandomConfig() throw (hpp::Error){
+        DevicePtr_t robot = problemSolver_->robot ();
+        hpp::core::BasicConfigurationShooter confShooter(robot);
+        //configurationptr_t is vector_t is eigen::matrix<double>
+        ConfigurationPtr_t configuration = confShooter.shoot();
+        hppDout(notice, "RANDOM CONF >> " << configuration.get());
+
+        hpp::model::ConfigurationIn_t random_configuration = *configuration.get();
+        hppDout(notice, "RANDOM CONF >> " << random_configuration);
+        robot->currentConfiguration(random_configuration);
+        return getCurrentConfig();
+      }
+
       hpp::floatSeq* Robot::projectConfigurationUntilIrreducible (const hpp::floatSeq& dofArray) 
         throw (hpp::Error)
       {
         // configuration, get convex projected hull, compute jacobian of outer points,
         // get complete gradient, do gradient descent into (0,0) direction of each point
-        return this->gradientConfigurationWrtProjection (dofArray);
 
+        return this->gradientConfigurationWrtProjection(dofArray);
       }
 
       hpp::floatSeq* Robot::computeVolume () throw (hpp::Error)

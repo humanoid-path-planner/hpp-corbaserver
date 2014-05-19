@@ -262,6 +262,7 @@ module hpp
 
     floatSeq projectConfigurationUntilIrreducible (in floatSeq dofArray) raises (Error);
     floatSeq gradientConfigurationWrtProjection(in floatSeq dofArray) raises (Error);
+    floatSeq getRandomConfig() raises (Error);
 
     /// \}
   };

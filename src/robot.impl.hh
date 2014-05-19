@@ -170,6 +170,11 @@ namespace hpp
         virtual hpp::floatSeq* gradientConfigurationWrtProjection 
           (const hpp::floatSeq& dofArray) throw (hpp::Error);
 
+        virtual hpp::floatSeq* gradientConfigurationWrtProjection () 
+                throw (hpp::Error);
+
+        virtual hpp::floatSeq* getRandomConfig() 
+                throw (hpp::Error);
 
 
       private:
