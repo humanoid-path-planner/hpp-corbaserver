@@ -187,35 +187,50 @@ namespace hpp
       {
 
                 //Params
-                JointPtr_t joint1 = problemSolver_->robot()->getJointByName("LARM_JOINT4");
-                JointPtr_t joint2 = problemSolver_->robot()->getJointByName("RARM_JOINT3");
+                JointPtr_t joint1 = problemSolver_->robot()->getJointByName("RLEG_JOINT4");
+                JointPtr_t joint2 = problemSolver_->robot()->getJointByName("RARM_JOINT4");
                 vector3_t local1;
                 vector3_t local2;
                 local1.setZero();
 
 
+		fcl::Vec3f v(0,0,0);
+		const fcl::Vec3f& vr(v);
+
                 const Transform3f& transfo1 = joint1->currentTransformation ();
                 const Transform3f& transfo2 = joint2->currentTransformation ();
                 hpp::model::matrix3_t rot1 (transfo1.getRotation ());
                 hpp::model::matrix3_t rot2 (transfo2.getRotation ());
-                //hpp::model::matrix3_t reference = rot1 * rot2;        
+		hpp::model::matrix3_t reference = rot1 * rot2;
                 hpp::model::matrix3_t rotNulle;
-                rotNulle.setZero();
-                const hpp::model::matrix3_t& pRotNulle = rotNulle;
+		rotNulle.setZero();
+		
+		Transform3f transfo3;
+		transfo3.setTranslation(vr);
 
+		
+		//const hpp::model::matrix3_t& pRotNulle = rotNulle;
 
                 //local2 = rot2 * (transfo1.getTranslation() - transfo2.getTranslation ());
-                local2.setZero();
+                //local2.setZero();
                 //local2.setValue(0,0,0.0);
 
-
+		local2.setZero();
+		//local2 = (transfo1.getTranslation() - transfo2.getTranslation ());
 
 
                 // Adding constraints into projector
-		//problemSolver_->constraints()->configProjector()->addConstraint(
-		//	RelativePosition::create(problemSolver_->robot(), joint1, joint2, local1, local2));
-		//problemSolver_->constraints()->configProjector()->addConstraint(RelativeOrientation::create(problemSolver_->robot(), joint1, joint2, pRotNulle, false));
+//		problemSolver_->constraints()->configProjector()->addConstraint(
+//			RelativePosition::create(problemSolver_->robot(), joint1, joint2, local1, local2));
+//		problemSolver_->constraints()->configProjector()->addConstraint(
+//			RelativeOrientation::create(problemSolver_->robot(), joint1, joint2, rotNulle, false) );
 
+
+	problemSolver_->constraints()->configProjector()->addConstraint(
+		RelativePosition::create (problemSolver_->robot(), joint1, joint2, 
+				local1,
+			 	vector3_t (0, 0, 0.8))
+	);
 
 
 
