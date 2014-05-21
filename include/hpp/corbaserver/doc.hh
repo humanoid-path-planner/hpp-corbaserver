@@ -22,6 +22,12 @@ cl = Client ()
 \endcode
 Then variable \c cl contains three members "robot", "obstacle" and problem that can send request to the server.
 
+Some python classes are provided that embed corba clients and
+that forward corba resquests to the server side:
+  \li hpp.corbaserver.robot.Robot to load and handle a robot,
+  \li hpp.corbaserver.robot.HumanoidRobot to load and handle a humanoid robot,
+  \li hpp.corbaserver.problem_solver.ProblemSolver to set and solve a path planning problem.
+
 \section hppCorbaServer_sec_embedding How to embed a server in an application
 
 To embed a CORBA server in an application, See documentation of class hpp::corbaServer::Server.

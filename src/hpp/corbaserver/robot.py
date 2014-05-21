@@ -54,23 +54,23 @@ class Robot (object):
     ## \name Joints
     #\{
 
-    # Get joint names in the same order as in the configuration.
+    ## Get joint names in the same order as in the configuration.
     def getJointNames (self):
         return self.client.robot.getJointNames ()
 
-    # Get joint position.
+    ## Get joint position.
     def getJointPosition (self, jointName):
         return self.client.robot.getJointPosition (jointName)
 
-    # Get joint number degrees of freedom.
+    ## Get joint number degrees of freedom.
     def getJointNumberDof (self, jointName):
         return self.client.robot.getJointNumberDof (jointName)
 
-    # Get joint number config size.
+    ## Get joint number config size.
     def getJointConfigSize (self, jointName):
         return self.client.robot.getJointConfigSize (jointName)
 
-    # set bounds for the joint
+    ## set bounds for the joint
     def setJointBounds (self, jointName, inJointBound):
         return self.client.robot.setJointBounds (jointName, inJointBound)
 
@@ -137,6 +137,9 @@ class Robot (object):
         return self.client.robot.getJacobianCenterOfMass ()
     ##\}
 
+## Humanoid robot
+#
+#  Method loadModel builds a humanoid robot.
 class HumanoidRobot (Robot):
 
     def __init__ (self, robotName, rootJointType):
