@@ -104,20 +104,20 @@ module hpp
     /// Get Number of paths
     short numberPaths () raises (Error);
 
-    // Optimize a given path
-    // \param inPathId Id of the path in this problem.
-    // \throw Error.
+    /// Optimize a given path
+    /// \param inPathId Id of the path in this problem.
+    /// \throw Error.
     void optimizePath(in unsigned short inPathId) raises (Error);
 
-    // Get length of path
-    // \param inPathId rank of the path in the problem
-    // \return length of path if path exists.
+    /// Get length of path
+    /// \param inPathId rank of the path in the problem
+    /// \return length of path if path exists.
     double pathLength(in unsigned short inPathId) raises (Error);
 
-     // Get the robot's config at param on the a path
-     // \param inPathId rank of the path in the problem
-     // \param atDistance : the user parameter choice
-     // \return dofseq : the config at param
+    /// Get the robot config at param on the a path
+    /// \param inPathId rank of the path in the problem
+    /// \param atDistance : the user parameter choice
+    /// \return dofseq : the config at param
     floatSeq configAtDistance(in unsigned short inPathId, in double atDistance)
       raises (Error);
 

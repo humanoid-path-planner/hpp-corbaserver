@@ -19,7 +19,6 @@
 from hpp.corbaserver.client import Client
 
 class Robot (object):
-    """Helper class to enhance corba interface"""
     def __init__ (self, robotName, rootJointType):
         self.client = Client ()
         self.loadModel (robotName, rootJointType)
