@@ -97,8 +97,9 @@ INSTALL(
 INSTALL(
   FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/hpp/corbaserver/client.py
-  ${CMAKE_CURRENT_SOURCE_DIR}/hpp/corbaserver/robot.py
-  DESTINATION ${PYTHON_SITELIB}/hpp/corbaserver
+  ${CMAKE_CURRENT_SOURCE_DIR}/hpp/corbaserver/robot.py 
+  ${CMAKE_CURRENT_SOURCE_DIR}/hpp/corbaserver/problem_solver.py
+ DESTINATION ${PYTHON_SITELIB}/hpp/corbaserver
   )
 
 INSTALL(
