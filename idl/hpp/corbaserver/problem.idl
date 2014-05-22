@@ -50,7 +50,22 @@ module hpp
     /// Apply constaints to a configuration
     ///
     /// constraints are stored in ProblemSolver object
-    void applyConstraints (in floatSeq input, out floatSeq output)
+    /// \param input input configuration,
+    /// \retval output output configuration,
+    /// \retval error norm of the residual error.
+    boolean applyConstraints (in floatSeq input, out floatSeq output,
+			      out double residualError)
+      raises (Error);
+
+
+    /// Apply position constraints to a configuration
+    ///
+    /// constraints are stored in ProblemSolver object
+    boolean createPositionConstraint (in string constraintName, 
+				      in string joint1Name,
+				      in string joint2Name,
+				      in double x, in double y, in double z
+				      )
       raises (Error);
 
 
