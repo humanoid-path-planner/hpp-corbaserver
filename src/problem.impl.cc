@@ -37,7 +37,7 @@ namespace hpp
       (hpp::core::ProblemSolverPtr_t problemSolver,
        const hpp::floatSeq& dofArray)
       {
-	unsigned int configDim = (unsigned int)dofArray.length();
+	size_type configDim = (size_type)dofArray.length();
 	ConfigurationPtr_t config (new Configuration_t (configDim));
 
 	// Get robot in hppPlanner object.
@@ -46,7 +46,8 @@ namespace hpp
 	// Compare size of input array with number of degrees of freedom of
 	// robot.
 	if (configDim != robot->configSize ()) {
-	  hppDout (error, "robot nb dof=" << configDim << " is different from config size=" << robot->configSize());
+	  hppDout (error, "robot nb dof=" << configDim <<
+		   " is different from config size=" << robot->configSize());
 	  throw std::runtime_error
 	    ("robot nb dof is different from config size");
 	}
@@ -248,7 +249,8 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::lockDof (const char* jointName, Double value)
+      void Problem::lockDof (const char* jointName, Double value,
+			     UShort rankInConfiguration, UShort rankInVelocity)
 	throw (hpp::Error)
       {
 	try {
@@ -259,8 +261,10 @@ namespace hpp
 	  std::ostringstream oss;
 	  oss << "locked dof, index: " << dofId << ", value: " << value;
 
-	  LockedDofPtr_t lockedDof (LockedDof::create (oss.str (),
-						       dofId, value));
+	  LockedDofPtr_t lockedDof (LockedDof::create (oss.str (), joint,
+						       value,
+						       rankInConfiguration,
+						       rankInVelocity));
 	  problemSolver_->addConstraint (lockedDof);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());

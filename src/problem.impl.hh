@@ -55,7 +55,9 @@ namespace hpp
 	virtual void setNumericalConstraints
 	(const char* constraintName, const hpp::Names_t& constraintNames)
 	  throw (Error);
-	virtual void lockDof (const char* jointName, Double value)
+	virtual void lockDof (const char* jointName, Double value,
+			      UShort rankInConfiguration,
+			      UShort rankInVelocity)
 	  throw (hpp::Error);
 	virtual void setErrorThreshold (Double threshold) throw (Error);
 	virtual void setMaxIterations (UShort iterations) throw (Error);

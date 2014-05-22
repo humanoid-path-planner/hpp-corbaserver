@@ -8,3 +8,4 @@ import problem_idl
 
 from client import Client
 Transform = common_idl._0_hpp.Transform
+from problem_solver import ProblemSolver
