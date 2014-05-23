@@ -59,8 +59,8 @@ namespace hpp
 			      UShort rankInConfiguration,
 			      UShort rankInVelocity)
 	  throw (hpp::Error);
-	//virtual void setErrorThreshold (Double threshold) throw (Error);
-	//virtual void setMaxIterations (UShort iterations) throw (Error);
+	virtual void setErrorThreshold (Double threshold) throw (Error);
+	virtual void setMaxIterations (UShort iterations) throw (Error);
 
 	virtual void solve () throw (hpp::Error);
 

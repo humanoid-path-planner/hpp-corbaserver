@@ -21,7 +21,7 @@
 #include <hpp/model/collision-object.hh>
 #include <hpp/core/weighed-distance.hh>
 #include <hpp/corbaserver/server.hh>
-#include "../../hpp-core/src/basic-configuration-shooter.hh"
+#include <hpp/core/basic-configuration-shooter.hh>
 
 #include "robot.impl.hh"
 #include "tools.hh"
