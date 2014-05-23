@@ -76,17 +76,6 @@ module hpp
       raises (Error);
 
 
-    /// Apply position constraints to a configuration
-    ///
-    /// constraints are stored in ProblemSolver object
-    boolean createPositionConstraint (in string constraintName, 
-				      in string joint1Name,
-				      in string joint2Name,
-				      in double x, in double y, in double z
-				      )
-      raises (Error);
-
-
     /// Reset constraints
     void resetConstraints () raises (Error);
 

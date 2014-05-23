@@ -8,12 +8,12 @@
 //
 // See the COPYING file for more information.
 
-#pragma once
+#ifndef HPP_CORBASERVER_PRECOMPUTATION_IMPL_HH
+#define HPP_CORBASERVER_PRECOMPUTATION_IMPL_HH
 # include <vector>
 
 # include "hpp/corbaserver/fwd.hh"
 # include "common.hh"
-# include "problem.hh"
 
 namespace hpp
 {
@@ -21,10 +21,11 @@ namespace hpp
   {
     namespace impl
     {
-      //class Precomputation
-      class Precomputation : public virtual POA_hpp::corbaserver::Precomputation
+      /// \brief Implement CORBA interface ``Precomputation''.
+      class Precomputation// : public virtual POA_hpp::corbaserver::Precomputation
       {
       public:
+
 	Precomputation (corbaServer::Server* server);
 
 	virtual Short getNumberDof () throw (hpp::Error);
@@ -39,3 +40,4 @@ namespace hpp
     } // end of namespace impl.
   } // end of namespace corbaServer.
 } // end of namespace hpp.
+#endif 

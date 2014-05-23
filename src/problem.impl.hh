@@ -44,21 +44,11 @@ namespace hpp
 	virtual void
 	resetGoalConfigs ()  throw (hpp::Error);
 
-<<<<<<< HEAD
-	virtual bool createPositionConstraint (
-			const char* constraintName, 
-			const char* joint1Name,
-			const char* joint2Name,
-			double x,
-			double y,
-			double z)
-=======
 	virtual bool createPositionConstraint (const char* constraintName, 
 					       const char* joint1Name,
 					       const char* joint2Name,
 					       const hpp::floatSeq& point1,
 					       const hpp::floatSeq& point2)
->>>>>>> 5d440425068e12c210a960d476dc8ec0446cfc7a
 	  throw (hpp::Error);
 
 	virtual bool applyConstraints (const hpp::floatSeq& input,

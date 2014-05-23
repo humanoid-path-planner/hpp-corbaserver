@@ -24,6 +24,7 @@
 #include <hpp/core/basic-configuration-shooter.hh>
 #include "robot.impl.hh"
 #include "tools.hh"
+#include "precomputation.impl.hh"
 
 namespace hpp
 {
@@ -32,13 +33,14 @@ namespace hpp
     namespace impl
     {
       Precomputation::Precomputation(corbaServer::Server* server) :
-        server_(server), robot_(server->robot ())
+	server_(server), problemSolver_(server->problemSolver ())
       {
       }
 
       Short Precomputation::getNumberDof () throw (hpp::Error)
       {
 	try {
+          hppDout(notice, "Precomputation");
 	  return (Short) problemSolver_->robot ()->numberDof ();
 	} catch (const std::exception& exc) {
 	  hppDout (error, exc.what ());
