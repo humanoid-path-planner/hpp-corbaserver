@@ -19,7 +19,6 @@
 from hpp.corbaserver.client import Client
 
 class Robot (object):
-    """Helper class to enhance corba interface"""
     def __init__ (self, robotName, rootJointType):
         self.client = Client ()
         self.loadModel (robotName, rootJointType)
@@ -38,11 +37,109 @@ class Robot (object):
                                           self.packageName, self.urdfName,
                                           self.urdfSuffix, self.srdfSuffix)
 
+    ## \name Degrees of freedom
+    #  \{
+
+    ## Get size of configuration
+    # \return size of configuration
+    def getConfigSize (self):
+        return self.client.robot.getConfigSize ()
+
+    # Get size of velocity
+    # \return size of velocity
+    def getNumberDof (self):
+        return self.client.robot.getNumberDof ()
+    ## \}
+
+    ## \name Joints
+    #\{
+
+    ## Get joint names in the same order as in the configuration.
+    def getJointNames (self):
+        return self.client.robot.getJointNames ()
+
+    ## Get joint position.
+    def getJointPosition (self, jointName):
+        return self.client.robot.getJointPosition (jointName)
+
+    ## Get joint number degrees of freedom.
+    def getJointNumberDof (self, jointName):
+        return self.client.robot.getJointNumberDof (jointName)
+
+    ## Get joint number config size.
+    def getJointConfigSize (self, jointName):
+        return self.client.robot.getJointConfigSize (jointName)
+
+    ## set bounds for the joint
+    def setJointBounds (self, jointName, inJointBound):
+        return self.client.robot.setJointBounds (jointName, inJointBound)
+
+    ## Set bounds on the translation part of the freeflyer joint.
+    #
+    #  Valid only if the robot has a freeflyer joint.
     def setTranslationBounds (self, xmin, xmax, ymin, ymax, zmin, zmax):
         self.client.robot.setJointBounds ("base_joint_x", [xmin, xmax])
         self.client.robot.setJointBounds ("base_joint_y", [ymin, ymax])
         self.client.robot.setJointBounds ("base_joint_z", [zmin, zmax])
+    ## \}
 
+    ## \name Access to current configuration
+    #\{
+
+    ## Set current configuration of composite robot
+    #
+    #  \param q configuration of the composite robot
+    def setCurrentConfig (self, q):
+        self.client.robot.setCurrentConfig (q)
+
+    ## Get current configuration of composite robot
+    #
+    #  \return configuration of the composite robot
+    def getCurrentConfig (self):
+        return self.client.robot.getCurrentConfig ()
+    ## \}
+
+    ## \name Collision checking and distance computation
+    # \{
+
+    ## Test collision with obstacles and auto-collision.
+    #
+    # Check whether current configuration of robot is valid by calling
+    # CkwsDevice::collisionTest ().
+    # \return whether configuration is valid
+    def collisionTest (self):
+        return self.client.robot.collisionTest ()
+
+    ## Compute distances between bodies and obstacles
+    #
+    # \return list of distances,
+    # \return names of the objects belonging to a body
+    # \return names of the objects tested with inner objects,
+    # \return  closest points on the body,
+    # \return  closest points on the obstacles
+    # \note outer objects for a body can also be inner objects of another
+    # body.
+    def distancesToCollision (self):
+        return self.client.robot.distancesToCollision ()
+    ## \}
+    ## \name Mass and inertia
+    # \{
+
+    ## Get mass of robot
+    def getMass (self):
+        return self.client.robot.getMass ()
+
+    ## Get position of center of mass
+    def getCenterOfMass (self):
+        return self.client.robot.getCenterOfMass ()
+    ## Get Jacobian of the center of mass
+    def getJacobianCenterOfMass (self):
+        return self.client.robot.getJacobianCenterOfMass ()
+    ##\}
+
+## Humanoid robot
+#
+#  Method loadModel builds a humanoid robot.
 class HumanoidRobot (Robot):
 
     def __init__ (self, robotName, rootJointType):

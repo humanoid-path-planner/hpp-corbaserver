@@ -63,11 +63,11 @@ module hpp
     /// \{
 
     /// Get size of configuration
-    /// \param configSize size of configuration
+    /// \return size of configuration
     short getConfigSize () raises (Error);
 
     /// Get size of velocity
-    /// \param numberDof size of velocity
+    /// \return size of velocity
     short getNumberDof () raises (Error);
 
     /// \}
@@ -77,6 +77,11 @@ module hpp
 
     /// Get joint names in the same order as in the configuration
     Names_t getJointNames () raises (Error);
+
+    /// Get joint position
+    /// \param jointName name of the joint
+    /// \throw Error if robot is not set or if joint does not exist.
+    Transform getJointPosition (in string jointName) raises (Error);
 
     /// Get joint number degrees of freedom
     /// \param jointName name of the joint

@@ -188,7 +188,7 @@ namespace hpp
       Short Robot::getConfigSize () throw (hpp::Error)
       {
 	try {
-	  return problemSolver_->robot ()->configSize ();
+	  return (Short) problemSolver_->robot ()->configSize ();
 	} catch (const std::exception& exc) {
 	  hppDout (error, exc.what ());
 	  throw hpp::Error (exc.what ());
@@ -200,7 +200,7 @@ namespace hpp
       Short Robot::getNumberDof () throw (hpp::Error)
       {
 	try {
-	  return problemSolver_->robot ()->numberDof ();
+	  return (Short) problemSolver_->robot ()->numberDof ();
 	} catch (const std::exception& exc) {
 	  hppDout (error, exc.what ());
 	  throw hpp::Error (exc.what ());
@@ -319,6 +319,38 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
+      Transform_slice* Robot::getJointPosition(const char* jointName)
+	throw (hpp::Error)
+      {
+	try {
+	  DevicePtr_t robot = problemSolver_->robot ();
+	  if (!robot) {
+	    throw hpp::Error ("no robot");
+	  }
+	  JointPtr_t joint = robot->getJointByName (jointName);
+	  if (!joint) {
+	    std::ostringstream oss ("Robot has no joint with name ");
+	    oss  << jointName;
+	    hppDout (error, oss.str ());
+	    throw hpp::Error (oss.str ().c_str ());
+	  }
+	  const Transform3f& T = joint->currentTransformation ();
+	  double* res = new Transform;
+	  res [0] = T.getTranslation () [0];
+	  res [1] = T.getTranslation () [1];
+	  res [2] = T.getTranslation () [2];
+	  res [3] = T.getQuatRotation () [0];
+	  res [4] = T.getQuatRotation () [1];
+	  res [5] = T.getQuatRotation () [2];
+	  res [6] = T.getQuatRotation () [3];
+	  return res;
+	} catch (const std::exception& exc) {
+	  throw Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
+
       Short Robot::getJointNumberDof (const char* jointName) throw (hpp::Error)
       {
 	try {
@@ -333,7 +365,7 @@ namespace hpp
 	    hppDout (error, oss.str ());
 	    throw hpp::Error (oss.str ().c_str ());
 	  }
-	  return joint->numberDof ();
+	  return (Short)joint->numberDof ();
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
@@ -355,7 +387,7 @@ namespace hpp
 	    hppDout (error, oss.str ());
 	    throw hpp::Error (oss.str ().c_str ());
 	  }
-	  return joint->configSize ();
+	  return (Short) joint->configSize ();
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
@@ -623,9 +655,9 @@ namespace hpp
 	  const ComJacobian_t& jacobian =
 	    problemSolver_->robot ()->jacobianCenterOfMass ();
 	  res->length (jacobian.rows ());
-	  for (std::size_t i=0; i<jacobian.rows (); ++i) {
+	  for (size_type i=0; i<jacobian.rows (); ++i) {
 	    hpp::floatSeq row; row.length (jacobian.cols ());
-	    for (std::size_t j=0; j<jacobian.cols (); ++j) {
+	    for (size_type j=0; j<jacobian.cols (); ++j) {
 	      row [j] = jacobian (i, j);
 	    }
 	    (*res) [i] = row;
