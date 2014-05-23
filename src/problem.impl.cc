@@ -27,6 +27,33 @@
 
 #include "problem.impl.hh"
 
+
+// ajout Nassime ////////////////////////////////////////////////////////////
+#include <hpp/constraints/position.hh>
+#include <hpp/core/config-projector.hh>
+#include <hpp/model/humanoid-robot.hh>
+#include <hpp/model/joint.hh>
+#include <hpp/core/config-projector.hh>
+#include <hpp/constraints/orientation.hh>
+#include <hpp/constraints/position.hh>
+#include <hpp/constraints/relative-com.hh>
+#include <hpp/constraints/relative-orientation.hh>
+#include <hpp/constraints/relative-position.hh>
+#include <hpp/wholebody-step/static-stability-constraint.hh>
+    using hpp::constraints::Orientation;
+    using hpp::constraints::OrientationPtr_t;
+    using hpp::constraints::Position;
+    using hpp::constraints::PositionPtr_t;
+    using hpp::constraints::RelativeOrientation;
+    using hpp::constraints::RelativeComPtr_t;
+    using hpp::constraints::RelativeCom;
+    using hpp::constraints::RelativeOrientationPtr_t;
+    using hpp::constraints::RelativePosition;
+    using hpp::constraints::RelativePositionPtr_t;
+/////////////////////////////////////////////////////////////////////////////
+
+
+
 namespace hpp
 {
   namespace corbaServer
@@ -155,6 +182,29 @@ namespace hpp
 
 
       // ---------------------------------------------------------------
+      bool Problem::createPositionConstraint (
+		const char* constraintName,
+		const char * joint1Name, const char * joint2Name,
+                double x, double y, double z
+		)
+	throw (hpp::Error)
+      {
+
+		//Params
+                JointPtr_t joint1 = problemSolver_->robot()->getJointByName(joint1Name);
+                JointPtr_t joint2 = problemSolver_->robot()->getJointByName(joint2Name);
+		hpp::model::matrix3_t I3; I3.setIdentity ();
+
+		problemSolver_->addNumericalConstraint(
+			std::string (constraintName), Position::create (
+				problemSolver_->robot(), joint2, vector3_t (0, 0, 0),
+				vector3_t (x, y, z), I3,
+				boost::assign::list_of (true)(true)(true) 
+				)
+			);
+      }
+      // ---------------------------------------------------------------
+      
 
       bool Problem::applyConstraints (const hpp::floatSeq& input,
 				      hpp::floatSeq_out output,
