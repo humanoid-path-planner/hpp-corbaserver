@@ -44,8 +44,9 @@ namespace hpp
 	virtual void
 	resetGoalConfigs ()  throw (hpp::Error);
 
-	virtual void applyConstraints (const hpp::floatSeq& input,
-				       hpp::floatSeq_out output)
+	virtual bool applyConstraints (const hpp::floatSeq& input,
+				       hpp::floatSeq_out output,
+				       Double& residualError)
 	  throw (hpp::Error);
 	virtual void resetConstraints () throw (hpp::Error);
 	virtual void setNumericalConstraints
