@@ -57,6 +57,24 @@ module hpp
 			      out double residualError)
       raises (Error);
 
+
+    /// Create position constraint between two joints
+    ///
+    /// \param constraintName name of the constraint created,
+    /// \param joint1Name name of first joint
+    /// \param joint2Name name of second joint
+    /// \param point1 point in local frame of joint1,
+    /// \param point2 point in local frame of joint2.
+    /// If joint1 of joint2 is "", the corresponding joint is replaced by
+    /// the global frame.
+    /// constraints are stored in ProblemSolver object
+    boolean createPositionConstraint (in string constraintName,
+				      in string joint1Name,
+				      in string joint2Name,
+				      in floatSeq point1,
+				      in floatSeq point2)
+      raises (Error);
+
     /// Reset constraints
     void resetConstraints () raises (Error);
 
@@ -68,7 +86,7 @@ module hpp
     void setNumericalConstraints (in string constraintName,
 				  in Names_t constraintNames)
       raises (Error);
-    
+
     /// Lock degree of freedom with given value
     /// \param jointName name of the joint
     /// \param value value of the locked degree of freedom,
