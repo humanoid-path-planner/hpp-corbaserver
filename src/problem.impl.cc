@@ -13,6 +13,7 @@
 #include <hpp/util/debug.hh>
 #include <hpp/util/portability.hh>
 
+#include <hpp/core/config-projector.hh>
 #include <hpp/core/connected-component.hh>
 #include <hpp/core/edge.hh>
 #include <hpp/core/locked-dof.hh>
@@ -23,36 +24,26 @@
 #include <hpp/core/path.hh>
 #include <hpp/core/roadmap.hh>
 #include <hpp/core/steering-method.hh>
-#include <hpp/corbaserver/server.hh>
-
-#include "problem.impl.hh"
-
-
-// ajout Nassime ////////////////////////////////////////////////////////////
 #include <hpp/constraints/position.hh>
-#include <hpp/core/config-projector.hh>
-#include <hpp/model/humanoid-robot.hh>
-#include <hpp/model/joint.hh>
-#include <hpp/core/config-projector.hh>
 #include <hpp/constraints/orientation.hh>
 #include <hpp/constraints/position.hh>
 #include <hpp/constraints/relative-com.hh>
 #include <hpp/constraints/relative-orientation.hh>
 #include <hpp/constraints/relative-position.hh>
-#include <hpp/wholebody-step/static-stability-constraint.hh>
-    using hpp::constraints::Orientation;
-    using hpp::constraints::OrientationPtr_t;
-    using hpp::constraints::Position;
-    using hpp::constraints::PositionPtr_t;
-    using hpp::constraints::RelativeOrientation;
-    using hpp::constraints::RelativeComPtr_t;
-    using hpp::constraints::RelativeCom;
-    using hpp::constraints::RelativeOrientationPtr_t;
-    using hpp::constraints::RelativePosition;
-    using hpp::constraints::RelativePositionPtr_t;
-/////////////////////////////////////////////////////////////////////////////
+#include <hpp/corbaserver/server.hh>
 
+#include "problem.impl.hh"
 
+using hpp::constraints::Orientation;
+using hpp::constraints::OrientationPtr_t;
+using hpp::constraints::Position;
+using hpp::constraints::PositionPtr_t;
+using hpp::constraints::RelativeOrientation;
+using hpp::constraints::RelativeComPtr_t;
+using hpp::constraints::RelativeCom;
+using hpp::constraints::RelativeOrientationPtr_t;
+using hpp::constraints::RelativePosition;
+using hpp::constraints::RelativePositionPtr_t;
 
 namespace hpp
 {
@@ -84,6 +75,22 @@ namespace hpp
 	  (*config) [iDof] = dofArray [iDof];
 	}
 	return config;
+      }
+
+      static vector3_t floatSeqTVector3 (const hpp::floatSeq& dofArray)
+      {
+	if (dofArray.length() != 3) {
+	  std::ostringstream oss
+	    ("Expecting vector of size 3, got vector of size");
+	  oss << dofArray.length() << ".";
+	  throw hpp::Error (oss.str ().c_str ());
+	}
+	// Fill dof vector with dof array.
+	vector3_t result;
+	for (unsigned int iDof=0; iDof < 3; ++iDof) {
+	  result [iDof] = dofArray [iDof];
+	}
+	return result;
       }
 
       Problem::Problem (corbaServer::Server* server)
@@ -182,29 +189,64 @@ namespace hpp
 
 
       // ---------------------------------------------------------------
-      bool Problem::createPositionConstraint (
-		const char* constraintName,
-		const char * joint1Name, const char * joint2Name,
-                double x, double y, double z
-		)
+      
+      bool Problem::createPositionConstraint
+      (const char* constraintName, const char* joint1Name,
+       const char* joint2Name, const hpp::floatSeq& point1,
+       const hpp::floatSeq& point2)
 	throw (hpp::Error)
       {
-
-		//Params
-                JointPtr_t joint1 = problemSolver_->robot()->getJointByName(joint1Name);
-                JointPtr_t joint2 = problemSolver_->robot()->getJointByName(joint2Name);
-		hpp::model::matrix3_t I3; I3.setIdentity ();
-
-		problemSolver_->addNumericalConstraint(
-			std::string (constraintName), Position::create (
-				problemSolver_->robot(), joint2, vector3_t (0, 0, 0),
-				vector3_t (x, y, z), I3,
-				boost::assign::list_of (true)(true)(true) 
-				)
-			);
+	JointPtr_t joint1;
+	JointPtr_t joint2;
+	vector3_t targetInWorldFrame;
+	vector3_t targetInLocalFrame;
+	vector3_t p1 = floatSeqTVector3 (point1);
+	vector3_t p2 = floatSeqTVector3 (point2);
+	size_type constrainedJoint = 0;
+	try {
+	  // Test whether joint1 is world frame
+	  if (std::string (joint1Name) == std::string ("")) {
+	    constrainedJoint = 2;
+	    targetInWorldFrame = p1;
+	    targetInLocalFrame = p2;
+	  } else {
+	    JointPtr_t joint1 =
+	      problemSolver_->robot()->getJointByName(joint1Name);
+	  }
+	  // Test whether joint2 is world frame
+	  if (std::string (joint2Name) == std::string ("")) {
+	    if (constrainedJoint == 2) {
+	      throw hpp::Error ("At least on joint should be provided.");
+	    }
+	    constrainedJoint == 1;
+	    targetInWorldFrame = p2;
+	    targetInLocalFrame = p1;
+	  } else {
+	    JointPtr_t joint2 =
+	      problemSolver_->robot()->getJointByName(joint1Name);
+	  }
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+	if (constrainedJoint == 0) {
+	  // Both joints are provided
+	  problemSolver_->addNumericalConstraint
+	    (std::string (constraintName), RelativePosition::create
+	     (problemSolver_->robot(), joint1, joint2, p1, p2,
+	      boost::assign::list_of (true)(true)(true)));
+	} else {
+	  hpp::model::matrix3_t I3; I3.setIdentity ();
+	  JointPtr_t joint = constrainedJoint == 1 ? joint1 : joint2;
+	  problemSolver_->addNumericalConstraint
+	    (std::string (constraintName), Position::create
+	     (problemSolver_->robot(), joint, targetInLocalFrame,
+	      targetInWorldFrame, I3, boost::assign::list_of (true)(true)
+	      (true)));
+	}
       }
+
       // ---------------------------------------------------------------
-      
+
 
       bool Problem::applyConstraints (const hpp::floatSeq& input,
 				      hpp::floatSeq_out output,
