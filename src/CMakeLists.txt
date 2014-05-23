@@ -40,6 +40,8 @@ ADD_LIBRARY(${LIBRARY_NAME}
   problem.impl.hh
   robot.impl.cc
   robot.impl.hh
+  precomputation.impl.cc
+  precomputation.impl.hh
   server.cc
   server-private.cc
   server-private.hh

@@ -916,7 +916,7 @@ namespace convexhull{
             const hpp::model::JointJacobian_t jjacobian = joint->jacobian();
             BodyPtr_t body = joint->linkedBody();
             if (!body) {
-              stream << "JOINT has no body" << endl;
+              //stream << "JOINT has no body" << endl;
               continue;
             }
             ObjectVector_t objects = body->innerObjects (model::COLLISION);
