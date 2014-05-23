@@ -156,14 +156,18 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::applyConstraints (const hpp::floatSeq& input,
-				      hpp::floatSeq_out output)
+      bool Problem::applyConstraints (const hpp::floatSeq& input,
+				      hpp::floatSeq_out output,
+				      double& residualError)
 	throw (hpp::Error)
       {
+	bool success = false;
 	ConfigurationPtr_t config = floatSeqToConfig (problemSolver_, input);
 	try {
-	  if (!problemSolver_->constraints ()->apply (*config)) {
-	    throw hpp::Error ("Failed to apply constraint");
+	  success = problemSolver_->constraints ()->apply (*config);
+	  if (hpp::core::ConfigProjectorPtr_t configProjector =
+	      problemSolver_->constraints ()->configProjector ()) {
+	    residualError = configProjector->residualError ();
 	  }
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -176,6 +180,7 @@ namespace hpp
 	  (*q_ptr) [i] = (*config) [i];
 	}
 	output = q_ptr;
+	return success;
       }
 
       // ---------------------------------------------------------------
