@@ -1,4 +1,4 @@
-// Copyright (C) 2014 by Florent Lamiraux, Andreas Orthey, LAAS-CNRS.
+// Copyright (C) 2009, 2010 by Florent Lamiraux, Thomas Moulard, JRL.
 //
 // This file is part of the hpp-corbaserver.
 //
