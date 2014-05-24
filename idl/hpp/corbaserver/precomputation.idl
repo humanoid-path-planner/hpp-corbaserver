@@ -16,10 +16,10 @@
 module hpp
 {
   module corbaserver {
-    interface Precomputation{
-	virtual Short getNumberDof () throw (hpp::Error);
-    }; 
+  interface Precomputation{
+    short getNumberDof () raises (Error);
+  }; 
   };
 };
 
-#endif 
+#endif //! HPP_CORBASERVER_PRECOMPUTATION_SERVER_IDL

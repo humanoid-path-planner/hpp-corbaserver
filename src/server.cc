@@ -122,9 +122,12 @@ namespace hpp
       Object_var robotObj = private_->robotServant_->_this();
       Object_var obstacleObj = private_->obstacleServant_->_this();
       Object_var problemObj = private_->problemServant_->_this();
+      Object_var precomputationObj = private_->precomputationServant_->_this();
 
       private_->createHppContext ();
+      //-----------------------------------------------------------------------
       // Bind robotObj with name Robot to the hppContext:
+      //-----------------------------------------------------------------------
       CosNaming::Name objectName;
       objectName.length(1);
       objectName[0].id   = (const char*) "basic";   // string copied
@@ -133,7 +136,9 @@ namespace hpp
       private_->bindObjectToName(robotObj, objectName);
       private_->robotServant_->_remove_ref();
 
+      //-----------------------------------------------------------------------
       // Bind obstacleObj with name Obstacle to the hppContext:
+      //-----------------------------------------------------------------------
       objectName.length(1);
       objectName[0].id   = (const char*) "basic"; // string copied
       objectName[0].kind = (const char*) "obstacle";   // string copied
@@ -141,13 +146,26 @@ namespace hpp
       private_->bindObjectToName(obstacleObj, objectName);
       private_->obstacleServant_->_remove_ref();
 
+      //-----------------------------------------------------------------------
       // Bind problemObj with name Problem to the hppContext:
+      //-----------------------------------------------------------------------
       objectName.length(1);
       objectName[0].id   = (const char*) "basic"; // string copied
       objectName[0].kind = (const char*) "problem";   // string copied
 
       private_->bindObjectToName(problemObj, objectName);
       private_->problemServant_->_remove_ref();
+
+      //-----------------------------------------------------------------------
+      // Bind precomputationobj with name Precomputation to the hppContext:
+      //-----------------------------------------------------------------------
+      objectName.length(1);
+      objectName[0].id   = (const char*) "basic"; // string copied
+      objectName[0].kind = (const char*) "precomputation";   // string copied
+
+      private_->bindObjectToName(precomputationObj, objectName);
+      private_->precomputationServant_->_remove_ref();
+      //-----------------------------------------------------------------------
 
       PortableServer::POAManager_var pman = private_->poa_->the_POAManager();
       pman->activate();

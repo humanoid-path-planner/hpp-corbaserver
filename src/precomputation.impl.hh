@@ -12,7 +12,8 @@
 #define HPP_CORBASERVER_PRECOMPUTATION_IMPL_HH
 # include <vector>
 
-# include "hpp/corbaserver/fwd.hh"
+# include <hpp/corbaserver/fwd.hh>
+# include <precomputation.hh>
 # include "common.hh"
 
 namespace hpp
@@ -22,7 +23,7 @@ namespace hpp
     namespace impl
     {
       /// \brief Implement CORBA interface ``Precomputation''.
-      class Precomputation// : public virtual POA_hpp::corbaserver::Precomputation
+      class Precomputation : public virtual POA_hpp::corbaserver::Precomputation
       {
       public:
 

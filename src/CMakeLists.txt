@@ -21,6 +21,7 @@ SET(IDL_SOURCES
   obstacle
   problem
   robot
+  precomputation
   )
 
 OMNIIDL_INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/idl)
@@ -50,10 +51,12 @@ ADD_LIBRARY(${LIBRARY_NAME}
   obstacleSK.cc
   problemSK.cc
   robotSK.cc
+  precomputationSK.cc
   ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/common_idl.py
   ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/obstacle_idl.py
   ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/problem_idl.py
   ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/robot_idl.py
+  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/precomputation_idl.py
 )
 
 PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-core)
