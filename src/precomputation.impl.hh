@@ -14,6 +14,7 @@
 
 # include <hpp/corbaserver/fwd.hh>
 # include <precomputation.hh>
+# include <robot.hh>
 # include "common.hh"
 
 namespace hpp
@@ -30,6 +31,19 @@ namespace hpp
 	Precomputation (corbaServer::Server* server);
 
 	virtual Short getNumberDof () throw (hpp::Error);
+
+	virtual hpp::floatSeq* computeVolume () throw (hpp::Error);
+
+	virtual hpp::floatSeq* parseCapsulePoints () throw (hpp::Error);
+
+	virtual hpp::floatSeq* projectConfigurationUntilIrreducible 
+          (const hpp::floatSeq& dofArray) throw (hpp::Error);
+
+        virtual hpp::floatSeq* gradientConfigurationWrtProjection 
+          (const hpp::floatSeq& dofArray) throw (hpp::Error);
+
+        virtual hpp::floatSeq* gradientConfigurationWrtProjection () 
+                throw (hpp::Error);
 
       private:
 	/// \brief Pointer to the Server owning this object

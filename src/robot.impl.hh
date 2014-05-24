@@ -81,6 +81,8 @@ namespace hpp
 
 	virtual Short getNumberDof () throw (hpp::Error);
 
+        virtual hpp::floatSeq* getRandomConfig() throw (hpp::Error);
+
 	virtual void
 	createJoint
 	(const char* jointName, const char* jointType,
@@ -160,24 +162,6 @@ namespace hpp
 	addObjectToJoint (const char* bodyName, const char* objectName,
 			  const Double* config)
 	  throw (hpp::Error);
-
-
-	virtual hpp::floatSeq* computeVolume () throw (hpp::Error);
-
-	virtual hpp::floatSeq* parseCapsulePoints () throw (hpp::Error);
-
-	virtual hpp::floatSeq* projectConfigurationUntilIrreducible 
-          (const hpp::floatSeq& dofArray) throw (hpp::Error);
-
-        virtual hpp::floatSeq* gradientConfigurationWrtProjection 
-          (const hpp::floatSeq& dofArray) throw (hpp::Error);
-
-        virtual hpp::floatSeq* gradientConfigurationWrtProjection () 
-                throw (hpp::Error);
-
-        virtual hpp::floatSeq* getRandomConfig() 
-                throw (hpp::Error);
-
 
       private:
 	typedef std::map <std::string, JointPtr_t> JointMap_t;
