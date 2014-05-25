@@ -30,8 +30,6 @@ namespace hpp
 
 	Precomputation (corbaServer::Server* server);
 
-	virtual Short getNumberDof () throw (hpp::Error);
-
 	virtual hpp::floatSeq* computeVolume () throw (hpp::Error);
 
 	virtual hpp::floatSeq* parseCapsulePoints () throw (hpp::Error);

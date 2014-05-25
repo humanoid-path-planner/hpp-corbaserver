@@ -25,6 +25,9 @@
 #include "robot.impl.hh"
 #include "tools.hh"
 #include "precomputation.impl.hh"
+#include "precomputation-utils.hh"
+
+using namespace hpp::corbaServer::precomputation::convexhull;
 
 namespace hpp
 {
@@ -36,102 +39,6 @@ namespace hpp
 	server_(server), problemSolver_(server->problemSolver ())
       {
       }
-
-      Short Precomputation::getNumberDof () throw (hpp::Error)
-      {
-	try {
-          hppDout(notice, "Precomputation");
-	  return (Short) problemSolver_->robot ()->numberDof ();
-	} catch (const std::exception& exc) {
-	  hppDout (error, exc.what ());
-	  throw hpp::Error (exc.what ());
-	}
-      }
-      // --------------------------------------------------------------------
-      // --------------------------------------------------------------------
-      // --------------------------------------------------------------------
-      // TODO: outsource the fast convexhull implementation and its wrapper! (ask florent where)
-      // Implementation of Andrew's monotone chain 2D convex hull algorithm.
-        // Asymptotic complexity: O(n log n).
-        // Practical performance: 0.5-1.0 seconds for n=1000000 on a 1GHz machine.
-namespace convexhull{
-        #include <algorithm>
-        #include <vector>
-        using namespace std;
-         
-        typedef double coord_t;   // coordinate type
-        typedef double coord2_t;  // must be big enough to hold 2*max(|coordinate|)^2
-         
-        struct Point {
-                coord_t x, y;
-                uint idx;
-                bool operator <(const Point &p) const {
-                        return x < p.x || (x == p.x && y < p.y);
-                }
-        };
-         
-        // 2D cross product of OA and OB vectors, i.e. z-component of their 3D cross product.
-        // Returns a positive value, if OAB makes a counter-clockwise turn,
-        // negative for clockwise turn, and zero if the points are collinear.
-        coord2_t cross(const Point &O, const Point &A, const Point &B)
-        {
-                return (A.x - O.x) * (B.y - O.y) - (A.y - O.y) * (B.x - O.x);
-        }
-         
-        // Returns a list of points on the convex hull in counter-clockwise order.
-        // Note: the last point in the returned list is the same as the first one.
-        vector<Point> convex_hull(vector<Point> P)
-        {
-                int n = P.size(), k = 0;
-                vector<Point> H(2*n);
-         
-                // Sort points lexicographically
-                sort(P.begin(), P.end());
-         
-                // Build lower hull
-                for (int i = 0; i < n; ++i) {
-                        while (k >= 2 && cross(H[k-2], H[k-1], P[i]) <= 0) k--;
-                        H[k++] = P[i];
-                }
-         
-                // Build upper hull
-                for (int i = n-2, t = k+1; i >= 0; i--) {
-                        while (k >= t && cross(H[k-2], H[k-1], P[i]) <= 0) k--;
-                        H[k++] = P[i];
-                }
-         
-                H.resize(k);
-                return H;
-        }
-
-      //wrapper for convex hull on capsules
-      std::vector<std::vector<double> > computeConvexHullFromCapsulePoints( 
-               std::vector<std::vector<double> > &capsules)
-      {
-        std::vector<convexhull::Point> P;
-        std::vector<std::vector<double> > hull_vec;
-        for(uint i=0; i<capsules.size(); i++){
-          convexhull::Point pt;
-          pt.x = capsules.at(i).at(0);
-          pt.y = capsules.at(i).at(1);
-          pt.idx = i;
-          P.push_back(pt);
-        }
-
-        std::vector<convexhull::Point> hull_pts = convexhull::convex_hull(P);
-
-        for(uint i=0; i<hull_pts.size(); i++){
-          std::vector<double> pt;
-          pt.push_back(hull_pts.at(i).x);
-          pt.push_back(hull_pts.at(i).y);
-          pt.push_back(hull_pts.at(i).idx);
-          hull_vec.push_back(pt);
-        }
-        return hull_vec;
-      }
-}//namespace convexhull
-
-//###################################################################
 
       hpp::floatSeq* Precomputation::gradientConfigurationWrtProjection (const hpp::floatSeq& dofArray) 
         throw (hpp::Error){
@@ -242,7 +149,7 @@ namespace convexhull{
           std::vector<std::vector<double> > hullPoints;
           std::vector<hpp::model::JointJacobian_t > hullJacobian;
 
-          hullPoints = convexhull::computeConvexHullFromCapsulePoints(capsulePoints);
+          hullPoints = computeConvexHullFromCapsulePoints(capsulePoints);
 
           for(uint i=0; i<hullPoints.size(); i++){
             uint idx = uint(hullPoints.at(i).at(2));

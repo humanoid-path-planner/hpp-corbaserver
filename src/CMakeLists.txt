@@ -43,6 +43,8 @@ ADD_LIBRARY(${LIBRARY_NAME}
   robot.impl.hh
   precomputation.impl.cc
   precomputation.impl.hh
+  precomputation-utils.cc
+  precomputation-utils.hh
   server.cc
   server-private.cc
   server-private.hh
