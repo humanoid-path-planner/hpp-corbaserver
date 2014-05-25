@@ -445,12 +445,9 @@ namespace hpp
       hpp::floatSeq* Robot::getRandomConfig() throw (hpp::Error){
         DevicePtr_t robot = problemSolver_->robot ();
         hpp::core::BasicConfigurationShooter confShooter(robot);
-        //configurationptr_t is vector_t is eigen::matrix<double>
         ConfigurationPtr_t configuration = confShooter.shoot();
-        hppDout(notice, "RANDOM CONF >> " << configuration.get());
 
         hpp::model::ConfigurationIn_t random_configuration = *configuration.get();
-        hppDout(notice, "RANDOM CONF >> " << random_configuration);
         robot->currentConfiguration(random_configuration);
         return getCurrentConfig();
       }
