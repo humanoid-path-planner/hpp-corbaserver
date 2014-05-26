@@ -204,23 +204,29 @@ namespace hpp
 	vector3_t p2 = floatSeqTVector3 (point2);
 	size_type constrainedJoint = 0;
 
-		joint1 = problemSolver_->robot()->getJointByName(joint1Name);
 
-    hpp::model::matrix3_t I3; I3.setIdentity ();
-    problemSolver_->addNumericalConstraint
-      (std::string (constraintName), Position::create
-       (problemSolver_->robot(), joint1, p1,
-        p2, I3, boost::assign::list_of (true)(true)
-        (true)));
 
-/*
+//*
+hpp::model::matrix3_t rotNulle;
+		rotNulle.setZero();
+
+	joint1 = problemSolver_->robot()->getJointByName(joint1Name);
+	joint2 = problemSolver_->robot()->getJointByName(joint2Name);
+
+//*/
+
+
+//*
 
 	problemSolver_->addNumericalConstraint
-		((std::string(constraintName),RelativeOrientation::create
-			(problemSolver_->robot(), joint1, joint2, rotNulle, false,
+		(std::string(constraintName), RelativeOrientation::create
+			(problemSolver_->robot(), joint1, joint2, rotNulle,
 			boost::assign::list_of(true)(true)(true)) );
 
-*/
+//*///
+
+
+
 /*
 	try {
 	  // Test whether joint1 is world frame
