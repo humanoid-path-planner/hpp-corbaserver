@@ -71,14 +71,19 @@ namespace hpp
         ///  irreducible up to a threshold
         virtual hpp::floatSeq* projectUntilIrreducible () throw (hpp::Error);
 
-	virtual void setCurrentConfiguration
-	(const hpp::floatSeq& dofArray) throw (hpp::Error);
+	virtual void setCurrentConfiguration (const hpp::floatSeq& dofArray) throw (hpp::Error);
+        virtual void setCurrentConfiguration (const vector_t& q) throw (hpp::Error);
 
+        vector_t floatSeqToVector(const hpp::floatSeq &q);
+        hpp::floatSeq* vectorToFloatSeq(const vector_t& q);
 
       private:
         /// \brief Compute q = q + lambda*q', i.e. one update step of gradient
         // descent
-        virtual hpp::floatSeq* updateConfiguration(const hpp::floatSeq &qq, double lambda) throw (hpp::Error);
+        virtual vector_t updateConfiguration(const vector_t &qq, double lambda) throw (hpp::Error);
+
+
+        virtual vector_t getGradientVector();
 
         /// \brief Parse capsule points from the robot geometry and return them
         ///  in a vector
