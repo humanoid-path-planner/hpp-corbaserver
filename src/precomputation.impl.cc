@@ -109,12 +109,18 @@ namespace hpp
 	try {
           double epsilon = 0.001; //convergence threshold
           double error = 1;
+          double oldC = inf();
           double lambda = 0.1; //update value
           this->computeProjectedConvexHullFromCurrentConfiguration ();
-          vector_t qq = this->getGradientVector();
-          vector_t q = this->updateConfiguration(qq, lambda);
-          this->setCurrentConfiguration(q);
-          this->computeProjectedConvexHullFromCurrentConfiguration ();
+          while(error > epsilon){
+            vector_t qq = this->getGradientVector();
+            vector_t q = this->updateConfiguration(qq, lambda);
+            this->setCurrentConfiguration(q);
+            this->computeProjectedConvexHullFromCurrentConfiguration ();
+            double C = this->getVolume();
+            error = fabs(C-oldC);
+            oldC = C;
+          }
           return vectorToFloatSeq(q);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
