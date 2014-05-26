@@ -57,6 +57,22 @@ module hpp
 			      out double residualError)
       raises (Error);
 
+    /// Create orientation constraint between two joints
+    ///
+    /// \param constraintName name of the constraint created,
+    /// \param joint1Name name of first joint
+    /// \param joint2Name name of second joint
+    /// \param point1 point in local frame of joint1,
+    /// \param point2 point in local frame of joint2.
+    /// If joint1 of joint2 is "", the corresponding joint is replaced by
+    /// the global frame.
+    /// constraints are stored in ProblemSolver object
+    boolean createOrientationConstraint (in string constraintName,
+              in string joint1Name,
+              in string joint2Name,
+              in floatSeq point1,
+              in floatSeq point2)
+      raises (Error);
 
     /// Create position constraint between two joints
     ///
@@ -103,10 +119,10 @@ module hpp
       raises (Error);
 
     /// Set error threshold in numerical constraint resolution
-    void setErrorThreshold (in double threshold) raises (Error);
+    //void setErrorThreshold (in double threshold) raises (Error);
 
     /// Set maximal number of iterations in numerical constraint resolution
-    void setMaxIterations (in unsigned short iterations) raises (Error);
+    //void setMaxIterations (in unsigned short iterations) raises (Error);
 
     /// \}
 
