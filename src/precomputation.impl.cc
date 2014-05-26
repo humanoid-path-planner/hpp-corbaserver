@@ -9,6 +9,7 @@
 // See the COPYING file for more information.
 
 #include <iostream>
+#include <cmath>
 
 #include <fcl/BVH/BVH_model.h>
 #include <fcl/shape/geometric_shapes.h>
@@ -27,7 +28,6 @@
 #include "precomputation.impl.hh"
 #include "precomputation-utils.hh"
 
-using namespace hpp::corbaServer::precomputation::convexhull;
 
 namespace hpp
 {
@@ -40,255 +40,214 @@ namespace hpp
       {
       }
 
-      hpp::floatSeq* Precomputation::gradientConfigurationWrtProjection (const hpp::floatSeq& dofArray) 
-        throw (hpp::Error){
-          //###################################################################
-          //## set new configuration, so that capsules have the right transform
-          //###################################################################
-          //outsourced to python file
-                //DevicePtr_t robot = problemSolver_->robot ();
-                //robot->setCurrentConfig(dofArray);
-          return gradientConfigurationWrtProjection ();
+      hpp::floatSeq* Precomputation::getConvexHullCapsules () throw (hpp::Error){
+        return capsulePointsToFloatSeq(cvxCaps_);
+      }
+      void Precomputation::setCurrentConfiguration(const hpp::floatSeq &dofArray) throw (hpp::Error){
+        this->computeProjectedConvexHullFromCurrentConfiguration ();
       }
 
-      hpp::floatSeq* Precomputation::gradientConfigurationWrtProjection () 
+      void Precomputation::computeProjectedConvexHullFromCurrentConfiguration () 
         throw (hpp::Error)
       {
-        // set new configuration, compute projected points of capsules, get convex projected hull, 
-        // compute jacobian of outer points of convex hull
-        try {
+	std::vector<CapsulePoint> caps = parseCapsulePoints();
+        std::vector<ProjectedCapsulePoint> projCaps = projectCapsulePointsOnYZPlane(caps);
+        cvxCaps_.clear();
+        cvxCaps_ = computeConvexHullFromProjectedCapsulePoints(projCaps);
+      }
 
-          //###################################################################
-          //## compute projected points of capsules
-          //###################################################################
+      hpp::floatSeq* Precomputation::getGradient() 
+        throw (hpp::Error)
+      {
+        //Compute gradient wrt outer jacobians
+        DevicePtr_t robot = problemSolver_->robot ();
+        //JointJacobian_t is Eigen::Matrix<double, 6, Eigen::Dynamic> 
+        vector_t qgrad(robot->numberDof());
+        qgrad.setZero();
+
+        double lambda = 0.1;
+        hppDout(notice, "gradient computation from outer jacobians");
+        for(uint i=0; i<cvxCaps_.size(); i++){
+          vector_t cvx_pt_eigen(6);
+          cvx_pt_eigen << 0,cvxCaps_.at(i).y,cvxCaps_.at(i).z,0,0,0;
+          vector_t qi = cvxCaps_.at(i).J.transpose()*cvx_pt_eigen;
+          qgrad = qgrad - lambda*qi;
+        }
+        hppDout(notice, "convert gradient to floatSeq and return");
+        hpp::floatSeq* q_proj = new hpp::floatSeq;
+        q_proj->length (robot->numberDof());
+        for(uint i=0;i<robot->numberDof();i++){
+          (*q_proj)[i] = qgrad[i];
+        }
+        return q_proj;
+      }
+
+      hpp::floatSeq* Precomputation::capsulePointsToFloatSeq (const std::vector<ProjectedCapsulePoint> &capsVector) 
+         throw (hpp::Error)
+      {
+	try {
+          hpp::floatSeq* capsFloatSeq = new hpp::floatSeq;
+          capsFloatSeq->length (3*capsVector.size());
+          int ctr = 0;
+          for(uint i=0;i<capsVector.size();i++){
+            (*capsFloatSeq)[ctr++] = 0;
+            (*capsFloatSeq)[ctr++] = capsVector.at(i).y;
+            (*capsFloatSeq)[ctr++] = capsVector.at(i).z;
+          }
+          return capsFloatSeq;
+	} catch (const std::exception& exc) {
+	  hppDout (error, exc.what ());
+	  throw hpp::Error (exc.what ());
+	}
+      }
+      hpp::floatSeq* Precomputation::capsulePointsToFloatSeq (const std::vector<CapsulePoint> &capsVector) 
+         throw (hpp::Error)
+      {
+	try {
+          hpp::floatSeq* capsFloatSeq = new hpp::floatSeq;
+          capsFloatSeq->length (3*capsVector.size());
+          int ctr = 0;
+          for(uint i=0;i<capsVector.size();i++){
+            (*capsFloatSeq)[ctr++] = capsVector.at(i).x;
+            (*capsFloatSeq)[ctr++] = capsVector.at(i).y;
+            (*capsFloatSeq)[ctr++] = capsVector.at(i).z;
+          }
+          return capsFloatSeq;
+	} catch (const std::exception& exc) {
+	  hppDout (error, exc.what ());
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      std::vector<ProjectedCapsulePoint> Precomputation::computeConvexHullFromProjectedCapsulePoints (const std::vector<ProjectedCapsulePoint> &capsVec) 
+      {
+        using namespace hpp::corbaServer::precomputation::convexhull;
+        return convex_hull(capsVec);
+      }
+
+      std::vector<ProjectedCapsulePoint> Precomputation::projectCapsulePointsOnYZPlane (const std::vector<CapsulePoint> &capsVec) 
+      {
+        std::vector<ProjectedCapsulePoint> projCapsulePointsYZPlane;
+        for(uint i=0; i<capsVec.size(); i++){
+          ProjectedCapsulePoint p;
+          p.y = capsVec.at(i).y;
+          p.z = capsVec.at(i).z;
+          p.J = capsVec.at(i).J;
+          projCapsulePointsYZPlane.push_back(p);
+
+          // orthogonal projection by just removing the x-component of the
+          // point.
+          // we still need to compute the outer points, which are located at
+          // radius from the capsule point on the YZ plane. We will compute only
+          // a finite number of outer points, which is equal to an approximation
+          // of the circle by an inner polygon. Change the t_step size to get
+          // a better approximation.
+          double t_step = M_PI/6;
+          double yP = capsVec.at(i).y;
+          double zP = capsVec.at(i).z;
+          double radius = capsVec.at(i).radius;
+          for(double theta = 0; theta <= 2*M_PI; theta+=t_step){
+            ProjectedCapsulePoint outerPoint;
+            outerPoint.y = cos(theta)*radius + yP;
+            outerPoint.z = sin(theta)*radius + zP;
+            outerPoint.J = capsVec.at(i).J;
+            projCapsulePointsYZPlane.push_back(outerPoint);
+          }
+        }
+        return projCapsulePointsYZPlane;
+      }
+
+      std::vector<CapsulePoint> Precomputation::parseCapsulePoints () throw (hpp::Error)
+      {
+	try {
           using namespace std;
           using namespace fcl;
           DevicePtr_t robot = problemSolver_->robot ();
-          std::vector<std::vector<double> > capsulePoints;
-          std::vector<hpp::model::JointJacobian_t > capsuleJacobian;
-
-          //nameSeq *innerObjectSeq = 0x0;
+          std::vector<CapsulePoint> capsuleVec;
           JointVector_t jointVec = robot->getJointVector();
-          std::stringstream stream;
+          std::stringstream stream; //DEBUG stream
 
-          for(uint i = 0; i<jointVec.size(); i++){
+          for(uint i=0; i<jointVec.size(); i++){
+            //-----------------------------------------------
             JointPtr_t joint = jointVec.at(i);
             const hpp::model::JointJacobian_t jjacobian = joint->jacobian();
+            //-----------------------------------------------
             BodyPtr_t body = joint->linkedBody();
             if (!body) {
-              //stream << "JOINT has no body" << endl;
+              stream << "JOINT has no body" << endl;
               continue;
             }
+            stream << "JOINT " << joint->name () << endl;
+            stream << "BODY " << body->name () << endl;
+            //-----------------------------------------------
             ObjectVector_t objects = body->innerObjects (model::COLLISION);
-            for (std::size_t i=0; i<objects.size(); i++) {
-              CollisionObjectPtr_t object = objects[i];
-              fcl::CollisionObjectPtr_t fco = object->fcl();
-              const fcl::NODE_TYPE nodeType = fco->getNodeType();
-              const fcl::OBJECT_TYPE objectType = fco->getObjectType();
-              //safety check the right node type:
-              // geometry -- capsules
-              if(objectType != OT_GEOM){
-                std::ostringstream oss ("OBJECT_TYPE ");
-                oss << objectType << " not handled by function.";
-                throw hpp::Error (oss.str ().c_str ());
-              }
-              if(nodeType != GEOM_CAPSULE){
-                std::ostringstream oss ("NODE_TYPE ");
-                oss << nodeType << " not handled by function.";
-                throw hpp::Error (oss.str ().c_str ());
-              }
-              const fcl::Capsule *capsule = static_cast<const fcl::Capsule*>(fco->getCollisionGeometry());
-              double length = capsule->lz;
-              double radius = capsule->radius;
-              //-----------------------------------------------
-              //compute the outer points of the
-              //capsule: ( x1 -----o----- x2 )
-              //here, o depicts the center of the
-              //capsule, which is given by aabb_center
-              fcl::Vec3f center = capsule->aabb_center;
-              fcl::Transform3f T = fco->getTransform();
-
-              //create points all along the axis of
-              //the capsule and project them under the
-              //given transformation
-              double l = -length/2;
-              double dl = length/2;
-              while( l<=length/2 ){
-                fcl::Vec3f x(0,0,l);
-                fcl::Transform3f Tx;
-                Tx.setTranslation(x);
-                Tx = T*Tx;
-                x = Tx.getTranslation();
-                std::vector<double> pt;
-                pt.push_back(x[1]);
-                pt.push_back(x[2]);
-                pt.push_back(radius);
-                pt.push_back(length);
-                capsulePoints.push_back(pt);
-                capsuleJacobian.push_back(jjacobian);
-                //compute outer points of capsule points 
-                // which are at a distance of radius away
-                double t_step = M_PI/6;
-                for(double theta = 0; theta <= 2*M_PI; theta+=t_step){
-                  std::vector<double> pt_out;
-                  pt_out.push_back(cos(theta)*radius+x[1]);
-                  pt_out.push_back(sin(theta)*radius+x[2]);
-                  pt_out.push_back(radius);
-                  pt_out.push_back(length);
-                  capsulePoints.push_back(pt);
-                  capsuleJacobian.push_back(jjacobian);
+            if (objects.size() > 0) {
+              std::size_t nbObjects = objects.size();
+              for (std::size_t iObject=0; iObject < nbObjects; iObject++) {
+                //-----------------------------------------------
+                CollisionObjectPtr_t object = objects[iObject];
+                std::string geometryName = object->name();
+                stream << "OBJECT " << geometryName << endl;
+                //-----------------------------------------------
+                fcl::CollisionObjectPtr_t fco = object->fcl();
+                //-----------------------------------------------
+                const fcl::NODE_TYPE nodeType = fco->getNodeType();
+                const fcl::OBJECT_TYPE objectType = fco->getObjectType();
+                //safety check the right node type:
+                // geometry -- capsules
+                if(objectType != OT_GEOM){
+                  hppDout(error, "OBJECT_TYPE " << objectType << " not handled by function");
                 }
-                l = l+dl;
-              }
+                if(nodeType != GEOM_CAPSULE){
+                  hppDout(error, "NODE_TYPE " << nodeType << " not handled by function");
+                }
+                const fcl::Capsule *capsule = static_cast<const fcl::Capsule*>(fco->getCollisionGeometry());
+
+                double length = capsule->lz;
+                double radius = capsule->radius;
+                //-----------------------------------------------
+                //compute the outer points of the
+                //capsule: ( x1 -----o----- x2 )
+                //here, o depicts the center of the
+                //capsule, which is given by aabb_center
+                //x1,x2 are the center points of the top 
+                //and bottom disc of the
+                //cylinder, respectively.
+
+                fcl::Vec3f center = capsule->aabb_center;
+                fcl::Transform3f T = fco->getTransform();
+
+                //create points all along the axis of
+                //the capsule and project them under the
+                //given transformation
+                double l = -length/2;
+                while(l <= length/2){
+                  fcl::Vec3f x(0,0,l);
+                  fcl::Transform3f Tx;
+                  Tx.setTranslation(x);
+                  Tx = T*Tx;
+                  x = Tx.getTranslation();
+                  CapsulePoint p;
+                  p.x = x[0];
+                  p.y = x[1];
+                  p.z = x[2];
+                  p.radius = radius;
+                  p.length = length;
+                  p.J = jjacobian;
+                  capsuleVec.push_back(p);
+                  l += length;
+                  hppDout(notice, l);
+                }
+                //-----------------------------------------------
+                //fcl::AABB aabb = fco->getAABB();
+                //stream << aabb.width() << " " << aabb.height() << endl;
+              }//iterate inner objects
             }
-          }
-
-          //###################################################################
-          //## compute convex hull from 2d capsule points (y,z)
-          //###################################################################
-          std::vector<std::vector<double> > hullPoints;
-          std::vector<hpp::model::JointJacobian_t > hullJacobian;
-
-          hullPoints = computeConvexHullFromCapsulePoints(capsulePoints);
-
-          for(uint i=0; i<hullPoints.size(); i++){
-            uint idx = uint(hullPoints.at(i).at(2));
-            hullJacobian.push_back(capsuleJacobian.at(idx));
-          }
-          //###################################################################
-          //## compute gradient of configuration q from outer jacobians
-          //###################################################################
-          //JointJacobian_t is Eigen::Matrix<double, 6, Eigen::Dynamic> 
-          vector_t qgrad(robot->numberDof());
-          qgrad.setZero();
-
-          hppDout(notice, "gradient computation from outer jacobians");
-          for(uint i=0; i<hullJacobian.size(); i++){
-            vector_t cvx_pt_eigen(6);
-            cvx_pt_eigen << 0,hullPoints.at(i).at(0),hullPoints.at(i).at(1),0,0,0;
-            vector_t qi = hullJacobian.at(i).transpose()*cvx_pt_eigen;
-            qgrad = qgrad - 0.1*qi;
-          }
-          hppDout(notice, "convert gradient to floatSeq and return");
-
-          hpp::floatSeq* q_proj = new hpp::floatSeq;
-          q_proj->length (robot->numberDof());
-          for(uint i=0;i<robot->numberDof();i++){
-            (*q_proj)[i] = qgrad[i];
-          }
+          }//iterate joints
+          //IF DEBUG
           hppDout(notice, stream.str());
-          return q_proj;
-        } catch (const std::exception& exc) {
-          hppDout (error, exc.what ());
-          throw hpp::Error (exc.what ());
-        }
-      }
+          return capsuleVec;
 
-      hpp::floatSeq* Precomputation::projectConfigurationUntilIrreducible (const hpp::floatSeq& dofArray) 
-        throw (hpp::Error)
-      {
-        // configuration, get convex projected hull, compute jacobian of outer points,
-        // get complete gradient, do gradient descent into (0,0) direction of each point
-
-        return this->gradientConfigurationWrtProjection(dofArray);
-      }
-
-      hpp::floatSeq* Precomputation::computeVolume () throw (hpp::Error)
-      {
-        return this->parseCapsulePoints();
-      }
-
-      hpp::floatSeq* Precomputation::parseCapsulePoints () throw (hpp::Error)
-      {
-	try {
-                using namespace std;
-                using namespace fcl;
-                hppDout (notice, "Computing Volume");
-                DevicePtr_t robot = problemSolver_->robot ();
-                hpp::floatSeq* capsPos = new hpp::floatSeq;
-                std::vector<double> capsulePoints;
-
-          //      nameSeq *innerObjectSeq = 0x0;
-                JointVector_t jointVec = robot->getJointVector();
-                std::stringstream stream;
-
-                for(uint i = 0; i<jointVec.size(); i++){
-                        //-----------------------------------------------
-                        JointPtr_t joint = jointVec.at(i);
-                        //-----------------------------------------------
-                        BodyPtr_t body = joint->linkedBody();
-                        if (!body) {
-                                stream << "JOINT has no body" << endl;
-                                continue;
-                        }
-                        stream << "JOINT " << joint->name () << endl;
-                        stream << "BODY " << body->name () << endl;
-                        //-----------------------------------------------
-                        ObjectVector_t objects = body->innerObjects (model::COLLISION);
-                        if (objects.size() > 0) {
-                                std::size_t nbObjects = objects.size();
-                                for (std::size_t iObject=0; iObject < nbObjects; iObject++) {
-                                        //-----------------------------------------------
-                                        CollisionObjectPtr_t object = objects[iObject];
-                                        std::string geometryName = object->name();
-                                        stream << "OBJECT " << geometryName << endl;
-                                        //-----------------------------------------------
-                                        fcl::CollisionObjectPtr_t fco = object->fcl();
-                                        //-----------------------------------------------
-                                        const fcl::NODE_TYPE nodeType = fco->getNodeType();
-                                        const fcl::OBJECT_TYPE objectType = fco->getObjectType();
-                                        //safety check the right node type:
-                                        // geometry -- capsules
-                                        if(objectType != OT_GEOM){
-                                                hppDout(error, "OBJECT_TYPE " << objectType << " not handled by function");
-                                        }
-                                        if(nodeType != GEOM_CAPSULE){
-                                                hppDout(error, "NODE_TYPE " << nodeType << " not handled by function");
-                                        }
-                                        const fcl::Capsule *capsule = static_cast<const fcl::Capsule*>(fco->getCollisionGeometry());
-
-                                        double length = capsule->lz;
-                                        double radius = capsule->radius;
-                                        //-----------------------------------------------
-                                        //compute the outer points of the
-                                        //capsule: ( x1 -----o----- x2 )
-                                        //here, o depicts the center of the
-                                        //capsule, which is given by aabb_center
-                                        fcl::Vec3f center = capsule->aabb_center;
-                                        fcl::Transform3f T = fco->getTransform();
-
-                                        //create points all along the axis of
-                                        //the capsule and project them under the
-                                        //given transformation
-                                        double l = -length/2;
-                                        double dl = length/2;
-                                        while( l<=length/2 ){
-                                                fcl::Vec3f x(0,0,l);
-                                                fcl::Transform3f Tx;
-                                                Tx.setTranslation(x);
-                                                Tx = T*Tx;
-                                                x = Tx.getTranslation();
-                                                capsulePoints.push_back(x[0]);
-                                                capsulePoints.push_back(x[1]);
-                                                capsulePoints.push_back(x[2]);
-                                                capsulePoints.push_back(radius);
-                                                capsulePoints.push_back(length);
-                                                l = l+dl;
-                                        }
-                                        //-----------------------------------------------
-                                        //fcl::AABB aabb = fco->getAABB();
-                                        //stream << aabb.width() << " " << aabb.height() << endl;
-                                }
-                        }
-                }
-                capsPos->length (capsulePoints.size());
-                for(uint i=0;i<capsulePoints.size();i++){
-                        (*capsPos)[i] = capsulePoints.at(i);
-                }
-
-                hppDout(notice, stream.str());
-
-                return capsPos;
 	} catch (const std::exception& exc) {
 	  hppDout (error, exc.what ());
 	  throw hpp::Error (exc.what ());

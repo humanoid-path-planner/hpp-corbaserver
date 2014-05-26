@@ -10,6 +10,8 @@
 
 #pragma once
 
+# include "precomputation.impl.hh"
+
 namespace hpp
 {
   namespace corbaServer
@@ -18,27 +20,18 @@ namespace hpp
     {
       namespace convexhull
       {
-        typedef double coord_t;   // coordinate type
-        typedef double coord2_t;  // must be big enough to hold 2*max(|coordinate|)^2
-         
-        struct Point {
-                coord_t x, y;
-                uint idx;
-                bool operator <(const Point &p) const {
-                        return x < p.x || (x == p.x && y < p.y);
-                }
-        };
+        /// \brief Implementation of Andrew's monotone chain 2D convex hull algorithm.
+        /// Asymptotic complexity: O(n log n).
+        /// Practical performance: 0.5-1.0 seconds for n=1000000 on a 1GHz machine.
+        /// Original source code from
+        /// http://en.wikibooks.org/wiki/Algorithm_Implementation/Geometry/Convex_hull/Monotone_chain#C.2B.2B
 
-        coord2_t cross(const Point &O, const Point &A, const Point &B);
+        using hpp::corbaServer::impl::ProjectedCapsulePoint;
+        double cross(const ProjectedCapsulePoint &O, const ProjectedCapsulePoint &A, const ProjectedCapsulePoint &B);
          
         // \brief Returns a list of points on the convex hull in counter-clockwise order.
         // Note: the last point in the returned list is the same as the first one.
-        std::vector<Point> convex_hull(std::vector<Point> P);
-
-        /// \brief Wrapper for convex hull computation on capsules
-        ///     with capsules in the format < <x,y,z,radius,length>, ...>
-        std::vector<std::vector<double> > computeConvexHullFromCapsulePoints( 
-                 std::vector<std::vector<double> > &capsules);
+        std::vector<ProjectedCapsulePoint> convex_hull(std::vector<ProjectedCapsulePoint> P);
 
       }// end of namespace convexhull
     } // end of namespace precomputation
