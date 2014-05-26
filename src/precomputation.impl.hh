@@ -69,6 +69,8 @@ namespace hpp
         /// of the projected capsule points
         virtual double getVolume () throw (hpp::Error);
 
+        virtual hpp::floatSeq* projectUntilIrreducible () throw (hpp::Error);
+
       private:
 
         /// \brief Parse capsule points from the robot geometry and return them
