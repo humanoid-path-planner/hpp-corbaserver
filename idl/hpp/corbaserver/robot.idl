@@ -258,6 +258,7 @@ module hpp
     /// \param pos relative position of the polyhedron in the body
     void addObjectToJoint(in string jointName, in string objectName,
 			  in Transform pos) raises (Error);
+
     /// \}
   };
   };
