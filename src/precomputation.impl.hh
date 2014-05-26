@@ -57,6 +57,20 @@ namespace hpp
 
         virtual void setCurrentConfiguration(const hpp::floatSeq &dofArray) throw (hpp::Error);
 
+        /// \brief returns the points of the convex hull of the projected
+        /// capsules
+        virtual hpp::floatSeq* getConvexHullCapsules () throw (hpp::Error);
+
+        /// \brief compute the gradient wrt to the outer convex hull points and
+        /// its associated jacobians
+        virtual hpp::floatSeq* getGradient () throw (hpp::Error);
+
+        /// \brief get volume of the surface area, inscribed in the convex hull
+        /// of the projected capsule points
+        virtual double getVolume () throw (hpp::Error);
+
+      private:
+
         /// \brief Parse capsule points from the robot geometry and return them
         ///  in a vector
 	virtual std::vector<CapsulePoint> parseCapsulePoints () throw (hpp::Error);
@@ -67,8 +81,6 @@ namespace hpp
 
         virtual void computeProjectedConvexHullFromCurrentConfiguration () throw (hpp::Error);
 
-        virtual hpp::floatSeq* getConvexHullCapsules () throw (hpp::Error);
-        virtual hpp::floatSeq* getGradient () throw (hpp::Error);
         //
         /// \brief Convert capsule point vector to hpp::floatSeq 
         virtual hpp::floatSeq* capsulePointsToFloatSeq (const std::vector<CapsulePoint> &capsVector) 

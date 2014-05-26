@@ -47,6 +47,27 @@ namespace hpp
         this->computeProjectedConvexHullFromCurrentConfiguration ();
       }
 
+      double Precomputation::getVolume () throw (hpp::Error){
+        //assume that hull are points on a convex hull, which are sorted
+        //counter-clockwise.
+        using namespace Eigen;
+        Vector2f x1(cvxCaps_.at(0).y, cvxCaps_.at(0).z);
+        double volume = 0;
+        //compute volume by iterating over all embeded triangles
+        for(int i=0; i<cvxCaps_.size()-2; i++){
+          Vector2f x2(cvxCaps_.at(i+1).y, cvxCaps_.at(i+1).z);
+          Vector2f x3(cvxCaps_.at(i+2).y, cvxCaps_.at(i+2).z);
+          Vector2f v12 = x2-x1;
+          Vector2f v13 = x3-x1;
+          double b = v12.norm();
+          Vector2f h_vec = v13 - v13.dot(v12)*v12;
+          double h = h_vec.norm();
+          double d = 0.5*b*h;
+          volume += d;
+        }
+        return volume;
+      }
+
       void Precomputation::computeProjectedConvexHullFromCurrentConfiguration () 
         throw (hpp::Error)
       {
