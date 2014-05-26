@@ -259,20 +259,6 @@ module hpp
     void addObjectToJoint(in string jointName, in string objectName,
 			  in Transform pos) raises (Error);
 
-    ///  Compute Projected Volume of the robot body
-    /// \return position of capsules
-    floatSeq computeVolume() raises (Error);
-
-    ///  Parse points of capsules attached to the robot body
-    /// \return 2 points per capsules each containing (x,y,z,radius,length)
-    ///         and arranged in one flat 1d array
-    floatSeq parseCapsulePoints () raises (Error);
-
-
-    floatSeq projectConfigurationUntilIrreducible (in floatSeq dofArray) raises (Error);
-    floatSeq gradientConfigurationWrtProjection(in floatSeq dofArray) raises (Error);
-    floatSeq getRandomConfig() raises (Error);
-
     /// \}
   };
   };
