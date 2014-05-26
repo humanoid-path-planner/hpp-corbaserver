@@ -21,6 +21,7 @@ SET(IDL_SOURCES
   obstacle
   problem
   robot
+  precomputation
   )
 
 OMNIIDL_INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/idl)
@@ -40,6 +41,10 @@ ADD_LIBRARY(${LIBRARY_NAME}
   problem.impl.hh
   robot.impl.cc
   robot.impl.hh
+  precomputation.impl.cc
+  precomputation.impl.hh
+  precomputation-utils.cc
+  precomputation-utils.hh
   server.cc
   server-private.cc
   server-private.hh
@@ -48,10 +53,12 @@ ADD_LIBRARY(${LIBRARY_NAME}
   obstacleSK.cc
   problemSK.cc
   robotSK.cc
+  precomputationSK.cc
   ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/common_idl.py
   ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/obstacle_idl.py
   ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/problem_idl.py
   ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/robot_idl.py
+  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/precomputation_idl.py
 )
 
 PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-core)
@@ -107,6 +114,7 @@ INSTALL(
   ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/common.idl
   ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/obstacle.idl
   ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/problem.idl
+  ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/precomputation.idl
   ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/robot.idl
   DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/idl/hpp/corbaserver
 )

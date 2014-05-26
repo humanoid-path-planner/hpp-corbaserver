@@ -326,7 +326,6 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-
       bool Problem::applyConstraints (const hpp::floatSeq& input,
 				      hpp::floatSeq_out output,
 				      double& residualError)

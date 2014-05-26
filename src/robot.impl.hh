@@ -81,6 +81,8 @@ namespace hpp
 
 	virtual Short getNumberDof () throw (hpp::Error);
 
+        virtual hpp::floatSeq* getRandomConfig() throw (hpp::Error);
+
 	virtual void
 	createJoint
 	(const char* jointName, const char* jointType,

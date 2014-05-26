@@ -5,6 +5,7 @@ import robot_idl
 import common_idl
 import obstacle_idl
 import problem_idl
+import precomputation_idl
 
 from client import Client
 Transform = common_idl._0_hpp.Transform

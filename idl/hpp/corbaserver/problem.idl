@@ -91,6 +91,7 @@ module hpp
 				      in floatSeq point2)
       raises (Error);
 
+
     /// Reset constraints
     void resetConstraints () raises (Error);
 

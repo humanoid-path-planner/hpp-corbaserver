@@ -83,6 +83,7 @@ namespace hpp
       using CORBA::UShort;
 
       class Problem;
+      class Precomputation;
       class Obstacle;
       class Robot;
       class Server;
