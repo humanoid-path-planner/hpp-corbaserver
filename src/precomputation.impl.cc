@@ -77,7 +77,7 @@ namespace hpp
         cvxCaps_ = computeConvexHullFromProjectedCapsulePoints(projCaps);
       }
 
-      virtual hpp::floatSeq* Precomputation::projectUntilIrreducible () throw (hpp::Error){
+      hpp::floatSeq* Precomputation::projectUntilIrreducible () throw (hpp::Error){
 
       }
 
