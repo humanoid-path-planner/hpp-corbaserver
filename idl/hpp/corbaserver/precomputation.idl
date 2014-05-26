@@ -23,6 +23,7 @@ module hpp
     floatSeq getConvexHullCapsules () raises (Error);
     floatSeq getGradient () raises (Error);
     double getVolume () raises (Error);
+    floatSeq projectUntilIrreducible () raises (Error);
 
   }; 
   };

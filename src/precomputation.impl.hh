@@ -55,8 +55,6 @@ namespace hpp
 
 	Precomputation (corbaServer::Server* server);
 
-        virtual void setCurrentConfiguration(const hpp::floatSeq &dofArray) throw (hpp::Error);
-
         /// \brief returns the points of the convex hull of the projected
         /// capsules
         virtual hpp::floatSeq* getConvexHullCapsules () throw (hpp::Error);
@@ -69,9 +67,18 @@ namespace hpp
         /// of the projected capsule points
         virtual double getVolume () throw (hpp::Error);
 
+        /// \brief Use the current configuration and project it down until it is
+        ///  irreducible up to a threshold
         virtual hpp::floatSeq* projectUntilIrreducible () throw (hpp::Error);
 
+	virtual void setCurrentConfiguration
+	(const hpp::floatSeq& dofArray) throw (hpp::Error);
+
+
       private:
+        /// \brief Compute q = q + lambda*q', i.e. one update step of gradient
+        // descent
+        virtual hpp::floatSeq* updateConfiguration(const hpp::floatSeq &qq, double lambda) throw (hpp::Error);
 
         /// \brief Parse capsule points from the robot geometry and return them
         ///  in a vector

@@ -40,14 +40,52 @@ namespace hpp
       {
       }
 
-      hpp::floatSeq* Precomputation::getConvexHullCapsules () throw (hpp::Error){
+      hpp::floatSeq* Precomputation::getConvexHullCapsules () throw (hpp::Error)
+      {
         return capsulePointsToFloatSeq(cvxCaps_);
       }
-      void Precomputation::setCurrentConfiguration(const hpp::floatSeq &dofArray) throw (hpp::Error){
-        this->computeProjectedConvexHullFromCurrentConfiguration ();
+      void Precomputation::setCurrentConfiguration(const hpp::floatSeq &dofArray) throw (hpp::Error)
+      {
+	std::size_t configDim = (std::size_t)dofArray.length();
+	std::vector<double> dofVector;
+	try {
+	  DevicePtr_t robot = problemSolver_->robot ();
+	  std::size_t deviceDim = robot->configSize ();
+	  vector_t config; config.resize (configDim);
+	  for (std::size_t iDof = 0; iDof < configDim; iDof++) {
+	    config [iDof] = dofArray[iDof];
+	  }
+	  if(configDim != deviceDim){
+	    hppDout (notice, "config dimension: " <<configDim
+		   <<",  deviceDim "<<deviceDim);
+	    throw hpp::Error ("dofVector Does not match");
+	  }
+	  // Create a config for robot initialized with dof vector.
+	  problemSolver_->robot ()->currentConfiguration (config);
+	  problemSolver_->robot ()->computeForwardKinematics ();
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
       }
 
-      double Precomputation::getVolume () throw (hpp::Error){
+      hpp::floatSeq* Precomputation::updateConfiguration (const hpp::floatSeq &dofArray, double lambda) throw (hpp::Error){
+      }
+      hpp::floatSeq* Precomputation::projectUntilIrreducible () throw (hpp::Error)
+      {
+        double epsilon = 0.001; //convergence threshold
+        double error = 1;
+        double lambda = 0.1; //update value
+        //while( error > epsilon ){
+          //this->computeProjectedConvexHullFromCurrentConfiguration ();
+          //floatSeq* qq = this->getGradient();
+          //floatSeq* q = this->updateConfiguration(qq, lambda);
+          //this->setCurrentConfiguration(*q);
+          //this->computeProjectedConvexHullFromCurrentConfiguration ();
+        //}
+      }
+
+      double Precomputation::getVolume () throw (hpp::Error)
+      {
         //assume that hull are points on a convex hull, which are sorted
         //counter-clockwise.
         using namespace Eigen;
@@ -77,10 +115,6 @@ namespace hpp
         cvxCaps_ = computeConvexHullFromProjectedCapsulePoints(projCaps);
       }
 
-      hpp::floatSeq* Precomputation::projectUntilIrreducible () throw (hpp::Error){
-
-      }
-
       hpp::floatSeq* Precomputation::getGradient() 
         throw (hpp::Error)
       {
@@ -90,13 +124,12 @@ namespace hpp
         vector_t qgrad(robot->numberDof());
         qgrad.setZero();
 
-        double lambda = 0.1;
         hppDout(notice, "gradient computation from outer jacobians");
         for(uint i=0; i<cvxCaps_.size(); i++){
           vector_t cvx_pt_eigen(6);
           cvx_pt_eigen << 0,cvxCaps_.at(i).y,cvxCaps_.at(i).z,0,0,0;
           vector_t qi = cvxCaps_.at(i).J.transpose()*cvx_pt_eigen;
-          qgrad = qgrad - lambda*qi;
+          qgrad = qgrad + qi;
         }
         hppDout(notice, "convert gradient to floatSeq and return");
         hpp::floatSeq* q_proj = new hpp::floatSeq;
