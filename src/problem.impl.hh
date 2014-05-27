@@ -44,6 +44,10 @@ namespace hpp
 	virtual void
 	resetGoalConfigs ()  throw (hpp::Error);
 
+	virtual bool createOrientationConstraint
+	(const char* constraintName, const char* joint1Name,
+	 const char* joint2Name, const Double* p) throw (hpp::Error);
+
 	virtual bool createPositionConstraint (const char* constraintName, 
 					       const char* joint1Name,
 					       const char* joint2Name,

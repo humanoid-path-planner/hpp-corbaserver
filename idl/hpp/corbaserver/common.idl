@@ -27,6 +27,7 @@ module hpp
 
   /// Element of SE(3) represented by a vector and a unit quaternion
   typedef double Transform [7];
+  typedef double Quaternion [4];
 };
 
 #endif //! HPP_CORBASERVER_SERVER_IDL
