@@ -21,7 +21,7 @@ class Client:
   Connect and create clients for all HPP services.
   """
 
-  defaultClients = ['problem', 'obstacle', 'robot']
+  defaultClients = ['problem', 'obstacle', 'robot', 'precomputation']
 
   def makeClient(self, serviceName):
     """

@@ -21,7 +21,7 @@
 #include <hpp/model/collision-object.hh>
 #include <hpp/core/weighed-distance.hh>
 #include <hpp/corbaserver/server.hh>
-
+#include <hpp/core/basic-configuration-shooter.hh>
 #include "robot.impl.hh"
 #include "tools.hh"
 
@@ -441,6 +441,16 @@ namespace hpp
 	}
       }
 
+      // --------------------------------------------------------------------
+      hpp::floatSeq* Robot::getRandomConfig() throw (hpp::Error){
+        DevicePtr_t robot = problemSolver_->robot ();
+        hpp::core::BasicConfigurationShooter confShooter(robot);
+        ConfigurationPtr_t configuration = confShooter.shoot();
+
+        hpp::model::ConfigurationIn_t random_configuration = *configuration.get();
+        robot->currentConfiguration(random_configuration);
+        return getCurrentConfig();
+      }
       // --------------------------------------------------------------------
 
       hpp::floatSeq* Robot::getCurrentConfig() throw (hpp::Error)

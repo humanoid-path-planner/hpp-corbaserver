@@ -189,7 +189,58 @@ namespace hpp
 
 
       // ---------------------------------------------------------------
+      
+      bool Problem::createOrientationConstraint(
+				const char* constraintName, const char* joint1Name,
+				const char* joint2Name, const hpp::floatSeq& angles
+			) throw (hpp::Error)
+      {
 
+			JointPtr_t joint1;
+			JointPtr_t joint2;
+			size_type constrainedJoint = 0;
+			hpp::model::matrix3_t rotation;
+			rotation.setEulerZYX(angles[0], angles[1], angles[2]);
+
+	try {
+	  // Test whether joint1 is world frame
+	  if (std::string (joint1Name) == std::string ("")) {
+	    constrainedJoint = 2;
+	  } else {
+	    joint1 =
+	      problemSolver_->robot()->getJointByName(joint1Name);
+	  }
+	  // Test whether joint2 is world frame
+	  if (std::string (joint2Name) == std::string ("")) {
+	    if (constrainedJoint == 2) {
+	      throw hpp::Error ("At least one joint should be provided.");
+	    }
+	    constrainedJoint = 1;
+	  } else {
+	    joint2 =
+	      problemSolver_->robot()->getJointByName(joint2Name);
+	  }
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+	if (constrainedJoint == 0) {
+	  // Both joints are provided
+	  problemSolver_->addNumericalConstraint
+	    (std::string(constraintName), RelativeOrientation::create
+	      (problemSolver_->robot(), joint1, joint2, rotation,
+	      boost::assign::list_of(true)(true)(true)) );
+	} else {
+	  JointPtr_t joint = constrainedJoint == 1 ? joint1 : joint2;
+	  problemSolver_->addNumericalConstraint
+	    (std::string(constraintName), Orientation::create
+	      (problemSolver_->robot(), joint1, rotation,
+	      boost::assign::list_of(true)(true)(true)) );
+	}
+      }
+
+      // ---------------------------------------------------------------
+     
+ 
       bool Problem::createPositionConstraint
       (const char* constraintName, const char* joint1Name,
        const char* joint2Name, const hpp::floatSeq& point1,
@@ -210,20 +261,20 @@ namespace hpp
 	    targetInWorldFrame = p1;
 	    targetInLocalFrame = p2;
 	  } else {
-	    JointPtr_t joint1 =
+	    joint1 =
 	      problemSolver_->robot()->getJointByName(joint1Name);
 	  }
 	  // Test whether joint2 is world frame
 	  if (std::string (joint2Name) == std::string ("")) {
 	    if (constrainedJoint == 2) {
-	      throw hpp::Error ("At least on joint should be provided.");
+	      throw hpp::Error ("At least one joint should be provided.");
 	    }
-	    constrainedJoint == 1;
+	    constrainedJoint = 1;
 	    targetInWorldFrame = p2;
 	    targetInLocalFrame = p1;
 	  } else {
-	    JointPtr_t joint2 =
-	      problemSolver_->robot()->getJointByName(joint1Name);
+	    joint2 =
+	      problemSolver_->robot()->getJointByName(joint2Name);
 	  }
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -246,7 +297,6 @@ namespace hpp
       }
 
       // ---------------------------------------------------------------
-
 
       bool Problem::applyConstraints (const hpp::floatSeq& input,
 				      hpp::floatSeq_out output,

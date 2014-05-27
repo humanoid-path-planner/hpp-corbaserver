@@ -1,0 +1,37 @@
+// Copyright (C) 2014, CNRS
+// Authors:  Florent Lamiraux, Andreas Orthey.
+//
+// This file is part of the hpp-corbaserver.
+//
+// This software is provided "as is" without warranty of any kind,
+// either expressed or implied, including but not limited to the
+// implied warranties of fitness for a particular purpose.
+//
+// See the COPYING file for more information.
+
+#ifndef HPP_CORBASERVER_PRECOMPUTATION_SERVER_IDL
+# define HPP_CORBASERVER_PRECOMPUTATION_SERVER_IDL
+# include <hpp/corbaserver/common.idl>
+
+module hpp
+{
+  module corbaserver {
+
+  interface Precomputation{
+
+    void setCurrentConfiguration(in floatSeq dofArray) raises (Error);
+    floatSeq getConvexHullCapsules () raises (Error);
+    floatSeq getGradient () raises (Error);
+    double getVolume () raises (Error);
+    floatSeq projectUntilIrreducible () raises (Error);
+    floatSeq projectUntilIrreducibleOneStep () raises (Error);
+
+    Names_t addNaturalConstraints (in string prefix,
+                                in floatSeq dofArray, in string leftAnkle,
+                                in string rightAnkle) raises (Error);
+
+  }; 
+  };
+};
+
+#endif //! HPP_CORBASERVER_PRECOMPUTATION_SERVER_IDL

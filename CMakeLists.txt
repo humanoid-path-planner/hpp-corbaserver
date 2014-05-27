@@ -45,6 +45,8 @@ ENDIF()
 
 # Dependencies
 ADD_REQUIRED_DEPENDENCY("hpp-core >= 3")
+MESSAGE(STATUS ${HPP_CORE_VERSION})
+MESSAGE(STATUS "---------------------")
 ADD_REQUIRED_DEPENDENCY("hpp-model-urdf >= 3")
 ADD_REQUIRED_DEPENDENCY("omniORB4 >= 4.1.4")
 ADD_REQUIRED_DEPENDENCY("hpp-constraints >= 3")

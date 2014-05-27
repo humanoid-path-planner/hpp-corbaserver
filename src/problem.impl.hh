@@ -44,6 +44,12 @@ namespace hpp
 	virtual void
 	resetGoalConfigs ()  throw (hpp::Error);
 
+  virtual bool createOrientationConstraint (const char* constraintName,
+                 const char* joint1Name,
+                 const char* joint2Name,
+                 const hpp::floatSeq& rotation)
+    throw (hpp::Error);
+
 	virtual bool createPositionConstraint (const char* constraintName, 
 					       const char* joint1Name,
 					       const char* joint2Name,
@@ -55,6 +61,8 @@ namespace hpp
 				       hpp::floatSeq_out output,
 				       Double& residualError)
 	  throw (hpp::Error);
+
+
 	virtual void resetConstraints () throw (hpp::Error);
 	virtual void setNumericalConstraints
 	(const char* constraintName, const hpp::Names_t& constraintNames)

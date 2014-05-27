@@ -15,6 +15,7 @@
 #include "obstacle.impl.hh"
 #include "problem.impl.hh"
 #include "robot.impl.hh"
+#include "precomputation.impl.hh"
 #include "server-private.hh"
 
 namespace hpp
@@ -39,6 +40,7 @@ namespace hpp
 	delete robotServantid_;
 	delete problemServantid_;
 	delete obstacleServantid_;
+	delete precomputationServantid_;
       }
 
       void
@@ -47,9 +49,12 @@ namespace hpp
 	robotServant_ = new Robot (inServer);
 	obstacleServant_ = new Obstacle (inServer);
 	problemServant_ = new Problem (inServer);
+	precomputationServant_ = new Precomputation (inServer);
+
 	robotServantid_ = poa_->activate_object(robotServant_);
 	obstacleServantid_ = poa_->activate_object(obstacleServant_);
 	problemServantid_ = poa_->activate_object(problemServant_);
+	precomputationServantid_ = poa_->activate_object(precomputationServant_);
       }
 
       void Server::deactivateAndDestroyServers()
@@ -65,6 +70,10 @@ namespace hpp
 	if (problemServant_) {
 	  poa_->deactivate_object(*problemServantid_);
 	  delete problemServant_;
+	}
+	if (precomputationServant_) {
+	  poa_->deactivate_object(*precomputationServantid_);
+	  delete precomputationServant_;
 	}
       }
 

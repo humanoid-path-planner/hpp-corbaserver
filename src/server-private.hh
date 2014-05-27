@@ -15,6 +15,7 @@
 # include "robot.impl.hh"
 # include "obstacle.impl.hh"
 # include "problem.impl.hh"
+# include "precomputation.impl.hh"
 
 namespace hpp
 {
@@ -40,18 +41,15 @@ namespace hpp
 	Obstacle* obstacleServant_;
 	/// \brief Implementation of object hpp::Problem.
 	Problem* problemServant_;
+	/// \brief Implementation of object hpp::Precomputation.
+	Precomputation* precomputationServant_;
 
 	/// \brief It seems that we need to store this object to
 	/// deactivate the server.
 	PortableServer::ObjectId* robotServantid_;
-
-	/// \brief It seems that we need to store this object to
-	/// deactivate the server.
 	PortableServer::ObjectId* obstacleServantid_;
-
-	/// \brief It seems that we need to store this object to
-	/// deactivate the server.
 	PortableServer::ObjectId* problemServantid_;
+	PortableServer::ObjectId* precomputationServantid_;
 
 	/// \brief Corba context.
 	CosNaming::NamingContext_var hppContext_;
@@ -62,7 +60,6 @@ namespace hpp
 	/// \brief Store objects in Corba name service.
 	void bindObjectToName
 	(CORBA::Object_ptr objref, CosNaming::Name objectName);
-
 
 	/// \brief Deactivate and destroy servers
 	///
