@@ -11,10 +11,20 @@
 #pragma once
 
 # include <vector>
+# include <hpp/model/fwd.hh>
+# include <hpp/core/fwd.hh>
 # include <hpp/corbaserver/fwd.hh>
+# include <hpp/core/config.hh>
+# include <hpp/core/config-projector.hh>
+# include <hpp/core/deprecated.hh>
+# include <hpp/core/problem.hh>
+
+
+
 # include <precomputation.hh>
 # include <robot.hh>
 # include "common.hh"
+# include "natural-constraints.hh"
 
 namespace hpp
 {
@@ -81,11 +91,19 @@ namespace hpp
         vector_t floatSeqToVector(const hpp::floatSeq &q);
         hpp::floatSeq* vectorToFloatSeq(const vector_t& q);
 
+        //---------------------------------------------------------------------
+        // NATURAL CONSTRAINTS
+        //---------------------------------------------------------------------
+        virtual hpp::Names_t* addNaturalConstraints
+              (const char* prefix, const hpp::floatSeq& dofArray,
+               const char* leftAnkle, const char* rightAnkle) throw (hpp::Error);
+
       private:
         /// \brief Compute q = q + lambda*q', i.e. one update step of gradient
         // descent
         virtual vector_t updateConfiguration(const vector_t &qq, double lambda) throw (hpp::Error);
 
+        hpp::Names_t* stringToNamesT(std::vector<std::string> &str);
 
         virtual vector_t getGradientVector();
 

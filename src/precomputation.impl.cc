@@ -23,6 +23,8 @@
 #include <hpp/core/weighed-distance.hh>
 #include <hpp/corbaserver/server.hh>
 #include <hpp/core/basic-configuration-shooter.hh>
+#include <hpp/core/differentiable-function.hh>
+
 #include "robot.impl.hh"
 #include "tools.hh"
 #include "precomputation.impl.hh"
@@ -379,6 +381,83 @@ namespace hpp
 	} catch (const std::exception& exc) {
 	  hppDout (error, exc.what ());
 	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      //-----------------------------------------------------------------------
+      // TODO: replace function
+      //-----------------------------------------------------------------------
+      static ConfigurationPtr_t dofSeqToConfig
+      (core::ProblemSolverPtr_t problemSolver, const hpp::floatSeq& dofArray)
+      {
+	unsigned int configDim = (unsigned int)dofArray.length();
+	ConfigurationPtr_t config (new Configuration_t (configDim));
+
+	// Get robot in hppPlanner object.
+	DevicePtr_t robot = problemSolver->robot ();
+
+	// Compare size of input array with number of degrees of freedom of
+	// robot.
+	if (configDim != robot->configSize ()) {
+	  hppDout (error, "robot configSize (" << robot->configSize ()
+		   << ") is different from config size ("
+		   << configDim << ")");
+	  throw std::runtime_error
+	    ("robot nb dof is different from config size");
+	}
+
+	// Fill dof vector with dof array.
+	for (unsigned int iDof=0; iDof < configDim; ++iDof) {
+	  (*config) [iDof] = dofArray [iDof];
+	}
+	return config;
+      }
+      hpp::Names_t* Precomputation::stringToNamesT(std::vector<std::string> &str){
+        uint size = str.size();
+	char** nameList = Names_t::allocbuf(size);
+	Names_t *names = new Names_t (size, size, nameList);
+	for(std::size_t i = 0; i < str.size (); ++i) {
+	  std::string it = str.at(i);
+	  nameList[i] = (char*) malloc (sizeof(char)*(it.length()+1));
+	  strcpy (nameList[i], it.c_str ());
+	}
+	return names;
+      }
+
+      hpp::Names_t* Precomputation::addNaturalConstraints
+              (const char* prefix, const hpp::floatSeq& dofArray,
+               const char* leftAnkle, const char* rightAnkle) throw (hpp::Error)
+      {
+	using core::DifferentiableFunctionPtr_t;
+        using std::string;
+	try {
+
+          using namespace hpp::corbaServer::precomputation;
+	  ConfigurationPtr_t config = dofSeqToConfig (problemSolver_, dofArray);
+	  const DevicePtr_t& robot (problemSolver_->robot ());
+	  if (!robot) {
+	    throw Error ("Robot has to be set before applying constraints");
+	  }
+
+	  JointPtr_t la = robot->getJointByName (leftAnkle);
+	  JointPtr_t ra = robot->getJointByName (rightAnkle);
+
+          std::vector<std::string> cnames;
+	  std::vector <DifferentiableFunctionPtr_t> constraints =
+	    createNaturalConstraintsManifold (robot, la, ra, *config);
+
+	  std::string p (prefix);
+	  std::string slash ("/");
+          for(uint i=0;i<constraints.size();i++){
+            DifferentiableFunctionPtr_t dfp = constraints.at(i);
+            std::stringstream ss; ss << i; std::string id = ss.str();
+            cnames.push_back(p+slash+id+dfp->name());
+	    problemSolver_->addNumericalConstraint(cnames.at(i), constraints.at(i));
+          }
+          return stringToNamesT(cnames);
+
+	} catch (const std::exception& exc) {
+	  throw Error (exc.what ());
 	}
       }
 

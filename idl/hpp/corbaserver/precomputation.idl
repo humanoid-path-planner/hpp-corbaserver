@@ -26,6 +26,10 @@ module hpp
     floatSeq projectUntilIrreducible () raises (Error);
     floatSeq projectUntilIrreducibleOneStep () raises (Error);
 
+    Names_t addNaturalConstraints (in string prefix,
+                                in floatSeq dofArray, in string leftAnkle,
+                                in string rightAnkle) raises (Error);
+
   }; 
   };
 };

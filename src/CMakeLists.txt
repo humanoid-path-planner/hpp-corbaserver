@@ -41,6 +41,8 @@ ADD_LIBRARY(${LIBRARY_NAME}
   problem.impl.hh
   robot.impl.cc
   robot.impl.hh
+  natural-constraints.cc
+  natural-constraints.hh
   precomputation.impl.cc
   precomputation.impl.hh
   precomputation-utils.cc
