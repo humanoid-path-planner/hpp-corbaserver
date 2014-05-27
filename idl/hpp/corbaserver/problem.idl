@@ -70,8 +70,7 @@ module hpp
     boolean createOrientationConstraint (in string constraintName,
               in string joint1Name,
               in string joint2Name,
-              in floatSeq point1,
-              in floatSeq point2)
+              in floatSeq angles)
       raises (Error);
 
     /// Create position constraint between two joints
