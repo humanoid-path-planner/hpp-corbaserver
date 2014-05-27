@@ -85,7 +85,7 @@ class Robot (object):
         self.client.robot.setJointBounds ("base_joint_z", [zmin, zmax])
     ## \}
 
-    ## \name Access to current configuration
+    ## \name Configurations
     #\{
 
     ## Set current configuration of composite robot
@@ -99,6 +99,12 @@ class Robot (object):
     #  \return configuration of the composite robot
     def getCurrentConfig (self):
         return self.client.robot.getCurrentConfig ()
+
+    ## Shoot random configuration
+    #  \return dofArray Array of degrees of freedom.
+    def shootRandomConfig(self):
+        return self.client.robot.shootRandomConfig ()
+
     ## \}
 
     ## \name Collision checking and distance computation

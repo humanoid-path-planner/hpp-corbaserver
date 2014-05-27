@@ -108,6 +108,7 @@ namespace hpp
 	virtual void setCurrentConfig
 	(const hpp::floatSeq& dofArray) throw (hpp::Error);
 
+	virtual hpp::floatSeq* shootRandomConfig () throw (hpp::Error);
 	virtual hpp::floatSeq* getCurrentConfig() throw (hpp::Error);
 
 	virtual Names_t* getJointInnerObjects

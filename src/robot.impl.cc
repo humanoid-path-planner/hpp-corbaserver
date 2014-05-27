@@ -19,9 +19,9 @@
 #include <hpp/model/urdf/util.hh>
 #include <hpp/model/object-factory.hh>
 #include <hpp/model/collision-object.hh>
+#include <hpp/core/basic-configuration-shooter.hh>
 #include <hpp/core/weighed-distance.hh>
 #include <hpp/corbaserver/server.hh>
-
 #include "robot.impl.hh"
 #include "tools.hh"
 
@@ -436,6 +436,27 @@ namespace hpp
 	  // Create a config for robot initialized with dof vector.
 	  problemSolver_->robot ()->currentConfiguration (config);
 	  problemSolver_->robot ()->computeForwardKinematics ();
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
+
+      hpp::floatSeq* Robot::shootRandomConfig () throw (hpp::Error)
+      {
+	try {
+	  hpp::floatSeq *dofArray = 0x0;
+	  DevicePtr_t robot = problemSolver_->robot ();
+	  hpp::core::BasicConfigurationShooter shooter (robot);
+	  ConfigurationPtr_t configuration = shooter.shoot();
+
+	  std::size_t deviceDim = robot->configSize ();
+	  dofArray = new hpp::floatSeq();
+	  dofArray->length (deviceDim);
+	  for(std::size_t i=0; i<deviceDim; i++)
+	    (*dofArray)[i] = (*configuration) [i];
+	  return dofArray;
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
