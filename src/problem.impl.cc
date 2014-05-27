@@ -190,44 +190,22 @@ namespace hpp
 
       // ---------------------------------------------------------------
       
-      bool Problem::createOrientationConstraint
-      (const char* constraintName, const char* joint1Name,
-       const char* joint2Name, const hpp::floatSeq& point1,
-       const hpp::floatSeq& point2)
-	throw (hpp::Error)
+      bool Problem::createOrientationConstraint(
+				const char* constraintName, const char* joint1Name,
+				const char* joint2Name, const hpp::floatSeq& angles
+			) throw (hpp::Error)
       {
-	JointPtr_t joint1;
-	JointPtr_t joint2;
-	vector3_t targetInWorldFrame;
-	vector3_t targetInLocalFrame;
-	vector3_t p1 = floatSeqTVector3 (point1);
-	vector3_t p2 = floatSeqTVector3 (point2);
-	size_type constrainedJoint = 0;
 
-		joint1 = problemSolver_->robot()->getJointByName(joint1Name);
+			JointPtr_t joint1;
+			JointPtr_t joint2;
+			size_type constrainedJoint = 0;
+			hpp::model::matrix3_t rotation;
+			rotation.setEulerZYX(angles[0], angles[1], angles[2]);
 
-    hpp::model::matrix3_t I3; I3.setIdentity ();
-    problemSolver_->addNumericalConstraint
-      (std::string (constraintName), Position::create
-       (problemSolver_->robot(), joint1, p1,
-        p2, I3, boost::assign::list_of (true)(true)
-        (true)));
-
-/*
-
-	problemSolver_->addNumericalConstraint
-		((std::string(constraintName),RelativeOrientation::create
-			(problemSolver_->robot(), joint1, joint2, rotNulle, false,
-			boost::assign::list_of(true)(true)(true)) );
-
-*/
-/*
 	try {
 	  // Test whether joint1 is world frame
 	  if (std::string (joint1Name) == std::string ("")) {
 	    constrainedJoint = 2;
-	    targetInWorldFrame = p1;
-	    targetInLocalFrame = p2;
 	  } else {
 	    joint1 =
 	      problemSolver_->robot()->getJointByName(joint1Name);
@@ -238,8 +216,6 @@ namespace hpp
 	      throw hpp::Error ("At least one joint should be provided.");
 	    }
 	    constrainedJoint = 1;
-	    targetInWorldFrame = p2;
-	    targetInLocalFrame = p1;
 	  } else {
 	    joint2 =
 	      problemSolver_->robot()->getJointByName(joint2Name);
@@ -250,20 +226,16 @@ namespace hpp
 	if (constrainedJoint == 0) {
 	  // Both joints are provided
 	  problemSolver_->addNumericalConstraint
-	    (std::string (constraintName), RelativePosition::create
-	     (problemSolver_->robot(), joint1, joint2, p1, p2,
-	      boost::assign::list_of (true)(true)(true)));
+	    (std::string(constraintName), RelativeOrientation::create
+	      (problemSolver_->robot(), joint1, joint2, rotation,
+	      boost::assign::list_of(true)(true)(true)) );
 	} else {
-	  hpp::model::matrix3_t I3; I3.setIdentity ();
 	  JointPtr_t joint = constrainedJoint == 1 ? joint1 : joint2;
 	  problemSolver_->addNumericalConstraint
-	    (std::string (constraintName), Position::create
-	     (problemSolver_->robot(), joint, targetInLocalFrame,
-	      targetInWorldFrame, I3, boost::assign::list_of (true)(true)
-	      (true)));
+	    (std::string(constraintName), Orientation::create
+	      (problemSolver_->robot(), joint1, rotation,
+	      boost::assign::list_of(true)(true)(true)) );
 	}
-*/
-
       }
 
       // ---------------------------------------------------------------

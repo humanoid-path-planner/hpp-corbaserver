@@ -47,8 +47,7 @@ namespace hpp
   virtual bool createOrientationConstraint (const char* constraintName,
                  const char* joint1Name,
                  const char* joint2Name,
-                 const hpp::floatSeq& point1,
-                 const hpp::floatSeq& point2)
+                 const hpp::floatSeq& rotation)
     throw (hpp::Error);
 
 	virtual bool createPositionConstraint (const char* constraintName, 
