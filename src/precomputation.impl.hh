@@ -71,6 +71,10 @@ namespace hpp
         ///  irreducible up to a threshold
         virtual hpp::floatSeq* projectUntilIrreducible () throw (hpp::Error);
 
+        /// \brief Perform one step of the gradient descent projection onto the
+        ///  irreducible manifold
+        virtual hpp::floatSeq* projectUntilIrreducibleOneStep () throw (hpp::Error);
+
 	virtual void setCurrentConfiguration (const hpp::floatSeq& dofArray) throw (hpp::Error);
         virtual void setCurrentConfiguration (const vector_t& q) throw (hpp::Error);
 

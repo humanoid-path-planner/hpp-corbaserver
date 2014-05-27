@@ -24,6 +24,7 @@ module hpp
     floatSeq getGradient () raises (Error);
     double getVolume () raises (Error);
     floatSeq projectUntilIrreducible () raises (Error);
+    floatSeq projectUntilIrreducibleOneStep () raises (Error);
 
   }; 
   };

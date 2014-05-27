@@ -104,6 +104,28 @@ namespace hpp
 	}
       }
 
+      hpp::floatSeq* Precomputation::projectUntilIrreducibleOneStep () throw (hpp::Error)
+      {
+	try {
+          double lambda = 0.1; //update value
+          this->computeProjectedConvexHullFromCurrentConfiguration ();
+
+          vector_t qq = this->getGradientVector();
+          vector_t q_new = this->updateConfiguration(qq, lambda);
+
+          this->setCurrentConfiguration(q_new);
+          this->computeProjectedConvexHullFromCurrentConfiguration ();
+
+	  DevicePtr_t robot = problemSolver_->robot ();
+	  vector_t q = robot->currentConfiguration();
+          return vectorToFloatSeq(q);
+
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+
+
+      }
       hpp::floatSeq* Precomputation::projectUntilIrreducible () throw (hpp::Error)
       {
 	try {
@@ -173,14 +195,12 @@ namespace hpp
         vector_t qgrad(robot->numberDof());
         qgrad.setZero();
 
-        hppDout(notice, "gradient computation from outer jacobians");
         for(uint i=0; i<cvxCaps_.size(); i++){
           vector_t cvx_pt_eigen(6);
           cvx_pt_eigen << 0,cvxCaps_.at(i).y,cvxCaps_.at(i).z,0,0,0;
           vector_t qi = cvxCaps_.at(i).J.transpose()*cvx_pt_eigen;
           qgrad = qgrad + qi;
         }
-        hppDout(notice, "gradient computation from outer jacobians");
         return qgrad;
       }
       hpp::floatSeq* Precomputation::getGradient() 
@@ -344,7 +364,6 @@ namespace hpp
                   p.J = jjacobian;
                   capsuleVec.push_back(p);
                   l += length;
-                  hppDout(notice, l);
                 }
                 //-----------------------------------------------
                 //fcl::AABB aabb = fco->getAABB();
