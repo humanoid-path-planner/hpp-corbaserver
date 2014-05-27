@@ -210,20 +210,20 @@ namespace hpp
 	    targetInWorldFrame = p1;
 	    targetInLocalFrame = p2;
 	  } else {
-	    JointPtr_t joint1 =
+	    joint1 =
 	      problemSolver_->robot()->getJointByName(joint1Name);
 	  }
 	  // Test whether joint2 is world frame
 	  if (std::string (joint2Name) == std::string ("")) {
 	    if (constrainedJoint == 2) {
-	      throw hpp::Error ("At least on joint should be provided.");
+	      throw hpp::Error ("At least one joint should be provided.");
 	    }
-	    constrainedJoint == 1;
+	    constrainedJoint = 1;
 	    targetInWorldFrame = p2;
 	    targetInLocalFrame = p1;
 	  } else {
-	    JointPtr_t joint2 =
-	      problemSolver_->robot()->getJointByName(joint1Name);
+	    joint2 =
+	      problemSolver_->robot()->getJointByName(joint2Name);
 	  }
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
