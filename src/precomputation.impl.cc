@@ -108,8 +108,9 @@ namespace hpp
       {
 	try {
           double epsilon = 0.001; //convergence threshold
+          uint iterations = 0;
           double error = 1;
-          double oldC = inf();
+          double oldC = 10000;
           double lambda = 0.1; //update value
           this->computeProjectedConvexHullFromCurrentConfiguration ();
           while(error > epsilon){
@@ -120,8 +121,14 @@ namespace hpp
             double C = this->getVolume();
             error = fabs(C-oldC);
             oldC = C;
+            iterations++;
           }
+          hppDout(notice, "projection onto irreducible manifold converged after " << iterations << " iterations." );
+
+	  DevicePtr_t robot = problemSolver_->robot ();
+	  vector_t q = robot->currentConfiguration();
           return vectorToFloatSeq(q);
+
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -345,8 +352,9 @@ namespace hpp
               }//iterate inner objects
             }
           }//iterate joints
+
           //IF DEBUG
-          hppDout(notice, stream.str());
+          //hppDout(notice, stream.str());
           return capsuleVec;
 
 	} catch (const std::exception& exc) {
