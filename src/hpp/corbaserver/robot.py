@@ -18,6 +18,11 @@
 
 from hpp.corbaserver.client import Client
 
+##
+#  Helper class to load a robot model in hpp::core::ProblemSolver instance.
+#
+#  This class is also used to initialize a client to rviz in order to
+#  display configurations of a robot.
 class Robot (object):
     def __init__ (self, robotName, rootJointType):
         self.tf_root = "base_link"
