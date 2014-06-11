@@ -59,6 +59,24 @@ class ProblemSolver (object):
         return self.client.problem.resetGoalConfigs ()
     ## \}
 
+    ## \name Obstacles
+    # \{
+    
+    ## Load obstacle from urdf file
+    #  \param package Name of the package containing the model,
+    #  \param filename name of the urdf file in the package
+    #         (without suffix .urdf)
+    #
+    #  The ros url is built as follows:
+    #  "package://${package}/urdf/${filename}.urdf"
+    #
+    #  The kinematic structure of the urdf file is ignored. Only the geometric
+    #  objects are loaded as obstacles.
+    def loadObstacleFromUrdf (self, package, filename):
+        return self.client.obstacle.loadObstacleModel (package, filename)
+
+    ##\}
+
     ## \name Constraints
     #  \{
 
