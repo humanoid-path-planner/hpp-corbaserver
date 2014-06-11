@@ -43,7 +43,7 @@ class ProblemSolver (object):
     def getInitialConfig (self):
         return self.client.problem.getInitialConfig ()
 
-    ## \brief Add goal configuration to specified problem.
+    ## Add goal configuration to specified problem.
     #	\param dofArray Array of degrees of freedom
     #	\throw Error.
     def addGoalConfig (self, dofArray):
