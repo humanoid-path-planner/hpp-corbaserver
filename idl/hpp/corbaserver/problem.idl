@@ -126,8 +126,18 @@ module hpp
     /// \name Solve problem and get paths
     /// \{
 
-    // \brief Solve the problem of corresponding ChppPlanner object
-    // \throw Error.
+    /// Select path planner type
+    /// \param Name of the path planner type, either "DiffusingPlanner" or
+    /// any type added by core::ProblemSolver::addPathPlannerType
+    void selectPathPlanner (in string pathPlannerType) raises (Error);
+
+    /// Select path optimizer type
+    /// \param Name of the path optimizer type, either "RandomShortcut" or
+    /// any type added by core::ProblemSolver::addPathOptimizerType
+    void selectPathOptimizer (in string pathOptimizerType) raises (Error);
+
+    /// Solve the problem.
+    /// \throw Error.
     void solve() raises (Error);
 
     /// Make direct connection between two configurations

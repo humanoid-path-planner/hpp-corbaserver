@@ -409,6 +409,30 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+      void Problem::selectPathPlanner (const char* pathPlannerType)
+	throw (Error)
+      {
+	try {
+	  problemSolver_->pathPlannerType (std::string (pathPlannerType));
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::selectPathOptimizer (const char* pathOptimizerType)
+	throw (Error)
+      {
+	try {
+	  problemSolver_->pathOptimizerType (std::string (pathOptimizerType));
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // ---------------------------------------------------------------
+
       void Problem::solve () throw (hpp::Error)
       {
 	try {

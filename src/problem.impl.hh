@@ -70,6 +70,12 @@ namespace hpp
 	virtual void setErrorThreshold (Double threshold) throw (Error);
 	virtual void setMaxIterations (UShort iterations) throw (Error);
 
+	virtual void selectPathOptimizer (const char* pathOptimizerType)
+	  throw (Error);
+
+	virtual void selectPathPlanner (const char* pathPlannerType)
+	  throw (Error);
+
 	virtual void solve () throw (hpp::Error);
 
 	virtual void directPath (const hpp::floatSeq& startConfig,

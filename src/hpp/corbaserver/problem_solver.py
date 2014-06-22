@@ -154,6 +154,18 @@ class ProblemSolver (object):
     ## \name Solve problem and get paths
     # \{
 
+    ## path planner type
+    #  \param Name of the path planner type, either "DiffusingPlanner" or
+    #   any type added by core::ProblemSolver::addPathPlannerType
+    def selectPathPlanner (self, pathPlannerType):
+        return self.client.problem.selectPathPlanner (pathPlannerType)
+
+    ## Select path optimizer type
+    #  \param Name of the path optimizer type, either "RandomShortcut" or
+    #   any type added by core::ProblemSolver::addPathOptimizerType
+    def selectPathOptimizer (self, pathOptimizerType):
+        return self.client.problem.selectPathOptimizer (pathOptimizerType)
+
     ## Solve the problem of corresponding ChppPlanner object
     def solve (self):
         return self.client.problem.solve ()
