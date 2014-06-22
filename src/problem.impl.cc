@@ -190,7 +190,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      bool Problem::createOrientationConstraint
+      void Problem::createOrientationConstraint
       (const char* constraintName, const char* joint1Name,
        const char* joint2Name, const Double* p) throw (hpp::Error)
       {
@@ -240,7 +240,7 @@ namespace hpp
       // ---------------------------------------------------------------
 
 
-      bool Problem::createPositionConstraint
+      void Problem::createPositionConstraint
       (const char* constraintName, const char* joint1Name,
        const char* joint2Name, const hpp::floatSeq& point1,
        const hpp::floatSeq& point2)

@@ -67,7 +67,7 @@ module hpp
     /// If joint1 of joint2 is "", the corresponding joint is replaced by
     /// the global frame.
     /// constraints are stored in ProblemSolver object
-    boolean createOrientationConstraint
+    void createOrientationConstraint
     (in string constraintName, in string joint1Name,
      in string joint2Name, in Quaternion p) raises (Error);
 
@@ -81,11 +81,11 @@ module hpp
     /// If joint1 of joint2 is "", the corresponding joint is replaced by
     /// the global frame.
     /// constraints are stored in ProblemSolver object
-    boolean createPositionConstraint (in string constraintName,
-				      in string joint1Name,
-				      in string joint2Name,
-				      in floatSeq point1,
-				      in floatSeq point2)
+    void createPositionConstraint (in string constraintName,
+				   in string joint1Name,
+				   in string joint2Name,
+				   in floatSeq point1,
+				   in floatSeq point2)
       raises (Error);
 
 
