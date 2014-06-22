@@ -232,7 +232,7 @@ namespace hpp
 	  JointPtr_t joint = constrainedJoint == 1 ? joint1 : joint2;
 	  problemSolver_->addNumericalConstraint
 	    (std::string(constraintName), Orientation::create
-	      (problemSolver_->robot(), joint1, rotation,
+	      (problemSolver_->robot(), joint, rotation,
 	      boost::assign::list_of(true)(true)(true)) );
 	}
       }
