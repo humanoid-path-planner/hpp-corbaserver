@@ -71,7 +71,7 @@ namespace hpp
 	}
 
 	// Fill dof vector with dof array.
-	for (unsigned int iDof=0; iDof < configDim; ++iDof) {
+	for (size_type iDof=0; iDof < configDim; ++iDof) {
 	  (*config) [iDof] = dofArray [iDof];
 	}
 	return config;
@@ -551,7 +551,7 @@ namespace hpp
 	    double* dofArray = hpp::floatSeq::allocbuf(size);
 	    hpp::floatSeq floats (size, size, dofArray, true);
 	    //convert the config in dofseq
-	    for (std::size_t j=0 ; j < config->size() ; ++j) {
+	    for (size_type j=0 ; j < config->size() ; ++j) {
 	      dofArray[j] = (*config) [j];
 	    }
 	    (*res) [i] = floats;
@@ -638,7 +638,7 @@ namespace hpp
 	    double* dofArray = hpp::floatSeq::allocbuf(size);
 	    hpp::floatSeq floats (size, size, dofArray, true);
 	    //convert the config in dofseq
-	    for (std::size_t j=0 ; j < config->size() ; ++j) {
+	    for (size_type j=0 ; j < config->size() ; ++j) {
 	      dofArray [j] = (*config) [j];
 	    }
 	    (*res) [i] = floats;
