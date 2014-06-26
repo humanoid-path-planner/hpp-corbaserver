@@ -55,6 +55,10 @@ namespace hpp
 		joint->isBounded(iDof, false);
 	      }
 	    }
+	  } else {
+	    std::ostringstream oss ("Expected list of ");
+	    oss << 2*jointNbDofs << "float, got " << nbJointBounds << ".";
+	    throw hpp::Error (oss.str ().c_str ());
 	  }
 	}
       } // end of namespace.
