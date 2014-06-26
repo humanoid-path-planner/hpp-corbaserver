@@ -39,9 +39,9 @@ namespace hpp
 					const jointBoundSeq& jointBounds)
 	{
 	  std::size_t nbJointBounds = (std::size_t)jointBounds.length();
-	  std::size_t kwsJointNbDofs = joint->configSize ();
-	  if (nbJointBounds == 2*kwsJointNbDofs) {
-	    for (std::size_t iDof=0; iDof<kwsJointNbDofs; iDof++) {
+	  std::size_t jointNbDofs = joint->configSize ();
+	  if (nbJointBounds == 2*jointNbDofs) {
+	    for (std::size_t iDof=0; iDof<jointNbDofs; iDof++) {
 	      double vMin = jointBounds[2*iDof];
 	      double vMax = jointBounds[2*iDof+1];
 	      if (vMin <= vMax) {
@@ -399,7 +399,7 @@ namespace hpp
 	throw (hpp::Error)
       {
 	try  {
-	  // Get robot in hppPlanner object.
+	  // Get robot in ProblemSolver object.
 	  DevicePtr_t robot = problemSolver_->robot ();
 
 	  // get joint
