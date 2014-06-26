@@ -100,10 +100,30 @@ module hpp
     ///        [v0_min,v0_max,v1_min,v1_max,...].
     /// \li If vi_min > vi_max, dof of rank i is not bounded.
     /// \li If size of sequence is different from twice the number of dofs,
-    ///     no dof is bounded.
+    ///     raise error.
     void setJointBounds(in string jointName,
 			in jointBoundSeq inJointBound)
       raises (Error);
+
+    /// \}
+
+    /// \name Extra configuration space
+    /// \{
+
+    /// Set dimension of the extra configuration space
+    ///
+    /// \param dimension dimension
+    /// \sa hpp::model::ExtraConfigSpace
+    void setDimensionExtraConfigSpace (in unsigned long dimension)
+      raises (Error);
+
+    /// Set bounds of extra configuration variables
+    /// \param inJointBound sequence of joint dof bounds in order
+    ///        [v0_min,v0_max,v1_min,v1_max,...].
+    /// \li If vi_min > vi_max, dof of rank i is not bounded.
+    /// \li If size of sequence is different from twice the number of dofs,
+    ///     raise error.
+    void setExtraConfigSpaceBounds (in jointBoundSeq bounds) raises (Error);
 
     /// \}
 

@@ -105,6 +105,13 @@ namespace hpp
 	(const char* jointName,
 	 const hpp::corbaserver::jointBoundSeq& jointBound) throw (hpp::Error);
 
+
+	virtual void setDimensionExtraConfigSpace (ULong dimension)
+	  throw (hpp::Error);
+
+	virtual void setExtraConfigSpaceBounds
+	(const hpp::corbaserver::jointBoundSeq& bounds) throw (hpp::Error);
+
 	virtual void setCurrentConfig
 	(const hpp::floatSeq& dofArray) throw (hpp::Error);
 

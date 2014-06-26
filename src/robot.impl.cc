@@ -412,6 +412,59 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
+      void Robot::setDimensionExtraConfigSpace (ULong dimension)
+	throw (hpp::Error)
+      {
+	// Get robot in ProblemSolver object.
+	DevicePtr_t robot = problemSolver_->robot ();
+	if (!robot) throw hpp::Error ("Robot is not set");
+	try {
+	  robot->setDimensionExtraConfigSpace (dimension);
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
+
+      void Robot::setExtraConfigSpaceBounds
+      (const hpp::corbaserver::jointBoundSeq& bounds) throw (hpp::Error)
+      {
+	using hpp::model::ExtraConfigSpace;
+	// Get robot in ProblemSolver object.
+	DevicePtr_t robot = problemSolver_->robot ();
+	if (!robot) throw hpp::Error ("Robot is not set");
+	try {
+	  ExtraConfigSpace& extraCS = robot->extraConfigSpace ();
+	  std::size_t nbBounds = (std::size_t)bounds.length();
+	  std::size_t dimension = extraCS.dimension ();
+	  if (nbBounds == 2*dimension) {
+	    for (std::size_t iDof=0; iDof < dimension; ++iDof) {
+	      double vMin = bounds [2*iDof];
+	      double vMax = bounds [2*iDof+1];
+	      if (vMin <= vMax) {
+		/* Dof is actually bounded */
+		extraCS.lower (iDof) = vMin;
+		extraCS.upper (iDof) = vMax;
+	      }
+	      else {
+		/* Dof is not bounded */
+		extraCS.lower (iDof) = -std::numeric_limits<double>::infinity();
+		extraCS.upper (iDof) = +std::numeric_limits<double>::infinity();
+	      }
+	    }
+	  } else {
+	    std::ostringstream oss ("Expected list of ");
+	    oss << 2*dimension << "float, got " << nbBounds << ".";
+	    throw hpp::Error (oss.str ().c_str ());
+	  }
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
+
       void Robot::setCurrentConfig(const hpp::floatSeq& dofArray)
 	throw (hpp::Error)
       {
