@@ -341,29 +341,15 @@ namespace hpp
       (const char* constraintName, const Names_t& constraintNames)
 	throw (Error)
       {
-	using core::ConstraintSetPtr_t;
-	using core::ConfigProjector;
-	using core::ConfigProjectorPtr_t;
 	try {
-	  const ConstraintSetPtr_t& constraints
-	    (problemSolver_->constraints ());
-	  const DevicePtr_t& robot (problemSolver_->robot ());
-	  if (!robot) {
+	  if (!problemSolver_->robot()) {
 	    throw Error ("You should set the robot before defining"
 			 " constraints.");
 	  }
-	  ConfigProjectorPtr_t  configProjector =
-	    constraints->configProjector ();
-	  if (!configProjector) {
-	    configProjector = ConfigProjector::create
-	      (robot, constraintName, problemSolver_->errorThreshold (),
-	       problemSolver_->maxIterations ());
-	    constraints->addConstraint (configProjector);
-	  }
 	  for (CORBA::ULong i=0; i<constraintNames.length (); ++i) {
 	    std::string name (constraintNames [i]);
-	    configProjector->addConstraint (problemSolver_->numericalConstraint
-					    (name));
+            problemSolver_->addConstraintToConfigProjector(constraintName, 
+                                    problemSolver_->numericalConstraint(name));
 	  }
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
