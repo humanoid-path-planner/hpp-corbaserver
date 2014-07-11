@@ -96,6 +96,10 @@ namespace hpp
 	virtual Transform_slice* getJointPosition(const char* jointName)
 	  throw (hpp::Error);
 
+	virtual void setRootJointPosition (const  Double* position)
+	  throw (hpp::Error);
+
+
 	virtual Short getJointNumberDof (const char* jointName)
 	  throw (hpp::Error);
 	virtual Short getJointConfigSize (const char* jointName)

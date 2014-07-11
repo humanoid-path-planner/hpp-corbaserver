@@ -322,6 +322,25 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
+      void Robot::setRootJointPosition (const Double* position)
+	throw (hpp::Error)
+      {
+	try {
+	  DevicePtr_t robot = problemSolver_->robot ();
+	  if (!robot) {
+	    throw hpp::Error ("no robot");
+	  }
+	  Transform3f t3f;
+	  hppTransformToTransform3f (position, t3f);
+	  robot->rootJointPosition (t3f);
+	} catch (const std::exception& exc) {
+	  throw Error (exc.what ());
+	}
+
+      }
+
+      // --------------------------------------------------------------------
+
       Transform_slice* Robot::getJointPosition(const char* jointName)
 	throw (hpp::Error)
       {
