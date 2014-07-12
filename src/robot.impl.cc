@@ -322,6 +322,34 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
+      Transform_slice* Robot::getRootJointPosition () throw (hpp::Error)
+      {
+	try {
+	  DevicePtr_t robot = problemSolver_->robot ();
+	  if (!robot) {
+	    throw hpp::Error ("no robot");
+	  }
+	  JointPtr_t root = robot->rootJoint ();
+	  if (!root) {
+	    throw hpp::Error ("robot has no root joint");
+	  }
+	  const Transform3f& T = root->positionInParentFrame ();
+	  double* res = new Transform;
+	  res [0] = T.getTranslation () [0];
+	  res [1] = T.getTranslation () [1];
+	  res [2] = T.getTranslation () [2];
+	  res [3] = T.getQuatRotation () [0];
+	  res [4] = T.getQuatRotation () [1];
+	  res [5] = T.getQuatRotation () [2];
+	  res [6] = T.getQuatRotation () [3];
+	  return res;
+	} catch (const std::exception& exc) {
+	  throw Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
+
       void Robot::setRootJointPosition (const Double* position)
 	throw (hpp::Error)
       {

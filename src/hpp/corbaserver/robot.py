@@ -69,6 +69,10 @@ class Robot (object):
     def getJointPosition (self, jointName):
         return self.client.robot.getJointPosition (jointName)
 
+    ## Get constant position of root joint in world frame in initial position
+    def getRootJointPosition (self):
+        return self.client.robot.getRootJointPosition ()
+
     ## Set position of root joint in world frame in initial configuration
     def setRootJointPosition (self, position):
         return self.client.robot.setRootJointPosition (position)

@@ -83,6 +83,11 @@ module hpp
     /// \throw Error if robot is not set or if joint does not exist.
     Transform getJointPosition (in string jointName) raises (Error);
 
+    /// Get position of root joint in world frame
+    /// \return constant position of the root joint in world frame in
+    ///         initial configuration.
+    Transform getRootJointPosition () raises (Error);
+
     /// Set position of root joint in world frame
     /// \param position constant position of the root joint in world frame in
     ///        initial configuration.
