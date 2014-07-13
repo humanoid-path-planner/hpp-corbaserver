@@ -27,7 +27,9 @@ module hpp
 
   /// Element of SE(3) represented by a vector and a unit quaternion
   typedef double Transform [7];
-  typedef double Quaternion [4];
+  /// Quaternion used to define orientation constraint
+  /// Add underscore to avoid name conflicts.
+  typedef double Quaternion_ [4];
 };
 
 #endif //! HPP_CORBASERVER_SERVER_IDL

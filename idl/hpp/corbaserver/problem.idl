@@ -69,7 +69,7 @@ module hpp
     /// constraints are stored in ProblemSolver object
     void createOrientationConstraint
     (in string constraintName, in string joint1Name,
-     in string joint2Name, in Quaternion p) raises (Error);
+     in string joint2Name, in Quaternion_ p) raises (Error);
 
     /// Create position constraint between two joints
     ///
