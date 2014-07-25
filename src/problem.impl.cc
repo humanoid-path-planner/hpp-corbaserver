@@ -26,6 +26,7 @@
 #include <hpp/core/path.hh>
 #include <hpp/core/roadmap.hh>
 #include <hpp/core/steering-method.hh>
+#include <hpp/core/differentiable-function.hh>
 #include <hpp/constraints/position.hh>
 #include <hpp/constraints/orientation.hh>
 #include <hpp/constraints/position.hh>
@@ -343,6 +344,31 @@ namespace hpp
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::isParametric (const char* constraintName,
+          CORBA::Boolean value)
+        throw (hpp::Error)
+      {
+        core::DifferentiableFunctionPtr_t f =
+          problemSolver_->numericalConstraint (constraintName);
+        if (!f)
+          throw hpp::Error ("The numerical constraint could not be found.");
+        f->isParametric (value);
+      }
+
+      // ---------------------------------------------------------------
+
+      bool Problem::isParametric (const char* constraintName)
+        throw (hpp::Error)
+      {
+        core::DifferentiableFunctionPtr_t f =
+          problemSolver_->numericalConstraint (constraintName);
+        if (!f)
+          throw hpp::Error ("The numerical constraint could not be found.");
+        return f->isParametric ();
       }
 
       // ---------------------------------------------------------------

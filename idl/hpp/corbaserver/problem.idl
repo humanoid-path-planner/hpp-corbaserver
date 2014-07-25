@@ -97,6 +97,14 @@ module hpp
     /// Reset constraints
     void resetConstraints () raises (Error);
 
+    /// Make a numerical constraint parametric or non-parametric
+    /// \param constraintName Name of the numerical constraint,
+    /// \param value True is parametric
+    ///
+    /// Constraints should have been added in the ProblemSolver local map.
+    void isParametric (in string constraintName, in boolean parametric)
+      raises (Error);
+
     /// Set numerical constraints by names in ConfigProjector
     /// \param constraintName Name of the set of numerical constraint,
     /// \param constraintNames names of the constraints to apply,

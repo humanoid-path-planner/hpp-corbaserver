@@ -61,6 +61,14 @@ namespace hpp
 				       hpp::floatSeq_out output,
 				       Double& residualError)
 	  throw (hpp::Error);
+
+        virtual void isParametric (const char* constraintName,
+                                   CORBA::Boolean value)
+          throw (hpp::Error);
+
+        virtual bool isParametric (const char* constraintName)
+          throw (hpp::Error);
+
 	virtual void resetConstraints () throw (hpp::Error);
 	virtual void setNumericalConstraints
 	(const char* constraintName, const hpp::Names_t& constraintNames)
