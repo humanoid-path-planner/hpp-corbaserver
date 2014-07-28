@@ -156,6 +156,20 @@ module hpp
     /// \param tolerance maximal acceptable penetration.
     void selectPathValidation (in string pathValidationType,
 			       in double tolerance) raises (Error);
+    /// Prepare the solver for a step by step planning.
+    /// and try to make direct connections (call PathPlanner::tryDirectPath)
+    /// \return True if a direct connection has been found.
+    boolean prepareSolveStepByStep () raises (Error);
+
+    /// Execute one step of the planner.
+    /// \return True if a path has been found.
+    /// \note This won't check if a solution has been found before doing one step.
+    /// The decision to stop planning is let to the user.
+    boolean executeOneStep () raises (Error);
+
+    /// Finish the step-by-step planning.
+    /// The path optimizer is not called
+    void finishSolveStepByStep () raises (Error);
 
     /// Solve the problem.
     /// \throw Error.

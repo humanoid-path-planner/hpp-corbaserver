@@ -468,6 +468,41 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+      bool Problem::prepareSolveStepByStep () throw (hpp::Error)
+      {
+	try {
+	  return problemSolver_->prepareSolveStepByStep ();
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+        return false;
+      }
+
+      // ---------------------------------------------------------------
+
+      bool Problem::executeOneStep () throw (hpp::Error)
+      {
+	try {
+	  return problemSolver_->executeOneStep ();
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+        return false;
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::finishSolveStepByStep () throw (hpp::Error)
+      {
+	try {
+	  problemSolver_->solve();
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // ---------------------------------------------------------------
+
       void Problem::solve () throw (hpp::Error)
       {
 	try {
