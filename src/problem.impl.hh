@@ -62,6 +62,11 @@ namespace hpp
 				       Double& residualError)
 	  throw (hpp::Error);
 
+	virtual bool generateValidConfig (UShort maxIter,
+				       hpp::floatSeq_out output,
+				       Double& residualError)
+	  throw (hpp::Error);
+
         virtual void isParametric (const char* constraintName,
                                    CORBA::Boolean value)
           throw (hpp::Error);

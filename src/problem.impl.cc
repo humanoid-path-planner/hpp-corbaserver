@@ -14,6 +14,7 @@
 #include <hpp/util/portability.hh>
 
 #include <hpp/core/config-projector.hh>
+#include <hpp/core/basic-configuration-shooter.hh>
 #include <hpp/core/connected-component.hh>
 #include <hpp/core/edge.hh>
 #include <hpp/core/locked-dof.hh>
@@ -333,6 +334,48 @@ namespace hpp
 	}
 	output = q_ptr;
 	return success;
+      }
+
+      // ---------------------------------------------------------------
+
+      bool Problem::generateValidConfig (UShort maxIter,
+				      hpp::floatSeq_out output,
+				      double& residualError)
+	throw (hpp::Error)
+      {
+        DevicePtr_t robot = problemSolver_->robot ();
+        core::BasicConfigurationShooter shooter
+          = core::BasicConfigurationShooter (robot);
+	bool success = false, configIsValid = false;
+        unsigned short int iter = maxIter;
+        ConfigurationPtr_t config;
+        while (!configIsValid && maxIter > 0)
+        {
+          try {
+            config = shooter.shoot ();
+            success = problemSolver_->constraints ()->apply (*config);
+            if (hpp::core::ConfigProjectorPtr_t configProjector =
+                problemSolver_->constraints ()->configProjector ()) {
+              residualError = configProjector->residualError ();
+            }
+            if (success) {
+              robot->currentConfiguration (*config);
+              configIsValid = !robot->collisionTest ();
+            }
+          } catch (const std::exception& exc) {
+            throw hpp::Error (exc.what ());
+          }
+          iter--;
+        }
+	ULong size = (ULong) config->size ();
+	hpp::floatSeq* q_ptr = new hpp::floatSeq ();
+	q_ptr->length (size);
+
+	for (std::size_t i=0; i<size; ++i) {
+	  (*q_ptr) [i] = (*config) [i];
+	}
+	output = q_ptr;
+	return configIsValid;
       }
 
       // ---------------------------------------------------------------

@@ -58,6 +58,18 @@ module hpp
 			      out double residualError)
       raises (Error);
 
+    /// Generate random configuration and apply constaints to a configuration
+    ///
+    /// constraints are stored in ProblemSolver object
+    /// The class hpp::core::BasicConfigurationShooter is used for random
+    /// generation of configuration.
+    /// \param maxIter maximum number of tries,
+    /// \retval output output configuration,
+    /// \retval error norm of the residual error.
+    boolean generateValidConfig (in unsigned short maxIter, out floatSeq output,
+			      out double residualError)
+      raises (Error);
+
     /// Create orientation constraint between two joints
     ///
     /// \param constraintName name of the constraint created,

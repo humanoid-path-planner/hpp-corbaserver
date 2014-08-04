@@ -137,6 +137,14 @@ class ProblemSolver (object):
     def applyConstraints (self, q):
         return self.client.problem.applyConstraints (q)
 
+    ## Generate a configuration satisfying the constraints
+    #
+    #  \param maxIter maximum number of tries,
+    #  \return configuration projected in success,
+    #  \throw Error if projection failed.
+    def generateValidConfig (self, maxIter):
+        return self.client.problem.generateValidConfig (maxIter)
+
     ## Lock degree of freedom with given value
     # \param jointName name of the joint
     # \param value value of the locked degree of freedom,
