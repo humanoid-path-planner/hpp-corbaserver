@@ -120,6 +120,22 @@ class Robot (object):
 
     ## \}
 
+    ## \name Bodies
+    #  \{
+
+    ##  Get the list of objects attached to a joint.
+    #  \param inJointName name of the joint.
+    #  \return list of names of CollisionObject attached to the body.
+    def getJointInnerObjects (self, jointName):
+        return self.client.robot.getJointInnerObjects (jointName)
+
+
+    ##  Get list of collision objects tested with the body attached to a joint
+    #  \param inJointName name of the joint.
+    #  \return list of names of CollisionObject
+    def getJointOuterObjects (self, jointName):
+        return self.client.robot.getJointOuterObjects (jointName)
+
     ## \brief Remove an obstacle from outer objects of a joint body
     #
     #  \param objectName name of the object to remove,
