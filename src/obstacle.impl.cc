@@ -56,6 +56,63 @@ namespace hpp
 	}
       }
 
+      void Obstacle::removeObstacleFromJoint
+      (const char* objectName, const char* jointName, Boolean collision,
+       Boolean distance) throw (hpp::Error)
+      {
+	using model::JointPtr_t;
+	using model::ObjectVector_t;
+	using model::COLLISION;
+	using model::DISTANCE;
+	std::string objName (objectName);
+	std::string jName (jointName);
+
+	try {
+	  JointPtr_t joint = problemSolver_->robot ()->getJointByName (jName);
+	  BodyPtr_t body = joint->linkedBody ();
+	  if (!body) {
+	    throw std::runtime_error
+	      (std::string ("Joint " + jName + std::string (" has no body.")));
+	  }
+	  if (collision) {
+	    bool found = false;
+	    for (ObjectVector_t::const_iterator itObj =
+		   body->outerObjects (COLLISION).begin ();
+		 itObj != body->outerObjects (COLLISION).end () &&
+		   !found; ++itObj) {
+	      if ((*itObj)->name () == objName) {
+		found = true;
+		body->removeOuterObject (*itObj, true, false);
+	      }
+	    }
+	    if (!found) {
+	      throw std::runtime_error
+		(std::string ("Joint ") + jName +
+		 std::string (" has no outer object called ") + objName);
+	    }
+	  }
+	  if (distance) {
+	    bool found = false;
+	    for (ObjectVector_t::const_iterator itObj =
+		   body->outerObjects (DISTANCE).begin ();
+		 itObj != body->outerObjects (DISTANCE).end () &&
+		   !found; ++itObj) {
+	      if ((*itObj)->name () == objName) {
+		found = true;
+		body->removeOuterObject (*itObj, false, true);
+	      }
+	    }
+	    if (!found) {
+	      throw std::runtime_error
+		(std::string ("Joint ") + jName +
+		 std::string (" has no outer object called ") + objName);
+	    }
+	  }
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
       void
       Obstacle::addObstacle(const char* objectName, Boolean collision,
 			    Boolean distance)

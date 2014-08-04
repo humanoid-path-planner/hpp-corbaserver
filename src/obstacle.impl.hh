@@ -34,6 +34,10 @@ namespace hpp
 					const char* prefix)
 	  throw (hpp::Error);
 
+	virtual void removeObstacleFromJoint
+	(const char* objectName, const char* jointName, Boolean collision,
+	 Boolean distance) throw (hpp::Error);
+
 	virtual	void
 	addObstacle (const char* polyhedronName, Boolean collision,
 		     Boolean distance)
