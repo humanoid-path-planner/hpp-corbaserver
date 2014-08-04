@@ -24,13 +24,16 @@ module hpp
     /// \param package Name of the package containing the model
     /// \param filename name of the urdf file in the package
     ///        (without suffix .urdf)
+    /// \param prefix prefix added to object names in case the same file is
+    ///        loaded several times
     ///
     /// The ros url is built as follows:
     /// "package://${package}/urdf/${filename}.urdf"
     ///
     /// The kinematic structure of the urdf file is ignored. Only the geometric
     /// objects are loaded as obstacles.
-    void loadObstacleModel (in string package, in string filename)
+    void loadObstacleModel (in string package, in string filename,
+			    in string prefix)
       raises (Error);
 
     /// \brief Add an obstacle to the set of obstacles

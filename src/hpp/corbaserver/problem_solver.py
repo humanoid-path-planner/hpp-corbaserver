@@ -72,8 +72,9 @@ class ProblemSolver (object):
     #
     #  The kinematic structure of the urdf file is ignored. Only the geometric
     #  objects are loaded as obstacles.
-    def loadObstacleFromUrdf (self, package, filename):
-        return self.client.obstacle.loadObstacleModel (package, filename)
+    def loadObstacleFromUrdf (self, package, filename, prefix):
+        return self.client.obstacle.loadObstacleModel (package, filename,
+                                                       prefix)
 
     ##\}
 

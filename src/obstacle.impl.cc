@@ -31,7 +31,8 @@ namespace hpp
       {}
 
       void Obstacle::loadObstacleModel (const char* package,
-					const char* filename)
+					const char* filename,
+					const char* prefix)
 	throw (hpp::Error)
       {
 	try {
@@ -44,9 +45,11 @@ namespace hpp
 	  // Detach objects from joints
 	  for (ObjectIterator itObj = device->objectIterator
 		 (hpp::model::COLLISION); !itObj.isEnd (); ++itObj) {
-	    (*itObj)->joint (0x0);
-	    problemSolver_->addObstacle (*itObj, true, true);
-	    hppDout (info, "Adding obstacle " << (*itObj)->name ());
+	    CollisionObjectPtr_t obj = model::CollisionObject::create
+	      ((*itObj)->fcl ()->collisionGeometry(), (*itObj)->getTransform (),
+	       std::string (prefix) + (*itObj)->name ());
+	    problemSolver_->addObstacle (obj, true, true);
+	    hppDout (info, "Adding obstacle " << obj->name ());
 	  }
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
