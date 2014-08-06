@@ -347,7 +347,6 @@ namespace hpp
         core::BasicConfigurationShooter shooter
           = core::BasicConfigurationShooter (robot);
 	bool success = false, configIsValid = false;
-        unsigned short int iter = maxIter;
         ConfigurationPtr_t config;
         while (!configIsValid && maxIter > 0)
         {
@@ -365,7 +364,7 @@ namespace hpp
           } catch (const std::exception& exc) {
             throw hpp::Error (exc.what ());
           }
-          iter--;
+          maxIter--;
         }
 	ULong size = (ULong) config->size ();
 	hpp::floatSeq* q_ptr = new hpp::floatSeq ();
