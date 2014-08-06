@@ -126,6 +126,7 @@ namespace hpp
 	virtual hpp::floatSeqSeq*
 	nodesConnectedComponent (ULong connectedComponentId) throw (hpp::Error);
 	virtual void clearRoadmap () throw (hpp::Error);
+	virtual void resetRoadmap ();
 
       private:
 	/// \brief Pointer to the Server owning this object

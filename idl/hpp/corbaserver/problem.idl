@@ -254,6 +254,11 @@ module hpp
 
     /// Clear the roadmap
     void clearRoadmap () raises (Error);
+
+    /// Reset the roadmap
+    /// This should be done when joints bounds are modified because the KDTree
+    /// must be resized.
+    void resetRoadmap () raises (Error);
     /// \}
   };
   }; // interface Problem

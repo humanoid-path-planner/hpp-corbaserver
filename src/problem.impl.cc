@@ -867,6 +867,17 @@ namespace hpp
 	  throw hpp::Error (exc.what ());
 	}
       }
+
+      // ---------------------------------------------------------------
+
+      void Problem::resetRoadmap ()
+      {
+	try {
+	  problemSolver_->resetRoadmap ();
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
     } // namespace impl
   } // namespace corbaServer
 } // namespace hpp
