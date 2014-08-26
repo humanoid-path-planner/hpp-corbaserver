@@ -614,12 +614,14 @@ namespace hpp
 	    ULong size = (ULong)nbObjects;
 	    char** nameList = Names_t::allocbuf(size);
 	    innerObjectSeq = new Names_t(size, size, nameList);
+	    ObjectVector_t::const_iterator itObj = objects.begin ();
 	    for (std::size_t iObject=0; iObject < nbObjects; iObject++) {
-	      CollisionObjectPtr_t object = objects[iObject];
+	      CollisionObjectPtr_t object = *itObj;
 	      std::string geometryName = object->name();
 	      nameList[iObject] =
 		(char*)malloc(sizeof(char)*(geometryName.length()+1));
 	      strcpy(nameList[iObject], geometryName.c_str());
+	      ++itObj;
 	    }
 	  } else {
 	    innerObjectSeq = new Names_t (0);
@@ -660,12 +662,14 @@ namespace hpp
 	    ULong size = (ULong)nbObjects;
 	    char** nameList = Names_t::allocbuf(size);
 	    outerObjectSeq = new Names_t(size, size, nameList);
+	    ObjectVector_t::const_iterator itObj = objects.begin ();
 	    for (std::size_t iObject=0; iObject < nbObjects; iObject++) {
-	      CollisionObjectPtr_t object = objects[iObject];
+	      CollisionObjectPtr_t object = *itObj;
 	      std::string geometryName = object->name();
 	      nameList[iObject] =
 		(char*)malloc(sizeof(char)*(geometryName.length()+1));
 	      strcpy(nameList[iObject], geometryName.c_str());
+	      ++itObj;
 	    }
 	  } else {
 	    outerObjectSeq = new Names_t (0);
