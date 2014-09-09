@@ -66,10 +66,12 @@ module hpp
     ///        of joint2 in the frame of joint1.
     /// If joint1 of joint2 is "", the corresponding joint is replaced by
     /// the global frame.
+    /// \param mask_x, mask_y, mask_z boolean representing which component of the error vector to take into account
     /// constraints are stored in ProblemSolver object
     void createOrientationConstraint
     (in string constraintName, in string joint1Name,
-     in string joint2Name, in Quaternion_ p) raises (Error);
+     in string joint2Name, in Quaternion_ p,
+     in boolean mask_x, in boolean mask_y, in boolean mask_z) raises (Error);
 
     /// Create position constraint between two joints
     ///
@@ -80,12 +82,16 @@ module hpp
     /// \param point2 point in local frame of joint2.
     /// If joint1 of joint2 is "", the corresponding joint is replaced by
     /// the global frame.
+    /// \param mask_x, mask_y, mask_z boolean representing which component of the error vector to take into account
     /// constraints are stored in ProblemSolver object
     void createPositionConstraint (in string constraintName,
 				   in string joint1Name,
 				   in string joint2Name,
 				   in floatSeq point1,
-				   in floatSeq point2)
+				   in floatSeq point2,
+				   in boolean mask_x,
+				   in boolean mask_y,
+				   in boolean mask_z)
       raises (Error);
 
 

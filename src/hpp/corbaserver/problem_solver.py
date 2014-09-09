@@ -90,11 +90,12 @@ class ProblemSolver (object):
     #         of joint2 in the frame of joint1.
     #  If joint1 of joint2 is "", the corresponding joint is replaced by
     #  the global frame.
+    #  \param mask_x, mask_y, mask_z boolean representing which component of the error vector to take into account
     #  constraints are stored in ProblemSolver object
     def createOrientationConstraint (self, constraintName, joint1Name,
-                                     joint2Name, p):
+                                     joint2Name, p, mask_x = True, mask_y = True, mask_z = True):
         return self.client.problem.createOrientationConstraint \
-            (constraintName, joint1Name, joint2Name, p)
+            (constraintName, joint1Name, joint2Name, p, mask_x, mask_y, mask_z)
 
     ## Create position constraint between two joints
     #
@@ -105,11 +106,12 @@ class ProblemSolver (object):
     #  \param point2 point in local frame of joint2.
     #  If joint1 of joint2 is "", the corresponding joint is replaced by
     #  the global frame.
+    #  \param mask_x, mask_y, mask_z boolean representing which component of the error vector to take into account
     #  constraints are stored in ProblemSolver object
     def createPositionConstraint (self, constraintName, joint1Name,
-                                  joint2Name, point1, point2):
+                                  joint2Name, point1, point2, mask_x = True, mask_y = True, mask_z = True):
         return self.client.problem.createPositionConstraint \
-            (constraintName, joint1Name, joint2Name, point1, point2)
+            (constraintName, joint1Name, joint2Name, point1, point2, mask_x, mask_y, mask_z)
 
     ## Reset Constraints
     #

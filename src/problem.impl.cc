@@ -192,7 +192,7 @@ namespace hpp
 
       void Problem::createOrientationConstraint
       (const char* constraintName, const char* joint1Name,
-       const char* joint2Name, const Double* p) throw (hpp::Error)
+       const char* joint2Name, const Double* p, const bool mask_x, const bool mask_y, const bool mask_z) throw (hpp::Error)
       {
 	JointPtr_t joint1;
 	JointPtr_t joint2;
@@ -227,13 +227,13 @@ namespace hpp
 	  problemSolver_->addNumericalConstraint
 	    (std::string(constraintName), RelativeOrientation::create
 	      (problemSolver_->robot(), joint1, joint2, rotation,
-	      boost::assign::list_of(true)(true)(true)) );
+	      boost::assign::list_of(mask_x)(mask_y)(mask_z)) );
 	} else {
 	  JointPtr_t joint = constrainedJoint == 1 ? joint1 : joint2;
 	  problemSolver_->addNumericalConstraint
 	    (std::string(constraintName), Orientation::create
 	      (problemSolver_->robot(), joint, rotation,
-	      boost::assign::list_of(true)(true)(true)) );
+	      boost::assign::list_of(mask_x)(mask_y)(mask_z)) );
 	}
       }
 
@@ -243,7 +243,8 @@ namespace hpp
       void Problem::createPositionConstraint
       (const char* constraintName, const char* joint1Name,
        const char* joint2Name, const hpp::floatSeq& point1,
-       const hpp::floatSeq& point2)
+       const hpp::floatSeq& point2,
+       const bool mask_x, const bool mask_y, const bool mask_z)
 	throw (hpp::Error)
       {
 	JointPtr_t joint1;
@@ -283,15 +284,15 @@ namespace hpp
 	  problemSolver_->addNumericalConstraint
 	    (std::string (constraintName), RelativePosition::create
 	     (problemSolver_->robot(), joint1, joint2, p1, p2,
-	      boost::assign::list_of (true)(true)(true)));
+	      boost::assign::list_of (mask_x)(mask_y)(mask_z)));
 	} else {
 	  hpp::model::matrix3_t I3; I3.setIdentity ();
 	  JointPtr_t joint = constrainedJoint == 1 ? joint1 : joint2;
 	  problemSolver_->addNumericalConstraint
 	    (std::string (constraintName), Position::create
 	     (problemSolver_->robot(), joint, targetInLocalFrame,
-	      targetInWorldFrame, I3, boost::assign::list_of (true)(true)
-	      (true)));
+	      targetInWorldFrame, I3, boost::assign::list_of (mask_x)(mask_y)
+	      (mask_z)));
 	}
       }
 
