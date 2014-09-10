@@ -390,6 +390,32 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+      void Problem::setPassiveDofs (const char* constraintName,
+          const hpp::Names_t& dofNames)
+        throw (hpp::Error)
+      {
+        DevicePtr_t robot = problemSolver_->robot ();
+        if (!robot)
+	    throw Error ("You should set the robot before defining"
+			 " constraints.");
+        core::DifferentiableFunctionPtr_t f =
+          problemSolver_->numericalConstraint (constraintName);
+        if (!f)
+          throw hpp::Error ("The numerical constraint could not be found.");
+        std::vector <size_type> dofs;
+        for (CORBA::ULong i=0; i<dofNames.length (); ++i) {
+          std::string name (dofNames[i]);
+          JointPtr_t j = robot->getJointByName (name);
+          if (!j)
+            throw hpp::Error ("One joint not found.");
+          for (size_type i = 0; i < j->numberDof (); i++)
+            dofs.push_back (j->rankInVelocity() + i);
+        }
+        f->passiveDofs (dofs);
+      }
+
+      // ---------------------------------------------------------------
+
       void Problem::isParametric (const char* constraintName,
           CORBA::Boolean value)
         throw (hpp::Error)
