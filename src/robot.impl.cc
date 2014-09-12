@@ -18,6 +18,7 @@
 #include <hpp/model/joint.hh>
 #include <hpp/model/urdf/util.hh>
 #include <hpp/model/object-factory.hh>
+#include <hpp/model/object-iterator.hh>
 #include <hpp/model/collision-object.hh>
 #include <hpp/core/basic-configuration-shooter.hh>
 #include <hpp/core/weighed-distance.hh>
@@ -675,6 +676,50 @@ namespace hpp
 	    outerObjectSeq = new Names_t (0);
 	  }
 	  return outerObjectSeq;
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
+
+      CollisionObjectPtr_t Robot::getObjectByName (const char* name)
+      {
+	using model::ObjectIterator;
+	try {
+	  DevicePtr_t robot = problemSolver_->robot ();
+	  if (!robot) {
+	    throw std::runtime_error ("No robot has been loaded or created");
+	  }
+	  for (ObjectIterator it = robot->objectIterator (model::COLLISION);
+	       !it.isEnd (); ++it) {
+	    if ((*it)->name () == name) {
+	      return *it;
+	    }
+	  }
+	  for (ObjectIterator it = robot->objectIterator (model::DISTANCE);
+	       !it.isEnd (); ++it) {
+	    if ((*it)->name () == name) {
+	      return *it;
+	    }
+	  }
+	  throw std::runtime_error ("robot has no object with name " +
+				    std::string (name));
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
+
+      void Robot::getObjectPosition (const char* objectName, Double* cfg)
+	throw (hpp::Error)
+      {
+	try {
+	  CollisionObjectPtr_t object = getObjectByName (objectName);
+	  Transform3f transform = object->getTransform ();
+	  Transform3fTohppTransform (transform, cfg);
+	  return;
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}

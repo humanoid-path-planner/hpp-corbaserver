@@ -137,6 +137,12 @@ class Robot (object):
     def getJointOuterObjects (self, jointName):
         return self.client.robot.getJointOuterObjects (jointName)
 
+    ## Get position of robot object
+    #  \param objectName name of the object.
+    #  \return transformation as a hpp.Transform object
+    def getObjectPosition (self, objectName):
+        return Transform (self.client.robot.getObjectPosition (objectName))
+
     ## \brief Remove an obstacle from outer objects of a joint body
     #
     #  \param objectName name of the object to remove,

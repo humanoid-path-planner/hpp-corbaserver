@@ -132,6 +132,9 @@ namespace hpp
 	(const char* bodyName)
 	  throw (hpp::Error);
 
+	virtual void getObjectPosition (const char* objectName, Double* cfg)
+	  throw (hpp::Error);
+
 	virtual void
 	collisionTest (Boolean& validity) throw (hpp::Error);
 
@@ -176,6 +179,7 @@ namespace hpp
 	  throw (hpp::Error);
 
       private:
+	CollisionObjectPtr_t getObjectByName (const char* name);
 	typedef std::map <std::string, JointPtr_t> JointMap_t;
 	// Store devices, joints and bodies in construction.
 

@@ -168,6 +168,14 @@ module hpp
     /// \return list of names of CollisionObject
     Names_t getJointOuterObjects (in string jointName) raises (Error);
 
+    /// Get the position of an object of the robot
+    ///
+    /// \param objectName name of the object.
+    /// \retval cfg Position of the obstacle.
+    /// \throw Error.
+    void getObjectPosition (in string objectName, out Transform_ cfg)
+      raises (Error);
+
     /// \}
 
     /// \name Collision checking and distance computation
