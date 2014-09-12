@@ -349,8 +349,8 @@ namespace hpp
 	  }
 	  for (CORBA::ULong i=0; i<constraintNames.length (); ++i) {
 	    std::string name (constraintNames [i]);
-            problemSolver_->addConstraintToConfigProjector(constraintName, 
-                                    problemSolver_->numericalConstraint(name));
+            problemSolver_->addConstraintToConfigProjector
+	      (constraintName, problemSolver_->numericalConstraint(name));
 	  }
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
@@ -511,8 +511,8 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      hpp::floatSeq* Problem::configAtDistance (UShort inPathId,
-					      Double atDistance)
+      hpp::floatSeq* Problem::configAtDistance (UShort pathId,
+						Double atDistance)
 	throw (hpp::Error)
       {
 	try {
