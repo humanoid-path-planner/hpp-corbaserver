@@ -96,7 +96,10 @@ class Robot (object):
     def setTranslationBounds (self, xmin, xmax, ymin, ymax, zmin, zmax):
         self.client.robot.setJointBounds ("base_joint_x", [xmin, xmax])
         self.client.robot.setJointBounds ("base_joint_y", [ymin, ymax])
-        self.client.robot.setJointBounds ("base_joint_z", [zmin, zmax])
+        if any("base_joint_z" in s for s in self.getJointNames()):
+            self.client.robot.setJointBounds ("base_joint_z", [zmin, zmax])
+        else:
+            self.client.robot.setJointBounds ("base_joint_rz", [zmin, zmax])
     ## \}
 
     ## \name Configurations
