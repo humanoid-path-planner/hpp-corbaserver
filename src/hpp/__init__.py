@@ -16,3 +16,4 @@
 # <http://www.gnu.org/licenses/>.
 
 from quaternion import Quaternion
+from transform import Transform

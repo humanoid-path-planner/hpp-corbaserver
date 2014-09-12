@@ -87,6 +87,7 @@ INSTALL(
   FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/hpp/__init__.py
   ${CMAKE_CURRENT_SOURCE_DIR}/hpp/quaternion.py
+  ${CMAKE_CURRENT_SOURCE_DIR}/hpp/transform.py
   DESTINATION ${PYTHON_SITELIB}/hpp
   )
 INSTALL(

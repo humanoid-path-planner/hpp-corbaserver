@@ -16,6 +16,7 @@
 # hpp-corbaserver.  If not, see
 # <http://www.gnu.org/licenses/>.
 
+from hpp import Transform
 from hpp.corbaserver.client import Client
 
 ##
