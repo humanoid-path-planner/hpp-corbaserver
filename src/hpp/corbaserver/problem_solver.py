@@ -54,6 +54,10 @@ class ProblemSolver (object):
     def getGoalConfigs (self):
         return self.client.problem.getGoalConfigs ()
 
+    def getWaypoints (self,inPathId):
+        return self.client.problem.getWaypoints (inPathId)
+
+
     ## Reset goal configurations
     def resetGoalConfigs (self):
         return self.client.problem.resetGoalConfigs ()

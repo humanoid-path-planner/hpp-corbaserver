@@ -94,6 +94,8 @@ namespace hpp
 						 Double atDistance)
 	  throw (hpp::Error);
 
+	virtual hpp::floatSeqSeq* getWaypoints (UShort inPathId)
+	  throw (hpp::Error);
 	virtual hpp::floatSeqSeq* nodes () throw (hpp::Error);
 	virtual Long numberEdges () throw (hpp::Error);
 	virtual void edge (ULong edgeId, hpp::floatSeq_out q1,

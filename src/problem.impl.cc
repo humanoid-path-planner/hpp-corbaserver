@@ -21,6 +21,7 @@
 #include <hpp/core/path-planner.hh>
 #include <hpp/core/path-optimizer.hh>
 #include <hpp/core/path-vector.hh>
+#include <hpp/core/straight-path.hh>
 #include <hpp/core/path.hh>
 #include <hpp/core/roadmap.hh>
 #include <hpp/core/steering-method.hh>
@@ -515,6 +516,80 @@ namespace hpp
 	  }
 	  return floatSeq;
 	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      //---------------------------------
+
+      // Get end point of path (start if points == 0, end if points == 1)
+      void findExtremes (PathPtr_t path, hpp::floatSeqSeq& configSequence,
+			 const std::size_t points)
+      {
+	const std::size_t size_increment = 1;
+	Configuration_t config, config_1;
+	std::vector<Configuration_t> configs;
+	hpp::floatSeq dofArray;
+	config = (*path) (0);
+	configs.push_back(config);
+	config_1 = (*path) (path->length());
+	configs.push_back(config_1);
+	dofArray.length (config.size());
+	// modify configsequence
+	configSequence.length (configSequence.length() + size_increment);
+	std::size_t ptr = configSequence.length() - size_increment;
+	for (std::size_t i=0; i<size_increment; ++i) {
+	  for (std::size_t j=0; j < (config.size()); ++j) {
+	    dofArray [j] = configs [points][j];
+	  }
+	  (configSequence)[ptr+i] = dofArray;
+	}
+      }
+
+      //---------------------------------
+
+      void findExtremities (PathVectorPtr_t path,
+			    hpp::floatSeqSeq& configSequence)
+      {
+        std::size_t num_subpaths  = (*path).numberPaths ();
+        if (num_subpaths == 1) {
+	  findExtremes (path,configSequence,1);
+	}
+        else {
+	  for (std::size_t i = 0; i < num_subpaths; ++i) {
+	    PathPtr_t subpath = (*path).pathAtRank(i);
+	    PathVectorPtr_t sp =
+	      HPP_DYNAMIC_PTR_CAST (hpp::core::PathVector,subpath);
+	    if (sp) {
+	      findExtremities(sp, configSequence);
+	    } else {
+	      findExtremes (subpath,configSequence, 1);
+	    }
+	  }
+	}
+      }
+
+      // --------------------------------------------------------------
+
+      hpp::floatSeqSeq* Problem::getWaypoints (UShort pathId)
+	throw (hpp::Error)
+      {
+	try {
+	  if (pathId >= problemSolver_->paths ().size ()) {
+	    std::ostringstream oss ("wrong path id: ");
+	    oss << pathId << ", number path: "
+		<< problemSolver_->paths ().size () << ".";
+	    throw std::runtime_error (oss.str ().c_str ());
+	  }
+	  hpp::floatSeqSeq *configSequence;
+	  configSequence = new hpp::floatSeqSeq ();
+	  PathVectorPtr_t path = problemSolver_->paths () [pathId];
+	  //init path
+	  findExtremes (path, *configSequence, 0);
+	  findExtremities (path, *configSequence);
+	  return configSequence;
+	}
+	catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
       }
