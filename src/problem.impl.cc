@@ -477,6 +477,12 @@ namespace hpp
       void Problem::optimizePath(UShort pathId) throw (hpp::Error)
       {
 	try {
+	  if (pathId >= problemSolver_->paths ().size ()) {
+	    std::ostringstream oss ("wrong path id: ");
+	    oss << pathId << ", number path: "
+		<< problemSolver_->paths ().size () << ".";
+	    throw std::runtime_error (oss.str ());
+	  }
 	  PathVectorPtr_t initial = problemSolver_->paths () [pathId];
 	  PathVectorPtr_t optimized =
 	    problemSolver_->pathOptimizer ()-> optimize (initial);
@@ -491,6 +497,12 @@ namespace hpp
       Double Problem::pathLength (UShort pathId) throw (hpp::Error)
       {
 	try {
+	  if (pathId >= problemSolver_->paths ().size ()) {
+	    std::ostringstream oss ("wrong path id: ");
+	    oss << pathId << ", number path: "
+		<< problemSolver_->paths ().size () << ".";
+	    throw std::runtime_error (oss.str ());
+	  }
 	  return problemSolver_->paths () [pathId]->length ();
 	} catch (std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -504,7 +516,13 @@ namespace hpp
 	throw (hpp::Error)
       {
 	try {
-	  PathPtr_t path = problemSolver_->paths () [inPathId];
+	  if (pathId >= problemSolver_->paths ().size ()) {
+	    std::ostringstream oss ("wrong path id: ");
+	    oss << pathId << ", number path: "
+		<< problemSolver_->paths ().size () << ".";
+	    throw std::runtime_error (oss.str ());
+	  }
+	  PathPtr_t path = problemSolver_->paths () [pathId];
 	  Configuration_t config = (*path) (atDistance);
 	  // Allocate result now that the size is known.
 	  std::size_t size =  config.size ();
