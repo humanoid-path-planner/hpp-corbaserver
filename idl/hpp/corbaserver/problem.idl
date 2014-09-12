@@ -134,6 +134,9 @@ module hpp
 				  in Names_t constraintNames)
       raises (Error);
 
+    void addInequality (in string constraintName, in floatSeq ref, in boolSeq superior)
+      raises (Error);
+
     /// Lock degree of freedom with given value
     /// \param jointName name of the joint
     /// \param value value of the locked degree of freedom,

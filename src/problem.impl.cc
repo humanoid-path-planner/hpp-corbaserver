@@ -28,6 +28,7 @@
 #include <hpp/core/roadmap.hh>
 #include <hpp/core/steering-method.hh>
 #include <hpp/core/differentiable-function.hh>
+#include <hpp/core/inequality.hh>
 #include <hpp/constraints/position.hh>
 #include <hpp/constraints/orientation.hh>
 #include <hpp/constraints/position.hh>
@@ -452,12 +453,34 @@ namespace hpp
 	  }
 	  for (CORBA::ULong i=0; i<constraintNames.length (); ++i) {
 	    std::string name (constraintNames [i]);
-            problemSolver_->addConstraintToConfigProjector
-	      (constraintName, problemSolver_->numericalConstraint(name));
+            problemSolver_->addConstraintToConfigProjector(constraintName, 
+                                    problemSolver_->numericalConstraint(name),
+                                    problemSolver_->inequality (name));
 	  }
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::addInequality (const char* constraintName,
+                                   const floatSeq& ref,
+                                   const boolSeq& superior)
+	throw (Error)
+      {
+        if (ref.length () != superior.length ())
+          throw hpp::Error ("Dimension of reference and superior should be equal.");
+	size_type dim = (size_type)ref.length();
+	vector_t refvector (dim), ivect (dim);
+
+	for (size_type i = 0; i < dim; ++i) {
+          refvector[i] = ref[i];
+          ivect[i] = (superior[i])?1:-1;
+	}
+
+        std::string name (constraintName);
+        problemSolver_->addInequalityRef (name, refvector, ivect);
       }
 
       // ---------------------------------------------------------------

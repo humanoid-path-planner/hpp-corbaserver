@@ -82,6 +82,10 @@ namespace hpp
 	virtual void setNumericalConstraints
 	(const char* constraintName, const hpp::Names_t& constraintNames)
 	  throw (Error);
+        void addInequality (const char* constraintName,
+            const hpp::floatSeq& ref,
+            const hpp::boolSeq& superior)
+          throw (Error);
 	virtual void lockDof (const char* jointName, Double value,
 			      UShort rankInConfiguration,
 			      UShort rankInVelocity)
