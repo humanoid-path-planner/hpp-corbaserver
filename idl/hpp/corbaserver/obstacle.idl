@@ -73,7 +73,7 @@ module hpp
     /// impl::Obstacle::collisionListMap.
     ///
     /// \note Build the collision entity of polyhedron for KCD.
-    void moveObstacle (in string objectName, in Transform cfg)
+    void moveObstacle (in string objectName, in Transform_ cfg)
       raises (Error);
 
     /// Get the position of an obstacle
@@ -81,7 +81,7 @@ module hpp
     /// \param objectName name of the polyhedron.
     /// \retval cfg Position of the obstacle.
     /// \throw Error.
-    void getObstaclePosition (in string objectName, out Transform cfg)
+    void getObstaclePosition (in string objectName, out Transform_ cfg)
       raises (Error);
     /// \}
 

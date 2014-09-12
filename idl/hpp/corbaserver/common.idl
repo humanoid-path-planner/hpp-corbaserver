@@ -26,7 +26,7 @@ module hpp
   typedef sequence<floatSeq> floatSeqSeq;
 
   /// Element of SE(3) represented by a vector and a unit quaternion
-  typedef double Transform [7];
+  typedef double Transform_ [7];
   /// Quaternion used to define orientation constraint
   /// Add underscore to avoid name conflicts.
   typedef double Quaternion_ [4];

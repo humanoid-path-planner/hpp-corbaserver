@@ -93,10 +93,10 @@ namespace hpp
 	(const char* parentName, const char* childName) throw (hpp::Error);
 
 	virtual Names_t* getJointNames () throw (hpp::Error);
-	virtual Transform_slice* getJointPosition(const char* jointName)
+	virtual Transform__slice* getJointPosition(const char* jointName)
 	  throw (hpp::Error);
 
-	virtual Transform_slice* getRootJointPosition () throw (hpp::Error);
+	virtual Transform__slice* getRootJointPosition () throw (hpp::Error);
 
 	virtual void setRootJointPosition (const  Double* position)
 	  throw (hpp::Error);
