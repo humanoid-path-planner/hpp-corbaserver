@@ -236,6 +236,14 @@ class Quaternion (object):
         """
         return  Quaternion(other)*self
 
+    def transform (self, v):
+        """
+        apply rotation to a vector
+        """
+        u = np.array (self.array [1:4])
+        s = self.array [0]
+        return 2*u.dot(v)*u + (s*s - u.dot(u))*v + 2*s*np.cross(u, v)
+
     def __abs__(self):
         """
         Returns the norm of the quaternion.
