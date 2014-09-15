@@ -183,10 +183,17 @@ module hpp
 
     /// Test collision with obstacles and auto-collision.
     ///
-    /// Check whether current configuration of robot is valid by calling
-    /// CkwsDevice::collisionTest ().
-    /// \retval validity whether configuration is valid
+    /// \deprecated Use isConfigValid instead
     void collisionTest (out boolean validity) raises (Error);
+
+    /// Test the validity of a configuration
+    ///
+    /// Check whether current configuration of robot is valid by calling
+    /// hpp::core::ConfigValidations object stored in Problem.
+    /// \retval validity whether configuration is valid
+    void isConfigValid (in floatSeq dofArray, out boolean validity)
+      raises (Error);
+
 
     /// Compute distances between bodies and obstacles
     ///

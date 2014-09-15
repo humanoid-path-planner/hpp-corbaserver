@@ -21,6 +21,8 @@
 #include <hpp/model/object-iterator.hh>
 #include <hpp/model/collision-object.hh>
 #include <hpp/core/basic-configuration-shooter.hh>
+#include <hpp/core/config-validations.hh>
+#include <hpp/core/distance-between-objects.hh>
 #include <hpp/core/weighed-distance.hh>
 #include <hpp/corbaserver/server.hh>
 #include "robot.impl.hh"
@@ -729,10 +731,26 @@ namespace hpp
 
       void Robot::collisionTest (Boolean& validity) throw (hpp::Error)
       {
-	validity = false;
 	try {
 	  DevicePtr_t robot = problemSolver_->robot ();
-	  validity = robot->collisionTest ();
+	  Configuration_t config = robot->currentConfiguration ();
+	  validity =
+	    problemSolver_->problem ()->configValidations ()->validate (config);
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
+
+      void Robot::isConfigValid (const hpp::floatSeq& dofArray,
+				 Boolean& validity) throw (hpp::Error)
+      {
+	try {
+	  Configuration_t config = dofArrayToConfig (problemSolver_, dofArray);
+	  DevicePtr_t robot = problemSolver_->robot ();
+	  validity =
+	    problemSolver_->problem ()->configValidations ()->validate (config);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}

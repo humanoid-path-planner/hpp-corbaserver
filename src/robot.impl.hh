@@ -138,6 +138,9 @@ namespace hpp
 	virtual void
 	collisionTest (Boolean& validity) throw (hpp::Error);
 
+	virtual void isConfigValid
+	(const hpp::floatSeq& dofArray, Boolean& validity) throw (hpp::Error);
+
 	virtual void
 	distancesToCollision (hpp::floatSeq_out distances,
 			      Names_t_out innerObjects,
