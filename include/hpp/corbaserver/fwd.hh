@@ -45,6 +45,8 @@ namespace hpp
     typedef model::DevicePtr_t DevicePtr_t;
     typedef model::DistanceResult DistanceResult_t;
     typedef model::DistanceResults_t DistanceResults_t;
+    typedef core::DistanceBetweenObjects DistanceBetweenObjects;
+    typedef core::DistanceBetweenObjectsPtr_t DistanceBetweenObjectsPtr_t;
     typedef core::Edges_t Edges_t;
     typedef model::Joint Joint_t;
     typedef model::JointPtr_t JointPtr_t;

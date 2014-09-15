@@ -517,29 +517,39 @@ namespace hpp
 	}
       }
 
+      static model::ConfigurationOut_t
+      dofArrayToConfig (const core::ProblemSolverPtr_t& problemSolver,
+			const hpp::floatSeq& dofArray)
+      {
+	std::size_t configDim = (std::size_t)dofArray.length();
+	std::vector<double> dofVector;
+	// Get robot
+	DevicePtr_t robot = problemSolver->robot ();
+	if (!robot) {
+	  throw hpp::Error ("No robot in problem solver.");
+	}
+	std::size_t deviceDim = robot->configSize ();
+	// Fill dof vector with dof array.
+	Configuration_t config; config.resize (configDim);
+	for (std::size_t iDof = 0; iDof < configDim; iDof++) {
+	  config [iDof] = dofArray[iDof];
+	}
+	// fill the vector by zero
+	hppDout (info, "config dimension: " <<configDim
+		 <<",  deviceDim "<<deviceDim);
+	if(configDim != deviceDim){
+	  throw hpp::Error ("dofVector Does not match");
+	}
+	return config;
+      }
+
       // --------------------------------------------------------------------
 
       void Robot::setCurrentConfig(const hpp::floatSeq& dofArray)
 	throw (hpp::Error)
       {
-	std::size_t configDim = (std::size_t)dofArray.length();
-	std::vector<double> dofVector;
 	try {
-	  // Get robot in hppPlanner object.
-	  DevicePtr_t robot = problemSolver_->robot ();
-	  // by Yoshida 06/08/25
-	  std::size_t deviceDim = robot->configSize ();
-	  // Fill dof vector with dof array.
-	  vector_t config; config.resize (configDim);
-	  for (std::size_t iDof = 0; iDof < configDim; iDof++) {
-	    config [iDof] = dofArray[iDof];
-	  }
-	  // fill the vector by zero
-	  hppDout (info, "config dimension: " <<configDim
-		   <<",  deviceDim "<<deviceDim);
-	  if(configDim != deviceDim){
-	    throw hpp::Error ("dofVector Does not match");
-	  }
+	  Configuration_t config = dofArrayToConfig (problemSolver_, dofArray);
 	  // Create a config for robot initialized with dof vector.
 	  problemSolver_->robot ()->currentConfiguration (config);
 	  problemSolver_->robot ()->computeForwardKinematics ();
@@ -768,9 +778,14 @@ namespace hpp
       {
 	try {
 	  DevicePtr_t robot = problemSolver_->robot ();
+	  const DistanceBetweenObjectsPtr_t& distanceBetweenObjects =
+	    problemSolver_->distanceBetweenObjects ();
 	  robot->computeDistances ();
-	  const DistanceResults_t& dr = robot->distanceResults ();
-	  std::size_t nbDistPairs = dr.size ();
+	  distanceBetweenObjects->computeDistances ();
+	  const DistanceResults_t& dr1 = robot->distanceResults ();
+	  const DistanceResults_t& dr2 =
+	    distanceBetweenObjects->distanceResults ();
+	  std::size_t nbDistPairs = dr1.size () + dr2.size ();
 	  hpp::floatSeq* distances_ptr = new hpp::floatSeq ();
 	  distances_ptr->length (nbDistPairs);
 	  Names_t* innerObjects_ptr = new Names_t ();
@@ -782,8 +797,27 @@ namespace hpp
 	  hpp::floatSeqSeq* outerPoints_ptr = new hpp::floatSeqSeq ();
 	  outerPoints_ptr->length (nbDistPairs);
 	  std::size_t distPairId = 0;
-	  for (DistanceResults_t::const_iterator itDistance = dr.begin ();
-	       itDistance != dr.end (); itDistance++) {
+	  for (DistanceResults_t::const_iterator itDistance = dr1.begin ();
+	       itDistance != dr1.end (); itDistance++) {
+	    (*distances_ptr) [distPairId] = itDistance->fcl.min_distance;
+	    (*innerObjects_ptr) [distPairId] =
+	      itDistance->innerObject->name ().c_str ();
+	    (*outerObjects_ptr) [distPairId] =
+	      itDistance->outerObject->name ().c_str ();
+	    hpp::floatSeq pointBody_seq;
+	    pointBody_seq.length (3);
+	    hpp::floatSeq pointObstacle_seq;
+	    pointObstacle_seq.length (3);
+	    for (std::size_t j=0; j<3; ++j) {
+	      pointBody_seq [j] = itDistance->fcl.nearest_points [0][j];
+	      pointObstacle_seq [j] = itDistance->fcl.nearest_points [1][j];
+	    }
+	    (*innerPoints_ptr) [distPairId] = pointBody_seq;
+	    (*outerPoints_ptr) [distPairId] = pointObstacle_seq;
+	    ++distPairId;
+	  }
+	  for (DistanceResults_t::const_iterator itDistance = dr2.begin ();
+	       itDistance != dr2.end (); itDistance++) {
 	    (*distances_ptr) [distPairId] = itDistance->fcl.min_distance;
 	    (*innerObjects_ptr) [distPairId] =
 	      itDistance->innerObject->name ().c_str ();
