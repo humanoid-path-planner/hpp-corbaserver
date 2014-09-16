@@ -480,7 +480,7 @@ namespace hpp
 	}
 
         std::string name (constraintName);
-        problemSolver_->addInequalityRef (name, refvector, ivect);
+        problemSolver_->addInequalityVector (name, ivect);
       }
 
       // ---------------------------------------------------------------
