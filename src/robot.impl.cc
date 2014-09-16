@@ -744,8 +744,8 @@ namespace hpp
 	try {
 	  DevicePtr_t robot = problemSolver_->robot ();
 	  Configuration_t config = robot->currentConfiguration ();
-	  validity =
-	    problemSolver_->problem ()->configValidations ()->validate (config);
+	  validity = !problemSolver_->problem ()->configValidations ()
+	    ->validate (config);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
