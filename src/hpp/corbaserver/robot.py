@@ -25,11 +25,12 @@ from hpp.corbaserver.client import Client
 #  This class is also used to initialize a client to rviz in order to
 #  display configurations of a robot.
 class Robot (object):
-    def __init__ (self, robotName, rootJointType):
+    def __init__ (self, robotName, rootJointType, load = True):
         self.tf_root = "base_link"
         self.rootJointType = rootJointType
         self.client = Client ()
-        self.loadModel (robotName, rootJointType)
+        if load:
+            self.loadModel (robotName, rootJointType)
         self.jointNames = self.client.robot.getJointNames ()
         self.rankInConfiguration = dict ()
         self.rankInVelocity = dict ()
@@ -203,8 +204,8 @@ class Robot (object):
 #  Method loadModel builds a humanoid robot.
 class HumanoidRobot (Robot):
 
-    def __init__ (self, robotName, rootJointType):
-        Robot.__init__ (self, robotName, rootJointType)
+    def __init__ (self, robotName, rootJointType, load = True):
+        Robot.__init__ (self, robotName, rootJointType, load)
     def loadModel (self, robotName, rootJointType):
         self.client.robot.loadHumanoidModel (robotName, rootJointType,
                                           self.packageName, self.urdfName,
