@@ -136,6 +136,14 @@ module hpp
     /// any type added by core::ProblemSolver::addPathOptimizerType
     void selectPathOptimizer (in string pathOptimizerType) raises (Error);
 
+    /// Select path validation method
+    /// \param Name of the path validation method, either "Discretized"
+    /// "Progressive", "Dichotomy", or any type added by
+    /// core::ProblemSolver::addPathValidationType,
+    /// \param tolerance maximal acceptable penetration.
+    void selectPathValidation (in string pathValidationType,
+			       in double tolerance) raises (Error);
+
     /// Solve the problem.
     /// \throw Error.
     void solve() raises (Error);

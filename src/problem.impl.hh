@@ -73,6 +73,9 @@ namespace hpp
 	virtual void selectPathOptimizer (const char* pathOptimizerType)
 	  throw (Error);
 
+	virtual void selectPathValidation (const char* pathValidationType,
+					   Double tolerance) throw (Error);
+
 	virtual void selectPathPlanner (const char* pathPlannerType)
 	  throw (Error);
 

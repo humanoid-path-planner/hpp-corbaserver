@@ -420,6 +420,19 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+      void Problem::selectPathValidation (const char* pathValidationType,
+					  Double tolerance) throw (Error)
+      {
+	try {
+	  problemSolver_->pathValidationType (std::string (pathValidationType),
+					      tolerance);
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // ---------------------------------------------------------------
+
       void Problem::solve () throw (hpp::Error)
       {
 	try {

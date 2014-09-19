@@ -171,6 +171,15 @@ class ProblemSolver (object):
     def selectPathOptimizer (self, pathOptimizerType):
         return self.client.problem.selectPathOptimizer (pathOptimizerType)
 
+    ## Select path validation method
+    #  \param Name of the path validation method, either "Discretized"
+    #  "Progressive", "Dichotomy", or any type added by
+    #  core::ProblemSolver::addPathValidationType,
+    #  \param tolerance maximal acceptable penetration.
+    def selectPathValidation (self, pathValidationType, tolerance):
+        return self.client.problem.selectPathValidation (pathValidationType,
+                                                         tolerance)
+
     ## Solve the problem of corresponding ChppPlanner object
     def solve (self):
         return self.client.problem.solve ()
