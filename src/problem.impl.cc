@@ -21,6 +21,8 @@
 #include <hpp/core/path-planner.hh>
 #include <hpp/core/path-optimizer.hh>
 #include <hpp/core/path-vector.hh>
+#include <hpp/core/path-validation.hh>
+#include <hpp/core/straight-path.hh>
 #include <hpp/core/path.hh>
 #include <hpp/core/roadmap.hh>
 #include <hpp/core/steering-method.hh>
@@ -448,6 +450,9 @@ namespace hpp
 	  PathVectorPtr_t path (core::PathVector::create (dp->outputSize ()));
 	  path->appendPath (dp);
 	  problemSolver_->addPath (path);
+	  PathPtr_t unused;
+	  problemSolver_->problem()->pathValidation ()->validate
+	    (dp, false, unused);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
