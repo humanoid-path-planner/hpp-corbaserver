@@ -95,8 +95,8 @@ namespace hpp
 
 	virtual Double pathLength (UShort pathId) throw (hpp::Error);
 
-	virtual hpp::floatSeq* configAtDistance (UShort pathId,
-						 Double atDistance)
+	virtual hpp::floatSeq* configAtParam (UShort pathId,
+					      Double atDistance)
 	  throw (hpp::Error);
 
 	virtual hpp::floatSeqSeq* getWaypoints (UShort inPathId)

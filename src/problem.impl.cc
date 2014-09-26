@@ -536,8 +536,8 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      hpp::floatSeq* Problem::configAtDistance (UShort pathId,
-						Double atDistance)
+      hpp::floatSeq* Problem::configAtParam (UShort pathId,
+					     Double atDistance)
 	throw (hpp::Error)
       {
 	try {
