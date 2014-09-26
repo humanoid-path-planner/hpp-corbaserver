@@ -65,7 +65,7 @@ class ProblemSolver (object):
 
     ## \name Obstacles
     # \{
-    
+
     ## Load obstacle from urdf file
     #  \param package Name of the package containing the model,
     #  \param filename name of the urdf file in the package
@@ -92,13 +92,14 @@ class ProblemSolver (object):
     #  \param joint2Name name of second joint
     #  \param p quaternion representing the desired orientation
     #         of joint2 in the frame of joint1.
+    #  \param mask Select which axis to be constrained.
     #  If joint1 of joint2 is "", the corresponding joint is replaced by
     #  the global frame.
     #  constraints are stored in ProblemSolver object
     def createOrientationConstraint (self, constraintName, joint1Name,
-                                     joint2Name, p):
+                                     joint2Name, p, mask):
         return self.client.problem.createOrientationConstraint \
-            (constraintName, joint1Name, joint2Name, p)
+            (constraintName, joint1Name, joint2Name, p, mask)
 
     ## Create position constraint between two joints
     #
@@ -107,13 +108,14 @@ class ProblemSolver (object):
     #  \param joint2Name name of second joint
     #  \param point1 point in local frame of joint1,
     #  \param point2 point in local frame of joint2.
+    #  \param mask Select which axis to be constrained.
     #  If joint1 of joint2 is "", the corresponding joint is replaced by
     #  the global frame.
     #  constraints are stored in ProblemSolver object
     def createPositionConstraint (self, constraintName, joint1Name,
-                                  joint2Name, point1, point2):
+                                  joint2Name, point1, point2, mask):
         return self.client.problem.createPositionConstraint \
-            (constraintName, joint1Name, joint2Name, point1, point2)
+            (constraintName, joint1Name, joint2Name, point1, point2, mask)
 
     ## Reset Constraints
     #

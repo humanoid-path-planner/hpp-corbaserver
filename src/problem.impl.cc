@@ -189,12 +189,22 @@ namespace hpp
 	problemSolver_->resetGoalConfigs ();
       }
 
+      std::vector<bool> boolSeqToBoolVector (const hpp::boolSeq& mask)
+      {
+        if (mask.length () != 3)
+	  throw hpp::Error ("Mask must be of length 3");
+        std::vector<bool> m (3);
+	for (size_t i=0; i<3; i++)
+	  m[i] = mask[i];
+	return m;
+      }
 
       // ---------------------------------------------------------------
 
       void Problem::createOrientationConstraint
       (const char* constraintName, const char* joint1Name,
-       const char* joint2Name, const Double* p) throw (hpp::Error)
+       const char* joint2Name, const Double* p, const hpp::boolSeq& mask)
+	throw (hpp::Error)
       {
 	JointPtr_t joint1;
 	JointPtr_t joint2;
@@ -203,6 +213,7 @@ namespace hpp
 	hpp::model::matrix3_t rotation;
 	quat.toRotation (rotation);
 
+	std::vector<bool> m = boolSeqToBoolVector (mask);
 	try {
 	  // Test whether joint1 is world frame
 	  if (std::string (joint1Name) == std::string ("")) {
@@ -228,14 +239,12 @@ namespace hpp
 	  // Both joints are provided
 	  problemSolver_->addNumericalConstraint
 	    (std::string(constraintName), RelativeOrientation::create
-	      (problemSolver_->robot(), joint1, joint2, rotation,
-	      boost::assign::list_of(true)(true)(true)) );
+	      (problemSolver_->robot(), joint1, joint2, rotation, m));
 	} else {
 	  JointPtr_t joint = constrainedJoint == 1 ? joint1 : joint2;
 	  problemSolver_->addNumericalConstraint
 	    (std::string(constraintName), Orientation::create
-	      (problemSolver_->robot(), joint, rotation,
-	      boost::assign::list_of(true)(true)(true)) );
+	      (problemSolver_->robot(), joint, rotation, m));
 	}
       }
 
@@ -245,7 +254,7 @@ namespace hpp
       void Problem::createPositionConstraint
       (const char* constraintName, const char* joint1Name,
        const char* joint2Name, const hpp::floatSeq& point1,
-       const hpp::floatSeq& point2)
+       const hpp::floatSeq& point2, const hpp::boolSeq& mask)
 	throw (hpp::Error)
       {
 	JointPtr_t joint1;
@@ -255,6 +264,7 @@ namespace hpp
 	vector3_t p1 = floatSeqTVector3 (point1);
 	vector3_t p2 = floatSeqTVector3 (point2);
 	size_type constrainedJoint = 0;
+	std::vector<bool> m = boolSeqToBoolVector (mask);
 	try {
 	  // Test whether joint1 is world frame
 	  if (std::string (joint1Name) == std::string ("")) {
@@ -284,16 +294,14 @@ namespace hpp
 	  // Both joints are provided
 	  problemSolver_->addNumericalConstraint
 	    (std::string (constraintName), RelativePosition::create
-	     (problemSolver_->robot(), joint1, joint2, p1, p2,
-	      boost::assign::list_of (true)(true)(true)));
+	     (problemSolver_->robot(), joint1, joint2, p1, p2, m));
 	} else {
 	  hpp::model::matrix3_t I3; I3.setIdentity ();
 	  JointPtr_t joint = constrainedJoint == 1 ? joint1 : joint2;
 	  problemSolver_->addNumericalConstraint
 	    (std::string (constraintName), Position::create
 	     (problemSolver_->robot(), joint, targetInLocalFrame,
-	      targetInWorldFrame, I3, boost::assign::list_of (true)(true)
-	      (true)));
+	      targetInWorldFrame, I3, m));
 	}
       }
 

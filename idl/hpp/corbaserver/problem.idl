@@ -15,6 +15,7 @@
 module hpp
 {
   module corbaserver {
+  typedef sequence<double> dofSeq;
   /// \brief To define and solve a path planning problem.
   interface Problem
   {
@@ -64,12 +65,14 @@ module hpp
     /// \param joint2Name name of second joint
     /// \param p quaternion representing the desired orientation
     ///        of joint2 in the frame of joint1.
+    /// \param mask Select which axis to be constrained.
     /// If joint1 of joint2 is "", the corresponding joint is replaced by
     /// the global frame.
     /// constraints are stored in ProblemSolver object
     void createOrientationConstraint
     (in string constraintName, in string joint1Name,
-     in string joint2Name, in Quaternion_ p) raises (Error);
+     in string joint2Name, in Quaternion_ p,
+     in boolSeq mask) raises (Error);
 
     /// Create position constraint between two joints
     ///
@@ -78,6 +81,7 @@ module hpp
     /// \param joint2Name name of second joint
     /// \param point1 point in local frame of joint1,
     /// \param point2 point in local frame of joint2.
+    /// \param mask Select which axis to be constrained.
     /// If joint1 of joint2 is "", the corresponding joint is replaced by
     /// the global frame.
     /// constraints are stored in ProblemSolver object
@@ -85,7 +89,8 @@ module hpp
 				   in string joint1Name,
 				   in string joint2Name,
 				   in floatSeq point1,
-				   in floatSeq point2)
+				   in floatSeq point2,
+				   in boolSeq mask)
       raises (Error);
 
 
