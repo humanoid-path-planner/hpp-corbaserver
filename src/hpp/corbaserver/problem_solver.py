@@ -54,10 +54,6 @@ class ProblemSolver (object):
     def getGoalConfigs (self):
         return self.client.problem.getGoalConfigs ()
 
-    def getWaypoints (self,inPathId):
-        return self.client.problem.getWaypoints (inPathId)
-
-
     ## Reset goal configurations
     def resetGoalConfigs (self):
         return self.client.problem.resetGoalConfigs ()
@@ -157,6 +153,15 @@ class ProblemSolver (object):
     def lockOneDofJoint (self, jointName, value):
         return self.client.problem.lockDof (jointName, value, 0, 0)
 
+    ## error threshold in numerical constraint resolution
+    def setErrorThreshold (self, threshold):
+        return self.client.problem.setErrorThreshold (threshold)
+
+    ## Set the maximal number of iterations
+    def setMaxIterations (self, iterations):
+	return self.client.problem.setMaxIterations (iterations)
+
+
     ## \}
     ## \name Solve problem and get paths
     # \{
@@ -215,4 +220,49 @@ class ProblemSolver (object):
     # \return dofseq : the config at param
     def configAtDistance(self, inPathId, atDistance):
         return self.client.problem.configAtDistance(inPathId, atDistance)
+
+    ## Get way points of a path
+    #  \param pathId rank of the path in the problem
+    def getWaypoints (self, pathId):
+        return self.client.problem.getWaypoints (pathId)
+
+    ## \name Interruption of a path planning request
+    #  \{
+
+    ## \brief Interrupt path planning activity
+    #   \note this method is effective only when multi-thread policy is used
+    #         by CORBA server.
+    #         See constructor of class Server for details.
+    def interruptPathPlanning (self):
+        return self.client.problem.interruptPathPlanning ()
+    # \}
+
+    ## \name exploring the roadmap
+    #  \{
+
+    ## Get nodes of the roadmap.
+    def nodes(self):
+	return self.client.problem.nodes ()
+
+    ## Number of edges
+    def numberEdges (self):
+        return self.client.problem.numberEdges ()
+
+    ## Edge at given rank
+    def edge (self, edgeId):
+        return self.client.problem.edge (edgeId)
+
+    ## Number of connected components
+    def numberConnectedComponents (self):
+        return self.client.problem.numberConnectedComponents ()
+
+    ## Nodes of a connected component
+    #  \param connectedComponentId index of connected component in roadmap
+    #  \return list of nodes of the connected component.
+    def nodesConnectedComponent (self, ccId):
+        return self.client.problem.nodesConnectedComponent (ccId)
+
+    ## Clear the roadmap
+    def clearRoadmap (self):
+        return self.client.problem.clearRoadmap ()
     ## \}
