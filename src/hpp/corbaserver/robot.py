@@ -91,16 +91,6 @@ class Robot (object):
     def setJointBounds (self, jointName, inJointBound):
         return self.client.robot.setJointBounds (jointName, inJointBound)
 
-    ## Set bounds on the translation part of the freeflyer joint.
-    #
-    #  Valid only if the robot has a freeflyer joint.
-    def setTranslationBounds (self, xmin, xmax, ymin, ymax, zmin, zmax):
-        self.client.robot.setJointBounds ("base_joint_x", [xmin, xmax])
-        self.client.robot.setJointBounds ("base_joint_y", [ymin, ymax])
-        if any("base_joint_z" in s for s in self.getJointNames()):
-            self.client.robot.setJointBounds ("base_joint_z", [zmin, zmax])
-        else:
-            self.client.robot.setJointBounds ("base_joint_rz", [zmin, zmax])
     ## \}
 
     ## \name Configurations
