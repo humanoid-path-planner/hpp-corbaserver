@@ -24,7 +24,6 @@ module hpp
   typedef sequence<boolean> boolSeq;
   /// Robot configuration is defined by a sequence of dof value.
   typedef sequence<double> floatSeq;
-  typedef sequence<boolean> boolSeq;
   typedef sequence<floatSeq> floatSeqSeq;
 
   /// Element of SE(3) represented by a vector and a unit quaternion
