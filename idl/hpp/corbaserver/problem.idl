@@ -54,7 +54,7 @@ module hpp
     /// \retval output output configuration,
     /// \retval error norm of the residual error.
     boolean applyConstraints (in floatSeq input, out floatSeq output,
-			      out double residualError)
+			      out double residualError, out double _time)
       raises (Error);
 
     /// Create orientation constraint between two joints

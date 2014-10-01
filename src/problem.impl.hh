@@ -61,7 +61,8 @@ namespace hpp
 
 	virtual bool applyConstraints (const hpp::floatSeq& input,
 				       hpp::floatSeq_out output,
-				       Double& residualError)
+				       Double& residualError,
+				       Double& _time)
 	  throw (hpp::Error);
 	virtual void resetConstraints () throw (hpp::Error);
 	virtual void setNumericalConstraints

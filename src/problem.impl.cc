@@ -9,6 +9,7 @@
 // See the COPYING file for more information.
 
 #include <iostream>
+#include <sys/time.h>
 
 #include <hpp/util/debug.hh>
 #include <hpp/util/portability.hh>
@@ -300,9 +301,12 @@ namespace hpp
 
       bool Problem::applyConstraints (const hpp::floatSeq& input,
 				      hpp::floatSeq_out output,
-				      double& residualError)
+				      double& residualError,
+				      double& _time)
 	throw (hpp::Error)
       {
+    struct timeval start, end;
+    gettimeofday(&start, NULL);
 	bool success = false;
 	ConfigurationPtr_t config = floatSeqToConfig (problemSolver_, input);
 	try {
@@ -322,6 +326,8 @@ namespace hpp
 	  (*q_ptr) [i] = (*config) [i];
 	}
 	output = q_ptr;
+	gettimeofday(&end, NULL);
+	_time = (double)(((end.tv_sec - start.tv_sec) * 1000. + (end.tv_usec - start.tv_usec) / 1000.) / 1000.);
 	return success;
       }
 
