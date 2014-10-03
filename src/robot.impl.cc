@@ -244,12 +244,20 @@ namespace hpp
 	  joint =
 	    objectFactory_.createJointSO3 (posMatrix);
 	}
-	else if (jt == "rotation") {
-	  joint = objectFactory_.createJointRotation (posMatrix);
+	else if (jt == "bounded-rotation") {
+	  joint = objectFactory_.createBoundedJointRotation (posMatrix);
+	}
+	else if (jt == "unbounded-rotation") {
+	  joint = objectFactory_.createUnBoundedJointRotation (posMatrix);
 	}
 	else if (jt == "translation") {
 	  joint =
 	    objectFactory_.createJointTranslation (posMatrix);
+	}
+	else if (jt == "rotation") {
+	  throw hpp::Error ("joint type \"rotation\" is not supported anymore,"
+			    "please choose between \"bounded-rotation\" "
+			    "and \"unbounded-rotation\"");
 	}
 	else {
 	  std::ostringstream oss ("joint type");
