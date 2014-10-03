@@ -340,6 +340,8 @@ namespace hpp
       {
 	try {
 	  problemSolver_->resetConstraints ();
+	  problemSolver_->robot ()->controlComputation
+	    (model::Device::JOINT_POSITION);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -360,6 +362,8 @@ namespace hpp
 	    std::string name (constraintNames [i]);
             problemSolver_->addConstraintToConfigProjector
 	      (constraintName, problemSolver_->numericalConstraint(name));
+	    problemSolver_->robot ()->controlComputation
+	      (model::Device::ALL);
 	  }
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());

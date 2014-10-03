@@ -157,6 +157,8 @@ namespace hpp
 					    std::string (srdfSuffix));
 	  // Add device to the planner
 	  problemSolver_->robot (device);
+	  problemSolver_->robot ()->controlComputation
+	    (model::Device::JOINT_POSITION);
 	} catch (const std::exception& exc) {
 	  hppDout (error, exc.what ());
 	  throw hpp::Error (exc.what ());
@@ -183,6 +185,8 @@ namespace hpp
 					       std::string (srdfSuffix));
 	  // Add robot to the planner
 	  problemSolver_->robot (robot);
+	  problemSolver_->robot ()->controlComputation
+	    (model::Device::JOINT_POSITION);
 	} catch (const std::exception& exc) {
 	  hppDout (error, exc.what ());
 	  throw hpp::Error (exc.what ());
