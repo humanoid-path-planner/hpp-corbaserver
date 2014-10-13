@@ -84,7 +84,7 @@ namespace hpp
 	  throw (Error);
         void addInequality (const char* constraintName,
             const hpp::floatSeq& ref,
-            const hpp::boolSeq& superior)
+            const hpp::intSeq& superior)
           throw (Error);
 	virtual void lockDof (const char* jointName, Double value,
 			      UShort rankInConfiguration,

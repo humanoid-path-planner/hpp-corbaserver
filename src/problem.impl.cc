@@ -466,21 +466,35 @@ namespace hpp
 
       void Problem::addInequality (const char* constraintName,
                                    const floatSeq& ref,
-                                   const boolSeq& superior)
+                                   const intSeq& superior)
 	throw (Error)
       {
         if (ref.length () != superior.length ())
           throw hpp::Error ("Dimension of reference and superior should be equal.");
 	size_type dim = (size_type)ref.length();
-	vector_t refvector (dim), ivect (dim);
+	vector_t refvector (dim);
+        using hpp::core::EquationType;
+        EquationType::VectorOfTypes types (dim);
 
 	for (size_type i = 0; i < dim; ++i) {
           refvector[i] = ref[i];
-          ivect[i] = (superior[i])?1:-1;
+          switch ((int)superior[i]) {
+            case 1:
+              types[i] = EquationType::Superior;
+              break;
+            case 0:
+              types[i] = EquationType::Equality;
+              break;
+            case -1:
+              types[i] = EquationType::Inferior;
+              break;
+            default:
+              throw Error ("superior is a vector of {-1, 0, 1}");
+          }
 	}
 
         std::string name (constraintName);
-        problemSolver_->addInequalityVector (name, ivect);
+        problemSolver_->addInequalityVector (name, types);
       }
 
       // ---------------------------------------------------------------

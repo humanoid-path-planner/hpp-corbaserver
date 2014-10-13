@@ -134,7 +134,7 @@ module hpp
 				  in Names_t constraintNames)
       raises (Error);
 
-    void addInequality (in string constraintName, in floatSeq ref, in boolSeq superior)
+    void addInequality (in string constraintName, in floatSeq ref, in intSeq superior)
       raises (Error);
 
     /// Lock degree of freedom with given value

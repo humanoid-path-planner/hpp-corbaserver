@@ -22,6 +22,7 @@ module hpp
     string msg;
   };
   typedef sequence<boolean> boolSeq;
+  typedef sequence<long> intSeq;
   /// Robot configuration is defined by a sequence of dof value.
   typedef sequence<double> floatSeq;
   typedef sequence<floatSeq> floatSeqSeq;
