@@ -159,8 +159,18 @@ class Robot (object):
     # Check whether current configuration of robot is valid by calling
     # CkwsDevice::collisionTest ().
     # \return whether configuration is valid
+    # \note Deprecated. Use isConfigValid instead.
     def collisionTest (self):
+        print "Deprecated. Use isConfigValid instead"
         return self.client.robot.collisionTest ()
+
+    ## Check the validity of a configuration.
+    #
+    # Check whether a configuration of robot is valid.
+    # \param cfg a configuration
+    # \return whether configuration is valid
+    def isConfigValid (self, cfg):
+        return self.client.robot.isConfigValid (cfg)
 
     ## Compute distances between bodies and obstacles
     #
