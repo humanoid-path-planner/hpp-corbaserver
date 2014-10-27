@@ -86,6 +86,11 @@ module hpp
      in string joint2Name, in Quaternion_ p,
      in boolSeq mask) raises (Error);
 
+    void createStaticStabilityGravityConstraint
+    (in string constraintName, in string jointName,
+     in floatSeqSeq pts, in intSeqSeq objectTriangles,
+     in intSeqSeq floorTriangles) raises (Error);
+
     /// Create position constraint between two joints
     ///
     /// \param constraintName name of the constraint created,

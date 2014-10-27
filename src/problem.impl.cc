@@ -35,7 +35,9 @@
 #include <hpp/constraints/relative-com.hh>
 #include <hpp/constraints/relative-orientation.hh>
 #include <hpp/constraints/relative-position.hh>
+#include <hpp/constraints/static-stability.hh>
 #include <hpp/corbaserver/server.hh>
+#include <hpp/model/body.hh>
 
 #include "problem.impl.hh"
 
@@ -49,6 +51,8 @@ using hpp::constraints::RelativeCom;
 using hpp::constraints::RelativeOrientationPtr_t;
 using hpp::constraints::RelativePosition;
 using hpp::constraints::RelativePositionPtr_t;
+using hpp::constraints::StaticStabilityGravity;
+using hpp::constraints::StaticStabilityGravityPtr_t;
 
 namespace hpp
 {
@@ -248,6 +252,57 @@ namespace hpp
 	  problemSolver_->addNumericalConstraint
 	    (std::string(constraintName), Orientation::create
 	      (problemSolver_->robot(), joint, rotation, m));
+	}
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::createStaticStabilityGravityConstraint
+      (const char* constraintName, const char* jointName,
+       const hpp::floatSeqSeq& points, const hpp::intSeqSeq& objTriangles,
+       const hpp::intSeqSeq& floorTriangles)
+        throw (hpp::Error)
+      {
+	JointPtr_t joint;
+        try {
+          joint = problemSolver_->robot()->getJointByName(jointName);
+          StaticStabilityGravityPtr_t f = StaticStabilityGravity::create
+            (problemSolver_->robot(), joint, joint->linkedBody ()->localCenterOfMass ());
+          problemSolver_->addNumericalConstraint (std::string(constraintName), f);
+          std::vector <fcl::Vec3f> pts (points.length ());
+          for (CORBA::ULong i = 0; i < points.length (); ++i) {
+            if (points[i].length () != 3)
+              throw hpp::Error ("Points must be of size 3.");
+            pts [i] = fcl::Vec3f (points[i][0],points[i][1],points[i][2]);
+          }
+          for (CORBA::ULong i = 0; i < objTriangles.length (); ++i) {
+            if (objTriangles[i].length () != 3)
+              throw hpp::Error ("Triangle must have size 3.");
+            for (size_t j = 0; j < 3; j++)
+              if (objTriangles[i][j] < 0 && (size_t) objTriangles[i][j] >= pts.size())
+                throw hpp::Error ("Point index out of range.");
+
+            f->addObjectTriangle (hpp::constraints::Triangle (
+                  pts [objTriangles[i][0]],
+                  pts [objTriangles[i][1]],
+                  pts [objTriangles[i][2]]
+                  ));
+          }
+          for (CORBA::ULong i = 0; i < floorTriangles.length (); ++i) {
+            if (floorTriangles[i].length () != 3)
+              throw hpp::Error ("Triangle must have size 3.");
+            for (size_t j = 0; j < 3; j++)
+              if (floorTriangles[i][j] < 0 && (size_t) floorTriangles[i][j] >= pts.size())
+                throw hpp::Error ("Point index out of range.");
+
+            f->addFloorTriangle (hpp::constraints::Triangle (
+                  pts [floorTriangles[i][0]],
+                  pts [floorTriangles[i][1]],
+                  pts [floorTriangles[i][2]]
+                  ));
+          }
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
 	}
       }
 

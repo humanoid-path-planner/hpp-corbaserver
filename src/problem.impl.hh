@@ -49,6 +49,12 @@ namespace hpp
 	 const char* joint2Name, const Double* p, const hpp::boolSeq& mask)
 	  throw (hpp::Error);
 
+	virtual void createStaticStabilityGravityConstraint
+	(const char* constraintName, const char* jointName,
+         const hpp::floatSeqSeq& points, const hpp::intSeqSeq& objTriangles,
+         const hpp::intSeqSeq& floorTriangles)
+	  throw (hpp::Error);
+
 	virtual void createPositionConstraint (const char* constraintName,
 					       const char* joint1Name,
 					       const char* joint2Name,
