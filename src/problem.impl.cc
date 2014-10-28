@@ -267,7 +267,7 @@ namespace hpp
         try {
           joint = problemSolver_->robot()->getJointByName(jointName);
           StaticStabilityGravityPtr_t f = StaticStabilityGravity::create
-            (problemSolver_->robot(), joint, joint->linkedBody ()->localCenterOfMass ());
+            (problemSolver_->robot(), joint);
           problemSolver_->addNumericalConstraint (std::string(constraintName), f);
           std::vector <fcl::Vec3f> pts (points.length ());
           for (CORBA::ULong i = 0; i < points.length (); ++i) {
