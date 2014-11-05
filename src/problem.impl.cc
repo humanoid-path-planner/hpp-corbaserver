@@ -13,6 +13,7 @@
 #include <hpp/util/debug.hh>
 #include <hpp/util/portability.hh>
 
+#include <fcl/shape/geometric_shapes.h>
 #include <hpp/core/config-projector.hh>
 #include <hpp/core/basic-configuration-shooter.hh>
 #include <hpp/core/connected-component.hh>
@@ -282,7 +283,7 @@ namespace hpp
               if (objTriangles[i][j] < 0 && (size_t) objTriangles[i][j] >= pts.size())
                 throw hpp::Error ("Point index out of range.");
 
-            f->addObjectTriangle (hpp::constraints::Triangle (
+            f->addObjectTriangle (fcl::TriangleP (
                   pts [objTriangles[i][0]],
                   pts [objTriangles[i][1]],
                   pts [objTriangles[i][2]]
@@ -295,7 +296,7 @@ namespace hpp
               if (floorTriangles[i][j] < 0 && (size_t) floorTriangles[i][j] >= pts.size())
                 throw hpp::Error ("Point index out of range.");
 
-            f->addFloorTriangle (hpp::constraints::Triangle (
+            f->addFloorTriangle (fcl::TriangleP (
                   pts [floorTriangles[i][0]],
                   pts [floorTriangles[i][1]],
                   pts [floorTriangles[i][2]]
