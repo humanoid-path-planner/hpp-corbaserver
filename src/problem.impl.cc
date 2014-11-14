@@ -243,16 +243,17 @@ namespace hpp
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
+  std::string name (constraintName);
 	if (constrainedJoint == 0) {
 	  // Both joints are provided
 	  problemSolver_->addNumericalConstraint
-	    (std::string(constraintName), RelativeOrientation::create
-	      (problemSolver_->robot(), joint1, joint2, rotation, m));
+	    (name, RelativeOrientation::create
+	      (name, problemSolver_->robot(), joint1, joint2, rotation, m));
 	} else {
 	  JointPtr_t joint = constrainedJoint == 1 ? joint1 : joint2;
 	  problemSolver_->addNumericalConstraint
-	    (std::string(constraintName), Orientation::create
-	      (problemSolver_->robot(), joint, rotation, m));
+	    (name, Orientation::create
+	      (name, problemSolver_->robot(), joint, rotation, m));
 	}
       }
 
@@ -264,12 +265,13 @@ namespace hpp
        const hpp::intSeqSeq& floorTriangles)
         throw (hpp::Error)
       {
-	JointPtr_t joint;
+        JointPtr_t joint;
         try {
+          std::string name (constraintName);
           joint = problemSolver_->robot()->getJointByName(jointName);
           StaticStabilityGravityPtr_t f = StaticStabilityGravity::create
-            (problemSolver_->robot(), joint);
-          problemSolver_->addNumericalConstraint (std::string(constraintName), f);
+            (name, problemSolver_->robot(), joint);
+          problemSolver_->addNumericalConstraint (name, f);
           std::vector <fcl::Vec3f> pts (points.length ());
           for (CORBA::ULong i = 0; i < points.length (); ++i) {
             if (points[i].length () != 3)
@@ -302,9 +304,9 @@ namespace hpp
                   pts [floorTriangles[i][2]]
                   ));
           }
-	} catch (const std::exception& exc) {
-	  throw hpp::Error (exc.what ());
-	}
+        } catch (const std::exception& exc) {
+          throw hpp::Error (exc.what ());
+        }
       }
 
       // ---------------------------------------------------------------
@@ -349,17 +351,18 @@ namespace hpp
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
+  std::string name (constraintName);
 	if (constrainedJoint == 0) {
 	  // Both joints are provided
 	  problemSolver_->addNumericalConstraint
-	    (std::string (constraintName), RelativePosition::create
-	     (problemSolver_->robot(), joint1, joint2, p1, p2, m));
+	    (name, RelativePosition::create
+	     (name, problemSolver_->robot(), joint1, joint2, p1, p2, m));
 	} else {
 	  hpp::model::matrix3_t I3; I3.setIdentity ();
 	  JointPtr_t joint = constrainedJoint == 1 ? joint1 : joint2;
 	  problemSolver_->addNumericalConstraint
-	    (std::string (constraintName), Position::create
-	     (problemSolver_->robot(), joint, targetInLocalFrame,
+	    (name, Position::create
+	     (name, problemSolver_->robot(), joint, targetInLocalFrame,
 	      targetInWorldFrame, I3, m));
 	}
       }
