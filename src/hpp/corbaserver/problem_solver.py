@@ -166,9 +166,10 @@ class ProblemSolver (object):
     ## \name Solve problem and get paths
     # \{
 
-    ## path planner type
-    #  \param Name of the path planner type, either "DiffusingPlanner" or
-    #   any type added by core::ProblemSolver::addPathPlannerType
+    ## Select path planner type
+    #  \param Name of the path planner type, either "DiffusingPlanner",
+    #         "VisibilityPrmPlanner", or any type added by method
+    #         core::ProblemSolver::addPathPlannerType
     def selectPathPlanner (self, pathPlannerType):
         return self.client.problem.selectPathPlanner (pathPlannerType)
 
