@@ -472,7 +472,9 @@ namespace hpp
 	  SteeringMethodPtr_t sm = problemSolver_->problem ()->steeringMethod ();
 	  PathPtr_t dp = (*sm) (*start, *end);
 	  // Add Path in problem
-	  PathVectorPtr_t path (core::PathVector::create (dp->outputSize ()));
+	  PathVectorPtr_t path
+	    (core::PathVector::create (dp->outputSize (),
+				       dp->outputDerivativeSize ()));
 	  path->appendPath (dp);
 	  problemSolver_->addPath (path);
 	  PathPtr_t unused;
