@@ -525,7 +525,7 @@ namespace hpp
 	}
       }
 
-      static model::ConfigurationOut_t
+      static model::Configuration_t
       dofArrayToConfig (const core::ProblemSolverPtr_t& problemSolver,
 			const hpp::floatSeq& dofArray)
       {
