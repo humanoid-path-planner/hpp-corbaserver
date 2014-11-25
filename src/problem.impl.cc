@@ -514,6 +514,13 @@ namespace hpp
 		<< problemSolver_->paths ().size () << ".";
 	    throw std::runtime_error (oss.str ());
 	  }
+	  if (!problemSolver_->pathOptimizer ()) {
+	    problemSolver_->createPathOptimizer ();
+	  }
+	  // If type is None, not path optimizer has been created.
+	  if (!problemSolver_->pathOptimizer ()) {
+	    return;
+	  }
 	  PathVectorPtr_t initial = problemSolver_->paths () [pathId];
 	  PathVectorPtr_t optimized =
 	    problemSolver_->pathOptimizer ()-> optimize (initial);
