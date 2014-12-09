@@ -10,8 +10,8 @@
 
 #include <iostream>
 
-#include <fcl/BVH/BVH_model.h>
-#include <fcl/shape/geometric_shapes.h>
+#include <hpp/fcl/BVH/BVH_model.h>
+#include <hpp/fcl/shape/geometric_shapes.h>
 
 #include <hpp/util/debug.hh>
 #include <hpp/model/fwd.hh>

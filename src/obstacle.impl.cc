@@ -10,8 +10,8 @@
 
 #include <iostream>
 #include <hpp/util/debug.hh>
-#include <fcl/BVH/BVH_model.h>
-#include <fcl/shape/geometric_shapes.h>
+#include <hpp/fcl/BVH/BVH_model.h>
+#include <hpp/fcl/shape/geometric_shapes.h>
 #include <hpp/model/collision-object.hh>
 #include <hpp/model/urdf/util.hh>
 #include "obstacle.impl.hh"

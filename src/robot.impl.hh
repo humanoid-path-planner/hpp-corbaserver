@@ -12,7 +12,7 @@
 # define HPP_CORBASERVER_ROBOT_IMPL_HH
 # include <map>
 # include <string>
-# include <fcl/BVH/BVH_model.h>
+# include <hpp/fcl/BVH/BVH_model.h>
 # include <hpp/model/object-factory.hh>
 # include "hpp/core/problem-solver.hh"
 # include "hpp/corbaserver/fwd.hh"
