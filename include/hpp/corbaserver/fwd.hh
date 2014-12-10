@@ -13,7 +13,7 @@
 
 //FIXME: should be replaced by CORBA base types forward declarations.
 # include <omniORB4/CORBA.h>
-# include <fcl/math/vec_3f.h>
+# include <hpp/fcl/math/vec_3f.h>
 # include <hpp/core/fwd.hh>
 
 namespace fcl {

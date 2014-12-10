@@ -8,7 +8,7 @@
 //
 // See the COPYING file for more information.
 
-#include <fcl/math/transform.h>
+#include <hpp/fcl/math/transform.h>
 #include "tools.hh"
 
 void
