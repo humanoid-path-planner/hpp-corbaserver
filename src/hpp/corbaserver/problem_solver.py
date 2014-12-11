@@ -66,6 +66,8 @@ class ProblemSolver (object):
     #  \param package Name of the package containing the model,
     #  \param filename name of the urdf file in the package
     #         (without suffix .urdf)
+    #  \param prefix prefix added to object names in case the same file is
+    #         loaded several times
     #
     #  The ros url is built as follows:
     #  "package://${package}/urdf/${filename}.urdf"
