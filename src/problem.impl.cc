@@ -13,7 +13,9 @@
 #include <hpp/util/debug.hh>
 #include <hpp/util/portability.hh>
 
+#include <fcl/shape/geometric_shapes.h>
 #include <hpp/core/config-projector.hh>
+#include <hpp/core/basic-configuration-shooter.hh>
 #include <hpp/core/connected-component.hh>
 #include <hpp/core/edge.hh>
 #include <hpp/core/locked-dof.hh>
@@ -26,13 +28,17 @@
 #include <hpp/core/path.hh>
 #include <hpp/core/roadmap.hh>
 #include <hpp/core/steering-method.hh>
+#include <hpp/core/differentiable-function.hh>
+#include <hpp/core/inequality.hh>
 #include <hpp/constraints/position.hh>
 #include <hpp/constraints/orientation.hh>
 #include <hpp/constraints/position.hh>
 #include <hpp/constraints/relative-com.hh>
 #include <hpp/constraints/relative-orientation.hh>
 #include <hpp/constraints/relative-position.hh>
+#include <hpp/constraints/static-stability.hh>
 #include <hpp/corbaserver/server.hh>
+#include <hpp/model/body.hh>
 
 #include "problem.impl.hh"
 
@@ -46,6 +52,8 @@ using hpp::constraints::RelativeCom;
 using hpp::constraints::RelativeOrientationPtr_t;
 using hpp::constraints::RelativePosition;
 using hpp::constraints::RelativePositionPtr_t;
+using hpp::constraints::StaticStabilityGravity;
+using hpp::constraints::StaticStabilityGravityPtr_t;
 
 namespace hpp
 {
@@ -235,17 +243,70 @@ namespace hpp
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
+  std::string name (constraintName);
 	if (constrainedJoint == 0) {
 	  // Both joints are provided
 	  problemSolver_->addNumericalConstraint
-	    (std::string(constraintName), RelativeOrientation::create
-	      (problemSolver_->robot(), joint1, joint2, rotation, m));
+	    (name, RelativeOrientation::create
+	      (name, problemSolver_->robot(), joint1, joint2, rotation, m));
 	} else {
 	  JointPtr_t joint = constrainedJoint == 1 ? joint1 : joint2;
 	  problemSolver_->addNumericalConstraint
-	    (std::string(constraintName), Orientation::create
-	      (problemSolver_->robot(), joint, rotation, m));
+	    (name, Orientation::create
+	      (name, problemSolver_->robot(), joint, rotation, m));
 	}
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::createStaticStabilityGravityConstraint
+      (const char* constraintName, const char* jointName,
+       const hpp::floatSeqSeq& points, const hpp::intSeqSeq& objTriangles,
+       const hpp::intSeqSeq& floorTriangles)
+        throw (hpp::Error)
+      {
+        JointPtr_t joint;
+        try {
+          std::string name (constraintName);
+          joint = problemSolver_->robot()->getJointByName(jointName);
+          StaticStabilityGravityPtr_t f = StaticStabilityGravity::create
+            (name, problemSolver_->robot(), joint);
+          problemSolver_->addNumericalConstraint (name, f);
+          std::vector <fcl::Vec3f> pts (points.length ());
+          for (CORBA::ULong i = 0; i < points.length (); ++i) {
+            if (points[i].length () != 3)
+              throw hpp::Error ("Points must be of size 3.");
+            pts [i] = fcl::Vec3f (points[i][0],points[i][1],points[i][2]);
+          }
+          for (CORBA::ULong i = 0; i < objTriangles.length (); ++i) {
+            if (objTriangles[i].length () != 3)
+              throw hpp::Error ("Triangle must have size 3.");
+            for (size_t j = 0; j < 3; j++)
+              if (objTriangles[i][j] < 0 && (size_t) objTriangles[i][j] >= pts.size())
+                throw hpp::Error ("Point index out of range.");
+
+            f->addObjectTriangle (fcl::TriangleP (
+                  pts [objTriangles[i][0]],
+                  pts [objTriangles[i][1]],
+                  pts [objTriangles[i][2]]
+                  ));
+          }
+          for (CORBA::ULong i = 0; i < floorTriangles.length (); ++i) {
+            if (floorTriangles[i].length () != 3)
+              throw hpp::Error ("Triangle must have size 3.");
+            for (size_t j = 0; j < 3; j++)
+              if (floorTriangles[i][j] < 0 && (size_t) floorTriangles[i][j] >= pts.size())
+                throw hpp::Error ("Point index out of range.");
+
+            f->addFloorTriangle (fcl::TriangleP (
+                  pts [floorTriangles[i][0]],
+                  pts [floorTriangles[i][1]],
+                  pts [floorTriangles[i][2]]
+                  ));
+          }
+        } catch (const std::exception& exc) {
+          throw hpp::Error (exc.what ());
+        }
       }
 
       // ---------------------------------------------------------------
@@ -290,17 +351,18 @@ namespace hpp
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
+  std::string name (constraintName);
 	if (constrainedJoint == 0) {
 	  // Both joints are provided
 	  problemSolver_->addNumericalConstraint
-	    (std::string (constraintName), RelativePosition::create
-	     (problemSolver_->robot(), joint1, joint2, p1, p2, m));
+	    (name, RelativePosition::create
+	     (name, problemSolver_->robot(), joint1, joint2, p1, p2, m));
 	} else {
 	  hpp::model::matrix3_t I3; I3.setIdentity ();
 	  JointPtr_t joint = constrainedJoint == 1 ? joint1 : joint2;
 	  problemSolver_->addNumericalConstraint
-	    (std::string (constraintName), Position::create
-	     (problemSolver_->robot(), joint, targetInLocalFrame,
+	    (name, Position::create
+	     (name, problemSolver_->robot(), joint, targetInLocalFrame,
 	      targetInWorldFrame, I3, m));
 	}
       }
@@ -336,6 +398,47 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+      bool Problem::generateValidConfig (UShort maxIter,
+				      hpp::floatSeq_out output,
+				      double& residualError)
+	throw (hpp::Error)
+      {
+        DevicePtr_t robot = problemSolver_->robot ();
+        core::BasicConfigurationShooter shooter
+          = core::BasicConfigurationShooter (robot);
+	bool success = false, configIsValid = false;
+        ConfigurationPtr_t config;
+        while (!configIsValid && maxIter > 0)
+        {
+          try {
+            config = shooter.shoot ();
+            success = problemSolver_->constraints ()->apply (*config);
+            if (hpp::core::ConfigProjectorPtr_t configProjector =
+                problemSolver_->constraints ()->configProjector ()) {
+              residualError = configProjector->residualError ();
+            }
+            if (success) {
+              robot->currentConfiguration (*config);
+              configIsValid = !robot->collisionTest ();
+            }
+          } catch (const std::exception& exc) {
+            throw hpp::Error (exc.what ());
+          }
+          maxIter--;
+        }
+	ULong size = (ULong) config->size ();
+	hpp::floatSeq* q_ptr = new hpp::floatSeq ();
+	q_ptr->length (size);
+
+	for (std::size_t i=0; i<size; ++i) {
+	  (*q_ptr) [i] = (*config) [i];
+	}
+	output = q_ptr;
+	return configIsValid;
+      }
+
+      // ---------------------------------------------------------------
+
       void Problem::resetConstraints ()	throw (hpp::Error)
       {
 	try {
@@ -345,6 +448,57 @@ namespace hpp
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::setPassiveDofs (const char* constraintName,
+          const hpp::Names_t& dofNames)
+        throw (hpp::Error)
+      {
+        DevicePtr_t robot = problemSolver_->robot ();
+        if (!robot)
+	    throw Error ("You should set the robot before defining"
+			 " constraints.");
+        core::DifferentiableFunctionPtr_t f =
+          problemSolver_->numericalConstraint (constraintName);
+        if (!f)
+          throw hpp::Error ("The numerical constraint could not be found.");
+        std::vector <size_type> dofs;
+        for (CORBA::ULong i=0; i<dofNames.length (); ++i) {
+          std::string name (dofNames[i]);
+          JointPtr_t j = robot->getJointByName (name);
+          if (!j)
+            throw hpp::Error ("One joint not found.");
+          for (size_type i = 0; i < j->numberDof (); i++)
+            dofs.push_back (j->rankInVelocity() + i);
+        }
+        f->passiveDofs (dofs);
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::isParametric (const char* constraintName,
+          CORBA::Boolean value)
+        throw (hpp::Error)
+      {
+        core::DifferentiableFunctionPtr_t f =
+          problemSolver_->numericalConstraint (constraintName);
+        if (!f)
+          throw hpp::Error ("The numerical constraint could not be found.");
+        f->isParametric (value);
+      }
+
+      // ---------------------------------------------------------------
+
+      bool Problem::isParametric (const char* constraintName)
+        throw (hpp::Error)
+      {
+        core::DifferentiableFunctionPtr_t f =
+          problemSolver_->numericalConstraint (constraintName);
+        if (!f)
+          throw hpp::Error ("The numerical constraint could not be found.");
+        return f->isParametric ();
       }
 
       // ---------------------------------------------------------------
@@ -360,14 +514,50 @@ namespace hpp
 	  }
 	  for (CORBA::ULong i=0; i<constraintNames.length (); ++i) {
 	    std::string name (constraintNames [i]);
-            problemSolver_->addConstraintToConfigProjector
-	      (constraintName, problemSolver_->numericalConstraint(name));
+            problemSolver_->addFunctionToConfigProjector
+	      (constraintName, problemSolver_->numericalConstraint(name),
+	       problemSolver_->inequality (name));
 	    problemSolver_->robot ()->controlComputation
 	      (model::Device::ALL);
 	  }
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::addInequality (const char* constraintName,
+                                   const floatSeq& ref,
+                                   const intSeq& superior)
+	throw (Error)
+      {
+        if (ref.length () != superior.length ())
+          throw hpp::Error ("Dimension of reference and superior should be equal.");
+	size_type dim = (size_type)ref.length();
+	vector_t refvector (dim);
+        using hpp::core::EquationType;
+        EquationType::VectorOfTypes types (dim);
+
+	for (size_type i = 0; i < dim; ++i) {
+          refvector[i] = ref[i];
+          switch ((int)superior[i]) {
+            case 1:
+              types[i] = EquationType::Superior;
+              break;
+            case 0:
+              types[i] = EquationType::Equality;
+              break;
+            case -1:
+              types[i] = EquationType::Inferior;
+              break;
+            default:
+              throw Error ("superior is a vector of {-1, 0, 1}");
+          }
+	}
+
+        std::string name (constraintName);
+        problemSolver_->addInequalityVector (name, types);
       }
 
       // ---------------------------------------------------------------
@@ -439,6 +629,41 @@ namespace hpp
 	try {
 	  problemSolver_->pathValidationType (std::string (pathValidationType),
 					      tolerance);
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // ---------------------------------------------------------------
+
+      bool Problem::prepareSolveStepByStep () throw (hpp::Error)
+      {
+	try {
+	  return problemSolver_->prepareSolveStepByStep ();
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+        return false;
+      }
+
+      // ---------------------------------------------------------------
+
+      bool Problem::executeOneStep () throw (hpp::Error)
+      {
+	try {
+	  return problemSolver_->executeOneStep ();
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+        return false;
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::finishSolveStepByStep () throw (hpp::Error)
+      {
+	try {
+	  problemSolver_->solve();
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -773,6 +998,17 @@ namespace hpp
       {
 	try {
 	  problemSolver_->roadmap ()->clear ();
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::resetRoadmap ()
+      {
+	try {
+	  problemSolver_->resetRoadmap ();
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}

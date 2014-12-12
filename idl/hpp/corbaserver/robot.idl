@@ -111,6 +111,8 @@ module hpp
     /// \li If vi_min > vi_max, dof of rank i is not bounded.
     /// \li If size of sequence is different from twice the number of dofs,
     ///     raise error.
+    /// \note The roadmap must be reset after all the joints bounds has been set.
+    ///       See Problem::resetRoadmap
     void setJointBounds(in string jointName,
 			in jointBoundSeq inJointBound)
       raises (Error);

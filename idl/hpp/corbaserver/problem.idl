@@ -58,6 +58,18 @@ module hpp
 			      out double residualError)
       raises (Error);
 
+    /// Generate random configuration and apply constaints to a configuration
+    ///
+    /// constraints are stored in ProblemSolver object
+    /// The class hpp::core::BasicConfigurationShooter is used for random
+    /// generation of configuration.
+    /// \param maxIter maximum number of tries,
+    /// \retval output output configuration,
+    /// \retval error norm of the residual error.
+    boolean generateValidConfig (in unsigned short maxIter, out floatSeq output,
+			      out double residualError)
+      raises (Error);
+
     /// Create orientation constraint between two joints
     ///
     /// \param constraintName name of the constraint created,
@@ -73,6 +85,11 @@ module hpp
     (in string constraintName, in string joint1Name,
      in string joint2Name, in Quaternion_ p,
      in boolSeq mask) raises (Error);
+
+    void createStaticStabilityGravityConstraint
+    (in string constraintName, in string jointName,
+     in floatSeqSeq pts, in intSeqSeq objectTriangles,
+     in intSeqSeq floorTriangles) raises (Error);
 
     /// Create position constraint between two joints
     ///
@@ -97,6 +114,22 @@ module hpp
     /// Reset constraints
     void resetConstraints () raises (Error);
 
+    /// Set passive dofs of a differentiable function
+    /// \param constraintName Name of the numerical constraint,
+    /// \param jointNames a sequence of joint names.
+    ///
+    /// Constraints should have been added in the ProblemSolver local map.
+    void setPassiveDofs (in string constraintName, in Names_t jointNames)
+      raises (Error);
+
+    /// Make a numerical constraint parametric or non-parametric
+    /// \param constraintName Name of the numerical constraint,
+    /// \param value True is parametric
+    ///
+    /// Constraints should have been added in the ProblemSolver local map.
+    void isParametric (in string constraintName, in boolean parametric)
+      raises (Error);
+
     /// Set numerical constraints by names in ConfigProjector
     /// \param constraintName Name of the set of numerical constraint,
     /// \param constraintNames names of the constraints to apply,
@@ -104,6 +137,9 @@ module hpp
     /// Constraints should have been added in the ProblemSolver local map.
     void setNumericalConstraints (in string constraintName,
 				  in Names_t constraintNames)
+      raises (Error);
+
+    void addInequality (in string constraintName, in floatSeq ref, in intSeq superior)
       raises (Error);
 
     /// Lock degree of freedom with given value
@@ -149,6 +185,20 @@ module hpp
     /// \param tolerance maximal acceptable penetration.
     void selectPathValidation (in string pathValidationType,
 			       in double tolerance) raises (Error);
+    /// Prepare the solver for a step by step planning.
+    /// and try to make direct connections (call PathPlanner::tryDirectPath)
+    /// \return True if a direct connection has been found.
+    boolean prepareSolveStepByStep () raises (Error);
+
+    /// Execute one step of the planner.
+    /// \return True if a path has been found.
+    /// \note This won't check if a solution has been found before doing one step.
+    /// The decision to stop planning is let to the user.
+    boolean executeOneStep () raises (Error);
+
+    /// Finish the step-by-step planning.
+    /// The path optimizer is not called
+    void finishSolveStepByStep () raises (Error);
 
     /// Solve the problem.
     /// \throw Error.
@@ -221,6 +271,11 @@ module hpp
 
     /// Clear the roadmap
     void clearRoadmap () raises (Error);
+
+    /// Reset the roadmap
+    /// This should be done when joints bounds are modified because the KDTree
+    /// must be resized.
+    void resetRoadmap () raises (Error);
     /// \}
   };
   }; // interface Problem

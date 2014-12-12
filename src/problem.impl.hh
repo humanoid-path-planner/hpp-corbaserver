@@ -49,6 +49,12 @@ namespace hpp
 	 const char* joint2Name, const Double* p, const hpp::boolSeq& mask)
 	  throw (hpp::Error);
 
+	virtual void createStaticStabilityGravityConstraint
+	(const char* constraintName, const char* jointName,
+         const hpp::floatSeqSeq& points, const hpp::intSeqSeq& objTriangles,
+         const hpp::intSeqSeq& floorTriangles)
+	  throw (hpp::Error);
+
 	virtual void createPositionConstraint (const char* constraintName,
 					       const char* joint1Name,
 					       const char* joint2Name,
@@ -61,10 +67,31 @@ namespace hpp
 				       hpp::floatSeq_out output,
 				       Double& residualError)
 	  throw (hpp::Error);
+
+	virtual bool generateValidConfig (UShort maxIter,
+				       hpp::floatSeq_out output,
+				       Double& residualError)
+	  throw (hpp::Error);
+
+        virtual void setPassiveDofs (const char* constraintName,
+                                    const hpp::Names_t& dofName)
+          throw (hpp::Error);
+
+        virtual void isParametric (const char* constraintName,
+                                   CORBA::Boolean value)
+          throw (hpp::Error);
+
+        virtual bool isParametric (const char* constraintName)
+          throw (hpp::Error);
+
 	virtual void resetConstraints () throw (hpp::Error);
 	virtual void setNumericalConstraints
 	(const char* constraintName, const hpp::Names_t& constraintNames)
 	  throw (Error);
+        void addInequality (const char* constraintName,
+            const hpp::floatSeq& ref,
+            const hpp::intSeq& superior)
+          throw (Error);
 	virtual void lockDof (const char* jointName, Double value,
 			      UShort rankInConfiguration,
 			      UShort rankInVelocity)
@@ -80,6 +107,10 @@ namespace hpp
 
 	virtual void selectPathPlanner (const char* pathPlannerType)
 	  throw (Error);
+
+	virtual bool prepareSolveStepByStep () throw (hpp::Error);
+	virtual bool executeOneStep () throw (hpp::Error);
+	virtual void finishSolveStepByStep () throw (hpp::Error);
 
 	virtual void solve () throw (hpp::Error);
 
@@ -109,6 +140,7 @@ namespace hpp
 	virtual hpp::floatSeqSeq*
 	nodesConnectedComponent (ULong connectedComponentId) throw (hpp::Error);
 	virtual void clearRoadmap () throw (hpp::Error);
+	virtual void resetRoadmap ();
 
       private:
 	/// \brief Pointer to the Server owning this object
