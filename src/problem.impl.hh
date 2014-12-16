@@ -77,24 +77,19 @@ namespace hpp
                                     const hpp::Names_t& dofName)
           throw (hpp::Error);
 
-        virtual void isParametric (const char* constraintName,
-                                   CORBA::Boolean value)
+        virtual void setConstantRightHandSide (const char* constraintName,
+					       CORBA::Boolean constant)
           throw (hpp::Error);
 
-        virtual bool isParametric (const char* constraintName)
+        virtual bool getConstantRightHandSide (const char* constraintName)
           throw (hpp::Error);
 
 	virtual void resetConstraints () throw (hpp::Error);
 	virtual void setNumericalConstraints
 	(const char* constraintName, const hpp::Names_t& constraintNames)
 	  throw (Error);
-        void addInequality (const char* constraintName,
-            const hpp::floatSeq& ref,
-            const hpp::intSeq& superior)
-          throw (Error);
-	virtual void lockDof (const char* jointName, Double value,
-			      UShort rankInConfiguration,
-			      UShort rankInVelocity)
+	virtual void lockJoint (const char* jointName,
+				const hpp::floatSeq& value)
 	  throw (hpp::Error);
 	virtual void setErrorThreshold (Double threshold) throw (Error);
 	virtual void setMaxIterations (UShort iterations) throw (Error);

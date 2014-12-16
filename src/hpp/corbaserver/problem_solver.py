@@ -118,7 +118,7 @@ class ProblemSolver (object):
     ## Reset Constraints
     #
     #  Reset all constraints, including numerical constraints and locked
-    #  degrees of freedom.
+    #  joints
     def resetConstraints (self):
         return self.client.problem.resetConstraints ()
 
@@ -147,21 +147,11 @@ class ProblemSolver (object):
     def generateValidConfig (self, maxIter):
         return self.client.problem.generateValidConfig (maxIter)
 
-    ## Lock degree of freedom with given value
+    ## Lock joint with given joint configuration
     # \param jointName name of the joint
-    # \param value value of the locked degree of freedom,
-    # \param rankInConfiguration rank of the locked dof in the joint
-    #        configuration vector
-    # \param rankInVelocity rank of the locked dof in the joint
-    #        velocity vector
-    def lockDof (self, jointName, value, rankInConfiguration, rankInVelocity):
-        return self.client.problem.lockDof (jointName, value,
-                                            rankInConfiguration, rankInVelocity)
-    ## Lock joint with one degree of freedom with given value
-    # \param jointName name of the joint
-    # \param value value of the locked degree of freedom,
-    def lockOneDofJoint (self, jointName, value):
-        return self.client.problem.lockDof (jointName, value, 0, 0)
+    # \param value value of the joint configuration
+    def lockJoint (self, jointName, value):
+        return self.client.problem.lockJoint (jointName, value)
 
     ## error threshold in numerical constraint resolution
     def setErrorThreshold (self, threshold):

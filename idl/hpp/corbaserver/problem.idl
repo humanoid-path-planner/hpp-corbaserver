@@ -122,12 +122,20 @@ module hpp
     void setPassiveDofs (in string constraintName, in Names_t jointNames)
       raises (Error);
 
-    /// Make a numerical constraint parametric or non-parametric
+    /// (Dis-)Allow to modify right hand side of a numerical constraint
     /// \param constraintName Name of the numerical constraint,
-    /// \param value True is parametric
+    /// \param constant whether right hand side is constant
     ///
-    /// Constraints should have been added in the ProblemSolver local map.
-    void isParametric (in string constraintName, in boolean parametric)
+    /// Constraints should have been added in the ProblemSolver local map,
+    /// but not inserted in the config projector.
+    void setConstantRightHandSide (in string constraintName,
+				   in boolean constant)
+      raises (Error);
+
+    /// Get whether right hand side of a numerical constraint is constant
+    /// \param constraintName Name of the numerical constraint,
+    /// \return whether right hand side is constant
+    boolean getConstantRightHandSide (in string constraintName)
       raises (Error);
 
     /// Set numerical constraints by names in ConfigProjector
@@ -139,21 +147,10 @@ module hpp
 				  in Names_t constraintNames)
       raises (Error);
 
-    void addInequality (in string constraintName, in floatSeq ref, in intSeq superior)
-      raises (Error);
-
-    /// Lock degree of freedom with given value
+    /// Lock joint with given joint configuration
     /// \param jointName name of the joint
-    /// \param value value of the locked degree of freedom,
-    /// \param rankInConfiguration rank of the locked dof in the joint
-    ///        configuration vector (should be 0 for rotation and translation
-    ///        joints)
-    /// \param rankInVelocity rank of the locked dof in the joint
-    ///        velocity vector (should be 0 for rotation and translation
-    ///        joints)
-    void lockDof (in string jointName, in double value,
-		  in unsigned short rankInConfiguration,
-		  in unsigned short rankInVelocity)
+    /// \param value value of the joint configuration
+    void lockJoint (in string jointName, in floatSeq value)
       raises (Error);
 
     /// Set error threshold in numerical constraint resolution

@@ -13,12 +13,15 @@
 #include <hpp/util/debug.hh>
 #include <hpp/util/portability.hh>
 
-#include <fcl/shape/geometric_shapes.h>
+#include <hpp/fcl/shape/geometric_shapes.h>
+
+#include <hpp/model/configuration.hh>
+
 #include <hpp/core/config-projector.hh>
 #include <hpp/core/basic-configuration-shooter.hh>
 #include <hpp/core/connected-component.hh>
 #include <hpp/core/edge.hh>
-#include <hpp/core/locked-dof.hh>
+#include <hpp/core/locked-joint.hh>
 #include <hpp/core/node.hh>
 #include <hpp/core/path-planner.hh>
 #include <hpp/core/path-optimizer.hh>
@@ -28,8 +31,9 @@
 #include <hpp/core/path.hh>
 #include <hpp/core/roadmap.hh>
 #include <hpp/core/steering-method.hh>
-#include <hpp/core/differentiable-function.hh>
-#include <hpp/core/inequality.hh>
+#include <hpp/core/comparison-type.hh>
+
+#include <hpp/constraints/differentiable-function.hh>
 #include <hpp/constraints/position.hh>
 #include <hpp/constraints/orientation.hh>
 #include <hpp/constraints/position.hh>
@@ -87,7 +91,7 @@ namespace hpp
 	return config;
       }
 
-      static vector3_t floatSeqTVector3 (const hpp::floatSeq& dofArray)
+      static vector3_t floatSeqToVector3 (const hpp::floatSeq& dofArray)
       {
 	if (dofArray.length() != 3) {
 	  std::ostringstream oss
@@ -98,6 +102,16 @@ namespace hpp
 	// Fill dof vector with dof array.
 	vector3_t result;
 	for (unsigned int iDof=0; iDof < 3; ++iDof) {
+	  result [iDof] = dofArray [iDof];
+	}
+	return result;
+      }
+
+      static vector_t floatSeqToVector (const hpp::floatSeq& dofArray)
+      {
+	// Fill dof vector with dof array.
+	vector_t result (dofArray.length ());
+	for (size_type iDof=0; iDof < result.size (); ++iDof) {
 	  result [iDof] = dofArray [iDof];
 	}
 	return result;
@@ -322,8 +336,8 @@ namespace hpp
 	JointPtr_t joint2;
 	vector3_t targetInWorldFrame;
 	vector3_t targetInLocalFrame;
-	vector3_t p1 = floatSeqTVector3 (point1);
-	vector3_t p2 = floatSeqTVector3 (point2);
+	vector3_t p1 = floatSeqToVector3 (point1);
+	vector3_t p2 = floatSeqToVector3 (point2);
 	size_type constrainedJoint = 0;
 	std::vector<bool> m = boolSeqToBoolVector (mask);
 	try {
@@ -351,7 +365,7 @@ namespace hpp
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
-  std::string name (constraintName);
+	std::string name (constraintName);
 	if (constrainedJoint == 0) {
 	  // Both joints are provided
 	  problemSolver_->addNumericalConstraint
@@ -478,27 +492,46 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::isParametric (const char* constraintName,
-          CORBA::Boolean value)
-        throw (hpp::Error)
+      void Problem::setConstantRightHandSide (const char* constraintName,
+					      CORBA::Boolean constant)
+	throw (hpp::Error)
       {
-        core::DifferentiableFunctionPtr_t f =
-          problemSolver_->numericalConstraint (constraintName);
-        if (!f)
-          throw hpp::Error ("The numerical constraint could not be found.");
-        f->isParametric (value);
+	try {
+	  core::ComparisonTypePtr_t comparison =
+	    problemSolver_->comparisonType (constraintName);
+	  if (!comparison)
+	    throw std::runtime_error
+	      (std::string ("Numerical constraint ") + constraintName +
+	       std::string ("can not be found."));
+	  if (constant) {
+	    problemSolver_->comparisonType (constraintName,
+					   core::EqualToZero::create ());
+	  } else {
+	    problemSolver_->comparisonType (constraintName,
+					   core::Equality::create ());
+	  }
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
       }
 
       // ---------------------------------------------------------------
 
-      bool Problem::isParametric (const char* constraintName)
-        throw (hpp::Error)
+      bool Problem::getConstantRightHandSide (const char* constraintName)
+	throw (hpp::Error)
       {
-        core::DifferentiableFunctionPtr_t f =
-          problemSolver_->numericalConstraint (constraintName);
-        if (!f)
-          throw hpp::Error ("The numerical constraint could not be found.");
-        return f->isParametric ();
+	try {
+	  core::ComparisonTypePtr_t comparison =
+	    problemSolver_->comparisonType (constraintName);
+	  if (!comparison) {
+	    throw std::runtime_error
+	      (std::string ("Numerical constraint ") + constraintName +
+	       std::string ("can not be found."));
+	  }
+	  return comparison->constantRightHandSide ();
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
       }
 
       // ---------------------------------------------------------------
@@ -514,9 +547,7 @@ namespace hpp
 	  }
 	  for (CORBA::ULong i=0; i<constraintNames.length (); ++i) {
 	    std::string name (constraintNames [i]);
-            problemSolver_->addFunctionToConfigProjector
-	      (constraintName, problemSolver_->numericalConstraint(name),
-	       problemSolver_->inequality (name));
+            problemSolver_->addFunctionToConfigProjector (constraintName, name);
 	    problemSolver_->robot ()->controlComputation
 	      (model::Device::ALL);
 	  }
@@ -527,58 +558,22 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::addInequality (const char* constraintName,
-                                   const floatSeq& ref,
-                                   const intSeq& superior)
-	throw (Error)
-      {
-        if (ref.length () != superior.length ())
-          throw hpp::Error ("Dimension of reference and superior should be equal.");
-	size_type dim = (size_type)ref.length();
-	vector_t refvector (dim);
-        using hpp::core::EquationType;
-        EquationType::VectorOfTypes types (dim);
-
-	for (size_type i = 0; i < dim; ++i) {
-          refvector[i] = ref[i];
-          switch ((int)superior[i]) {
-            case 1:
-              types[i] = EquationType::Superior;
-              break;
-            case 0:
-              types[i] = EquationType::Equality;
-              break;
-            case -1:
-              types[i] = EquationType::Inferior;
-              break;
-            default:
-              throw Error ("superior is a vector of {-1, 0, 1}");
-          }
-	}
-
-        std::string name (constraintName);
-        problemSolver_->addInequalityVector (name, types);
-      }
-
-      // ---------------------------------------------------------------
-
-      void Problem::lockDof (const char* jointName, Double value,
-			     UShort rankInConfiguration, UShort rankInVelocity)
+      void Problem::lockJoint (const char* jointName,
+			       const hpp::floatSeq& value)
 	throw (hpp::Error)
       {
 	try {
 	  // Get robot in hppPlanner object.
 	  DevicePtr_t robot = problemSolver_->robot ();
 	  JointPtr_t joint = robot->getJointByName (jointName);
-	  size_type dofId = joint->rankInConfiguration ();
+	  vector_t jointConfig = floatSeqToVector (value);
 	  std::ostringstream oss;
-	  oss << "locked dof, index: " << dofId << ", value: " << value;
+	  oss << "locked joint, name: " << jointName << ", value: "
+	      << model::displayConfig (jointConfig);
 
-	  LockedDofPtr_t lockedDof (LockedDof::create (oss.str (), joint,
-						       value,
-						       rankInConfiguration,
-						       rankInVelocity));
-	  problemSolver_->addConstraint (lockedDof);
+	  LockedJointPtr_t lockedJoint (LockedJoint::create
+					(oss.str (), joint, jointConfig));
+	  problemSolver_->addConstraint (lockedJoint);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
