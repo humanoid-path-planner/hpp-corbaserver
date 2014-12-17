@@ -28,8 +28,8 @@
 #include <hpp/core/path.hh>
 #include <hpp/core/roadmap.hh>
 #include <hpp/core/steering-method.hh>
-#include <hpp/core/differentiable-function.hh>
 #include <hpp/core/inequality.hh>
+#include <hpp/constraints/differentiable-function.hh>
 #include <hpp/constraints/position.hh>
 #include <hpp/constraints/orientation.hh>
 #include <hpp/constraints/position.hh>
