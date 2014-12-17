@@ -514,7 +514,7 @@ namespace hpp
 	  }
 	  for (CORBA::ULong i=0; i<constraintNames.length (); ++i) {
 	    std::string name (constraintNames [i]);
-            problemSolver_->addFunctionToConfigProjector
+            problemSolver_->addConstraintToConfigProjector
 	      (constraintName, problemSolver_->numericalConstraint(name),
 	       problemSolver_->inequality (name));
 	    problemSolver_->robot ()->controlComputation
