@@ -26,6 +26,7 @@ from hpp.corbaserver.client import Client
 #  display configurations of a robot.
 class Robot (object):
     def __init__ (self, robotName, rootJointType, load = True):
+        self.name = robotName
         self.tf_root = "base_link"
         self.rootJointType = rootJointType
         self.client = Client ()
