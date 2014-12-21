@@ -76,7 +76,11 @@ module hpp
     /// \{
 
     /// Get joint names in the same order as in the configuration
+    /// \note anchor joints are not exported.
     Names_t getJointNames () raises (Error);
+
+    /// Get all joint names including anchor joints
+    Names_t getAllJointNames () raises (Error);
 
     /// Get joint position
     /// \param jointName name of the joint
