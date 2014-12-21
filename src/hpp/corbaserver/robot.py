@@ -32,6 +32,7 @@ class Robot (object):
         if load:
             self.loadModel (robotName, rootJointType)
         self.jointNames = self.client.robot.getJointNames ()
+        self.allJointNames = self.client.robot.getAllJointNames ()
         self.rankInConfiguration = dict ()
         self.rankInVelocity = dict ()
         rankInConfiguration = rankInVelocity = 0
@@ -66,6 +67,10 @@ class Robot (object):
     ## Get joint names in the same order as in the configuration.
     def getJointNames (self):
         return self.client.robot.getJointNames ()
+
+    ## Get joint names in the same order as in the configuration.
+    def getAllJointNames (self):
+        return self.client.robot.getAllJointNames ()
 
     ## Get joint position.
     def getJointPosition (self, jointName):

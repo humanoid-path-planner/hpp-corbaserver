@@ -337,6 +337,30 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
+      Names_t* Robot::getAllJointNames () throw (hpp::Error)
+      {
+	try {
+	  DevicePtr_t robot = problemSolver_->robot ();
+	  // Compute number of real urdf joints
+	  JointVector_t jointVector = robot->getJointVector ();
+	  ULong size = jointVector.size ();
+	  char** nameList = Names_t::allocbuf(size);
+	  Names_t *jointNames = new Names_t (size, size, nameList);
+	  for (std::size_t i = 0; i < jointVector.size (); ++i) {
+	    const JointPtr_t joint = jointVector [i];
+	    std::string name = joint->name ();
+	    nameList [i] =
+	      (char*) malloc (sizeof(char)*(name.length ()+1));
+	    strcpy (nameList [i], name.c_str ());
+	  }
+	  return jointNames;
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
+
       Transform__slice* Robot::getRootJointPosition () throw (hpp::Error)
       {
 	try {
