@@ -121,6 +121,23 @@ module hpp
 			in jointBoundSeq inJointBound)
       raises (Error);
 
+    /// Get link position in world frame
+    ///
+    /// Joints are oriented in a different way as in urdf standard since
+    /// rotation and uni-dimensional translation joints act around or along
+    /// their x-axis. This method returns the current position of the urdf link
+    /// in world frame.
+    ///
+    /// \param jointName name of the joint
+    /// \return position of the link in world frame.
+    Transform_ getLinkPosition (in string jointName) raises (Error);
+
+    /// Get link name
+    ///
+    /// \param jointName name of the joint,
+    /// \return name of the link.
+    string getLinkName (in string jointName) raises (Error);
+
     /// \}
 
     /// \name Extra configuration space
