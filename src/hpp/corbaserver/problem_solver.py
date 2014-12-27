@@ -78,6 +78,37 @@ class ProblemSolver (object):
         return self.client.obstacle.loadObstacleModel (package, filename,
                                                        prefix)
 
+    ## Remove an obstacle from outer objects of a joint body
+    # 
+    #  \param objectName name of the object to remove,
+    #  \param jointName name of the joint owning the body,
+    #  \param collision whether collision with object should be computed,
+    #  \param distance whether distance to object should be computed.
+    #  \throw Error.
+    def removeObstacleFromJoint (self, objectName, jointName, collision,
+                                 distance):
+        return self.client.obstacle.removeObstacleFromJoint \
+            (objectName, jointName, collision, distance)
+
+    ## Move an obstacle to a given configuration.
+    #  \param objectName name of the polyhedron.
+    #  \param cfg the configuration of the obstacle.
+    #  \throw Error.
+    # 
+    #  \note The obstacle is not added to local map
+    #  impl::Obstacle::collisionListMap.
+    # 
+    #  \note Build the collision entity of polyhedron for KCD.
+    def moveObstacle (self, objectName, cfg):
+        return self.client.obstacle.moveObstacle (objectName, cfg)
+    ## Get the position of an obstacle
+    # 
+    #  \param objectName name of the polyhedron.
+    #  \retval cfg Position of the obstacle.
+    #  \throw Error.
+    def getObstaclePosition (self, objectName):
+        return self.client.obstacle.getObstaclePosition (objectName)
+
     ##\}
 
     ## \name Constraints
