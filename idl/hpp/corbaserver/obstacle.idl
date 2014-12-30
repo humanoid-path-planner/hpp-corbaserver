@@ -15,7 +15,7 @@
 module hpp
 {
   module corbaserver {
-  /// \brief Obstacles management.
+  /// \brief Obstacle management.
   ///
   interface Obstacle
   {
@@ -82,6 +82,14 @@ module hpp
     /// \retval cfg Position of the obstacle.
     /// \throw Error.
     void getObstaclePosition (in string objectName, out Transform_ cfg)
+      raises (Error);
+
+    /// Get list of obstacles
+    ///
+    /// \param collision whether to return obstacle for collision,
+    /// \param distance whether to return obstacles for distance computation
+    /// \return list of obstacles
+    Names_t getObstacleNames (in boolean collision, in boolean distance)
       raises (Error);
     /// \}
 

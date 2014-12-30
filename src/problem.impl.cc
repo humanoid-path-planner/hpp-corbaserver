@@ -16,7 +16,6 @@
 #include <hpp/fcl/shape/geometric_shapes.h>
 
 #include <hpp/model/configuration.hh>
-
 #include <hpp/core/config-projector.hh>
 #include <hpp/core/basic-configuration-shooter.hh>
 #include <hpp/core/connected-component.hh>

@@ -502,6 +502,64 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
+      Transform__slice* Robot::getLinkPosition (const char* jointName)
+	throw (hpp::Error)
+      {
+	try {
+	  DevicePtr_t robot = problemSolver_->robot ();
+	  if (!robot) {
+	    throw hpp::Error ("no robot");
+	  }
+	  JointPtr_t joint = robot->getJointByName (jointName);
+	  if (!joint) {
+	    std::ostringstream oss ("Robot has no joint with name ");
+	    oss  << jointName;
+	    hppDout (error, oss.str ());
+	    throw hpp::Error (oss.str ().c_str ());
+	  }
+	  Transform3f T = joint->currentTransformation () *
+	    joint->linkInJointFrame ();
+	  double* res = new Transform_;
+	  res [0] = T.getTranslation () [0];
+	  res [1] = T.getTranslation () [1];
+	  res [2] = T.getTranslation () [2];
+	  res [3] = T.getQuatRotation () [0];
+	  res [4] = T.getQuatRotation () [1];
+	  res [5] = T.getQuatRotation () [2];
+	  res [6] = T.getQuatRotation () [3];
+	  return res;
+	} catch (const std::exception& exc) {
+	  throw Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
+
+      char* Robot::getLinkName (const char* jointName) throw (hpp::Error)
+      {
+	try {
+	  DevicePtr_t robot = problemSolver_->robot ();
+	  if (!robot) {
+	    throw hpp::Error ("no robot");
+	  }
+	  JointPtr_t joint = robot->getJointByName (jointName);
+	  if (!joint) {
+	    std::ostringstream oss ("Robot has no joint with name ");
+	    oss  << jointName;
+	    hppDout (error, oss.str ());
+	    throw hpp::Error (oss.str ().c_str ());
+	  }
+	  std::string linkName = joint->linkName ();
+	  char* res = new char [linkName.size ()];
+	  strcpy (res, linkName.c_str ());
+	  return res;
+	} catch (const std::exception& exc) {
+	  throw Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
+
       void Robot::setDimensionExtraConfigSpace (ULong dimension)
 	throw (hpp::Error)
       {

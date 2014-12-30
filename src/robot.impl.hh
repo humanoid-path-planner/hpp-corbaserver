@@ -112,6 +112,11 @@ namespace hpp
 	(const char* jointName,
 	 const hpp::corbaserver::jointBoundSeq& jointBound) throw (hpp::Error);
 
+	virtual Transform__slice* getLinkPosition (const char* jointName)
+	  throw (hpp::Error);
+
+	virtual char* getLinkName(const char* jointName)
+	  throw (hpp::Error);
 
 	virtual void setDimensionExtraConfigSpace (ULong dimension)
 	  throw (hpp::Error);

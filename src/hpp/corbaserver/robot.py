@@ -27,6 +27,7 @@ from hpp.corbaserver.client import Client
 class Robot (object):
     def __init__ (self, robotName, rootJointType, load = True):
         self.name = robotName
+        self.displayName = robotName
         self.tf_root = "base_link"
         self.rootJointType = rootJointType
         self.client = Client ()
@@ -96,6 +97,25 @@ class Robot (object):
     ## set bounds for the joint
     def setJointBounds (self, jointName, inJointBound):
         return self.client.robot.setJointBounds (jointName, inJointBound)
+
+    ## Get link position in world frame
+    #
+    # Joints are oriented in a different way as in urdf standard since
+    # rotation and uni-dimensional translation joints act around or along
+    # their x-axis. This method returns the position of the urdf link in
+    # world frame.
+    #
+    # \param jointName name of the joint
+    # \return position of the link in world frame.
+    def getLinkPosition (self, jointName):
+        return self.client.robot.getLinkPosition (jointName)
+
+    ## Get link name
+    #
+    # \param jointName name of the joint,
+    # \return name of the link.
+    def getLinkName (self, jointName):
+        return self.client.robot.getLinkName (jointName)
 
     ## \}
 

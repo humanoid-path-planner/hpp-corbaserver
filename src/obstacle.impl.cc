@@ -176,6 +176,25 @@ namespace hpp
 	throw hpp::Error (oss.str ().c_str ());
       }
 
+      Names_t* Obstacle::getObstacleNames (bool collision, bool distance)
+	throw (hpp::Error)
+      {
+	std::list <std::string> obstacles =
+	  problemSolver_->obstacleNames (collision, distance);
+	ULong size = obstacles.size ();
+	char** nameList = Names_t::allocbuf(size);
+	Names_t *result = new Names_t (size, size, nameList);
+	std::size_t i = 0;
+	for (std::list <std::string>::const_iterator it = obstacles.begin ();
+	     it != obstacles.end (); ++it) {
+	  std::string name = *it;
+	  nameList [i] = (char*) malloc (sizeof (char) * (name.length () + 1));
+	  strcpy (nameList [i], name.c_str ());
+	  ++i;
+	}
+	return result;
+      }
+
       void Obstacle::createPolyhedron
       (const char* polyhedronName) throw (hpp::Error)
       {
