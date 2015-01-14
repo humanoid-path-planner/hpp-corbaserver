@@ -566,13 +566,9 @@ namespace hpp
 	  DevicePtr_t robot = problemSolver_->robot ();
 	  JointPtr_t joint = robot->getJointByName (jointName);
 	  vector_t jointConfig = floatSeqToVector (value);
-	  std::ostringstream oss;
-	  oss << "locked joint, name: " << jointName << ", value: "
-	      << model::displayConfig (jointConfig);
 
-	  LockedJointPtr_t lockedJoint (LockedJoint::create
-					(oss.str (), joint, jointConfig));
-	  problemSolver_->addConstraint (lockedJoint);
+	  LockedJointPtr_t lockedJoint (LockedJoint::create (joint, jointConfig));
+	  problemSolver_->addLockedJoint (lockedJoint);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
