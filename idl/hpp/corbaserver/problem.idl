@@ -182,6 +182,15 @@ module hpp
     /// \param tolerance maximal acceptable penetration.
     void selectPathValidation (in string pathValidationType,
 			       in double tolerance) raises (Error);
+
+    /// Select path projector method
+    /// \param Name of the path projector method, either "None"
+    /// "Progressive", "Dichotomy", or any type added by
+    /// core::ProblemSolver::addPathProjectorType,
+    /// \param tolerance
+    void selectPathProjector (in string pathProjectorType,
+                              in double tolerance) raises (Error);
+
     /// Prepare the solver for a step by step planning.
     /// and try to make direct connections (call PathPlanner::tryDirectPath)
     /// \return True if a direct connection has been found.

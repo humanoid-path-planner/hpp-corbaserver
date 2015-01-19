@@ -626,6 +626,19 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+      void Problem::selectPathProjector (const char* pathProjectorType,
+                                         Double tolerance) throw (Error)
+      {
+        try {
+          problemSolver_->pathProjectorType (std::string (pathProjectorType),
+                                             tolerance);
+        } catch (const std::exception& exc) {
+          throw hpp::Error (exc.what ());
+        }
+      }
+
+      // ---------------------------------------------------------------
+
       bool Problem::prepareSolveStepByStep () throw (hpp::Error)
       {
 	try {

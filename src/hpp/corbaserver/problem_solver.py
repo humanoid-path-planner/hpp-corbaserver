@@ -228,6 +228,15 @@ class ProblemSolver (object):
         return self.client.problem.selectPathValidation (pathValidationType,
                                                          tolerance)
 
+    ## Select path projector method
+    #  \param Name of the path projector method, either "Discretized"
+    #  "Progressive", "Dichotomy", or any type added by
+    #  core::ProblemSolver::addPathProjectorType,
+    #  \param tolerance maximal acceptable penetration.
+    def selectPathProjector (self, pathProjectorType, tolerance):
+        return self.client.problem.selectPathProjector (pathProjectorType,
+                                                        tolerance)
+
     ## Solve the problem of corresponding ChppPlanner object
     def solve (self):
         return self.client.problem.solve ()

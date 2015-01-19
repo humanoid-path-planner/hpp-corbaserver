@@ -100,6 +100,9 @@ namespace hpp
 	virtual void selectPathValidation (const char* pathValidationType,
 					   Double tolerance) throw (Error);
 
+        virtual void selectPathProjector (const char* pathProjectorType,
+                                          Double tolerance) throw (Error);
+
 	virtual void selectPathPlanner (const char* pathPlannerType)
 	  throw (Error);
 
