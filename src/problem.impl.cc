@@ -465,19 +465,16 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::setPassiveDofs (const char* constraintName,
+      void Problem::addPassiveDofs (const char* passiveDofsName,
           const hpp::Names_t& dofNames)
         throw (hpp::Error)
       {
         DevicePtr_t robot = problemSolver_->robot ();
         if (!robot)
 	    throw Error ("You should set the robot before defining"
-			 " constraints.");
-        core::DifferentiableFunctionPtr_t f =
-          problemSolver_->numericalConstraint (constraintName);
-        if (!f)
-          throw hpp::Error ("The numerical constraint could not be found.");
+			 " passive DOFs.");
         std::vector <size_type> dofs;
+        /// First, translate names into velocity indexes.
         for (CORBA::ULong i=0; i<dofNames.length (); ++i) {
           std::string name (dofNames[i]);
           JointPtr_t j = robot->getJointByName (name);
@@ -486,7 +483,26 @@ namespace hpp
           for (size_type i = 0; i < j->numberDof (); i++)
             dofs.push_back (j->rankInVelocity() + i);
         }
-        f->passiveDofs (dofs);
+        /// Then, sort and remove non duplicated elements.
+        std::sort (dofs.begin (), dofs.end ());
+        std::vector <size_type>::iterator last =
+          std::unique (dofs.begin (), dofs.end ());
+        dofs.erase (dofs.begin (), last);
+        /// Then, create the intervals.
+        core::SizeIntervals_t passiveDofs;
+        dofs.push_back (robot->numberDof () + 1);
+        size_type intStart = dofs[0], intEnd = dofs[0];
+        for (size_t i = 1; i < dofs.size (); i++) {
+          intEnd ++;
+          if (intEnd == dofs[i]) {
+            continue;
+          } else {
+            passiveDofs.push_back (
+                core::SizeInterval_t (intStart, intEnd - intStart));
+            intStart = intEnd = dofs[i];
+          }
+        }
+        problemSolver_->addPassiveDofs (passiveDofsName, passiveDofs);
       }
 
       // ---------------------------------------------------------------

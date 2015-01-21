@@ -178,6 +178,13 @@ class ProblemSolver (object):
     def applyConstraints (self, q):
         return self.client.problem.applyConstraints (q)
 
+    ## Create a vector of passive dofs.
+    #
+    #  \param name name of the vector in the ProblemSolver map.
+    #  \param dofNames list of names of DOF that may
+    def addPassiveDofs (self, name, dofNames):
+        return self.client.problem.addPassiveDofs (name, dofNames)
+
     ## Generate a configuration satisfying the constraints
     #
     #  \param maxIter maximum number of tries,

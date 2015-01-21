@@ -73,7 +73,7 @@ namespace hpp
 				       Double& residualError)
 	  throw (hpp::Error);
 
-        virtual void setPassiveDofs (const char* constraintName,
+        virtual void addPassiveDofs (const char* constraintName,
                                     const hpp::Names_t& dofName)
           throw (hpp::Error);
 

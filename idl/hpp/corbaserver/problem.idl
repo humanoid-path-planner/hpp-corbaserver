@@ -114,12 +114,10 @@ module hpp
     /// Reset constraints
     void resetConstraints () raises (Error);
 
-    /// Set passive dofs of a differentiable function
-    /// \param constraintName Name of the numerical constraint,
+    /// Add vector of passive dofs into the ProblemSolver local map
+    /// \param constraintName Name of the vector of passive dofs,
     /// \param jointNames a sequence of joint names.
-    ///
-    /// Constraints should have been added in the ProblemSolver local map.
-    void setPassiveDofs (in string constraintName, in Names_t jointNames)
+    void addPassiveDofs (in string constraintName, in Names_t jointNames)
       raises (Error);
 
     /// (Dis-)Allow to modify right hand side of a numerical constraint
