@@ -341,6 +341,8 @@ namespace hpp
       {
 	try {
 	  DevicePtr_t robot = problemSolver_->robot ();
+          if (!robot)
+            return new Names_t (0, 0, Names_t::allocbuf (0));
 	  // Compute number of real urdf joints
 	  JointVector_t jointVector = robot->getJointVector ();
 	  ULong size = jointVector.size ();
