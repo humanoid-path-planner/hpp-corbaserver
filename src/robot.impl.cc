@@ -550,7 +550,7 @@ namespace hpp
 	    throw hpp::Error (oss.str ().c_str ());
 	  }
 	  std::string linkName = joint->linkName ();
-	  char* res = new char [linkName.size ()];
+	  char* res = new char [linkName.size () + 1];
 	  strcpy (res, linkName.c_str ());
 	  return res;
 	} catch (const std::exception& exc) {
