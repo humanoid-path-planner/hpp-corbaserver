@@ -683,6 +683,7 @@ namespace hpp
 	try {
 	  // Get robot in hppPlanner object.
 	  DevicePtr_t robot = problemSolver_->robot ();
+          if (!robot) throw hpp::Error ("No robot in problem solver.");
 	  vector_t config = robot->currentConfiguration ();
 	  std::size_t deviceDim = robot->configSize ();
 	  dofArray = new hpp::floatSeq();
