@@ -86,6 +86,21 @@ module hpp
      in string joint2Name, in Quaternion_ p,
      in boolSeq mask) raises (Error);
 
+    /// Create ComBeetweenFeet constraint between two joints
+    ///
+    /// \param constraintName name of the constraint created,
+    /// \param jointLName name of first joint
+    /// \param jointRName name of second joint
+    /// \param jointRefName name of second joint
+    /// \param point point in local frame of jointRef.
+    /// \param mask Select axis to be constrained.
+    /// If jointRef is "", the global frame is used.
+    /// Constraints are stored in ProblemSolver object
+    void createComBeetweenFeet
+        (in string constraintName, in string jointLName, in string jointRName,
+         in string jointRefName, in floatSeq point, in boolSeq mask)
+        raises (Error);
+
     void createStaticStabilityGravityConstraint
     (in string constraintName, in string jointName,
      in floatSeqSeq pts, in intSeqSeq objectTriangles,

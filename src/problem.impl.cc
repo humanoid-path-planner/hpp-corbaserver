@@ -37,6 +37,7 @@
 #include <hpp/constraints/orientation.hh>
 #include <hpp/constraints/position.hh>
 #include <hpp/constraints/relative-com.hh>
+#include <hpp/constraints/com-between-feet.hh>
 #include <hpp/constraints/relative-orientation.hh>
 #include <hpp/constraints/relative-position.hh>
 #include <hpp/constraints/static-stability.hh>
@@ -50,6 +51,8 @@ using hpp::constraints::OrientationPtr_t;
 using hpp::constraints::Position;
 using hpp::constraints::PositionPtr_t;
 using hpp::constraints::RelativeOrientation;
+using hpp::constraints::ComBetweenFeetPtr_t;
+using hpp::constraints::ComBetweenFeet;
 using hpp::constraints::RelativeComPtr_t;
 using hpp::constraints::RelativeCom;
 using hpp::constraints::RelativeOrientationPtr_t;
@@ -268,6 +271,36 @@ namespace hpp
 	    (name, Orientation::create
 	      (name, problemSolver_->robot(), joint, rotation, m));
 	}
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::createComBeetweenFeet
+      (const char* constraintName, const char* jointLName,
+       const char* jointRName, const char* jointRefName, const floatSeq& point,
+       const hpp::boolSeq& mask)
+	throw (hpp::Error)
+      {
+	JointPtr_t jointL, jointR, jointRef;
+	vector3_t p = floatSeqToVector3 (point);
+
+	std::vector<bool> m = boolSeqToBoolVector (mask);
+	try {
+          jointL = problemSolver_->robot()->getJointByName(jointLName);
+          jointR = problemSolver_->robot()->getJointByName(jointRName);
+	  // Test whether joint1 is world frame
+          if (std::string (jointRefName) == std::string (""))
+            jointRef = problemSolver_->robot()->rootJoint ();
+	  else
+	    jointRef = problemSolver_->robot()->getJointByName(jointRefName);
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+        std::string name (constraintName);
+        problemSolver_->addNumericalConstraint
+          (name, ComBetweenFeet::create (name, problemSolver_->robot(),
+                                         jointL, jointR,
+                                         jointRef, p, m));
       }
 
       // ---------------------------------------------------------------

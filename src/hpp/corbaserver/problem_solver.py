@@ -130,13 +130,28 @@ class ProblemSolver (object):
     #  \param p quaternion representing the desired orientation
     #         of joint2 in the frame of joint1.
     #  \param mask Select which axis to be constrained.
-    #  If joint1 of joint2 is "", the corresponding joint is replaced by
+    #  If joint1 or joint2 is "", the corresponding joint is replaced by
     #  the global frame.
     #  constraints are stored in ProblemSolver object
     def createOrientationConstraint (self, constraintName, joint1Name,
                                      joint2Name, p, mask):
         return self.client.problem.createOrientationConstraint \
             (constraintName, joint1Name, joint2Name, p, mask)
+
+    ## Create ComBeetweenFeet constraint between two joints
+    #
+    #  \param constraintName name of the constraint created,
+    #  \param jointLName name of first joint
+    #  \param jointRName name of second joint
+    #  \param jointRefName name of second joint
+    #  \param point point in local frame of jointRef.
+    #  \param mask Select axis to be constrained.
+    #  If jointRef is "", the robot root joint is used.
+    #  Constraints are stored in ProblemSolver object
+    def createComBeetweenFeet (self, constraintName, jointLName,
+                                     jointRName, jointRefName, point, mask):
+        return self.client.problem.createComBeetweenFeet \
+            (constraintName, jointLName, jointRName, jointRefName, point, mask)
 
     ## Create position constraint between two joints
     #
