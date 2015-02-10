@@ -138,6 +138,19 @@ class ProblemSolver (object):
         return self.client.problem.createOrientationConstraint \
             (constraintName, joint1Name, joint2Name, p, mask)
 
+    ## Create RelativeCom constraint between two joints
+    #
+    #  \param constraintName name of the constraint created,
+    #  \param comName name of CenterOfMassComputation
+    #  \param jointName name of joint
+    #  \param point point in local frame of joint.
+    #  \param mask Select axis to be constrained.
+    #  If jointName is "", the robot root joint is used.
+    #  Constraints are stored in ProblemSolver object
+    def createRelativeComConstraint (self, constraintName, comName, jointLName, point, mask):
+        return self.client.problem.createRelativeComConstraint \
+            (constraintName, comName, jointLName, point, mask)
+
     ## Create ComBeetweenFeet constraint between two joints
     #
     #  \param constraintName name of the constraint created,
@@ -154,6 +167,14 @@ class ProblemSolver (object):
         pointL, pointR, jointRefName, mask):
         return self.client.problem.createComBeetweenFeet \
             (constraintName, comName, jointLName, jointRName, pointL, pointR, jointRefName, mask)
+
+    ## Add an object to compute a partial COM of the robot.
+    # \param name of the partial com
+    # \param jointNames list of joint name of each tree ROOT to consider.
+    # \note Joints are added recursively, it is not possible so far to add a
+    # joint without addind all its children.
+    def addPartialCom (self, comName, jointNames):
+        return self.client.robot.addPartialCom (comName, jointNames);
 
     ## Create position constraint between two joints
     #
