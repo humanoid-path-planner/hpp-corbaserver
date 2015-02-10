@@ -141,17 +141,19 @@ class ProblemSolver (object):
     ## Create ComBeetweenFeet constraint between two joints
     #
     #  \param constraintName name of the constraint created,
+    #  \param comName name of CenterOfMassComputation
     #  \param jointLName name of first joint
     #  \param jointRName name of second joint
+    #  \param pointL point in local frame of jointL.
+    #  \param pointR point in local frame of jointR.
     #  \param jointRefName name of second joint
-    #  \param point point in local frame of jointRef.
     #  \param mask Select axis to be constrained.
     #  If jointRef is "", the robot root joint is used.
     #  Constraints are stored in ProblemSolver object
-    def createComBeetweenFeet (self, constraintName, jointLName,
-                                     jointRName, jointRefName, point, mask):
+    def createComBeetweenFeet (self, constraintName, comName, jointLName, jointRName,
+        pointL, pointR, jointRefName, mask):
         return self.client.problem.createComBeetweenFeet \
-            (constraintName, jointLName, jointRName, jointRefName, point, mask)
+            (constraintName, comName, jointLName, jointRName, pointL, pointR, jointRefName, mask)
 
     ## Create position constraint between two joints
     #

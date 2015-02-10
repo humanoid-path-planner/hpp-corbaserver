@@ -49,10 +49,10 @@ namespace hpp
 	 const char* joint2Name, const Double* p, const hpp::boolSeq& mask)
 	  throw (hpp::Error);
 
-        void createComBeetweenFeet (const char* constraintName,
+        void createComBeetweenFeet (const char* constraintName, const char* comn,
             const char* jointLName, const char* jointRName,
-            const char* jointRefName, const floatSeq& point,
-            const hpp::boolSeq& mask)
+            const floatSeq& pointL, const floatSeq& pointR,
+            const char* jointRefName, const hpp::boolSeq& mask)
           throw (hpp::Error);
 
 	virtual void createStaticStabilityGravityConstraint

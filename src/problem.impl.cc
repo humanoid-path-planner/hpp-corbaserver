@@ -276,13 +276,16 @@ namespace hpp
       // ---------------------------------------------------------------
 
       void Problem::createComBeetweenFeet
-      (const char* constraintName, const char* jointLName,
-       const char* jointRName, const char* jointRefName, const floatSeq& point,
-       const hpp::boolSeq& mask)
+      (const char* constraintName, const char* comName, const char* jointLName,
+       const char* jointRName, const floatSeq& pL, const floatSeq& pR,
+       const char* jointRefName, const hpp::boolSeq& mask)
 	throw (hpp::Error)
       {
 	JointPtr_t jointL, jointR, jointRef;
-	vector3_t p = floatSeqToVector3 (point);
+        model::CenterOfMassComputationPtr_t comc;
+	vector3_t pointL = floatSeqToVector3 (pL);
+	vector3_t pointR = floatSeqToVector3 (pR);
+	vector3_t pointRef (0,0,0);
 
 	std::vector<bool> m = boolSeqToBoolVector (mask);
 	try {
@@ -293,14 +296,24 @@ namespace hpp
             jointRef = problemSolver_->robot()->rootJoint ();
 	  else
 	    jointRef = problemSolver_->robot()->getJointByName(jointRefName);
+          std::string name (constraintName), comN (comName);
+          if (comN.compare ("") == 0) {
+            problemSolver_->addNumericalConstraint
+              (name, ComBetweenFeet::create (name, problemSolver_->robot(),
+                                             jointL, jointR, pointL, pointR,
+                                             jointRef, pointRef, m));
+          } else {
+            comc = problemSolver_->centerOfMassComputation (comN);
+            if (!comc)
+              throw hpp::Error ("Partial COM not found.");
+            problemSolver_->addNumericalConstraint
+              (name, ComBetweenFeet::create (name, problemSolver_->robot(), comc,
+                                             jointL, jointR, pointL, pointR,
+                                             jointRef, pointRef, m));
+          }
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
-        std::string name (constraintName);
-        problemSolver_->addNumericalConstraint
-          (name, ComBetweenFeet::create (name, problemSolver_->robot(),
-                                         jointL, jointR,
-                                         jointRef, p, m));
       }
 
       // ---------------------------------------------------------------
