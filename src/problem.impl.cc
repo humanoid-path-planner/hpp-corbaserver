@@ -275,6 +275,39 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+      void Problem::createRelativeComConstraint (const char* constraintName,
+          const char* comName, const char* jointName, const floatSeq& p,
+          const hpp::boolSeq& mask)
+        throw (hpp::Error)
+      {
+	JointPtr_t joint;
+        model::CenterOfMassComputationPtr_t comc;
+	vector3_t point = floatSeqToVector3 (p);
+
+	std::vector<bool> m = boolSeqToBoolVector (mask);
+	try {
+          joint = problemSolver_->robot()->getJointByName(jointName);
+	  // Test whether joint1 is world frame
+          std::string name (constraintName), comN (comName);
+          if (comN.compare ("") == 0) {
+            problemSolver_->addNumericalConstraint
+              (name, RelativeCom::create (problemSolver_->robot(),
+                                             joint, point, m));
+          } else {
+            comc = problemSolver_->centerOfMassComputation (comN);
+            if (!comc)
+              throw hpp::Error ("Partial COM not found.");
+            problemSolver_->addNumericalConstraint
+              (name, RelativeCom::create (problemSolver_->robot(), comc,
+                                             joint, point, m));
+          }
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // ---------------------------------------------------------------
+
       void Problem::createComBeetweenFeet
       (const char* constraintName, const char* comName, const char* jointLName,
        const char* jointRName, const floatSeq& pL, const floatSeq& pR,

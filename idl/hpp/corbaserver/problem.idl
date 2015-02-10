@@ -104,6 +104,19 @@ module hpp
             in floatSeq pointR, in string jointRefName, in boolSeq mask)
         raises (Error);
 
+    /// Create RelativeCom constraint between two joints
+    ///
+    /// \param constraintName name of the constraint created,
+    /// \param comName name of CenterOfMassComputation
+    /// \param jointName name of joint
+    /// \param point point in local frame of joint.
+    /// \param mask Select axis to be constrained.
+    /// If jointName is "", the robot root joint is used.
+    /// Constraints are stored in ProblemSolver object
+    void createRelativeComConstraint (in string constraintName, in string comName,
+        in string jointLName, in floatSeq point, in boolSeq mask)
+      raises (Error);
+
     void createStaticStabilityGravityConstraint
     (in string constraintName, in string jointName,
      in floatSeqSeq pts, in intSeqSeq objectTriangles,

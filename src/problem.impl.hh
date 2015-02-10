@@ -49,6 +49,11 @@ namespace hpp
 	 const char* joint2Name, const Double* p, const hpp::boolSeq& mask)
 	  throw (hpp::Error);
 
+        void createRelativeComConstraint (const char* constraintName,
+            const char* comn, const char* jointName, const floatSeq& point,
+            const hpp::boolSeq& mask)
+          throw (hpp::Error);
+
         void createComBeetweenFeet (const char* constraintName, const char* comn,
             const char* jointLName, const char* jointRName,
             const floatSeq& pointL, const floatSeq& pointR,
