@@ -566,7 +566,7 @@ namespace hpp
         std::sort (dofs.begin (), dofs.end ());
         std::vector <size_type>::iterator last =
           std::unique (dofs.begin (), dofs.end ());
-        dofs.erase (dofs.begin (), last);
+        dofs.erase (last, dofs.end ());
         /// Then, create the intervals.
         core::SizeIntervals_t passiveDofs;
         dofs.push_back (robot->numberDof () + 1);
