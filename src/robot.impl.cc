@@ -20,6 +20,7 @@
 #include <hpp/model/object-factory.hh>
 #include <hpp/model/object-iterator.hh>
 #include <hpp/model/collision-object.hh>
+#include <hpp/model/center-of-mass-computation.hh>
 #include <hpp/core/basic-configuration-shooter.hh>
 #include <hpp/core/config-validations.hh>
 #include <hpp/core/distance-between-objects.hh>
@@ -677,6 +678,26 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
+      hpp::floatSeq* Robot::getComPosition () throw (hpp::Error)
+      {
+	hpp::floatSeq *dofArray;
+	try {
+	  // Get robot in hppPlanner object.
+	  DevicePtr_t robot = problemSolver_->robot ();
+          if (!robot) throw hpp::Error ("No robot in problem solver.");
+	  const vector3_t& com = robot->positionCenterOfMass ();
+	  dofArray = new hpp::floatSeq();
+	  dofArray->length(3);
+	  for(std::size_t i=0; i<3; i++)
+	    (*dofArray)[i] = com [i];
+	  return dofArray;
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
+
       hpp::floatSeq* Robot::getCurrentConfig() throw (hpp::Error)
       {
 	hpp::floatSeq *dofArray;
@@ -1120,6 +1141,23 @@ namespace hpp
 	}
       }
 
+      void Robot::addPartialCom (const char* comName, const Names_t& jointNames)
+        throw (hpp::Error)
+      {
+        DevicePtr_t robot = problemSolver_->robot ();
+        if (!robot) throw Error ("You should set the robot before.");
+        model::CenterOfMassComputationPtr_t comc =
+          model::CenterOfMassComputation::create (robot);
+
+        for (CORBA::ULong i=0; i<jointNames.length (); ++i) {
+          std::string name (jointNames[i]);
+          JointPtr_t j = robot->getJointByName (name);
+          if (!j) throw hpp::Error ("One joint not found.");
+          comc->add (j);
+        }
+        comc->computeMass ();
+        problemSolver_->addCenterOfMassComputation (std::string (comName), comc);
+      }
     } // end of namespace impl.
   } // end of namespace corbaServer.
 } // end of namespace hpp.

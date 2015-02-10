@@ -96,6 +96,7 @@ namespace hpp
 	virtual Names_t* getAllJointNames () throw (hpp::Error);
 	virtual Transform__slice* getJointPosition(const char* jointName)
 	  throw (hpp::Error);
+	virtual floatSeq* getComPosition() throw (hpp::Error);
 
 	virtual Transform__slice* getRootJointPosition () throw (hpp::Error);
 
@@ -186,6 +187,10 @@ namespace hpp
 	addObjectToJoint (const char* bodyName, const char* objectName,
 			  const Double* config)
 	  throw (hpp::Error);
+
+        virtual void
+        addPartialCom (const char* comName, const Names_t& jointNames)
+          throw (hpp::Error);
 
       private:
 	CollisionObjectPtr_t getObjectByName (const char* name);

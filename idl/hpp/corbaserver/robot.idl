@@ -82,6 +82,10 @@ module hpp
     /// Get all joint names including anchor joints
     Names_t getAllJointNames () raises (Error);
 
+    /// Get COM position
+    /// \throw Error if robot is not set
+    floatSeq getComPosition () raises (Error);
+
     /// Get joint position
     /// \param jointName name of the joint
     /// \throw Error if robot is not set or if joint does not exist.
@@ -325,6 +329,14 @@ module hpp
     /// \param pos relative position of the polyhedron in the body
     void addObjectToJoint(in string jointName, in string objectName,
 			  in Transform_ pos) raises (Error);
+
+    /// Add an object to compute a partial COM of the robot.
+    /// \param name of the partial com
+    /// \param jointNames names of each ROOT of the joint trees to consider.
+    /// \note Joints are added recursively, it is not possible so far to add a
+    /// joint without addind all its children.
+    void addPartialCom (in string comName, in Names_t jointNames)
+        raises (Error);
     /// \}
   };
   };
