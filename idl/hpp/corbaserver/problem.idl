@@ -237,7 +237,7 @@ module hpp
 
     /// Solve the problem.
     /// \throw Error.
-    void solve() raises (Error);
+    double solve() raises (Error);
 
     /// Make direct connection between two configurations
     /// \param startConfig, endConfig: the configurations to link.

@@ -121,7 +121,7 @@ namespace hpp
 	virtual bool executeOneStep () throw (hpp::Error);
 	virtual void finishSolveStepByStep () throw (hpp::Error);
 
-	virtual void solve () throw (hpp::Error);
+	virtual CORBA::Double solve () throw (hpp::Error);
 
 	virtual void directPath (const hpp::floatSeq& startConfig,
 				  const hpp::floatSeq& endConfig)

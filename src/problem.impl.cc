@@ -9,6 +9,7 @@
 // See the COPYING file for more information.
 
 #include <iostream>
+#include <ctime>
 
 #include <hpp/util/debug.hh>
 #include <hpp/util/portability.hh>
@@ -769,10 +770,12 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::solve () throw (hpp::Error)
+      CORBA::Double Problem::solve () throw (hpp::Error)
       {
 	try {
+          std::clock_t start = std::clock ();
 	  problemSolver_->solve();
+          return (std::clock () - start) / (double) CLOCKS_PER_SEC;
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
