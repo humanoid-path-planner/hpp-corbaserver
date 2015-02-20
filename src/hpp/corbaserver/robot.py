@@ -86,6 +86,10 @@ class Robot (object):
     def setRootJointPosition (self, position):
         return self.client.robot.setRootJointPosition (position)
 
+    ## Set the static position of joint WRT its parent
+    def setJointPosition (self, jointName, position):
+        return self.client.robot.setJointPosition (jointName, position)
+
     ## Get joint number degrees of freedom.
     def getJointNumberDof (self, jointName):
         return self.client.robot.getJointNumberDof (jointName)

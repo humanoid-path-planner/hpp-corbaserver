@@ -101,6 +101,11 @@ module hpp
     ///        initial configuration.
     void setRootJointPosition (in Transform_ position) raises (Error);
 
+    /// Set the static position of joint WRT its parent
+    /// \param position constant position of the joint
+    void setJointPosition (in string jointName, in Transform_ position)
+      raises (Error);
+
     /// Get joint number degrees of freedom
     /// \param jointName name of the joint
     /// \throw Error if robot is not set or if joint does not exist.

@@ -103,6 +103,9 @@ namespace hpp
 	virtual void setRootJointPosition (const  Double* position)
 	  throw (hpp::Error);
 
+	virtual void setJointPosition (const char* jointName,
+            const  Double* position)
+	  throw (hpp::Error);
 
 	virtual Short getJointNumberDof (const char* jointName)
 	  throw (hpp::Error);

@@ -411,6 +411,40 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
+      void Robot::setJointPosition (const char* jointName, const Double* position)
+	throw (hpp::Error)
+      {
+	try {
+	  DevicePtr_t robot = problemSolver_->robot ();
+	  if (!robot) {
+	    throw hpp::Error ("no robot");
+	  }
+	  JointVector_t jv = robot->getJointVector ();
+	  JointPtr_t joint (NULL);
+          std::string n (jointName);
+          for (JointVector_t::iterator it = jv.begin ();
+              it != jv.end (); ++it) {
+            if (n.compare ((*it)->name ()) == 0) {
+              joint = *it;
+              break;
+            }
+          }
+	  if (!joint) {
+	    std::ostringstream oss ("Robot has no joint with name ");
+	    oss  << n;
+	    hppDout (error, oss.str ());
+	    throw hpp::Error (oss.str ().c_str ());
+	  }
+	  Transform3f t3f;
+	  hppTransformToTransform3f (position, t3f);
+	  joint->positionInParentFrame (t3f);
+	} catch (const std::exception& exc) {
+	  throw Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
+
       Transform__slice* Robot::getJointPosition(const char* jointName)
 	throw (hpp::Error)
       {
