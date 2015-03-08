@@ -83,25 +83,18 @@ FOREACH (IDL ${IDL_SOURCES})
     DESTINATION ${PYTHON_SITELIB}/hpp/corbaserver
     )
 ENDFOREACH()
-INSTALL(
-  FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/hpp/__init__.py
-  ${CMAKE_CURRENT_SOURCE_DIR}/hpp/quaternion.py
-  ${CMAKE_CURRENT_SOURCE_DIR}/hpp/transform.py
-  DESTINATION ${PYTHON_SITELIB}/hpp
-  )
-INSTALL(
-  FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/hpp/corbaserver/__init__.py
-  DESTINATION ${PYTHON_SITELIB}/hpp/corbaserver
-  )
-INSTALL(
-  FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/hpp/corbaserver/client.py
-  ${CMAKE_CURRENT_SOURCE_DIR}/hpp/corbaserver/robot.py 
-  ${CMAKE_CURRENT_SOURCE_DIR}/hpp/corbaserver/problem_solver.py
- DESTINATION ${PYTHON_SITELIB}/hpp/corbaserver
-  )
+
+FOREACH (FILE __init__.py quaternion.py transform.py)
+  PYTHON_INSTALL_ON_SITE(
+    hpp ${FILE} ${PYTHON_SITELIB}
+    )
+ENDFOREACH ()
+
+FOREACH (FILE __init__.py client.py robot.py  problem_solver.py)
+  PYTHON_INSTALL_ON_SITE(
+    hpp/corbaserver ${FILE} ${PYTHON_SITELIB}
+    )
+ENDFOREACH ()
 
 INSTALL(
   FILES
