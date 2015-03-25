@@ -26,32 +26,36 @@ SET(IDL_SOURCES
 OMNIIDL_INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/idl)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src)
 FOREACH(IDL ${IDL_SOURCES})
-  GENERATE_IDL_FILE (${IDL}
+  GENERATE_IDL_FILE (hpp/corbaserver/${IDL}
     ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver)
 ENDFOREACH()
 
 ADD_LIBRARY(${LIBRARY_NAME}
   SHARED
-  common.hh
-  commonSK.cc
+  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/common_idl.py
+  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/problem_idl.py
+  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/obstacle_idl.py
+  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/robot_idl.py
+  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/common.hh
+  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/problem.hh
+  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/obstacle.hh
+  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/robot.hh
   obstacle.impl.cc
   obstacle.impl.hh
   problem.impl.cc
   problem.impl.hh
   robot.impl.cc
   robot.impl.hh
+  client.cc
   server.cc
   server-private.cc
   server-private.hh
   tools.cc
   tools.hh
-  obstacleSK.cc
-  problemSK.cc
-  robotSK.cc
-  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/common_idl.py
-  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/obstacle_idl.py
-  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/problem_idl.py
-  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/robot_idl.py
+  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/commonSK.cc
+  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/obstacleSK.cc
+  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/robotSK.cc
+  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/problemSK.cc
 )
 
 PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-core)
@@ -75,11 +79,13 @@ FOREACH (IDL ${IDL_SOURCES})
     )
   SET_SOURCE_FILES_PROPERTIES(
     ${CMAKE_CURRENT_BINARY_DIR}/${IDL}_idl.py
-    GENERATED=ON
+    PROPERTIES GENERATED ON
     )
   INSTALL(
-    FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/${IDL}_idl.py
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/${IDL}.hh
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp/corbaserver)
+  INSTALL(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/${IDL}_idl.py
     DESTINATION ${PYTHON_SITELIB}/hpp/corbaserver
     )
 ENDFOREACH()

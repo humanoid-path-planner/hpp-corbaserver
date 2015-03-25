@@ -29,6 +29,7 @@ namespace hpp
   namespace corbaServer
   {
     class Server;
+    class Client;
     typedef model::Body* BodyPtr_t;
     typedef fcl::CollisionGeometry CollisionGeometry_t;
     typedef boost::shared_ptr <CollisionGeometry_t> CollisionGeometryPtr_t;

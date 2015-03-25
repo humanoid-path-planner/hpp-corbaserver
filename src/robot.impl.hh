@@ -16,7 +16,7 @@
 # include <hpp/model/object-factory.hh>
 # include "hpp/core/problem-solver.hh"
 # include "hpp/corbaserver/fwd.hh"
-# include "robot.hh"
+# include "hpp/corbaserver/robot.hh"
 
 namespace hpp
 {

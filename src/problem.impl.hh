@@ -13,8 +13,7 @@
 # include <vector>
 
 # include "hpp/corbaserver/fwd.hh"
-# include "common.hh"
-# include "problem.hh"
+# include "hpp/corbaserver/problem.hh"
 
 namespace hpp
 {
