@@ -65,6 +65,23 @@ namespace hpp
 	    throw hpp::Error (oss.str ().c_str ());
 	  }
 	}
+
+	static jointBoundSeq* localGetJointBounds(const JointPtr_t& joint)
+	{
+	  std::size_t jointNbDofs = joint->configSize ();
+          jointBoundSeq* ret = new jointBoundSeq;
+          ret->length (2*jointNbDofs);
+          for (std::size_t iDof=0; iDof<jointNbDofs; iDof++) {
+            if (joint->isBounded (iDof)) {
+                (*ret) [2*iDof] = joint->lowerBound (iDof);
+                (*ret) [2*iDof + 1] = joint->upperBound (iDof);
+            } else {
+                (*ret) [2*iDof] = 1;
+                (*ret) [2*iDof + 1] = 0;
+            }
+          }
+          return ret;
+	}
       } // end of namespace.
 
       // --------------------------------------------------------------------
@@ -364,6 +381,32 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
+      Names_t* Robot::getChildJointNames (const char* jointName)
+        throw (hpp::Error)
+      {
+	try {
+	  DevicePtr_t robot = problemSolver_->robot ();
+          if (!robot) return new Names_t (0, 0, Names_t::allocbuf (0));
+	  // Compute number of real urdf joints
+          JointPtr_t j = robot->getJointByName (std::string (jointName));
+	  JointVector_t jointVector = robot->getJointVector ();
+	  ULong size = j->numberChildJoints ();
+	  char** nameList = Names_t::allocbuf(size);
+	  Names_t *jointNames = new Names_t (size, size, nameList);
+	  for (std::size_t i = 0; i < size; ++i) {
+	    const JointPtr_t joint = j->childJoint (i);
+	    std::string name = joint->name ();
+	    nameList [i] =
+	      (char*) malloc (sizeof(char)*(name.length ()+1));
+	    strcpy (nameList [i], name.c_str ());
+	  }
+	  return jointNames;
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
       Transform__slice* Robot::getRootJointPosition () throw (hpp::Error)
       {
 	try {
@@ -445,6 +488,98 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
+      hpp::floatSeq* Robot::getJointConfig(const char* jointName)
+	throw (hpp::Error)
+      {
+	hpp::floatSeq *dofArray;
+	try {
+	  // Get robot in hppPlanner object.
+	  DevicePtr_t robot = problemSolver_->robot ();
+          if (!robot) throw hpp::Error ("No robot in problem solver.");
+	  JointPtr_t joint = robot->getJointByName (jointName);
+	  if (!joint) {
+	    std::ostringstream oss ("Robot has no joint with name ");
+	    oss  << jointName;
+	    hppDout (error, oss.str ());
+	    throw hpp::Error (oss.str ().c_str ());
+	  }
+          vector_t config = robot->currentConfiguration ();
+          size_t ric = joint->rankInConfiguration ();
+	  std::size_t dim = joint->configSize ();
+	  dofArray = new hpp::floatSeq();
+	  dofArray->length(dim);
+	  for(std::size_t i=0; i<dim; i++)
+	    (*dofArray)[i] = config [ric + i];
+	  return dofArray;
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
+
+      void Robot::setJointConfig(const char* jointName, const hpp::floatSeq& q)
+	throw (hpp::Error)
+      {
+	try {
+	  // Get robot in hppPlanner object.
+	  DevicePtr_t robot = problemSolver_->robot ();
+          if (!robot) throw hpp::Error ("No robot in problem solver.");
+	  JointPtr_t joint = robot->getJointByName (jointName);
+	  if (!joint) {
+	    std::ostringstream oss ("Robot has no joint with name ");
+	    oss  << jointName;
+	    hppDout (error, oss.str ());
+	    throw hpp::Error (oss.str ().c_str ());
+	  }
+          vector_t config = robot->currentConfiguration ();
+          size_t ric = joint->rankInConfiguration ();
+	  std::size_t dim = joint->configSize ();
+          if (dim != q.length ()) throw Error ("Wrong configuration dimension");
+	  for(std::size_t i=0; i<dim; i++)
+            config [ric + i] = q[i];
+          robot->currentConfiguration (config);
+          robot->computeForwardKinematics ();
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
+
+      void Robot::jointIntegrate(const char* jointName, const hpp::floatSeq& dq)
+	throw (hpp::Error)
+      {
+	try {
+	  // Get robot in hppPlanner object.
+	  DevicePtr_t robot = problemSolver_->robot ();
+          if (!robot) throw hpp::Error ("No robot in problem solver.");
+	  JointPtr_t joint = robot->getJointByName (jointName);
+	  if (!joint) {
+	    std::ostringstream oss ("Robot has no joint with name ");
+	    oss  << jointName;
+	    hppDout (error, oss.str ());
+	    throw hpp::Error (oss.str ().c_str ());
+	  }
+	  std::size_t dim = joint->numberDof ();
+          if (dim != dq.length ()) throw Error ("Wrong speed dimension");
+          vector_t config = robot->currentConfiguration ();
+          vector_t dqAll (robot->numberDof ());
+          dqAll.setZero ();
+          size_t ric = joint->rankInConfiguration ();
+          size_t riv = joint->rankInVelocity ();
+	  for(std::size_t i=0; i<dim; i++)
+            dqAll [riv + i] = dq[i];
+          joint->configuration ()->integrate (config, dqAll, ric, riv, config);
+          robot->currentConfiguration (config);
+          robot->computeForwardKinematics ();
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
+
       Transform__slice* Robot::getJointPosition(const char* jointName)
 	throw (hpp::Error)
       {
@@ -516,6 +651,23 @@ namespace hpp
 	  return (Short) joint->configSize ();
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
+
+      jointBoundSeq* Robot::getJointBounds (const char* jointName)
+	throw (hpp::Error)
+      {
+	try  {
+	  // Get robot in ProblemSolver object.
+	  DevicePtr_t robot = problemSolver_->robot ();
+
+	  // get joint
+	  JointPtr_t joint = robot->getJointByName (jointName);
+	  return localGetJointBounds(joint);
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
 	}
       }
 
@@ -750,6 +902,7 @@ namespace hpp
 	  throw hpp::Error (exc.what ());
 	}
       }
+
       // --------------------------------------------------------------------
 
       Names_t* Robot::getJointInnerObjects (const char* jointName)

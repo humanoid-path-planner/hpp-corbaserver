@@ -94,6 +94,14 @@ namespace hpp
 
 	virtual Names_t* getJointNames () throw (hpp::Error);
 	virtual Names_t* getAllJointNames () throw (hpp::Error);
+	virtual Names_t* getChildJointNames (const char* jointName)
+          throw (hpp::Error);
+        virtual hpp::floatSeq* getJointConfig(const char* jointName)
+          throw (hpp::Error);
+        virtual void setJointConfig(const char* jointName, const floatSeq& cfg)
+          throw (hpp::Error);
+        virtual void jointIntegrate(const char* jointName, const floatSeq& dq)
+          throw (hpp::Error);
 	virtual Transform__slice* getJointPosition(const char* jointName)
 	  throw (hpp::Error);
 	virtual floatSeq* getComPosition() throw (hpp::Error);
@@ -112,6 +120,8 @@ namespace hpp
 	virtual Short getJointConfigSize (const char* jointName)
 	  throw (hpp::Error);
 
+        virtual hpp::corbaserver::jointBoundSeq* getJointBounds (const char* jointName)
+          throw (hpp::Error);
 	virtual void setJointBounds
 	(const char* jointName,
 	 const hpp::corbaserver::jointBoundSeq& jointBound) throw (hpp::Error);
