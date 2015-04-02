@@ -77,6 +77,8 @@ namespace hpp
 					 const char* srdfSuffix)
 	  throw (hpp::Error);
 
+	virtual char* getRobotName () throw (hpp::Error);
+
 	virtual Short getConfigSize () throw (hpp::Error);
 
 	virtual Short getNumberDof () throw (hpp::Error);

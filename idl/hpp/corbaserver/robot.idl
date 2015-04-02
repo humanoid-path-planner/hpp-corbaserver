@@ -352,6 +352,9 @@ module hpp
     /// joint without addind all its children.
     void addPartialCom (in string comName, in Names_t jointNames)
         raises (Error);
+
+    /// Get the name of the current robot.
+    string getRobotName () raises (Error);
     /// \}
   };
   };

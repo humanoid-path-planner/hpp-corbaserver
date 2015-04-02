@@ -129,6 +129,18 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
+      char* Robot::getRobotName () throw (hpp::Error)
+      {
+        DevicePtr_t robot = problemSolver_->robot ();
+        if (!robot) throw hpp::Error ("No robot in problem solver.");
+        const std::string& str = robot->name();
+        char* name = new char[str.length ()+1];
+        strcpy (name, str.c_str ());
+        return name;
+      }
+
+      // --------------------------------------------------------------------
+
       void Robot::setRobotRootJoint(const char* inRobotName,
 				     const char* inJointName)
 	throw (hpp::Error)
