@@ -33,6 +33,7 @@
 #include <hpp/core/roadmap.hh>
 #include <hpp/core/steering-method.hh>
 #include <hpp/core/comparison-type.hh>
+#include <hpp/core/parser/roadmap-factory.hh>
 
 #include <hpp/constraints/differentiable-function.hh>
 #include <hpp/constraints/distance-between-bodies.hh>
@@ -1238,6 +1239,33 @@ namespace hpp
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
+      }
+
+      void Problem::saveRoadmap (const char* filename)
+        throw (hpp::Error)
+      {
+        try {
+          std::ofstream ofs (filename, std::ofstream::out);
+          hpp::core::parser::writeRoadmap (ofs, problemSolver_->roadmap(),
+              problemSolver_->robot());
+          ofs.close ();
+        } catch (const std::exception& exc) {
+          throw hpp::Error (exc.what ());
+        }
+      }
+
+      void Problem::readRoadmap (const char* filename)
+        throw (hpp::Error)
+      {
+        try {
+          problemSolver_->roadmap (
+              hpp::core::parser::readRoadmap (std::string(filename),
+                problemSolver_->roadmap()->distance (),
+                problemSolver_->robot())
+              );
+        } catch (const std::exception& exc) {
+          throw hpp::Error (exc.what ());
+        }
       }
     } // namespace impl
   } // namespace corbaServer

@@ -361,6 +361,14 @@ module hpp
     /// This should be done when joints bounds are modified because the KDTree
     /// must be resized.
     void resetRoadmap () raises (Error);
+
+    /// Save the current roadmap in a file
+    /// \param filename name of the file where the roadmap is saved
+    void saveRoadmap (in string filename) raises (Error);
+
+    /// Read a roadmap from a file
+    /// \param filename name of the file from which the roadmap is read.
+    void readRoadmap (in string filename) raises (Error);
     /// \}
   };
   }; // interface Problem

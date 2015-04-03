@@ -419,4 +419,15 @@ class ProblemSolver (object):
     ## Clear the roadmap
     def clearRoadmap (self):
         return self.client.problem.clearRoadmap ()
+
+    ## Save the current roadmap in a file
+    #  \param filename name of the file where the roadmap is saved
+    def saveRoadmap (self, filename):
+        return self.client.problem.saveRoadmap (filename)
+
+    ## Read a roadmap from a file
+    #  \param filename name of the file from which the roadmap is read.
+    def readRoadmap (self, filename):
+        return self.client.problem.readRoadmap (filename)
+
     ## \}
