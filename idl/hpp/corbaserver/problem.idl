@@ -199,10 +199,13 @@ module hpp
     ///        core::ProblemSolver::addPathPlannerType
     void selectPathPlanner (in string pathPlannerType) raises (Error);
 
-    /// Select path optimizer type
+    /// Add a path optimizer
     /// \param Name of the path optimizer type, either "RandomShortcut" or
     /// any type added by core::ProblemSolver::addPathOptimizerType
-    void selectPathOptimizer (in string pathOptimizerType) raises (Error);
+    void addPathOptimizer (in string pathOptimizerType) raises (Error);
+
+    /// Clear the vector of path optimizers
+    void clearPathOptimizers () raises (Error);
 
     /// Select path validation method
     /// \param Name of the path validation method, either "Discretized"

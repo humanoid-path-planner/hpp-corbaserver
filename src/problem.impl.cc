@@ -697,11 +697,22 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::selectPathOptimizer (const char* pathOptimizerType)
+      void Problem::addPathOptimizer (const char* pathOptimizerType)
 	throw (Error)
       {
 	try {
-	  problemSolver_->pathOptimizerType (std::string (pathOptimizerType));
+	  problemSolver_->addPathOptimizer (std::string (pathOptimizerType));
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::clearPathOptimizers () throw (Error)
+      {
+	try {
+	  problemSolver_->clearPathOptimizers ();
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -840,17 +851,8 @@ namespace hpp
 		<< problemSolver_->paths ().size () << ".";
 	    throw std::runtime_error (oss.str ());
 	  }
-	  if (!problemSolver_->pathOptimizer ()) {
-	    problemSolver_->createPathOptimizer ();
-	  }
-	  // If type is None, not path optimizer has been created.
-	  if (!problemSolver_->pathOptimizer ()) {
-	    return;
-	  }
 	  PathVectorPtr_t initial = problemSolver_->paths () [pathId];
-	  PathVectorPtr_t optimized =
-	    problemSolver_->pathOptimizer ()-> optimize (initial);
-	  problemSolver_->addPath (optimized);
+	  problemSolver_->optimizePath (initial);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}

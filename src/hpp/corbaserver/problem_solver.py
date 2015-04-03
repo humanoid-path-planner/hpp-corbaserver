@@ -258,11 +258,16 @@ class ProblemSolver (object):
     def selectPathPlanner (self, pathPlannerType):
         return self.client.problem.selectPathPlanner (pathPlannerType)
 
-    ## Select path optimizer type
+    ## Add a path optimizer
     #  \param Name of the path optimizer type, either "RandomShortcut" or
     #   any type added by core::ProblemSolver::addPathOptimizerType
-    def selectPathOptimizer (self, pathOptimizerType):
-        return self.client.problem.selectPathOptimizer (pathOptimizerType)
+    def addPathOptimizer (self, pathOptimizerType):
+        return self.client.problem.addPathOptimizer (pathOptimizerType)
+
+    ## Clear sequence of path optimizers
+    #
+    def clearPathOptimizers (self):
+        return self.client.problem.clearPathOptimizers ()
 
     ## Select path validation method
     #  \param Name of the path validation method, either "Discretized"

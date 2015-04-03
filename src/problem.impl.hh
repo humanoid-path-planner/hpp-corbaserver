@@ -104,8 +104,10 @@ namespace hpp
 	virtual void setErrorThreshold (Double threshold) throw (Error);
 	virtual void setMaxIterations (UShort iterations) throw (Error);
 
-	virtual void selectPathOptimizer (const char* pathOptimizerType)
+	virtual void addPathOptimizer (const char* pathOptimizerType)
 	  throw (Error);
+
+	virtual void clearPathOptimizers () throw (Error);
 
 	virtual void selectPathValidation (const char* pathValidationType,
 					   Double tolerance) throw (Error);
