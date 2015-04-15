@@ -144,6 +144,8 @@ namespace hpp
 	virtual Long numberEdges () throw (hpp::Error);
 	virtual void edge (ULong edgeId, hpp::floatSeq_out q1,
 			   hpp::floatSeq_out q2) throw (hpp::Error);
+    virtual hpp::floatSeq* node (ULong nodeId) throw (hpp::Error);
+    virtual Long numberNodes () throw (hpp::Error);
 	virtual Long numberConnectedComponents () throw (hpp::Error);
 	virtual hpp::floatSeqSeq*
 	nodesConnectedComponent (ULong connectedComponentId) throw (hpp::Error);

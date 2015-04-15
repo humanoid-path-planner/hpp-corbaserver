@@ -288,6 +288,12 @@ module hpp
     /// Nodes of the roadmap
     floatSeqSeq nodes () raises (Error);
 
+		// number of nodes in the roadmap
+    long numberNodes() raises (Error);
+
+    // return the configuration of the node nodeId
+    floatSeq node(in unsigned long nodeId) raises(Error);
+
     /// Number of edges
     long numberEdges () raises (Error);
 
