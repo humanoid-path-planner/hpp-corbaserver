@@ -288,6 +288,14 @@ namespace hpp
 	  joint =
 	    objectFactory_.createJointTranslation (posMatrix);
 	}
+	else if (jt == "translation2") {
+	  joint =
+	    objectFactory_.createJointTranslation2 (posMatrix);
+	}
+	else if (jt == "translation3") {
+	  joint =
+	    objectFactory_.createJointTranslation3 (posMatrix);
+	}
 	else if (jt == "rotation") {
 	  throw hpp::Error ("joint type \"rotation\" is not supported anymore,"
 			    "please choose between \"bounded-rotation\" "

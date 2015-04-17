@@ -278,8 +278,9 @@ module hpp
 
     /// Create a new joint
     /// \param jointName name of the joint,
-    /// \param jointType among ["anchor", "SO3", "rotation",
-    ///                         "translation"]
+    /// \param jointType among ["anchor", "SO3", "bounded-rotation",
+    ///                         "unbounded-rotation", "translation",
+    ///                         "translation2", "translation3"]
     /// \param pos initial position of the joint
     /// \param joinBounds bounds of the joint. See setJointBounds for details.
     void createJoint(in string jointName, in string jointType,
