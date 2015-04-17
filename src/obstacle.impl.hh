@@ -15,7 +15,7 @@
 
 # include <hpp/core/problem-solver.hh>
 # include <hpp/corbaserver/fwd.hh>
-# include <obstacle.hh>
+# include <hpp/corbaserver/obstacle.hh>
 
 /// \brief Implement CORBA interface ``Obstacle''.
 namespace hpp

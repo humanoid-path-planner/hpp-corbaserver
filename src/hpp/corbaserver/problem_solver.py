@@ -337,7 +337,15 @@ class ProblemSolver (object):
 
     ## Get nodes of the roadmap.
     def nodes(self):
-	return self.client.problem.nodes ()
+      return self.client.problem.nodes ()
+
+    # the configuration of the node nodeId
+    def node(self,nodeId):
+      return self.client.problem.node(nodeId)
+
+    # the number of nodes in the roadmap
+    def numberNodes(self):
+      return self.client.problem.numberNodes ()
 
     ## Number of edges
     def numberEdges (self):

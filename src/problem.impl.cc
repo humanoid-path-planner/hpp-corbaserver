@@ -1015,6 +1015,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+
       void Problem::edge (ULong edgeId, hpp::floatSeq_out q1,
 			  hpp::floatSeq_out q2) throw (hpp::Error)
       {
@@ -1048,6 +1049,44 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+      Long Problem::numberNodes () throw (hpp::Error)
+      {
+          return problemSolver_->roadmap ()->nodes().size();
+      }
+
+      // ---------------------------------------------------------------
+
+      hpp::floatSeq* Problem::node (ULong nodeId) throw (hpp::Error)
+      {
+      try {
+        const Nodes_t & nodes (problemSolver_->roadmap()->nodes());
+
+        if (nodes.size() > nodeId)
+        {
+            Nodes_t::const_iterator itNode = boost::next(nodes.begin(),nodeId);
+            ConfigurationPtr_t conf = (*itNode)->configuration ();
+            ULong size = (ULong) conf->size ();
+
+            hpp::floatSeq* q_ptr = new hpp::floatSeq ();
+            q_ptr->length (size);
+
+            for (int i=0; i<size; ++i) {
+            (*q_ptr) [i] = (*conf) [i];
+            }
+            return q_ptr;
+        }else{
+            std::ostringstream oss ("wrong nodeId :");
+            oss << nodeId << ", number of nodes: "
+            << nodes.size() << ".";
+            throw std::runtime_error (oss.str ().c_str ());
+        }
+        } catch (const std::exception& exc) {
+          throw hpp::Error (exc.what ());
+        }
+      }
+
+      // -----------------------------------------------------------------
+
       Long Problem::numberConnectedComponents () throw (hpp::Error)
       {
 	return
@@ -1070,7 +1109,7 @@ namespace hpp
 	  while (i != connectedComponentId) {
 	    ++i; itcc++;
 	  }
-	  const Nodes_t & nodes ((*itcc)->nodes ());
+      const Nodes_t & nodes ((*itcc)->nodes ());
 	  res = new hpp::floatSeqSeq;
 	  res->length (nodes.size ());
 	  i=0;

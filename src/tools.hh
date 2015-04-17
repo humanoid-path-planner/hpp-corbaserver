@@ -13,7 +13,7 @@
 
 # include <hpp/corbaserver/config.hh>
 # include <hpp/corbaserver/fwd.hh>
-# include "common.hh"
+# include "hpp/corbaserver/common.hh"
 
 HPP_CORBASERVER_LOCAL void
 hppTransformToTransform3f (const CORBA::Double* inConfig,

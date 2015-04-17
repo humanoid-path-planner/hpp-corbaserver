@@ -12,9 +12,6 @@
 
 #include <hpp/util/debug.hh>
 
-#include "obstacle.impl.hh"
-#include "problem.impl.hh"
-#include "robot.impl.hh"
 #include "server-private.hh"
 
 namespace hpp

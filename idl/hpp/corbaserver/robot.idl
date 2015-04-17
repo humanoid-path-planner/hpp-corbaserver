@@ -82,6 +82,15 @@ module hpp
     /// Get all joint names including anchor joints
     Names_t getAllJointNames () raises (Error);
 
+    /// Get child joint names including anchor joints
+    Names_t getChildJointNames (in string jointName) raises (Error);
+
+    floatSeq getJointConfig(in string jointName) raises (Error);
+
+    void setJointConfig(in string jointName, in floatSeq config) raises (Error);
+
+    void jointIntegrate(in string jointName, in floatSeq speed) raises (Error);
+
     /// Get COM position
     /// \throw Error if robot is not set
     floatSeq getComPosition () raises (Error);
@@ -129,6 +138,7 @@ module hpp
     void setJointBounds(in string jointName,
 			in jointBoundSeq inJointBound)
       raises (Error);
+    jointBoundSeq getJointBounds(in string jointName) raises (Error);
 
     /// Get link position in world frame
     ///
@@ -342,6 +352,9 @@ module hpp
     /// joint without addind all its children.
     void addPartialCom (in string comName, in Names_t jointNames)
         raises (Error);
+
+    /// Get the name of the current robot.
+    string getRobotName () raises (Error);
     /// \}
   };
   };
