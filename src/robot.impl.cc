@@ -303,6 +303,7 @@ namespace hpp
 	// Bound joint if needed.
 	localSetJointBounds(joint, jointBounds);
 	BodyPtr_t body = objectFactory_.createBody ();
+	body->name (jn);
 	joint->setLinkedBody (body);
 	// Store joint in jointMap_.
 	jointMap_[jn] = joint;
