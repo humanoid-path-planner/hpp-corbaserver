@@ -210,8 +210,9 @@ namespace hpp
       private:
 	CollisionObjectPtr_t getObjectByName (const char* name);
 	typedef std::map <std::string, JointPtr_t> JointMap_t;
+	// Look for joint in jointMap_. If not found look into the robot.
+	JointPtr_t getJointByName (const char* name);
 	// Store devices, joints and bodies in construction.
-
 	/// Map of devices in construction.
 	std::map <std::string, DevicePtr_t> robotMap_;
 	/// Map of joints in construction.
