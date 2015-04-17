@@ -1072,7 +1072,7 @@ namespace hpp
             hpp::floatSeq* q_ptr = new hpp::floatSeq ();
             q_ptr->length (size);
 
-            for (int i=0; i<size; ++i) {
+            for (ULong i=0; i<size; ++i) {
             (*q_ptr) [i] = (*conf) [i];
             }
             return q_ptr;
