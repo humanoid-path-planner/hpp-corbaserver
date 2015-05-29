@@ -324,6 +324,15 @@ class ProblemSolver (object):
         return self.client.problem.selectPathProjector (pathProjectorType,
                                                         tolerance)
 
+    def prepareSolveStepByStep (self):
+        return self.client.problem.prepareSolveStepByStep ()
+
+    def executeOneStep (self):
+        return self.client.problem.executeOneStep ()
+
+    def finishSolveStepByStep (self):
+        return self.client.problem.finishSolveStepByStep ()
+
     ## Solve the problem of corresponding ChppPlanner object
     def solve (self):
         return self.client.problem.solve ()
