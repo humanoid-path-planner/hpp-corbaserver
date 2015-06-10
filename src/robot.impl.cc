@@ -849,8 +849,9 @@ namespace hpp
 	try {
 	  hpp::floatSeq *dofArray = 0x0;
 	  DevicePtr_t robot = problemSolver_->robot ();
-	  hpp::core::BasicConfigurationShooter shooter (robot);
-	  ConfigurationPtr_t configuration = shooter.shoot();
+	  hpp::core::BasicConfigurationShooterPtr_t shooter
+			= core::BasicConfigurationShooter::create (robot);
+	  ConfigurationPtr_t configuration = shooter->shoot();
 
 	  std::size_t deviceDim = robot->configSize ();
 	  dofArray = new hpp::floatSeq();

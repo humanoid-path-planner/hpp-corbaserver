@@ -497,14 +497,14 @@ namespace hpp
 	throw (hpp::Error)
       {
         DevicePtr_t robot = problemSolver_->robot ();
-        core::BasicConfigurationShooter shooter
-          = core::BasicConfigurationShooter (robot);
+        core::BasicConfigurationShooterPtr_t shooter
+          = core::BasicConfigurationShooter::create (robot);
 	bool success = false, configIsValid = false;
         ConfigurationPtr_t config;
         while (!configIsValid && maxIter > 0)
         {
           try {
-            config = shooter.shoot ();
+            config = shooter->shoot ();
             success = problemSolver_->constraints ()->apply (*config);
             if (hpp::core::ConfigProjectorPtr_t configProjector =
                 problemSolver_->constraints ()->configProjector ()) {
