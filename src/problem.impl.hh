@@ -118,6 +118,9 @@ namespace hpp
 	virtual void selectPathPlanner (const char* pathPlannerType)
 	  throw (Error);
 
+    virtual void selectConFigurationShooter (const char* configurationShooterType)
+      throw (Error);
+
 	virtual bool prepareSolveStepByStep () throw (hpp::Error);
 	virtual bool executeOneStep () throw (hpp::Error);
 	virtual void finishSolveStepByStep () throw (hpp::Error);
