@@ -199,6 +199,12 @@ module hpp
     ///        core::ProblemSolver::addPathPlannerType
     void selectPathPlanner (in string pathPlannerType) raises (Error);
 
+    /// Select configuration shooter type
+    /// \param Name of the configuration planner type, either
+    ///        "BasicConfigurationShooter" or any type added by method
+    ///        core::ProblemSolver::addConfigurationShooterType
+    void selectConFigurationShooter (in string configurationShooterType) raises (Error);
+
     /// Add a path optimizer
     /// \param Name of the path optimizer type, either "RandomShortcut" or
     /// any type added by core::ProblemSolver::addPathOptimizerType
