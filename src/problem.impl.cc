@@ -697,6 +697,17 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+      void Problem::selectConFigurationShooter (const char* configurationShooterType)
+    throw (Error)
+      {
+    try {
+      problemSolver_->configurationShooterType (std::string (configurationShooterType));
+    } catch (const std::exception& exc) {
+      throw hpp::Error (exc.what ());
+    }
+      }
+
+      // ---------------------------------------------------------------
       void Problem::addPathOptimizer (const char* pathOptimizerType)
 	throw (Error)
       {
