@@ -142,6 +142,28 @@ module hpp
       raises (Error);
 
 
+    /// Create distance constraint between robot objects
+    ///
+    /// \param constraintName name of the constraint created,
+    /// \param joint1Name name of first joint,
+    /// \param joint2Name name of second joint,
+    /// \param distance desired distance between joint bodies.
+    /// Constraints are stored in ProblemSolver object
+    void createDistanceBetweenJointConstraint
+    (in string constraintName, in string joint1Name, in string joint2Name,
+     in double distance) raises (Error);
+
+    /// Create distance constraint between robot and environment objects
+    ///
+    /// \param constraintName name of the constraint created,
+    /// \param joint1Name name of first joint,
+    /// \param objects names of environment objects,
+    /// \param distance desired distance between joint bodies.
+    /// Constraints are stored in ProblemSolver object
+    void createDistanceBetweenJointAndObjects
+    (in string constraintName, in string joint1Name, in Names_t objects,
+     in double distance) raises (Error);
+
     /// Reset constraints
     void resetConstraints () raises (Error);
 

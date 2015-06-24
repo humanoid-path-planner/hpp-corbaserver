@@ -73,6 +73,14 @@ namespace hpp
 					       const hpp::boolSeq& mask)
 	  throw (hpp::Error);
 
+	virtual void createDistanceBetweenJointConstraint
+	(const char* constraintName, const char* joint1Name,
+	 const char* joint2Name, Double distance) throw (Error);
+
+	virtual void createDistanceBetweenJointAndObjects
+	(const char* constraintName, const char* joint1Name,
+	 const hpp::Names_t& objects, Double distance) throw (Error);
+
 	virtual bool applyConstraints (const hpp::floatSeq& input,
 				       hpp::floatSeq_out output,
 				       Double& residualError)

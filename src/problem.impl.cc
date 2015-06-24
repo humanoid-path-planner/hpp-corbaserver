@@ -34,6 +34,7 @@
 #include <hpp/core/comparison-type.hh>
 
 #include <hpp/constraints/differentiable-function.hh>
+#include <hpp/constraints/distance-between-bodies.hh>
 #include <hpp/constraints/position.hh>
 #include <hpp/constraints/orientation.hh>
 #include <hpp/constraints/position.hh>
@@ -47,6 +48,9 @@
 
 #include "problem.impl.hh"
 
+using hpp::model::ObjectVector_t;
+
+using hpp::constraints::DistanceBetweenBodies;
 using hpp::constraints::Orientation;
 using hpp::constraints::OrientationPtr_t;
 using hpp::constraints::Position;
@@ -459,6 +463,51 @@ namespace hpp
 	    (name, Position::create
 	     (name, problemSolver_->robot(), joint, targetInLocalFrame,
 	      targetInWorldFrame, I3, m));
+	}
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::createDistanceBetweenJointConstraint
+      (const char* constraintName, const char* joint1Name,
+       const char* joint2Name, Double) throw (Error)
+      {
+	if (!problemSolver_->robot ()) throw hpp::Error ("No robot loaded");
+	try {
+	  JointPtr_t joint1 = problemSolver_->robot ()->getJointByName
+	    (joint1Name);
+	  JointPtr_t joint2 = problemSolver_->robot ()->getJointByName
+	    (joint2Name);
+	  std::string name (constraintName);
+	  problemSolver_->addNumericalConstraint
+	    (name, DistanceBetweenBodies::create (name, problemSolver_->robot(),
+						  joint1, joint2));
+	} catch (const std::exception& exc) {
+	  throw Error (exc.what ());
+	}
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::createDistanceBetweenJointAndObjects
+      (const char* constraintName, const char* joint1Name,
+       const hpp::Names_t& objects, Double) throw (Error)
+      {
+	if (!problemSolver_->robot ()) throw hpp::Error ("No robot loaded");
+	try {
+	  JointPtr_t joint1 = problemSolver_->robot ()->getJointByName
+	    (joint1Name);
+	  ObjectVector_t objectList;
+	  for (CORBA::ULong i=0; i<objects.length (); ++i) {
+	    objectList.push_back (problemSolver_->obstacle
+				  (std::string (objects [i])));
+	  }
+	  std::string name (constraintName);
+	  problemSolver_->addNumericalConstraint
+	    (name, DistanceBetweenBodies::create (name, problemSolver_->robot(),
+						  joint1, objectList));
+	} catch (const std::exception& exc) {
+	  throw Error (exc.what ());
 	}
       }
 

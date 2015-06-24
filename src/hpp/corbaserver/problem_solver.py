@@ -192,6 +192,30 @@ class ProblemSolver (object):
         return self.client.problem.createPositionConstraint \
             (constraintName, joint1Name, joint2Name, point1, point2, mask)
 
+    ## Create distance constraint between robot objects
+    #
+    #  \param constraintName name of the constraint created,
+    #  \param joint1Name name of first joint,
+    #  \param joint2Name name of second joint,
+    #  \param distance desired distance between joint bodies.
+    #  Constraints are stored in ProblemSolver object
+    def createDistanceBetweenJointConstraint (self, constraintName, joint1Name,\
+                                              joint2Name, distance) :
+        return self.client.problem.createDistanceBetweenJointConstraint \
+            (constraintName, joint1Name, joint2Name, distance)
+
+    ## Create distance constraint between robot and environment objects
+    #
+    #  \param constraintName name of the constraint created,
+    #  \param joint1Name name of first joint,
+    #  \param objects names of environment objects,
+    #  \param distance desired distance between joint bodies.
+    #  Constraints are stored in ProblemSolver object
+    def createDistanceBetweenJointAndObjects (self, constraintName, joint1Name,\
+                                              objects, distance) :
+        return self.client.problem.createDistanceBetweenJointAndObjects \
+            (constraintName, joint1Name, objects, distance)
+
     ## Reset Constraints
     #
     #  Reset all constraints, including numerical constraints and locked
