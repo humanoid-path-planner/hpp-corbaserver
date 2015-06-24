@@ -89,7 +89,7 @@ namespace hpp
 
 	// Fill dof vector with dof array.
 	for (size_type iDof=0; iDof < configDim; ++iDof) {
-	  (*config) [iDof] = dofArray [iDof];
+	  (*config) [iDof] = dofArray [(CORBA::ULong)iDof];
 	}
 	return config;
       }
@@ -115,7 +115,7 @@ namespace hpp
 	// Fill dof vector with dof array.
 	vector_t result (dofArray.length ());
 	for (size_type iDof=0; iDof < result.size (); ++iDof) {
-	  result [iDof] = dofArray [iDof];
+	  result [iDof] = dofArray [(CORBA::ULong)iDof];
 	}
 	return result;
       }
@@ -153,7 +153,7 @@ namespace hpp
 	  std::size_t deviceDim = config->size();
 
 	  dofArray = new hpp::floatSeq();
-	  dofArray->length(deviceDim);
+	  dofArray->length((CORBA::ULong)deviceDim);
 
 	  for(unsigned int i=0; i<deviceDim; i++){
 	    (*dofArray)[i] = (*config) [i];
@@ -189,17 +189,17 @@ namespace hpp
 	    (problemSolver_->goalConfigs ());
 	  std::size_t nbGoalConfig = goalConfigs.size ();
 	  configSequence = new hpp::floatSeqSeq ();
-	  configSequence->length (nbGoalConfig);
+	  configSequence->length ((CORBA::ULong)nbGoalConfig);
 	  for (std::size_t i=0; i<nbGoalConfig ;++i) {
 	    const ConfigurationPtr_t& config = goalConfigs [i];
 	    std::size_t deviceDim = config->size ();
 
 	    hpp::floatSeq dofArray;
-	    dofArray.length (deviceDim);
+	    dofArray.length ((CORBA::ULong)deviceDim);
 
 	    for (std::size_t j=0; j<deviceDim; ++j)
-	      dofArray[j] = (*config) [j];
-	    (*configSequence) [i] = dofArray;
+	      dofArray[(CORBA::ULong)j] = (*config) [j];
+	    (*configSequence) [(CORBA::ULong)i] = dofArray;
 	  }
 	  return configSequence;
 	} catch (const std::exception& exc) {
@@ -220,7 +220,7 @@ namespace hpp
 	  throw hpp::Error ("Mask must be of length 3");
         std::vector<bool> m (3);
 	for (size_t i=0; i<3; i++)
-	  m[i] = mask[i];
+	  m[i] = mask[(CORBA::ULong)i];
 	return m;
       }
 
@@ -375,7 +375,8 @@ namespace hpp
             if (objTriangles[i].length () != 3)
               throw hpp::Error ("Triangle must have size 3.");
             for (size_t j = 0; j < 3; j++)
-              if (objTriangles[i][j] < 0 && (size_t) objTriangles[i][j] >= pts.size())
+              if (objTriangles[i][(CORBA::ULong)j] < 0 &&
+		  (size_t) objTriangles[i][(CORBA::ULong)j] >= pts.size())
                 throw hpp::Error ("Point index out of range.");
 
             f->addObjectTriangle (fcl::TriangleP (
@@ -388,7 +389,8 @@ namespace hpp
             if (floorTriangles[i].length () != 3)
               throw hpp::Error ("Triangle must have size 3.");
             for (size_t j = 0; j < 3; j++)
-              if (floorTriangles[i][j] < 0 && (size_t) floorTriangles[i][j] >= pts.size())
+              if (floorTriangles[i][(CORBA::ULong)j] < 0 &&
+		  (size_t) floorTriangles[i][(CORBA::ULong)j] >= pts.size())
                 throw hpp::Error ("Point index out of range.");
 
             f->addFloorTriangle (fcl::TriangleP (
@@ -483,7 +485,7 @@ namespace hpp
 	q_ptr->length (size);
 
 	for (std::size_t i=0; i<size; ++i) {
-	  (*q_ptr) [i] = (*config) [i];
+	  (*q_ptr) [(CORBA::ULong)i] = (*config) [i];
 	}
 	output = q_ptr;
 	return success;
@@ -524,7 +526,7 @@ namespace hpp
 	q_ptr->length (size);
 
 	for (std::size_t i=0; i<size; ++i) {
-	  (*q_ptr) [i] = (*config) [i];
+	  (*q_ptr) [(CORBA::ULong)i] = (*config) [i];
 	}
 	output = q_ptr;
 	return configIsValid;
@@ -797,7 +799,7 @@ namespace hpp
 	try {
           std::clock_t start = std::clock ();
 	  problemSolver_->solve();
-          return (std::clock () - start) / (double) CLOCKS_PER_SEC;
+          return (double)(std::clock () - start) / (double) CLOCKS_PER_SEC;
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -904,10 +906,10 @@ namespace hpp
 	  // Allocate result now that the size is known.
 	  std::size_t size =  config.size ();
 	  double* dofArray = hpp::floatSeq::allocbuf((ULong)size);
-	  hpp::floatSeq* floatSeq = new hpp::floatSeq (size, size,
-						       dofArray, true);
+	  hpp::floatSeq* floatSeq = new hpp::floatSeq
+	    ((CORBA::ULong)size, (CORBA::ULong)size, dofArray, true);
 	  for (std::size_t i=0; i < size; ++i) {
-	    dofArray[i] =  config [i];
+	    dofArray[(CORBA::ULong)i] =  config [i];
 	  }
 	  return floatSeq;
 	} catch (const std::exception& exc) {
@@ -929,15 +931,17 @@ namespace hpp
 	configs.push_back(config);
 	config_1 = (*path) (path->length());
 	configs.push_back(config_1);
-	dofArray.length (config.size());
+	dofArray.length ((CORBA::ULong)config.size());
 	// modify configsequence
-	configSequence.length (configSequence.length() + size_increment);
-	std::size_t ptr = configSequence.length() - size_increment;
+	configSequence.length (configSequence.length() +
+			       (CORBA::ULong)size_increment);
+	CORBA::ULong ptr = configSequence.length() -
+	  (CORBA::ULong)size_increment;
 	for (std::size_t i=0; i<size_increment; ++i) {
-	  for (std::size_t j=0; j < (config.size()); ++j) {
-	    dofArray [j] = configs [points][j];
+	  for (std::size_t j=0; j < ((std::size_t)config.size()); ++j) {
+	    dofArray [(CORBA::ULong)j] = configs [points][j];
 	  }
-	  (configSequence)[ptr+i] = dofArray;
+	  (configSequence)[ptr+(CORBA::ULong)i] = dofArray;
 	}
       }
 
@@ -998,7 +1002,7 @@ namespace hpp
 	  const Nodes_t & nodes
 	    (problemSolver_->roadmap ()->nodes ());
 	  res = new hpp::floatSeqSeq;
-	  res->length (nodes.size ());
+	  res->length ((CORBA::ULong)nodes.size ());
 	  std::size_t i=0;
 	  for (Nodes_t::const_iterator itNode = nodes.begin ();
 	       itNode != nodes.end (); itNode++) {
@@ -1010,7 +1014,7 @@ namespace hpp
 	    for (size_type j=0 ; j < config->size() ; ++j) {
 	      dofArray[j] = (*config) [j];
 	    }
-	    (*res) [i] = floats;
+	    (*res) [(CORBA::ULong)i] = floats;
 	    ++i;
 	  }
 	} catch (const std::exception& exc) {
@@ -1023,7 +1027,7 @@ namespace hpp
 
       Long Problem::numberEdges () throw (hpp::Error)
       {
-	return problemSolver_->roadmap ()->edges ().size ();
+	return (Long)problemSolver_->roadmap ()->edges ().size ();
       }
 
       // ---------------------------------------------------------------
@@ -1050,8 +1054,8 @@ namespace hpp
 	  q2_ptr->length (size);
 
 	  for (i=0; i<size; ++i) {
-	    (*q1_ptr) [i] = (*config1) [i];
-	    (*q2_ptr) [i] = (*config2) [i];
+	    (*q1_ptr) [(CORBA::ULong)i] = (*config1) [i];
+	    (*q2_ptr) [(CORBA::ULong)i] = (*config2) [i];
 	  }
 	  q1 = q1_ptr;
 	  q2 = q2_ptr;
@@ -1064,7 +1068,7 @@ namespace hpp
 
       Long Problem::numberNodes () throw (hpp::Error)
       {
-          return problemSolver_->roadmap ()->nodes().size();
+	return (Long) problemSolver_->roadmap ()->nodes().size();
       }
 
       // ---------------------------------------------------------------
@@ -1103,7 +1107,7 @@ namespace hpp
       Long Problem::numberConnectedComponents () throw (hpp::Error)
       {
 	return
-	  problemSolver_->roadmap ()->connectedComponents ().size ();
+	  (Long) problemSolver_->roadmap ()->connectedComponents ().size ();
       }
 
       // ---------------------------------------------------------------
@@ -1124,7 +1128,7 @@ namespace hpp
 	  }
       const Nodes_t & nodes ((*itcc)->nodes ());
 	  res = new hpp::floatSeqSeq;
-	  res->length (nodes.size ());
+	  res->length ((CORBA::ULong)nodes.size ());
 	  i=0;
 	  for (Nodes_t::const_iterator itNode = nodes.begin ();
 	       itNode != nodes.end (); itNode++) {
