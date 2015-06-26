@@ -240,6 +240,19 @@ class ProblemSolver (object):
     def applyConstraints (self, q):
         return self.client.problem.applyConstraints (q)
 
+    ## Compute value and Jacobian of numerical constraints
+    #
+    #  \param q input configuration
+    #  \return value values of the numerical constraints stacked in a unique
+    #          vector,
+    #  \return Jacobian of the numerical constraints stacked in a unique
+    #          matrix.
+    #
+    #  Columns of the Jacobian corresponding to locked joints are omitted,
+    #  columns corresponding to passive dofs are set to 0.
+    def computeValueAndJacobian (self, q):
+        return self.client.problem.computeValueAndJacobian (q)
+
     ## Create a vector of passive dofs.
     #
     #  \param name name of the vector in the ProblemSolver map.

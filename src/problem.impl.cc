@@ -540,6 +540,23 @@ namespace hpp
 	return success;
       }
 
+      // ---------------------------------------------------------------
+
+      void Problem::computeValueAndJacobian
+      (const hpp::floatSeq& config, hpp::floatSeq_out value,
+       hpp::floatSeqSeq_out jacobian) throw (hpp::Error)
+      {
+	if (!problemSolver_->robot ()) throw hpp::Error ("No robot loaded");
+	try {
+	  ConfigurationPtr_t configuration = floatSeqToConfig
+	    (problemSolver_, config);
+	  vector_t v;
+	  matrix_t J;
+	  problemSolver_->computeValueAndJacobian (*configuration, v, J);
+	  value = vectorToFloatseq (v);
+	  jacobian = matrixToFloatSeqSeq (J);
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
 	}
       }
 

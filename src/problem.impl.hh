@@ -86,6 +86,10 @@ namespace hpp
 				       Double& residualError)
 	  throw (hpp::Error);
 
+	virtual void computeValueAndJacobian
+	(const hpp::floatSeq& config, hpp::floatSeq_out value,
+	 hpp::floatSeqSeq_out jacobian) throw (hpp::Error);
+
 	virtual bool generateValidConfig (UShort maxIter,
 				       hpp::floatSeq_out output,
 				       Double& residualError)
