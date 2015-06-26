@@ -85,10 +85,33 @@ module hpp
     /// Get child joint names including anchor joints
     Names_t getChildJointNames (in string jointName) raises (Error);
 
+    /// Get configuration of a joint in robot configuration
+    ///
+    /// \param jointName name of the joint,
+    /// \return the segment of the robot current configuration correponding to
+    ///         the joint.
     floatSeq getJointConfig(in string jointName) raises (Error);
 
+    /// Set configuration of a joint in robot configuration
+    ///
+    /// \param jointName name of the joint,
+    /// \param config Configuration of the joint.
+    ///
+    /// Size of config should fit hpp::model::Joint::configSize.
+    ///
+    /// Modify the part of the robot current configuration
+    /// correponding to the joint and recompute forward kinematics
     void setJointConfig(in string jointName, in floatSeq config) raises (Error);
 
+    /// Integrate velocity of a joint starting from robot configuration
+    ///
+    /// \param jointName name of the joint,
+    /// \param speed velocity vector of the joint
+    ///
+    /// Size of speed should fit hpp::model::Joint::numberDof.
+    ///
+    /// Modify the part of the robot current configuration
+    /// correponding to the joint and recompute forward kinematics
     void jointIntegrate(in string jointName, in floatSeq speed) raises (Error);
 
     /// Get COM position
