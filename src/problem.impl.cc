@@ -235,6 +235,7 @@ namespace hpp
        const char* joint2Name, const Double* p, const hpp::boolSeq& mask)
 	throw (hpp::Error)
       {
+	if (!problemSolver_->robot ()) throw hpp::Error ("No robot loaded");
 	JointPtr_t joint1;
 	JointPtr_t joint2;
 	size_type constrainedJoint = 0;
@@ -285,6 +286,7 @@ namespace hpp
           const hpp::boolSeq& mask)
         throw (hpp::Error)
       {
+	if (!problemSolver_->robot ()) throw hpp::Error ("No robot loaded");
 	JointPtr_t joint;
         model::CenterOfMassComputationPtr_t comc;
 	vector3_t point = floatSeqToVector3 (p);
@@ -319,6 +321,7 @@ namespace hpp
        const char* jointRefName, const hpp::boolSeq& mask)
 	throw (hpp::Error)
       {
+	if (!problemSolver_->robot ()) throw hpp::Error ("No robot loaded");
 	JointPtr_t jointL, jointR, jointRef;
         model::CenterOfMassComputationPtr_t comc;
 	vector3_t pointL = floatSeqToVector3 (pL);
@@ -362,6 +365,7 @@ namespace hpp
        const hpp::intSeqSeq& floorTriangles)
         throw (hpp::Error)
       {
+	if (!problemSolver_->robot ()) throw hpp::Error ("No robot loaded");
         JointPtr_t joint;
         try {
           std::string name (constraintName);
@@ -417,6 +421,7 @@ namespace hpp
        const hpp::floatSeq& point2, const hpp::boolSeq& mask)
 	throw (hpp::Error)
       {
+	if (!problemSolver_->robot ()) throw hpp::Error ("No robot loaded");
 	JointPtr_t joint1;
 	JointPtr_t joint2;
 	vector3_t targetInWorldFrame;
@@ -518,6 +523,7 @@ namespace hpp
 				      double& residualError)
 	throw (hpp::Error)
       {
+	if (!problemSolver_->robot ()) throw hpp::Error ("No robot loaded");
 	bool success = false;
 	ConfigurationPtr_t config = floatSeqToConfig (problemSolver_, input);
 	try {
@@ -548,6 +554,7 @@ namespace hpp
 	throw (hpp::Error)
       {
         DevicePtr_t robot = problemSolver_->robot ();
+	if (!robot) throw hpp::Error ("No robot loaded");
         core::BasicConfigurationShooterPtr_t shooter
           = core::BasicConfigurationShooter::create (robot);
 	bool success = false, configIsValid = false;
@@ -585,6 +592,7 @@ namespace hpp
 
       void Problem::resetConstraints ()	throw (hpp::Error)
       {
+	if (!problemSolver_->robot ()) throw hpp::Error ("No robot loaded");
 	try {
 	  problemSolver_->resetConstraints ();
 	  problemSolver_->robot ()->controlComputation
@@ -601,9 +609,7 @@ namespace hpp
         throw (hpp::Error)
       {
         DevicePtr_t robot = problemSolver_->robot ();
-        if (!robot)
-	    throw Error ("You should set the robot before defining"
-			 " passive DOFs.");
+        if (!robot) throw hpp::Error ("No robot loaded");
         std::vector <size_type> dofs;
         /// First, translate names into velocity indexes.
         for (CORBA::ULong i=0; i<dofNames.length (); ++i) {
@@ -686,11 +692,8 @@ namespace hpp
       (const char* constraintName, const Names_t& constraintNames)
 	throw (Error)
       {
+	if (!problemSolver_->robot ()) throw hpp::Error ("No robot loaded");
 	try {
-	  if (!problemSolver_->robot()) {
-	    throw Error ("You should set the robot before defining"
-			 " constraints.");
-	  }
 	  for (CORBA::ULong i=0; i<constraintNames.length (); ++i) {
 	    std::string name (constraintNames [i]);
             problemSolver_->addFunctionToConfigProjector (constraintName, name);
@@ -708,6 +711,7 @@ namespace hpp
 			       const hpp::floatSeq& value)
 	throw (hpp::Error)
       {
+	if (!problemSolver_->robot ()) throw hpp::Error ("No robot loaded");
 	try {
 	  // Get robot in hppPlanner object.
 	  DevicePtr_t robot = problemSolver_->robot ();
