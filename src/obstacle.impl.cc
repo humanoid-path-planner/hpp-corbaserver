@@ -181,7 +181,7 @@ namespace hpp
       {
 	std::list <std::string> obstacles =
 	  problemSolver_->obstacleNames (collision, distance);
-	ULong size = obstacles.size ();
+	ULong size = (ULong) obstacles.size ();
 	char** nameList = Names_t::allocbuf(size);
 	Names_t *result = new Names_t (size, size, nameList);
 	std::size_t i = 0;

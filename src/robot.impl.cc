@@ -46,8 +46,8 @@ namespace hpp
 	  std::size_t jointNbDofs = joint->configSize ();
 	  if (nbJointBounds == 2*jointNbDofs) {
 	    for (std::size_t iDof=0; iDof<jointNbDofs; iDof++) {
-	      double vMin = jointBounds[2*iDof];
-	      double vMax = jointBounds[2*iDof+1];
+	      double vMin = jointBounds[(CORBA::ULong) (2*iDof)];
+	      double vMax = jointBounds[(CORBA::ULong) (2*iDof+1)];
 	      if (vMin <= vMax) {
 		/* Dof is actually bounded */
 		joint->isBounded(iDof, true);
@@ -70,14 +70,14 @@ namespace hpp
 	{
 	  std::size_t jointNbDofs = joint->configSize ();
           jointBoundSeq* ret = new jointBoundSeq;
-          ret->length (2*jointNbDofs);
+          ret->length ((CORBA::ULong) (2*jointNbDofs));
           for (std::size_t iDof=0; iDof<jointNbDofs; iDof++) {
             if (joint->isBounded (iDof)) {
-                (*ret) [2*iDof] = joint->lowerBound (iDof);
-                (*ret) [2*iDof + 1] = joint->upperBound (iDof);
+	      (*ret) [(CORBA::ULong) (2*iDof)] = joint->lowerBound (iDof);
+	      (*ret) [(CORBA::ULong) (2*iDof + 1)] = joint->upperBound (iDof);
             } else {
-                (*ret) [2*iDof] = 1;
-                (*ret) [2*iDof + 1] = 0;
+	      (*ret) [(CORBA::ULong) (2*iDof)] = 1;
+	      (*ret) [(CORBA::ULong) (2*iDof + 1)] = 0;
             }
           }
           return ret;
@@ -364,7 +364,7 @@ namespace hpp
             return new Names_t (0, 0, Names_t::allocbuf (0));
 	  // Compute number of real urdf joints
 	  JointVector_t jointVector = robot->getJointVector ();
-	  ULong size = jointVector.size ();
+	  ULong size = (CORBA::ULong) jointVector.size ();
 	  char** nameList = Names_t::allocbuf(size);
 	  Names_t *jointNames = new Names_t (size, size, nameList);
 	  for (std::size_t i = 0; i < jointVector.size (); ++i) {
@@ -391,7 +391,7 @@ namespace hpp
 	  // Compute number of real urdf joints
           JointPtr_t j = robot->getJointByName (std::string (jointName));
 	  JointVector_t jointVector = robot->getJointVector ();
-	  ULong size = j->numberChildJoints ();
+	  ULong size = (CORBA::ULong) j->numberChildJoints ();
 	  char** nameList = Names_t::allocbuf(size);
 	  Names_t *jointNames = new Names_t (size, size, nameList);
 	  for (std::size_t i = 0; i < size; ++i) {
@@ -505,12 +505,12 @@ namespace hpp
 	    throw hpp::Error (oss.str ().c_str ());
 	  }
           vector_t config = robot->currentConfiguration ();
-          size_t ric = joint->rankInConfiguration ();
-	  std::size_t dim = joint->configSize ();
+          size_type ric = joint->rankInConfiguration ();
+	  size_type dim = joint->configSize ();
 	  dofArray = new hpp::floatSeq();
-	  dofArray->length(dim);
-	  for(std::size_t i=0; i<dim; i++)
-	    (*dofArray)[i] = config [ric + i];
+	  dofArray->length((CORBA::ULong) dim);
+	  for(std::size_t i=0; i<dim; ++i)
+	    (*dofArray)[(CORBA::ULong) i] = config [ric + i];
 	  return dofArray;
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -534,11 +534,13 @@ namespace hpp
 	    throw hpp::Error (oss.str ().c_str ());
 	  }
           vector_t config = robot->currentConfiguration ();
-          size_t ric = joint->rankInConfiguration ();
-	  std::size_t dim = joint->configSize ();
-          if (dim != q.length ()) throw Error ("Wrong configuration dimension");
-	  for(std::size_t i=0; i<dim; i++)
-            config [ric + i] = q[i];
+          size_type ric = joint->rankInConfiguration ();
+	  size_type dim = joint->configSize ();
+          if (dim != (size_type) q.length ()) {
+	    throw Error ("Wrong configuration dimension");
+	  }
+	  for(size_type i=0; i<dim; i++)
+            config [ric + i] = q[(CORBA::ULong) i];
           robot->currentConfiguration (config);
           robot->computeForwardKinematics ();
 	} catch (const std::exception& exc) {
@@ -562,15 +564,17 @@ namespace hpp
 	    hppDout (error, oss.str ());
 	    throw hpp::Error (oss.str ().c_str ());
 	  }
-	  std::size_t dim = joint->numberDof ();
-          if (dim != dq.length ()) throw Error ("Wrong speed dimension");
+	  size_type dim = joint->numberDof ();
+          if (dim != (CORBA::ULong) dq.length ()) {
+	    throw Error ("Wrong speed dimension");
+	  }
           vector_t config = robot->currentConfiguration ();
           vector_t dqAll (robot->numberDof ());
           dqAll.setZero ();
-          size_t ric = joint->rankInConfiguration ();
-          size_t riv = joint->rankInVelocity ();
-	  for(std::size_t i=0; i<dim; i++)
-            dqAll [riv + i] = dq[i];
+          size_type ric = joint->rankInConfiguration ();
+          size_type riv = joint->rankInVelocity ();
+	  for(size_type i=0; i<dim; ++i)
+            dqAll [riv + i] = dq[(CORBA::ULong) i];
           joint->configuration ()->integrate (config, dqAll, ric, riv, config);
           robot->currentConfiguration (config);
           robot->computeForwardKinematics ();
@@ -774,12 +778,12 @@ namespace hpp
 	if (!robot) throw hpp::Error ("Robot is not set");
 	try {
 	  ExtraConfigSpace& extraCS = robot->extraConfigSpace ();
-	  std::size_t nbBounds = (std::size_t)bounds.length();
-	  std::size_t dimension = extraCS.dimension ();
+	  size_type nbBounds = (size_type)bounds.length();
+	  size_type dimension = extraCS.dimension ();
 	  if (nbBounds == 2*dimension) {
-	    for (std::size_t iDof=0; iDof < dimension; ++iDof) {
-	      double vMin = bounds [2*iDof];
-	      double vMax = bounds [2*iDof+1];
+	    for (size_type iDof=0; iDof < dimension; ++iDof) {
+	      double vMin = bounds [(CORBA::ULong) (2*iDof)];
+	      double vMax = bounds [(CORBA::ULong) (2*iDof+1)];
 	      if (vMin <= vMax) {
 		/* Dof is actually bounded */
 		extraCS.lower (iDof) = vMin;
@@ -805,18 +809,18 @@ namespace hpp
       dofArrayToConfig (const core::ProblemSolverPtr_t& problemSolver,
 			const hpp::floatSeq& dofArray)
       {
-	std::size_t configDim = (std::size_t)dofArray.length();
+	size_type configDim = (size_type)dofArray.length();
 	std::vector<double> dofVector;
 	// Get robot
 	DevicePtr_t robot = problemSolver->robot ();
 	if (!robot) {
 	  throw hpp::Error ("No robot in problem solver.");
 	}
-	std::size_t deviceDim = robot->configSize ();
+	size_type deviceDim = robot->configSize ();
 	// Fill dof vector with dof array.
 	Configuration_t config; config.resize (configDim);
-	for (std::size_t iDof = 0; iDof < configDim; iDof++) {
-	  config [iDof] = dofArray[iDof];
+	for (size_type iDof = 0; iDof < configDim; iDof++) {
+	  config [iDof] = dofArray[(CORBA::ULong) iDof];
 	}
 	// fill the vector by zero
 	hppDout (info, "config dimension: " <<configDim
@@ -853,11 +857,11 @@ namespace hpp
 			= core::BasicConfigurationShooter::create (robot);
 	  ConfigurationPtr_t configuration = shooter->shoot();
 
-	  std::size_t deviceDim = robot->configSize ();
+	  size_type deviceDim = robot->configSize ();
 	  dofArray = new hpp::floatSeq();
-	  dofArray->length (deviceDim);
-	  for(std::size_t i=0; i<deviceDim; i++)
-	    (*dofArray)[i] = (*configuration) [i];
+	  dofArray->length ((CORBA::ULong) deviceDim);
+	  for(size_type i=0; i<deviceDim; i++)
+	    (*dofArray)[(CORBA::ULong) i] = (*configuration) [i];
 	  return dofArray;
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -876,8 +880,8 @@ namespace hpp
 	  const vector3_t& com = robot->positionCenterOfMass ();
 	  dofArray = new hpp::floatSeq();
 	  dofArray->length(3);
-	  for(std::size_t i=0; i<3; i++)
-	    (*dofArray)[i] = com [i];
+	  for(size_type i=0; i<3; i++)
+	    (*dofArray)[(CORBA::ULong) i] = com [i];
 	  return dofArray;
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -894,11 +898,11 @@ namespace hpp
 	  DevicePtr_t robot = problemSolver_->robot ();
           if (!robot) throw hpp::Error ("No robot in problem solver.");
 	  vector_t config = robot->currentConfiguration ();
-	  std::size_t deviceDim = robot->configSize ();
+	  size_type deviceDim = robot->configSize ();
 	  dofArray = new hpp::floatSeq();
-	  dofArray->length(deviceDim);
-	  for(std::size_t i=0; i<deviceDim; i++)
-	    (*dofArray)[i] = config [i];
+	  dofArray->length((CORBA::ULong) deviceDim);
+	  for(size_type i=0; i<deviceDim; i++)
+	    (*dofArray)[(CORBA::ULong) i] = config [i];
 	  return dofArray;
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -1111,52 +1115,58 @@ namespace hpp
 	    distanceBetweenObjects->distanceResults ();
 	  std::size_t nbDistPairs = dr1.size () + dr2.size ();
 	  hpp::floatSeq* distances_ptr = new hpp::floatSeq ();
-	  distances_ptr->length (nbDistPairs);
+	  distances_ptr->length ((CORBA::ULong) nbDistPairs);
 	  Names_t* innerObjects_ptr = new Names_t ();
-	  innerObjects_ptr->length (nbDistPairs);
+	  innerObjects_ptr->length ((CORBA::ULong) nbDistPairs);
 	  Names_t* outerObjects_ptr = new Names_t ();
-	  outerObjects_ptr->length (nbDistPairs);
+	  outerObjects_ptr->length ((CORBA::ULong) nbDistPairs);
 	  hpp::floatSeqSeq* innerPoints_ptr = new hpp::floatSeqSeq ();
-	  innerPoints_ptr->length (nbDistPairs);
+	  innerPoints_ptr->length ((CORBA::ULong) nbDistPairs);
 	  hpp::floatSeqSeq* outerPoints_ptr = new hpp::floatSeqSeq ();
-	  outerPoints_ptr->length (nbDistPairs);
+	  outerPoints_ptr->length ((CORBA::ULong) nbDistPairs);
 	  std::size_t distPairId = 0;
 	  for (DistanceResults_t::const_iterator itDistance = dr1.begin ();
 	       itDistance != dr1.end (); itDistance++) {
-	    (*distances_ptr) [distPairId] = itDistance->fcl.min_distance;
-	    (*innerObjects_ptr) [distPairId] =
+	    (*distances_ptr) [(CORBA::ULong) distPairId] =
+	      itDistance->fcl.min_distance;
+	    (*innerObjects_ptr) [(CORBA::ULong) distPairId] =
 	      itDistance->innerObject->name ().c_str ();
-	    (*outerObjects_ptr) [distPairId] =
+	    (*outerObjects_ptr) [(CORBA::ULong) distPairId] =
 	      itDistance->outerObject->name ().c_str ();
 	    hpp::floatSeq pointBody_seq;
 	    pointBody_seq.length (3);
 	    hpp::floatSeq pointObstacle_seq;
 	    pointObstacle_seq.length (3);
 	    for (std::size_t j=0; j<3; ++j) {
-	      pointBody_seq [j] = itDistance->fcl.nearest_points [0][j];
-	      pointObstacle_seq [j] = itDistance->fcl.nearest_points [1][j];
+	      pointBody_seq [(CORBA::ULong) j] =
+		itDistance->fcl.nearest_points [0][j];
+	      pointObstacle_seq [(CORBA::ULong) j] =
+		itDistance->fcl.nearest_points [1][j];
 	    }
-	    (*innerPoints_ptr) [distPairId] = pointBody_seq;
-	    (*outerPoints_ptr) [distPairId] = pointObstacle_seq;
+	    (*innerPoints_ptr) [(CORBA::ULong) distPairId] = pointBody_seq;
+	    (*outerPoints_ptr) [(CORBA::ULong) distPairId] = pointObstacle_seq;
 	    ++distPairId;
 	  }
 	  for (DistanceResults_t::const_iterator itDistance = dr2.begin ();
 	       itDistance != dr2.end (); itDistance++) {
-	    (*distances_ptr) [distPairId] = itDistance->fcl.min_distance;
-	    (*innerObjects_ptr) [distPairId] =
+	    (*distances_ptr) [(CORBA::ULong) distPairId] =
+	      itDistance->fcl.min_distance;
+	    (*innerObjects_ptr) [(CORBA::ULong) distPairId] =
 	      itDistance->innerObject->name ().c_str ();
-	    (*outerObjects_ptr) [distPairId] =
+	    (*outerObjects_ptr) [(CORBA::ULong) distPairId] =
 	      itDistance->outerObject->name ().c_str ();
 	    hpp::floatSeq pointBody_seq;
 	    pointBody_seq.length (3);
 	    hpp::floatSeq pointObstacle_seq;
 	    pointObstacle_seq.length (3);
 	    for (std::size_t j=0; j<3; ++j) {
-	      pointBody_seq [j] = itDistance->fcl.nearest_points [0][j];
-	      pointObstacle_seq [j] = itDistance->fcl.nearest_points [1][j];
+	      pointBody_seq [(CORBA::ULong) j] =
+		itDistance->fcl.nearest_points [0][j];
+	      pointObstacle_seq [(CORBA::ULong) j] =
+		itDistance->fcl.nearest_points [1][j];
 	    }
-	    (*innerPoints_ptr) [distPairId] = pointBody_seq;
-	    (*outerPoints_ptr) [distPairId] = pointObstacle_seq;
+	    (*innerPoints_ptr) [(CORBA::ULong) distPairId] = pointBody_seq;
+	    (*outerPoints_ptr) [(CORBA::ULong) distPairId] = pointObstacle_seq;
 	    ++distPairId;
 	  }
 	  distances = distances_ptr;
