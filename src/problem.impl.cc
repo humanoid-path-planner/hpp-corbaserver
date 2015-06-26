@@ -47,6 +47,7 @@
 #include <hpp/model/body.hh>
 
 #include "problem.impl.hh"
+#include "tools.hh"
 
 using hpp::model::ObjectVector_t;
 
@@ -535,15 +536,11 @@ namespace hpp
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
-	ULong size = (ULong) config->size ();
-	hpp::floatSeq* q_ptr = new hpp::floatSeq ();
-	q_ptr->length (size);
-
-	for (std::size_t i=0; i<size; ++i) {
-	  (*q_ptr) [(CORBA::ULong)i] = (*config) [i];
-	}
-	output = q_ptr;
+	output = vectorToFloatseq (*config);
 	return success;
+      }
+
+	}
       }
 
       // ---------------------------------------------------------------

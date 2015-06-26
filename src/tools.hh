@@ -22,4 +22,11 @@ hppTransformToTransform3f (const CORBA::Double* inConfig,
 HPP_CORBASERVER_LOCAL void
 Transform3fTohppTransform (const hpp::corbaServer::Transform3f& transform,
 			   CORBA::Double* config);
+
+HPP_CORBASERVER_LOCAL hpp::floatSeq* vectorToFloatseq
+(const hpp::core::vector_t& input);
+
+HPP_CORBASERVER_LOCAL hpp::floatSeqSeq* matrixToFloatSeqSeq
+(const hpp::core::matrix_t& input);
+
 #endif //! HPPCORBASERVER_TOOLS_HH

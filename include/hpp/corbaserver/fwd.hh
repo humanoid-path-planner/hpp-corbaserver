@@ -72,6 +72,7 @@ namespace hpp
     typedef std::map <std::string, std::vector <fcl::Triangle> > TriangleMap_t;
     typedef std::map <std::string, std::vector <fcl::Vec3f> > VertexMap_t;
 
+    typedef model::matrix_t matrix_t;
     typedef model::vector_t vector_t;
     typedef model::vector3_t vector3_t;
     typedef model::ComJacobian_t ComJacobian_t;

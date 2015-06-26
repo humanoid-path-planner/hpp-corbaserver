@@ -11,6 +11,8 @@
 #include <hpp/fcl/math/transform.h>
 #include "tools.hh"
 
+using hpp::corbaServer::size_type;
+
 void
 hppTransformToTransform3f
 (const CORBA::Double* inConfig, hpp::corbaServer::Transform3f& transform)
@@ -38,4 +40,30 @@ Transform3fTohppTransform (const hpp::corbaServer::Transform3f& transform,
   }
   for(int i=0; i<3; i++)
     config [i] = T [i];
+}
+
+hpp::floatSeq* vectorToFloatseq (const hpp::core::vector_t& input)
+{
+  CORBA::ULong size = (CORBA::ULong) input.size ();
+  hpp::floatSeq* q_ptr = new hpp::floatSeq ();
+  q_ptr->length (size);
+
+  for (std::size_t i=0; i<size; ++i) {
+    (*q_ptr) [(CORBA::ULong)i] = input [i];
+  }
+  return q_ptr;
+}
+
+hpp::floatSeqSeq* matrixToFloatSeqSeq (const hpp::core::matrix_t& input)
+{
+  hpp::floatSeqSeq* res = new hpp::floatSeqSeq;
+  res->length (input.rows ());
+  for (size_type i=0; i<input.rows (); ++i) {
+    hpp::floatSeq row; row.length (input.cols ());
+    for (size_type j=0; j<input.cols (); ++j) {
+      row [j] = input (i, j);
+    }
+    (*res) [i] = row;
+  }
+  return res;
 }

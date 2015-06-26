@@ -1209,19 +1209,10 @@ namespace hpp
 
       hpp::floatSeqSeq* Robot::getJacobianCenterOfMass () throw (hpp::Error)
       {
-	hpp::floatSeqSeq* res = new hpp::floatSeqSeq;
 	try {
 	  const ComJacobian_t& jacobian =
 	    problemSolver_->robot ()->jacobianCenterOfMass ();
-	  res->length (jacobian.rows ());
-	  for (size_type i=0; i<jacobian.rows (); ++i) {
-	    hpp::floatSeq row; row.length (jacobian.cols ());
-	    for (size_type j=0; j<jacobian.cols (); ++j) {
-	      row [j] = jacobian (i, j);
-	    }
-	    (*res) [i] = row;
-	  }
-	  return res;
+	  return matrixToFloatSeqSeq (jacobian);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
