@@ -906,7 +906,7 @@ namespace hpp
 
       void Problem::interruptPathPlanning() throw (hpp::Error)
       {
-	problemSolver_->pathPlanner ()->interrupt ();
+	problemSolver_->interrupt ();
       }
 
       // ---------------------------------------------------------------
