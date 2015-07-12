@@ -1088,7 +1088,8 @@ namespace hpp
 	  Configuration_t config = dofArrayToConfig (problemSolver_, dofArray);
 	  DevicePtr_t robot = problemSolver_->robot ();
 	  validity =
-	    problemSolver_->problem ()->configValidations ()->validate (config);
+	    problemSolver_->problem ()->configValidations ()->validate
+	    (config, true);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}

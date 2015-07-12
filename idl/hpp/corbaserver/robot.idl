@@ -256,6 +256,7 @@ module hpp
     /// Check whether current configuration of robot is valid by calling
     /// hpp::core::ConfigValidations object stored in Problem.
     /// \retval validity whether configuration is valid
+    /// \throw if config is not valid, raise an exception.
     void isConfigValid (in floatSeq dofArray, out boolean validity)
       raises (Error);
 

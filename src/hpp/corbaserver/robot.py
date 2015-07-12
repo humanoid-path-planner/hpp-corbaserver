@@ -199,6 +199,7 @@ class Robot (object):
     # Check whether a configuration of robot is valid.
     # \param cfg a configuration
     # \return whether configuration is valid
+    # \throw if config is not valid, raise an exception.
     def isConfigValid (self, cfg):
         return self.client.robot.isConfigValid (cfg)
 
