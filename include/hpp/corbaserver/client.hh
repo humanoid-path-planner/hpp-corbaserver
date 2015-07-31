@@ -50,6 +50,8 @@ namespace hpp
       hpp::corbaserver::Obstacle_var obstacle_;
 
       CORBA::ORB_var orb_;
+
+      static unsigned int clientNumber;
     };
 
   } // end of namespace corbaServer.
