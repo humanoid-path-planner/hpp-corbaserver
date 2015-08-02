@@ -509,7 +509,7 @@ namespace hpp
 	  size_type dim = joint->configSize ();
 	  dofArray = new hpp::floatSeq();
 	  dofArray->length((CORBA::ULong) dim);
-	  for(std::size_t i=0; i<dim; ++i)
+	  for(std::size_t i=0; i< (std::size_t) dim; ++i)
 	    (*dofArray)[(CORBA::ULong) i] = config [ric + i];
 	  return dofArray;
 	} catch (const std::exception& exc) {
