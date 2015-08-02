@@ -157,9 +157,6 @@ namespace hpp
 	virtual void getObjectPosition (const char* objectName, Double* cfg)
 	  throw (hpp::Error);
 
-	virtual void
-	collisionTest (Boolean& validity) throw (hpp::Error);
-
 	virtual void isConfigValid
 	(const hpp::floatSeq& dofArray, Boolean& validity) throw (hpp::Error);
 

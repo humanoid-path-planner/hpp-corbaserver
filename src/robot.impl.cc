@@ -1067,20 +1067,6 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      void Robot::collisionTest (Boolean& validity) throw (hpp::Error)
-      {
-	try {
-	  DevicePtr_t robot = problemSolver_->robot ();
-	  Configuration_t config = robot->currentConfiguration ();
-	  validity = !problemSolver_->problem ()->configValidations ()
-	    ->validate (config);
-	} catch (const std::exception& exc) {
-	  throw hpp::Error (exc.what ());
-	}
-      }
-
-      // --------------------------------------------------------------------
-
       void Robot::isConfigValid (const hpp::floatSeq& dofArray,
 				 Boolean& validity) throw (hpp::Error)
       {

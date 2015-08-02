@@ -246,11 +246,6 @@ module hpp
     /// \name Collision checking and distance computation
     /// \{
 
-    /// Test collision with obstacles and auto-collision.
-    ///
-    /// \deprecated Use isConfigValid instead
-    void collisionTest (out boolean validity) raises (Error);
-
     /// Test the validity of a configuration
     ///
     /// Check whether current configuration of robot is valid by calling
