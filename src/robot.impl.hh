@@ -158,7 +158,8 @@ namespace hpp
 	  throw (hpp::Error);
 
 	virtual void isConfigValid
-	(const hpp::floatSeq& dofArray, Boolean& validity) throw (hpp::Error);
+	(const hpp::floatSeq& dofArray, Boolean& validity,
+	 CORBA::String_out report) throw (hpp::Error);
 
 	virtual void
 	distancesToCollision (hpp::floatSeq_out distances,

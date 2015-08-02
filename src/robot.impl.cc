@@ -1068,14 +1068,19 @@ namespace hpp
       // --------------------------------------------------------------------
 
       void Robot::isConfigValid (const hpp::floatSeq& dofArray,
-				 Boolean& validity) throw (hpp::Error)
+				 Boolean& validity, CORBA::String_out report)
+	throw (hpp::Error)
       {
 	try {
 	  Configuration_t config = dofArrayToConfig (problemSolver_, dofArray);
 	  DevicePtr_t robot = problemSolver_->robot ();
-	  validity =
-	    problemSolver_->problem ()->configValidations ()->validate
-	    (config, true);
+	  core::ValidationReportPtr_t validationReport;
+	  validity = problemSolver_->problem ()->configValidations ()->validate
+	    (config, validationReport);
+	  if (!validity) {
+	    std::ostringstream oss; oss << *validationReport;
+	    report = CORBA::string_dup(oss.str ().c_str ());
+	  }
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
