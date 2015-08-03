@@ -58,6 +58,7 @@ namespace hpp
     typedef model::ObjectVector_t ObjectVector_t;
     typedef model::ObjectIterator ObjectIterator;
     typedef core::PathPtr_t PathPtr_t;
+    typedef core::PathValidationReportPtr_t PathValidationReportPtr_t;
     typedef core::PathVector PathVector_t;
     typedef core::PathVectorPtr_t PathVectorPtr_t;
     typedef core::SteeringMethod SteeringMethod_t;

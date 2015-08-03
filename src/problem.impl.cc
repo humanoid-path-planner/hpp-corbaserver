@@ -27,6 +27,7 @@
 #include <hpp/core/path-optimizer.hh>
 #include <hpp/core/path-vector.hh>
 #include <hpp/core/path-validation.hh>
+#include <hpp/core/path-validation-report.hh>
 #include <hpp/core/straight-path.hh>
 #include <hpp/core/path.hh>
 #include <hpp/core/roadmap.hh>
@@ -895,8 +896,9 @@ namespace hpp
 	  path->appendPath (dp);
 	  problemSolver_->addPath (path);
 	  PathPtr_t unused;
+	  PathValidationReportPtr_t report;
 	  problemSolver_->problem()->pathValidation ()->validate
-	    (dp, false, unused);
+	    (dp, false, unused, report);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
