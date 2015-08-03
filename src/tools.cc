@@ -12,6 +12,7 @@
 #include "tools.hh"
 
 using hpp::corbaServer::size_type;
+using CORBA::ULong;
 
 void
 hppTransformToTransform3f
@@ -57,13 +58,13 @@ hpp::floatSeq* vectorToFloatseq (const hpp::core::vector_t& input)
 hpp::floatSeqSeq* matrixToFloatSeqSeq (const hpp::core::matrix_t& input)
 {
   hpp::floatSeqSeq* res = new hpp::floatSeqSeq;
-  res->length (input.rows ());
+  res->length ((ULong) input.rows ());
   for (size_type i=0; i<input.rows (); ++i) {
-    hpp::floatSeq row; row.length (input.cols ());
+    hpp::floatSeq row; row.length ((ULong) input.cols ());
     for (size_type j=0; j<input.cols (); ++j) {
-      row [j] = input (i, j);
+      row [(ULong) j] = input (i, j);
     }
-    (*res) [i] = row;
+    (*res) [(ULong) i] = row;
   }
   return res;
 }
