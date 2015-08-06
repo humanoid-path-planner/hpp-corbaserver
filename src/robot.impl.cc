@@ -1077,7 +1077,9 @@ namespace hpp
 	  core::ValidationReportPtr_t validationReport;
 	  validity = problemSolver_->problem ()->configValidations ()->validate
 	    (config, validationReport);
-	  if (!validity) {
+	  if (validity) {
+	    report = CORBA::string_dup ("");
+	  } else {
 	    std::ostringstream oss; oss << *validationReport;
 	    report = CORBA::string_dup(oss.str ().c_str ());
 	  }
