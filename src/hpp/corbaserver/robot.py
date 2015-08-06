@@ -171,12 +171,9 @@ class Robot (object):
     #
     #  \param objectName name of the object to remove,
     #  \param jointName name of the joint owning the body,
-    #  \param collision whether collision with object should be computed,
-    #  \param distance whether distance to object should be computed.
-    def removeObstacleFromJoint (self, objectName, jointName, collision,
-                                 distance):
+    def removeObstacleFromJoint (self, objectName, jointName):
         return self.client.obstacle.removeObstacleFromJoint \
-            (objectName, jointName, collision, distance)
+            (objectName, jointName, True, False)
 
 
     ## \}
