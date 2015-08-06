@@ -47,11 +47,14 @@
 #include <hpp/constraints/static-stability.hh>
 #include <hpp/corbaserver/server.hh>
 #include <hpp/model/body.hh>
+#include <hpp/model/center-of-mass-computation.hh>
 
 #include "problem.impl.hh"
 #include "tools.hh"
 
 using hpp::model::ObjectVector_t;
+using hpp::model::CenterOfMassComputation;
+using hpp::model::CenterOfMassComputationPtr_t;
 
 using hpp::constraints::DistanceBetweenBodies;
 using hpp::constraints::Orientation;
@@ -68,6 +71,8 @@ using hpp::constraints::RelativePosition;
 using hpp::constraints::RelativePositionPtr_t;
 using hpp::constraints::StaticStabilityGravity;
 using hpp::constraints::StaticStabilityGravityPtr_t;
+using hpp::constraints::StaticStability;
+using hpp::constraints::StaticStabilityPtr_t;
 
 namespace hpp
 {
@@ -436,6 +441,75 @@ namespace hpp
                   pts [floorTriangles[i][1]],
                   pts [floorTriangles[i][2]]), joint);
           }
+        } catch (const std::exception& exc) {
+          throw hpp::Error (exc.what ());
+        }
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::createStaticStabilityConstraint
+      (const char* constraintName, const hpp::Names_t& jointNames,
+       const hpp::floatSeqSeq& points, const hpp::floatSeqSeq& normals,
+       const char* comRootJointName)
+        throw (hpp::Error)
+      {
+	if (!problemSolver_->robot ()) throw hpp::Error ("No robot loaded");
+        DevicePtr_t robot = problemSolver_->robot();
+        JointPtr_t comRJ;
+        try {
+          std::string name (constraintName);
+          /// Create the com
+          comRJ = robot->getJointByName(comRootJointName);
+          CenterOfMassComputationPtr_t com =
+            CenterOfMassComputation::create (robot);
+          com->add (comRJ);
+          com->computeMass ();
+
+          /// Create the contacts
+          StaticStability::Contacts_t contacts;
+          if (jointNames.length () != points.length()
+              || jointNames.length () != normals.length()) {
+            throw Error ("There should be as many joint names, points and normals");
+          }
+          for (CORBA::ULong i = 0; i < jointNames.length (); i+=2) {
+            StaticStability::Contact_t c;
+            // Set joints
+            std::string jn1 (jointNames[i  ]);
+            std::string jn2 (jointNames[i+1]);
+            if (jn1.empty ()) c.joint1 = NULL;
+            else c.joint1 = robot->getJointByName (jn1);
+            if (jn2.empty ()) c.joint2 = NULL;
+            else c.joint2 = robot->getJointByName (jn2);
+            // Set points and normals
+            if (points[i].length () != 3 || points[i+1].length () != 3
+                || normals[i].length () != 3 || normals[i+1].length () != 3)
+              throw Error ("Points and normals must be of length 3");
+            for (size_t j = 0; j < 3; j++) {
+              c.point1[j]  = points [i  ][j];
+              c.point2[j]  = points [i+1][j];
+              c.normal1[j] = normals[i  ][j];
+              c.normal2[j] = normals[i+1][j];
+            }
+            contacts.push_back (c);
+          }
+          StaticStabilityPtr_t f = StaticStability::create
+            (name, robot, contacts, com);
+          if (f->outputSize() <= 6)
+            throw Error ("The output size of StaticStability functions should "
+                "be greater or equal to 7. Something went wrong.");
+          problemSolver_->addNumericalConstraint (name, f);
+
+          // Create the inequalities
+          std::vector <core::ComparisonType::Type> cts;
+          for (std::size_t i = 0; i < contacts.size(); ++i) {
+            cts.push_back (core::ComparisonType::Superior);
+          }
+          for (std::size_t i = 0; i < 6 + 6*contacts.size(); ++i) {
+            cts.push_back (core::ComparisonType::EqualToZero);
+          }
+          core::ComparisonTypePtr_t c = core::ComparisonTypes::create (cts);
+          problemSolver_->comparisonType (name, c);
         } catch (const std::exception& exc) {
           throw hpp::Error (exc.what ());
         }

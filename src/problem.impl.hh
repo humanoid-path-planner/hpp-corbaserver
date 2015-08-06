@@ -66,6 +66,12 @@ namespace hpp
          const hpp::intSeqSeq& floorTriangles)
 	  throw (hpp::Error);
 
+        void createStaticStabilityConstraint (
+            const char* constraintName, const hpp::Names_t& jointNames,
+            const hpp::floatSeqSeq& points, const hpp::floatSeqSeq& normals,
+            const char* comRootJointName)
+          throw (hpp::Error);
+
 	virtual void createPositionConstraint (const char* constraintName,
 					       const char* joint1Name,
 					       const char* joint2Name,
