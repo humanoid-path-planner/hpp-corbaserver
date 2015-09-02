@@ -290,6 +290,16 @@ module hpp
     void directPath (in floatSeq startConfig, in floatSeq endConfig)
       raises (Error);
 
+    /// Append a path to an existing path
+    /// \param pathId Id of the path in this problem,
+    /// \param config end configuration of the new path.
+    /// \throw Error if steering method fails to create a direct path of if
+    /// direct path is not valid
+    /// Call steering method between end of path and input config and append
+    /// direct path in case of success.
+    void appendDirectPath (in unsigned short pathId, in floatSeq config)
+      raises (Error);
+
     /// Get Number of paths
     short numberPaths () raises (Error);
 

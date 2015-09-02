@@ -143,6 +143,10 @@ namespace hpp
 				  const hpp::floatSeq& endConfig)
 	  throw (hpp::Error);
 
+	virtual void appendDirectPath (UShort pathId,
+				       const hpp::floatSeq& config)
+	  throw (hpp::Error);
+
 	virtual void interruptPathPlanning () throw (hpp::Error);
 
 	virtual Short numberPaths () throw (hpp::Error);
