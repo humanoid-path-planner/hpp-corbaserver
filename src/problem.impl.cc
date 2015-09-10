@@ -1312,6 +1312,58 @@ namespace hpp
 
       // -----------------------------------------------------------------
 
+      Long Problem::connectedComponentOfEdge (ULong edgeId)
+        throw (hpp::Error)
+        {
+          try {
+            const Edges_t & edges (problemSolver_->roadmap()->edges());
+            if (edges.size() > edgeId) {
+              Edges_t::const_iterator itEdge = boost::next(edges.begin(),edgeId);
+
+              const core::ConnectedComponents_t& ccs = problemSolver_->roadmap()
+                ->connectedComponents ();
+              core::ConnectedComponents_t::const_iterator itcc = ccs.begin();
+              for (std::size_t i = 0; i < ccs.size (); ++i) {
+                if (*itcc == (*itEdge)->from()->connectedComponent ()) {
+                  return i;
+                }
+                itcc++;
+              }
+            }
+          } catch (const std::exception& exc) {
+            throw hpp::Error (exc.what ());
+          }
+          throw hpp::Error ("Connected component not found");
+        }
+
+      // -----------------------------------------------------------------
+
+      Long Problem::connectedComponentOfNode (ULong nodeId)
+        throw (hpp::Error)
+        {
+          try {
+            const Nodes_t & nodes (problemSolver_->roadmap()->nodes());
+            if (nodes.size() > nodeId) {
+              Nodes_t::const_iterator itNode = boost::next(nodes.begin(),nodeId);
+
+              const core::ConnectedComponents_t& ccs = problemSolver_->roadmap()
+                ->connectedComponents ();
+              core::ConnectedComponents_t::const_iterator itcc = ccs.begin();
+              for (std::size_t i = 0; i < ccs.size (); ++i) {
+                if (*itcc == (*itNode)->connectedComponent ()) {
+                  return i;
+                }
+                itcc++;
+              }
+            }
+          } catch (const std::exception& exc) {
+            throw hpp::Error (exc.what ());
+          }
+          throw hpp::Error ("Connected component not found");
+        }
+
+      // -----------------------------------------------------------------
+
       Long Problem::numberConnectedComponents () throw (hpp::Error)
       {
 	return

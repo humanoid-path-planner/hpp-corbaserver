@@ -353,6 +353,12 @@ module hpp
     // return the configuration of the node nodeId
     floatSeq node(in unsigned long nodeId) raises(Error);
 
+    /// return the connected component index of the edge
+    long connectedComponentOfEdge(in unsigned long edgeId) raises(Error);
+
+    /// return the connected component index of the node
+    long connectedComponentOfNode(in unsigned long nodeId) raises(Error);
+
     /// Number of edges
     long numberEdges () raises (Error);
 
