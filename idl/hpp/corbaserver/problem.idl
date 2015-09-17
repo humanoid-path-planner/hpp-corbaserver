@@ -285,8 +285,10 @@ module hpp
     void finishSolveStepByStep () raises (Error);
 
     /// Solve the problem.
+    /// \return the running time as 4 integers repectively representing
+    ///         the number of hours, minutes, seconds, microseconds.
     /// \throw Error.
-    double solve() raises (Error);
+    intSeq solve() raises (Error);
 
     /// Make direct connection between two configurations
     /// \param startConfig, endConfig: the configurations to link.

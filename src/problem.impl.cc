@@ -9,7 +9,8 @@
 // See the COPYING file for more information.
 
 #include <iostream>
-#include <ctime>
+
+#include <boost/date_time/posix_time/posix_time_types.hpp>
 
 #include <hpp/util/debug.hh>
 #include <hpp/util/portability.hh>
@@ -963,12 +964,21 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      CORBA::Double Problem::solve () throw (hpp::Error)
+      hpp::intSeq* Problem::solve () throw (hpp::Error)
       {
 	try {
-          std::clock_t start = std::clock ();
+          boost::posix_time::ptime start =
+            boost::posix_time::microsec_clock::universal_time ();
 	  problemSolver_->solve();
-          return (double)(std::clock () - start) / (double) CLOCKS_PER_SEC;
+          boost::posix_time::time_duration time =
+            boost::posix_time::microsec_clock::universal_time () - start;
+          hpp::intSeq *ret = new hpp::intSeq;
+          ret->length (4);
+          (*ret)[0] = time.hours ();
+          (*ret)[1] = time.minutes ();
+          (*ret)[2] = time.seconds ();
+          (*ret)[3] = (long) (time.fractional_seconds () / 1000);
+          return ret;
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
