@@ -20,10 +20,10 @@ from hpp import Transform
 from hpp.corbaserver.client import Client
 
 ##
-#  Helper class to load a robot model in hpp::core::ProblemSolver instance.
+#  Helper class to load a robot model in hpp::core::ProblemSolver.
 #
-#  This class is also used to initialize a client to rviz in order to
-#  display configurations of a robot.
+#  This class is also a wrapper of idl methods defined by
+#  hpp::corbaserver::Robot. Most methods call idl methods.
 class Robot (object):
     def __init__ (self, robotName, rootJointType, load = True):
         self.name = robotName
