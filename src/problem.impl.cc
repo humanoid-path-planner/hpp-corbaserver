@@ -363,18 +363,18 @@ namespace hpp
       // ---------------------------------------------------------------
 
       void Problem::createStaticStabilityGravityConstraint
-      (const char* constraintName, const char* jointName,
+      (const char* constraintName, const Names_t& floorJoints,
+       const Names_t& objectJoints,
        const hpp::floatSeqSeq& points, const hpp::intSeqSeq& objTriangles,
        const hpp::intSeqSeq& floorTriangles)
         throw (hpp::Error)
       {
 	if (!problemSolver_->robot ()) throw hpp::Error ("No robot loaded");
-        JointPtr_t joint;
+        JointPtr_t floorJoint, objectJoint;
         try {
           std::string name (constraintName);
-          joint = problemSolver_->robot()->getJointByName(jointName);
           StaticStabilityGravityPtr_t f = StaticStabilityGravity::create
-            (name, problemSolver_->robot(), joint);
+            (name, problemSolver_->robot());
           problemSolver_->addNumericalConstraint (name, f);
           std::vector <fcl::Vec3f> pts (points.length ());
           for (CORBA::ULong i = 0; i < points.length (); ++i) {
@@ -382,20 +382,41 @@ namespace hpp
               throw hpp::Error ("Points must be of size 3.");
             pts [i] = fcl::Vec3f (points[i][0],points[i][1],points[i][2]);
           }
+	  if (objectJoints.length () != objTriangles.length ()) {
+	    std::ostringstream oss;
+	    oss << "Number of object joints (" << objectJoints.length ()
+		<< ") should fit number of objTriangles ("
+		<< objTriangles.length () << ").";
+	    throw std::runtime_error (oss.str ());
+	  }
           for (CORBA::ULong i = 0; i < objTriangles.length (); ++i) {
             if (objTriangles[i].length () != 3)
               throw hpp::Error ("Triangle must have size 3.");
+
             for (size_t j = 0; j < 3; j++)
               if (objTriangles[i][(CORBA::ULong)j] < 0 &&
 		  (size_t) objTriangles[i][(CORBA::ULong)j] >= pts.size())
                 throw hpp::Error ("Point index out of range.");
 
+	    std::string jointName (objectJoints [i]);
+	    JointPtr_t joint;
+	    if (jointName == "None") {
+	      joint = 0x0;
+	    } else {
+	      joint = problemSolver_->robot ()->getJointByName (jointName);
+	    }
             f->addObjectTriangle (fcl::TriangleP (
                   pts [objTriangles[i][0]],
                   pts [objTriangles[i][1]],
-                  pts [objTriangles[i][2]]
-                  ));
+                  pts [objTriangles[i][2]]), joint);
           }
+	  if (floorJoints.length () != floorTriangles.length ()) {
+	    std::ostringstream oss;
+	    oss << "Number of floor joints (" << floorJoints.length ()
+		<< ") should fit number of floorTriangles ("
+		<< floorTriangles.length () << ").";
+	    throw std::runtime_error (oss.str ());
+	  }
           for (CORBA::ULong i = 0; i < floorTriangles.length (); ++i) {
             if (floorTriangles[i].length () != 3)
               throw hpp::Error ("Triangle must have size 3.");
@@ -404,11 +425,17 @@ namespace hpp
 		  (size_t) floorTriangles[i][(CORBA::ULong)j] >= pts.size())
                 throw hpp::Error ("Point index out of range.");
 
+	    std::string jointName (floorJoints [i]);
+	    JointPtr_t joint;
+	    if (jointName == "None") {
+	      joint = 0x0;
+	    } else {
+	      joint = problemSolver_->robot ()->getJointByName (jointName);
+	    }
             f->addFloorTriangle (fcl::TriangleP (
                   pts [floorTriangles[i][0]],
                   pts [floorTriangles[i][1]],
-                  pts [floorTriangles[i][2]]
-                  ));
+                  pts [floorTriangles[i][2]]), joint);
           }
         } catch (const std::exception& exc) {
           throw hpp::Error (exc.what ());

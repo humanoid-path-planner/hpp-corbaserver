@@ -60,7 +60,8 @@ namespace hpp
           throw (hpp::Error);
 
 	virtual void createStaticStabilityGravityConstraint
-	(const char* constraintName, const char* jointName,
+	(const char* constraintName, const Names_t& floorJoints,
+	 const Names_t& objectJoints,
          const hpp::floatSeqSeq& points, const hpp::intSeqSeq& objTriangles,
          const hpp::intSeqSeq& floorTriangles)
 	  throw (hpp::Error);

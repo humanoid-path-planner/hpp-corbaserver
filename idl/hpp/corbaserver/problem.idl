@@ -131,7 +131,7 @@ module hpp
       raises (Error);
 
     void createStaticStabilityGravityConstraint
-    (in string constraintName, in string jointName,
+    (in string constraintName, in Names_t floorJoints, in Names_t objectJoints,
      in floatSeqSeq pts, in intSeqSeq objectTriangles,
      in intSeqSeq floorTriangles) raises (Error);
 
