@@ -48,6 +48,10 @@ class Transform (object):
         rot = self.quaternion.conjugate()
         trans = - self.quaternion.conjugate().transform (self.translation)
         return Transform (rot, trans)
+
+    def transform (self, v):
+        res = self.quaternion.transform (v) + self.translation
+        return res
         
     def __str__ (self):
         return "quaternion:  %s,\ntranslation: %s"%(self.quaternion,
