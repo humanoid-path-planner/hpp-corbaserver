@@ -370,7 +370,6 @@ namespace hpp
         throw (hpp::Error)
       {
 	if (!problemSolver_->robot ()) throw hpp::Error ("No robot loaded");
-        JointPtr_t floorJoint, objectJoint;
         try {
           std::string name (constraintName);
           StaticStabilityGravityPtr_t f = StaticStabilityGravity::create
