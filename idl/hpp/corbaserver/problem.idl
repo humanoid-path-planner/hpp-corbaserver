@@ -314,6 +314,8 @@ module hpp
     void appendDirectPath (in unsigned short pathId, in floatSeq config)
       raises (Error);
 
+    boolean projectPath (in unsigned short patId) raises (Error);
+
     /// Get Number of paths
     short numberPaths () raises (Error);
 

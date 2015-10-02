@@ -163,6 +163,8 @@ namespace hpp
 
 	virtual void appendDirectPath (UShort pathId,
 				       const hpp::floatSeq& config)
+
+	virtual bool projectPath (UShort pathId)
 	  throw (hpp::Error);
 
 	virtual void interruptPathPlanning () throw (hpp::Error);

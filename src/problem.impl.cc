@@ -27,6 +27,7 @@
 #include <hpp/core/path-planner.hh>
 #include <hpp/core/path-optimizer.hh>
 #include <hpp/core/path-vector.hh>
+#include <hpp/core/path-projector.hh>
 #include <hpp/core/path-validation.hh>
 #include <hpp/core/path-validation-report.hh>
 #include <hpp/core/straight-path.hh>
@@ -1064,6 +1065,36 @@ namespace hpp
 	    throw hpp::Error (oss.str ().c_str ());
 	  }
 	  path->appendPath (dp);
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // ---------------------------------------------------------------
+
+      bool Problem::projectPath (UShort pathId)
+	throw (hpp::Error)
+      {
+	try {
+	  if (pathId >= problemSolver_->paths ().size ()) {
+	    std::ostringstream oss ("wrong path id: ");
+	    oss << pathId << ", number path: "
+		<< problemSolver_->paths ().size () << ".";
+	    throw std::runtime_error (oss.str ());
+	  }
+	  PathVectorPtr_t initial = problemSolver_->paths () [pathId];
+          core::PathProjectorPtr_t pp = problemSolver_->problem ()->pathProjector ();
+          if (!pp) throw Error ("There is no path projector");
+
+          PathPtr_t proj;
+          bool success = pp->apply (initial, proj);
+
+	  PathVectorPtr_t path
+	    (core::PathVector::create (initial->outputSize (),
+				       initial->outputDerivativeSize ()));
+	  path->appendPath (proj);
+	  problemSolver_->addPath (path);
+          return success;
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
