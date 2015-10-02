@@ -11,6 +11,7 @@
 #ifndef HPP_CORBASERVER_PROBLEM_IMPL_HH
 # define HPP_CORBASERVER_PROBLEM_IMPL_HH
 # include <vector>
+# include <stdlib.h>
 
 # include "hpp/corbaserver/fwd.hh"
 # include "hpp/corbaserver/problem.hh"
@@ -28,6 +29,11 @@ namespace hpp
       {
       public:
 	Problem (corbaServer::Server* server);
+
+	virtual void
+	setRandomSeed (const Long seed) throw (hpp::Error) {
+          srand ((int) seed);
+        }
 
 	virtual void
 	setInitialConfig (const hpp::floatSeq& dofArray) throw (hpp::Error);

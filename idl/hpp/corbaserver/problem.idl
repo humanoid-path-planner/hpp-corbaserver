@@ -19,6 +19,8 @@ module hpp
   /// \brief To define and solve a path planning problem.
   interface Problem
   {
+    void setRandomSeed (in long seed) raises (Error);
+
     /// \name Initial and goal configurations
     /// \{
 
