@@ -46,6 +46,7 @@
 #include <hpp/constraints/relative-orientation.hh>
 #include <hpp/constraints/relative-position.hh>
 #include <hpp/constraints/static-stability.hh>
+#include <hpp/constraints/configuration-constraint.hh>
 #include <hpp/corbaserver/server.hh>
 #include <hpp/model/body.hh>
 #include <hpp/model/center-of-mass-computation.hh>
@@ -573,6 +574,19 @@ namespace hpp
 	     (name, problemSolver_->robot(), joint, targetInLocalFrame,
 	      targetInWorldFrame, I3, m));
 	}
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::createConfigurationConstraint (const char* constraintName,
+          const hpp::floatSeq& goal) throw (hpp::Error)
+      {
+	if (!problemSolver_->robot ()) throw hpp::Error ("No robot loaded");
+	ConfigurationPtr_t config = floatSeqToConfig (problemSolver_, goal);
+	std::string name (constraintName);
+        problemSolver_->addNumericalConstraint
+          (name, constraints::ConfigurationConstraint::create
+           (name, problemSolver_->robot(), *config));
       }
 
       // ---------------------------------------------------------------

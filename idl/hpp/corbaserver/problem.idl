@@ -161,6 +161,10 @@ module hpp
 				   in boolSeq mask)
       raises (Error);
 
+    void createConfigurationConstraint (in string constraintName,
+				        in floatSeq goal)
+      raises (Error);
+
 
     /// Create distance constraint between robot objects
     ///
