@@ -219,7 +219,8 @@ module hpp
     ///
     /// Constraints should have been added in the ProblemSolver local map.
     void setNumericalConstraints (in string constraintName,
-				  in Names_t constraintNames)
+				  in Names_t constraintNames,
+                                  in intSeq priorities)
       raises (Error);
 
     /// Lock joint with given joint configuration

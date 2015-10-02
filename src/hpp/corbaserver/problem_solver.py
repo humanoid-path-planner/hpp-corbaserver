@@ -229,8 +229,10 @@ class ProblemSolver (object):
     #         by stacking elementary numerical constraints,
     #  \param names list of names of the numerical constraints as
     #         inserted by method hpp::core::ProblemSolver::addNumericalConstraint.
-    def setNumericalConstraints (self, name, names):
-        return self.client.problem.setNumericalConstraints (name, names)
+    def setNumericalConstraints (self, name, names, priorities = None):
+        if priorities is None:
+            priorities = [ 0 for i in names ]
+        return self.client.problem.setNumericalConstraints (name, names, priorities)
 
     ## Apply constraints
     #

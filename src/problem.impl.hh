@@ -125,7 +125,8 @@ namespace hpp
 
 	virtual void resetConstraints () throw (hpp::Error);
 	virtual void setNumericalConstraints
-	(const char* constraintName, const hpp::Names_t& constraintNames)
+	(const char* constraintName, const hpp::Names_t& constraintNames,
+         const hpp::intSeq& priorities)
 	  throw (Error);
 	virtual void lockJoint (const char* jointName,
 				const hpp::floatSeq& value)

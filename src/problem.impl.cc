@@ -820,14 +820,16 @@ namespace hpp
       // ---------------------------------------------------------------
 
       void Problem::setNumericalConstraints
-      (const char* constraintName, const Names_t& constraintNames)
+      (const char* constraintName, const Names_t& constraintNames,
+       const hpp::intSeq& priorities)
 	throw (Error)
       {
 	if (!problemSolver_->robot ()) throw hpp::Error ("No robot loaded");
 	try {
 	  for (CORBA::ULong i=0; i<constraintNames.length (); ++i) {
 	    std::string name (constraintNames [i]);
-            problemSolver_->addFunctionToConfigProjector (constraintName, name);
+            problemSolver_->addFunctionToConfigProjector (constraintName, name,
+                (std::size_t)priorities[i]);
 	    problemSolver_->robot ()->controlComputation
 	      (model::Device::ALL);
 	  }
