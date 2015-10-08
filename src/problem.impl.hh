@@ -171,7 +171,7 @@ namespace hpp
 
 	virtual Short numberPaths () throw (hpp::Error);
 
-	virtual void optimizePath (UShort pathId) throw (hpp::Error);
+	virtual hpp::intSeq* optimizePath (UShort pathId) throw (hpp::Error);
 
 	virtual Double pathLength (UShort pathId) throw (hpp::Error);
 

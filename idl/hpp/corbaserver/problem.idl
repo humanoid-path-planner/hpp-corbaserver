@@ -321,8 +321,10 @@ module hpp
 
     /// Optimize a given path
     /// \param inPathId Id of the path in this problem.
+    /// \return the running time as 4 integers repectively representing
+    ///         the number of hours, minutes, seconds, microseconds.
     /// \throw Error.
-    void optimizePath(in unsigned short inPathId) raises (Error);
+    intSeq optimizePath(in unsigned short inPathId) raises (Error);
 
     /// Get length of path
     /// \param inPathId rank of the path in the problem

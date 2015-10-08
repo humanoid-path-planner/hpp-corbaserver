@@ -1120,7 +1120,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::optimizePath(UShort pathId) throw (hpp::Error)
+      hpp::intSeq* Problem::optimizePath(UShort pathId) throw (hpp::Error)
       {
 	try {
 	  if (pathId >= problemSolver_->paths ().size ()) {
@@ -1129,8 +1129,24 @@ namespace hpp
 		<< problemSolver_->paths ().size () << ".";
 	    throw std::runtime_error (oss.str ());
 	  }
+          // Start timer
+          boost::posix_time::ptime start =
+            boost::posix_time::microsec_clock::universal_time ();
+
 	  PathVectorPtr_t initial = problemSolver_->paths () [pathId];
 	  problemSolver_->optimizePath (initial);
+
+          // Stop timer
+          boost::posix_time::time_duration time =
+            boost::posix_time::microsec_clock::universal_time () - start;
+
+          hpp::intSeq *ret = new hpp::intSeq;
+          ret->length (4);
+          (*ret)[0] = time.hours ();
+          (*ret)[1] = time.minutes ();
+          (*ret)[2] = time.seconds ();
+          (*ret)[3] = (long) (time.fractional_seconds () / 1000);
+          return ret;
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
