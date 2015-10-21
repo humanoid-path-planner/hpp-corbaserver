@@ -79,6 +79,8 @@ using hpp::constraints::ConvexShapeContactPtr_t;
 using hpp::constraints::StaticStability;
 using hpp::constraints::StaticStabilityPtr_t;
 
+using hpp::core::NumericalConstraint;
+
 namespace hpp
 {
   namespace corbaServer
@@ -282,13 +284,15 @@ namespace hpp
 	if (constrainedJoint == 0) {
 	  // Both joints are provided
 	  problemSolver_->addNumericalConstraint
-	    (name, RelativeOrientation::create
-	      (name, problemSolver_->robot(), joint1, joint2, rotation, m));
+	    (name, NumericalConstraint::create
+	     (RelativeOrientation::create
+	      (name, problemSolver_->robot(), joint1, joint2, rotation, m)));
 	} else {
 	  JointPtr_t joint = constrainedJoint == 1 ? joint1 : joint2;
 	  problemSolver_->addNumericalConstraint
-	    (name, Orientation::create
-	      (name, problemSolver_->robot(), joint, rotation, m));
+	    (name, NumericalConstraint::create
+	     (Orientation::create (name, problemSolver_->robot(), joint,
+				   rotation, m)));
 	}
       }
 
@@ -311,15 +315,17 @@ namespace hpp
           std::string name (constraintName), comN (comName);
           if (comN.compare ("") == 0) {
             problemSolver_->addNumericalConstraint
-              (name, RelativeCom::create (problemSolver_->robot(),
-                                             joint, point, m));
+              (name, NumericalConstraint::create
+	       (RelativeCom::create (problemSolver_->robot(),
+				     joint, point, m)));
           } else {
             comc = problemSolver_->centerOfMassComputation (comN);
             if (!comc)
               throw hpp::Error ("Partial COM not found.");
             problemSolver_->addNumericalConstraint
-              (name, RelativeCom::create (problemSolver_->robot(), comc,
-                                             joint, point, m));
+              (name, NumericalConstraint::create
+	       (RelativeCom::create (problemSolver_->robot(), comc,
+				     joint, point, m)));
           }
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -353,17 +359,19 @@ namespace hpp
           std::string name (constraintName), comN (comName);
           if (comN.compare ("") == 0) {
             problemSolver_->addNumericalConstraint
-              (name, ComBetweenFeet::create (name, problemSolver_->robot(),
-                                             jointL, jointR, pointL, pointR,
-                                             jointRef, pointRef, m));
+              (name, NumericalConstraint::create
+	       (ComBetweenFeet::create (name, problemSolver_->robot(),
+					jointL, jointR, pointL, pointR,
+					jointRef, pointRef, m)));
           } else {
             comc = problemSolver_->centerOfMassComputation (comN);
             if (!comc)
               throw hpp::Error ("Partial COM not found.");
             problemSolver_->addNumericalConstraint
-              (name, ComBetweenFeet::create (name, problemSolver_->robot(), comc,
-                                             jointL, jointR, pointL, pointR,
-                                             jointRef, pointRef, m));
+              (name, NumericalConstraint::create
+	       (ComBetweenFeet::create (name, problemSolver_->robot(), comc,
+					jointL, jointR, pointL, pointR,
+					jointRef, pointRef, m)));
           }
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -397,7 +405,8 @@ namespace hpp
           std::string name (constraintName);
           ConvexShapeContactPtr_t f = ConvexShapeContact::create
             (name, problemSolver_->robot());
-          problemSolver_->addNumericalConstraint (name, f);
+          problemSolver_->addNumericalConstraint
+	    (name, NumericalConstraint::create (f));
           std::vector <fcl::Vec3f> pts (points.length ());
           for (CORBA::ULong i = 0; i < points.length (); ++i) {
             if (points[i].length () != 3)
@@ -582,15 +591,16 @@ namespace hpp
 	if (constrainedJoint == 0) {
 	  // Both joints are provided
 	  problemSolver_->addNumericalConstraint
-	    (name, RelativePosition::create
-	     (name, problemSolver_->robot(), joint1, joint2, p1, p2, m));
+	    (name, NumericalConstraint::create
+	     (RelativePosition::create
+	      (name, problemSolver_->robot(), joint1, joint2, p1, p2, m)));
 	} else {
 	  hpp::model::matrix3_t I3; I3.setIdentity ();
 	  JointPtr_t joint = constrainedJoint == 1 ? joint1 : joint2;
 	  problemSolver_->addNumericalConstraint
-	    (name, Position::create
-	     (name, problemSolver_->robot(), joint, targetInLocalFrame,
-	      targetInWorldFrame, I3, m));
+	    (name, NumericalConstraint::create
+	     (Position::create (name, problemSolver_->robot(), joint,
+				targetInLocalFrame, targetInWorldFrame, I3,m)));
 	}
       }
 
@@ -621,8 +631,9 @@ namespace hpp
 	    (joint2Name);
 	  std::string name (constraintName);
 	  problemSolver_->addNumericalConstraint
-	    (name, DistanceBetweenBodies::create (name, problemSolver_->robot(),
-						  joint1, joint2));
+	    (name, NumericalConstraint::create
+	     (DistanceBetweenBodies::create (name, problemSolver_->robot(),
+					     joint1, joint2)));
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
@@ -645,8 +656,9 @@ namespace hpp
 	  }
 	  std::string name (constraintName);
 	  problemSolver_->addNumericalConstraint
-	    (name, DistanceBetweenBodies::create (name, problemSolver_->robot(),
-						  joint1, objectList));
+	    (name, NumericalConstraint::create
+	     (DistanceBetweenBodies::create (name, problemSolver_->robot(),
+					     joint1, objectList)));
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
