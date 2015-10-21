@@ -1212,7 +1212,12 @@ namespace hpp
 	    throw std::runtime_error (oss.str ());
 	  }
 	  PathPtr_t path = problemSolver_->paths () [pathId];
-	  Configuration_t config = (*path) (atDistance);
+	  bool success;
+	  Configuration_t config = (*path) (atDistance, success);
+	  if (!success) {
+	    throw std::runtime_error ("Failed to apply constraint in path "
+				      "evaluation.");
+	  }
 	  // Allocate result now that the size is known.
 	  std::size_t size =  config.size ();
 	  double* dofArray = hpp::floatSeq::allocbuf((ULong)size);
@@ -1237,9 +1242,18 @@ namespace hpp
 	Configuration_t config, config_1;
 	std::vector<Configuration_t> configs;
 	hpp::floatSeq dofArray;
-	config = (*path) (0);
+	bool success;
+	config = (*path) (0, success);
+	if (!success) {
+	  throw std::runtime_error ("Failed to apply constraint in path "
+				    "evaluation.");
+	}
 	configs.push_back(config);
-	config_1 = (*path) (path->length());
+	config_1 = (*path) (path->length(), success);
+	if (!success) {
+	  throw std::runtime_error ("Failed to apply constraint in path "
+				    "evaluation.");
+	}
 	configs.push_back(config_1);
 	dofArray.length ((CORBA::ULong)config.size());
 	// modify configsequence
