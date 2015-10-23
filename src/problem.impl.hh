@@ -16,6 +16,8 @@
 # include "hpp/corbaserver/fwd.hh"
 # include "hpp/corbaserver/problem.hh"
 
+# include "hpp/corbaserver/deprecated.hh"
+
 namespace hpp
 {
   namespace corbaServer
@@ -68,6 +70,13 @@ namespace hpp
 	virtual void createStaticStabilityGravityConstraint
 	(const char* constraintName, const Names_t& floorJoints,
 	 const Names_t& objectJoints,
+         const hpp::floatSeqSeq& points, const hpp::intSeqSeq& objTriangles,
+         const hpp::intSeqSeq& floorTriangles)
+	  throw (hpp::Error) HPP_CORBASERVER_DEPRECATED;
+
+	virtual void createConvexShapeContactConstraint
+        (const char* constraintName, const Names_t& floorJoints,
+         const Names_t& objectJoints,
          const hpp::floatSeqSeq& points, const hpp::intSeqSeq& objTriangles,
          const hpp::intSeqSeq& floorTriangles)
 	  throw (hpp::Error);
@@ -163,6 +172,7 @@ namespace hpp
 
 	virtual void appendDirectPath (UShort pathId,
 				       const hpp::floatSeq& config)
+	  throw (hpp::Error);
 
 	virtual bool projectPath (UShort pathId)
 	  throw (hpp::Error);

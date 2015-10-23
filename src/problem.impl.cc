@@ -11,6 +11,7 @@
 #include <iostream>
 
 #include <boost/date_time/posix_time/posix_time_types.hpp>
+#include <boost/assign/list_of.hpp>
 
 #include <hpp/util/debug.hh>
 #include <hpp/util/portability.hh>
@@ -46,6 +47,7 @@
 #include <hpp/constraints/com-between-feet.hh>
 #include <hpp/constraints/relative-orientation.hh>
 #include <hpp/constraints/relative-position.hh>
+#include <hpp/constraints/convex-shape-contact.hh>
 #include <hpp/constraints/static-stability.hh>
 #include <hpp/constraints/configuration-constraint.hh>
 #include <hpp/corbaserver/server.hh>
@@ -72,8 +74,8 @@ using hpp::constraints::RelativeCom;
 using hpp::constraints::RelativeOrientationPtr_t;
 using hpp::constraints::RelativePosition;
 using hpp::constraints::RelativePositionPtr_t;
-using hpp::constraints::StaticStabilityGravity;
-using hpp::constraints::StaticStabilityGravityPtr_t;
+using hpp::constraints::ConvexShapeContact;
+using hpp::constraints::ConvexShapeContactPtr_t;
 using hpp::constraints::StaticStability;
 using hpp::constraints::StaticStabilityPtr_t;
 
@@ -377,10 +379,23 @@ namespace hpp
        const hpp::intSeqSeq& floorTriangles)
         throw (hpp::Error)
       {
+        createConvexShapeContactConstraint (constraintName, floorJoints,
+            objectJoints, points, objTriangles, floorTriangles);
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::createConvexShapeContactConstraint
+        (const char* constraintName, const Names_t& floorJoints,
+         const Names_t& objectJoints,
+         const hpp::floatSeqSeq& points, const hpp::intSeqSeq& objTriangles,
+         const hpp::intSeqSeq& floorTriangles)
+        throw (hpp::Error)
+      {
 	if (!problemSolver_->robot ()) throw hpp::Error ("No robot loaded");
         try {
           std::string name (constraintName);
-          StaticStabilityGravityPtr_t f = StaticStabilityGravity::create
+          ConvexShapeContactPtr_t f = ConvexShapeContact::create
             (name, problemSolver_->robot());
           problemSolver_->addNumericalConstraint (name, f);
           std::vector <fcl::Vec3f> pts (points.length ());
@@ -412,10 +427,11 @@ namespace hpp
 	    } else {
 	      joint = problemSolver_->robot ()->getJointByName (jointName);
 	    }
-            f->addObjectTriangle (fcl::TriangleP (
-                  pts [objTriangles[i][0]],
-                  pts [objTriangles[i][1]],
-                  pts [objTriangles[i][2]]), joint);
+            std::vector <core::vector3_t> shapePts = boost::assign::list_of
+                  (pts [objTriangles[i][0]])
+                  (pts [objTriangles[i][1]])
+                  (pts [objTriangles[i][2]]);
+            f->addObject (constraints::ConvexShape (shapePts, joint));
           }
 	  if (floorJoints.length () != floorTriangles.length ()) {
 	    std::ostringstream oss;
@@ -439,10 +455,11 @@ namespace hpp
 	    } else {
 	      joint = problemSolver_->robot ()->getJointByName (jointName);
 	    }
-            f->addFloorTriangle (fcl::TriangleP (
-                  pts [floorTriangles[i][0]],
-                  pts [floorTriangles[i][1]],
-                  pts [floorTriangles[i][2]]), joint);
+            std::vector <core::vector3_t> shapePts = boost::assign::list_of
+                  (pts [floorTriangles[i][0]])
+                  (pts [floorTriangles[i][1]])
+                  (pts [floorTriangles[i][2]]);
+            f->addFloor (constraints::ConvexShape (shapePts, joint));
           }
         } catch (const std::exception& exc) {
           throw hpp::Error (exc.what ());

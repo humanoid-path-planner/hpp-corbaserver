@@ -132,7 +132,13 @@ module hpp
         in string jointLName, in floatSeq point, in boolSeq mask)
       raises (Error);
 
+    /// Deprecated. Use createConvexShapeContactConstraint instead
     void createStaticStabilityGravityConstraint
+    (in string constraintName, in Names_t floorJoints, in Names_t objectJoints,
+     in floatSeqSeq pts, in intSeqSeq objectTriangles,
+     in intSeqSeq floorTriangles) raises (Error);
+
+    void createConvexShapeContactConstraint
     (in string constraintName, in Names_t floorJoints, in Names_t objectJoints,
      in floatSeqSeq pts, in intSeqSeq objectTriangles,
      in intSeqSeq floorTriangles) raises (Error);
