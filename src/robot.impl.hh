@@ -16,7 +16,8 @@
 # include <hpp/model/object-factory.hh>
 # include "hpp/core/problem-solver.hh"
 # include "hpp/corbaserver/fwd.hh"
-# include "hpp/corbaserver/robot.hh"
+# include "hpp/corbaserver/robot.hh" 
+# include "hpp/model/fcl-to-eigen.hh"
 
 namespace hpp
 {
@@ -104,6 +105,8 @@ namespace hpp
           throw (hpp::Error);
         virtual void jointIntegrate(const char* jointName, const floatSeq& dq)
           throw (hpp::Error);
+	virtual hpp::floatSeqSeq* getCurrentTransformation(const char* jointName)
+	  throw (hpp::Error);
 	virtual Transform__slice* getJointPosition(const char* jointName)
 	  throw (hpp::Error);
 	virtual floatSeq* getComPosition() throw (hpp::Error);

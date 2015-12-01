@@ -585,6 +585,45 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
+      hpp::floatSeqSeq* Robot::getCurrentTransformation(const char* jointName)
+	throw (hpp::Error)
+      {
+	try {
+	  DevicePtr_t robot = problemSolver_->robot ();
+	  if (!robot) {
+	    throw hpp::Error ("no robot");
+	  }
+	  JointPtr_t joint = robot->getJointByName (jointName);
+	  if (!joint) {
+	    std::ostringstream oss ("Robot has no joint with name ");
+	    oss  << jointName;
+	    hppDout (error, oss.str ());
+	    throw hpp::Error (oss.str ().c_str ());
+	  }
+	  
+	  // create eigen::matrix from fcl transformation 
+	  const Transform3f& T = joint->currentTransformation ();
+	  Eigen::Matrix< hpp::model::value_type, 3, 1 > translation;
+	  hpp::model::vector3_t fclTrans (T.getTranslation ());
+	  hpp::model::toEigen (fclTrans, translation);
+
+	  Eigen::Matrix< hpp::model::value_type, 3, 3 > rotation;
+          hpp::model::matrix3_t fclRot (T.getRotation ());
+	  hpp::model::toEigen (fclRot, rotation);
+	 
+	  // join translation & rotation into homog. transformation 
+	  Eigen::Matrix< hpp::model::value_type, 4, 4 > trafo;
+	  trafo.block<3,3>(0,0) = rotation;
+	  trafo.block<3,1>(0,3) = translation;
+	  trafo.block<1,4>(3,0) << 0, 0, 0, 1;
+	  return matrixToFloatSeqSeq(trafo);
+	} catch (const std::exception& exc) {
+	  throw Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
+
       Transform__slice* Robot::getJointPosition(const char* jointName)
 	throw (hpp::Error)
       {

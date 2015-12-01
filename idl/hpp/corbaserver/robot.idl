@@ -118,6 +118,11 @@ module hpp
     /// \throw Error if robot is not set
     floatSeq getComPosition () raises (Error);
 
+    /// Get joint Transformation
+    /// \param jointName name of the joint
+    /// \throw Error if robot is not set or it joint does not exist.
+    floatSeqSeq getCurrentTransformation(in string jointName) raises (Error);
+
     /// Get joint position
     /// \param jointName name of the joint
     /// \throw Error if robot is not set or if joint does not exist.
