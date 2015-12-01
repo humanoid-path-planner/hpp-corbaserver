@@ -9,6 +9,7 @@
 // See the COPYING file for more information.
 
 #include <iostream>
+#include <sstream>
 
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <boost/assign/list_of.hpp>
@@ -42,10 +43,11 @@
 #include <hpp/constraints/distance-between-bodies.hh>
 #include <hpp/constraints/position.hh>
 #include <hpp/constraints/orientation.hh>
-#include <hpp/constraints/position.hh>
+#include <hpp/constraints/transformation.hh>
 #include <hpp/constraints/relative-com.hh>
 #include <hpp/constraints/com-between-feet.hh>
 #include <hpp/constraints/relative-orientation.hh>
+#include <hpp/constraints/relative-transformation.hh>
 #include <hpp/constraints/relative-position.hh>
 #include <hpp/constraints/convex-shape-contact.hh>
 #include <hpp/constraints/static-stability.hh>
@@ -74,6 +76,8 @@ using hpp::constraints::RelativeCom;
 using hpp::constraints::RelativeOrientationPtr_t;
 using hpp::constraints::RelativePosition;
 using hpp::constraints::RelativePositionPtr_t;
+using hpp::constraints::RelativeTransformation;
+using hpp::constraints::Transformation;
 using hpp::constraints::ConvexShapeContact;
 using hpp::constraints::ConvexShapeContactPtr_t;
 using hpp::constraints::StaticStability;
@@ -233,12 +237,14 @@ namespace hpp
 	problemSolver_->resetGoalConfigs ();
       }
 
-      std::vector<bool> boolSeqToBoolVector (const hpp::boolSeq& mask)
+      std::vector<bool> boolSeqToBoolVector (const hpp::boolSeq& mask, unsigned int length = 3)
       {
-        if (mask.length () != 3)
-	  throw hpp::Error ("Mask must be of length 3");
-        std::vector<bool> m (3);
-	for (size_t i=0; i<3; i++)
+        if (mask.length () != length) {
+          std::stringstream ss; ss << "Mask must be of length " << length;
+	  throw hpp::Error (ss.str().c_str());
+        }
+        std::vector<bool> m (length);
+	for (size_t i=0; i<length; i++)
 	  m[i] = mask[(CORBA::ULong)i];
 	return m;
       }
@@ -258,7 +264,7 @@ namespace hpp
 	hpp::model::matrix3_t rotation;
 	quat.toRotation (rotation);
 
-	std::vector<bool> m = boolSeqToBoolVector (mask);
+	std::vector<bool> m = boolSeqToBoolVector (mask, 3);
 	try {
 	  // Test whether joint1 is world frame
 	  if (std::string (joint1Name) == std::string ("")) {
@@ -293,6 +299,59 @@ namespace hpp
 	    (name, NumericalConstraint::create
 	     (Orientation::create (name, problemSolver_->robot(), joint,
 				   rotation, m)));
+	}
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::createTransformationConstraint
+      (const char* constraintName, const char* joint1Name,
+       const char* joint2Name, const Transform_ p, const hpp::boolSeq& mask)
+	throw (hpp::Error)
+      {
+	if (!problemSolver_->robot ()) throw hpp::Error ("No robot loaded");
+	JointPtr_t joint1;
+	JointPtr_t joint2;
+	size_type constrainedJoint = 0;
+        fcl::Vec3f vec (p[0], p[1], p[2]);
+	fcl::Quaternion3f quat (p [3], p [4], p [5], p [6]);
+        fcl::Transform3f ref (quat, vec);
+
+	std::vector<bool> m = boolSeqToBoolVector (mask, 6);
+	try {
+	  // Test whether joint1 is world frame
+	  if (std::string (joint1Name) == std::string ("")) {
+	    constrainedJoint = 2;
+	  } else {
+	    joint1 =
+	      problemSolver_->robot()->getJointByName(joint1Name);
+	  }
+	  // Test whether joint2 is world frame
+	  if (std::string (joint2Name) == std::string ("")) {
+	    if (constrainedJoint == 2) {
+	      throw hpp::Error ("At least one joint should be provided.");
+	    }
+	    constrainedJoint = 1;
+	  } else {
+	    joint2 =
+	      problemSolver_->robot()->getJointByName(joint2Name);
+	  }
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+  std::string name (constraintName);
+	if (constrainedJoint == 0) {
+	  // Both joints are provided
+	  problemSolver_->addNumericalConstraint
+	    (name, NumericalConstraint::create
+	     (RelativeTransformation::create
+	      (name, problemSolver_->robot(), joint1, joint2, ref, m)));
+	} else {
+	  JointPtr_t joint = constrainedJoint == 1 ? joint1 : joint2;
+	  problemSolver_->addNumericalConstraint
+	    (name, NumericalConstraint::create
+	     (Transformation::create (name, problemSolver_->robot(), joint,
+				   ref, m)));
 	}
       }
 

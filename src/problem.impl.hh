@@ -56,6 +56,11 @@ namespace hpp
 	 const char* joint2Name, const Double* p, const hpp::boolSeq& mask)
 	  throw (hpp::Error);
 
+	virtual void createTransformationConstraint
+	(const char* constraintName, const char* joint1Name,
+	 const char* joint2Name, const Transform_ p, const hpp::boolSeq& mask)
+	  throw (hpp::Error);
+
         void createRelativeComConstraint (const char* constraintName,
             const char* comn, const char* jointName, const floatSeq& point,
             const hpp::boolSeq& mask)
