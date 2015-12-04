@@ -32,6 +32,8 @@ namespace hpp
       public:
 	Problem (corbaServer::Server* server);
 
+        virtual Names_t* getAvailable (const char* what) throw (hpp::Error);
+
 	virtual void
 	setRandomSeed (const Long seed) throw (hpp::Error) {
           srand ((int) seed);

@@ -13,6 +13,7 @@
 
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <boost/assign/list_of.hpp>
+#include <boost/algorithm/string.hpp>    
 
 #include <hpp/util/debug.hh>
 #include <hpp/util/portability.hh>
@@ -147,6 +148,44 @@ namespace hpp
 	: server_ (server),
 	  problemSolver_ (server->problemSolver ())
       {}
+
+      // ---------------------------------------------------------------
+
+      Names_t* Problem::getAvailable (const char* what) throw (hpp::Error)
+      {
+        std::string w (what);
+        boost::algorithm::to_lower(w);
+        typedef std::list <std::string> Ret_t;
+        Ret_t ret;
+
+        if (w == "pathoptimizer") {
+          ret = problemSolver_->getKeys <core::PathOptimizerBuilder_t, Ret_t> ();
+        } else if (w == "pathprojector") {
+          ret = problemSolver_->getKeys <core::PathProjectorBuilder_t, Ret_t> ();
+        } else if (w == "pathplanner") {
+          ret = problemSolver_->getKeys <core::PathPlannerBuilder_t, Ret_t> ();
+        } else if (w == "configurationshooter") {
+          ret = problemSolver_->getKeys <core::ConfigurationShooterBuilder_t, Ret_t> ();
+        } else if (w == "pathvalidation") {
+          ret = problemSolver_->getKeys <core::PathValidationBuilder_t, Ret_t> ();
+        } else if (w == "type") {
+          ret = boost::assign::list_of ("PathOptimizer") ("PathProjector")
+            ("PathPlanner") ("ConfigurationShooter") ("PathValidation");
+        } else {
+          throw Error ("Type not understood");
+        }
+
+        char** nameList = Names_t::allocbuf(ret.size());
+        Names_t *names = new Names_t (ret.size(), ret.size(), nameList);
+        std::size_t i = 0;
+        for (Ret_t::const_iterator it = ret.begin (); it != ret.end(); ++it) {
+          nameList [i] =
+            (char*) malloc (sizeof(char)*(it->length ()+1));
+            strcpy (nameList [i], it->c_str ());
+            ++i;
+        }
+        return names;
+      }
 
       // ---------------------------------------------------------------
 

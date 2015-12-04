@@ -21,6 +21,11 @@ module hpp
   {
     void setRandomSeed (in long seed) raises (Error);
 
+    /// Return a list of available elements of type type
+    /// \param type enter "type" to know what types I know of.
+    ///             This is case insensitive.
+    Names_t getAvailable (in string type) raises (Error);
+
     /// \name Initial and goal configurations
     /// \{
 
