@@ -583,28 +583,15 @@ namespace hpp
           }
           StaticStabilityPtr_t f = StaticStability::create
             (name, robot, contacts, com);
-          if (f->outputSize() <= 6)
-            throw Error ("The output size of StaticStability functions should "
-                "be greater or equal to 7. Something went wrong.");
-          problemSolver_->addNumericalConstraint (name, f);
-
-          // Create the inequalities
-          std::vector <core::ComparisonType::Type> cts;
-          for (std::size_t i = 0; i < contacts.size(); ++i) {
-            cts.push_back (core::ComparisonType::Superior);
-          }
-          for (std::size_t i = 0; i < 6 + 6*contacts.size(); ++i) {
-            cts.push_back (core::ComparisonType::EqualToZero);
-          }
-          core::ComparisonTypePtr_t c = core::ComparisonTypes::create (cts);
-          problemSolver_->comparisonType (name, c);
+          problemSolver_->addNumericalConstraint (name,
+              NumericalConstraint::create (f, core::EqualToZero::create())
+              );
         } catch (const std::exception& exc) {
           throw hpp::Error (exc.what ());
         }
       }
 
       // ---------------------------------------------------------------
-
 
       void Problem::createPositionConstraint
       (const char* constraintName, const char* joint1Name,
