@@ -926,6 +926,18 @@ namespace hpp
       }
 
       // ---------------------------------------------------------------
+
+      void Problem::selectSteeringMethod (const char* steeringMethodType)
+    throw (Error)
+      {
+    try {
+      problemSolver_->steeringMethodType (std::string (steeringMethodType));
+    } catch (const std::exception& exc) {
+      throw hpp::Error (exc.what ());
+    }
+      }
+
+      // ---------------------------------------------------------------
       void Problem::addPathOptimizer (const char* pathOptimizerType)
 	throw (Error)
       {

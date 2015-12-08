@@ -258,6 +258,12 @@ module hpp
     ///        core::ProblemSolver::addConfigurationShooterType
     void selectConFigurationShooter (in string configurationShooterType) raises (Error);
 
+    /// Select steering method type
+    /// \param Name of the steering method type, either
+    ///        "SteeringMethodStraight" or any type added by method
+    ///        core::ProblemSolver::addSteeringMethodType
+    void selectSteeringMethod (in string steeringMethodType) raises (Error);
+
     /// Add a path optimizer
     /// \param Name of the path optimizer type, either "RandomShortcut" or
     /// any type added by core::ProblemSolver::addPathOptimizerType
