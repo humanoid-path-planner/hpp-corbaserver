@@ -168,9 +168,12 @@ namespace hpp
           ret = problemSolver_->getKeys <core::ConfigurationShooterBuilder_t, Ret_t> ();
         } else if (w == "pathvalidation") {
           ret = problemSolver_->getKeys <core::PathValidationBuilder_t, Ret_t> ();
+        } else if (w == "numericalconstraint") {
+          ret = problemSolver_->getKeys <core::NumericalConstraintPtr_t, Ret_t> ();
         } else if (w == "type") {
           ret = boost::assign::list_of ("PathOptimizer") ("PathProjector")
-            ("PathPlanner") ("ConfigurationShooter") ("PathValidation");
+            ("PathPlanner") ("ConfigurationShooter")
+            ("PathValidation") ("NumericalConstraint");
         } else {
           throw Error ("Type not understood");
         }
