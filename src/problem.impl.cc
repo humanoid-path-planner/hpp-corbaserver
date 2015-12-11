@@ -700,9 +700,11 @@ namespace hpp
 	if (!problemSolver_->robot ()) throw hpp::Error ("No robot loaded");
 	ConfigurationPtr_t config = floatSeqToConfig (problemSolver_, goal);
 	std::string name (constraintName);
-        problemSolver_->addNumericalConstraint
-          (name, constraints::ConfigurationConstraint::create
-           (name, problemSolver_->robot(), *config));
+        problemSolver_->add
+          (name, NumericalConstraint::create
+           (constraints::ConfigurationConstraint::create
+            (name, problemSolver_->robot(), *config)
+            ));
       }
 
       // ---------------------------------------------------------------
@@ -1652,8 +1654,8 @@ namespace hpp
       {
         try {
           std::ofstream ofs (filename, std::ofstream::out);
-          hpp::core::parser::writeRoadmap (ofs, problemSolver_->roadmap(),
-              problemSolver_->robot());
+          hpp::core::parser::writeRoadmap (ofs, problemSolver_->problem(),
+              problemSolver_->roadmap());
           ofs.close ();
         } catch (const std::exception& exc) {
           throw hpp::Error (exc.what ());
@@ -1666,8 +1668,7 @@ namespace hpp
         try {
           problemSolver_->roadmap (
               hpp::core::parser::readRoadmap (std::string(filename),
-                problemSolver_->roadmap()->distance (),
-                problemSolver_->robot())
+                problemSolver_->problem())
               );
         } catch (const std::exception& exc) {
           throw hpp::Error (exc.what ());
