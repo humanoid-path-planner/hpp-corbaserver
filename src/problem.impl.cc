@@ -1148,21 +1148,7 @@ namespace hpp
 	  if (!problemSolver_->problem ()) {
 	    problemSolver_->resetProblem ();
 	  }
-	  SteeringMethodPtr_t sm = problemSolver_->problem ()->steeringMethod ();
-	  PathPtr_t dp = (*sm) (*start, *end);
-	  PathPtr_t unused;
-	  PathValidationReportPtr_t report;
-	  if (!problemSolver_->problem()->pathValidation ()->validate
-	      (dp, false, unused, report)) {
-	    std::ostringstream oss; oss << *report;
-	    throw hpp::Error (oss.str ().c_str ());
-	  }
-	  // Add Path in problem
-	  PathVectorPtr_t path
-	    (core::PathVector::create (dp->outputSize (),
-				       dp->outputDerivativeSize ()));
-	  path->appendPath (dp);
-	  problemSolver_->addPath (path);
+	  problemSolver_->directPath (*start, *end);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
