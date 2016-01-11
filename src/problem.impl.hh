@@ -53,6 +53,9 @@ namespace hpp
 	virtual void
 	resetGoalConfigs ()  throw (hpp::Error);
 
+	virtual hpp::floatSeq*
+	getNearestConfig (const hpp::floatSeq& config, const Long iCC);
+
 	virtual void createOrientationConstraint
 	(const char* constraintName, const char* joint1Name,
 	 const char* joint2Name, const Double* p, const hpp::boolSeq& mask)

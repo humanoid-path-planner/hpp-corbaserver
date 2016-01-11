@@ -294,6 +294,25 @@ namespace hpp
       }
 
       // ---------------------------------------------------------------
+      
+      virtual hpp::floatSeq*
+      getNearestConfig (const hpp::floatSeq& config, const Long iCC)
+      {
+	hpp::core::ConnectedComponents_t& connectedComponents;
+	if (iCC < 0) {
+	  connectedComponents = (problemSolver_->roadmap ())->connectedComponents ();
+	  
+	} else {
+	  (problemSolver_->roadmap ())->connectedComponents ()->
+	  connectedComponents.push_back()
+	  
+	}
+	hpp::core::value_type distance;
+	hpp::core::NodePtr_t near = (problemSolver_->roadmap ())->nearestNode (config, *itcc, distance);
+	return near->configuration ();
+      }
+
+      // ---------------------------------------------------------------
 
       void Problem::createOrientationConstraint
       (const char* constraintName, const char* joint1Name,
