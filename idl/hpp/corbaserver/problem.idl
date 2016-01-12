@@ -335,8 +335,15 @@ module hpp
     /// \param startConfig, endConfig: the configurations to link.
     /// \throw Error if steering method fails to create a direct path of if
     /// direct path is not valid
-    void directPath (in floatSeq startConfig, in floatSeq endConfig)
+    boolean directPath (in floatSeq startConfig, in floatSeq endConfig)
       raises (Error);
+
+    ///
+    boolean addConfigToRoadmap (in floatSeq config) raises(Error);
+
+    ///
+    boolean addEdgeToRoadmap (in floatSeq config1, in floatSeq config2,
+			      in unsigned short pathId) raises (Error);
 
     /// Append a path to an existing path
     /// \param pathId Id of the path in this problem,

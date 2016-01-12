@@ -335,6 +335,9 @@ class ProblemSolver (object):
     def prepareSolveStepByStep (self):
         return self.client.problem.prepareSolveStepByStep ()
 
+    def getNearestConfig (self, randomConfig, connectedComponentId):
+	return self.client.problem.getNearestConfig (randomConfig, connectedComponentId)
+
     def executeOneStep (self):
         return self.client.problem.executeOneStep ()
 
@@ -351,6 +354,12 @@ class ProblemSolver (object):
     #  direct path is not valid
     def directPath (self, startConfig, endConfig):
         return self.client.problem.directPath (startConfig, endConfig)
+
+    def addConfigToRoadmap (self, config):
+	return self.client.problem.addConfigToRoadmap(config)
+
+    def addEdgeToRoadmap (self, config1, config2, pathId):
+	return self.client.problem.addEdgeToRoadmap (config1, config2, pathId)
 
     ## Get Number of paths
     def numberPaths (self):

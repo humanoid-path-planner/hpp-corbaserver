@@ -176,9 +176,15 @@ namespace hpp
 
 	virtual hpp::intSeq* solve () throw (hpp::Error);
 
-	virtual void directPath (const hpp::floatSeq& startConfig,
+	virtual bool directPath (const hpp::floatSeq& startConfig,
 				  const hpp::floatSeq& endConfig)
 	  throw (hpp::Error);
+
+	virtual bool addConfigToRoadmap (const hpp::floatSeq& config) throw (hpp::Error);
+
+	virtual bool addEdgeToRoadmap (const hpp::floatSeq& config1, 
+	   			       const hpp::floatSeq& config2, UShort pathId) 
+	throw (hpp::Error);
 
 	virtual void appendDirectPath (UShort pathId,
 				       const hpp::floatSeq& config)

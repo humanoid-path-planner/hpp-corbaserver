@@ -1136,24 +1136,55 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::directPath (const hpp::floatSeq& startConfig,
+      bool Problem::directPath (const hpp::floatSeq& startConfig,
 				const hpp::floatSeq& endConfig)
 	throw (hpp::Error)
       {
 	ConfigurationPtr_t start;
 	ConfigurationPtr_t end;
+	bool pathValid = false;
 	try {
 	  start = floatSeqToConfig (problemSolver_, startConfig);
 	  end = floatSeqToConfig (problemSolver_, endConfig);
 	  if (!problemSolver_->problem ()) {
 	    problemSolver_->resetProblem ();
 	  }
-	  problemSolver_->directPath (*start, *end);
+	  pathValid = problemSolver_->directPath (*start, *end);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
+	return pathValid;
       }
 
+      // ---------------------------------------------------------------
+
+      bool Problem::addConfigToRoadmap (const hpp::floatSeq& config) throw (hpp::Error)
+      {
+	ConfigurationPtr_t configuration (floatSeqToConfig (problemSolver_, config));
+	return problemSolver_->addConfigToRoadmap (configuration);
+      }
+
+      // ---------------------------------------------------------------
+
+      bool Problem::addEdgeToRoadmap (const hpp::floatSeq& config1, 
+			     const hpp::floatSeq& config2, UShort pathId)
+      throw (hpp::Error)
+      {
+        try {
+	  if (pathId >= problemSolver_->paths ().size ()) {
+	    std::ostringstream oss ("wrong path id: ");
+	    oss << pathId << ", number path: "
+		<< problemSolver_->paths ().size () << ".";
+	    throw std::runtime_error (oss.str ());
+	  }
+          PathVectorPtr_t path = problemSolver_->paths () [pathId];
+	  ConfigurationPtr_t start (floatSeqToConfig (problemSolver_, config1));
+	  ConfigurationPtr_t finish (floatSeqToConfig (problemSolver_, config2));
+	  return problemSolver_->addEdgeToRoadmap (start, finish, path);
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+       }
       // ---------------------------------------------------------------
 
       void Problem::appendDirectPath (UShort pathId,
