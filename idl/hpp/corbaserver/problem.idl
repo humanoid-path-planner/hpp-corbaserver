@@ -38,12 +38,6 @@ module hpp
     ///	\return Array of degrees of freedom
      floatSeq getInitialConfig () raises (Error);
 
-    /// Return nearest neighbour of given input configuration.
-    /// \param iCC is the index of a connected component in the roadmap. If iCC
-    ///	   	     is negative, function goes through all connected components
-    ///		     looking for the nearest node (configuration).
-    floatSeq getNearestConfig(in floatSeq config, in long iCC) raises (Error);
-
     /// \brief Add goal configuration to specified problem.
     ///	\param dofArray Array of degrees of freedom
     ///	\throw Error.
@@ -427,6 +421,12 @@ module hpp
     /// \return list of nodes of the connected component.
     floatSeqSeq nodesConnectedComponent (in unsigned long connectedComponentId)
       raises (Error);
+
+    /// Return nearest neighbour of given input configuration.
+    /// \param connectedComponentId is the index of a connected component in the roadmap.
+    ///	   	     If connectedComponentId is negative, function goes through all
+    ///		      connected components looking for the nearest node (configuration).
+    floatSeq getNearestConfig(in floatSeq config, in long connectedComponentId) raises (Error);
 
     /// Clear the roadmap
     void clearRoadmap () raises (Error);

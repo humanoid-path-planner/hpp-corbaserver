@@ -294,25 +294,6 @@ namespace hpp
       }
 
       // ---------------------------------------------------------------
-      
-      virtual hpp::floatSeq*
-      getNearestConfig (const hpp::floatSeq& config, const Long iCC)
-      {
-	hpp::core::ConnectedComponents_t& connectedComponents;
-	if (iCC < 0) {
-	  connectedComponents = (problemSolver_->roadmap ())->connectedComponents ();
-	  
-	} else {
-	  (problemSolver_->roadmap ())->connectedComponents ()->
-	  connectedComponents.push_back()
-	  
-	}
-	hpp::core::value_type distance;
-	hpp::core::NodePtr_t near = (problemSolver_->roadmap ())->nearestNode (config, *itcc, distance);
-	return near->configuration ();
-      }
-
-      // ---------------------------------------------------------------
 
       void Problem::createOrientationConstraint
       (const char* constraintName, const char* joint1Name,
@@ -1628,6 +1609,38 @@ namespace hpp
 	    (*res) [i] = floats;
 	    ++i;
 	  }
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+	return res;
+      }
+
+      // ---------------------------------------------------------------
+
+      hpp::floatSeq*
+      Problem::getNearestConfig (const hpp::floatSeq& config, const Long connectedComponentId)
+      throw (hpp::Error)
+      {
+	hpp::floatSeq* res;
+	hpp::core::value_type distance;
+	try {
+	  const hpp::core::ConnectedComponents_t& connectedComponents 
+	        (problemSolver_->roadmap ()->connectedComponents ());
+	  hpp::core::NodePtr_t nearest;
+	  hpp::core::ConfigurationPtr_t configuration = floatSeqToConfig (problemSolver_, config); 
+	  if (connectedComponentId < 0) {
+	    nearest = problemSolver_->roadmap ()->nearestNode (configuration, distance);
+	    	  } else {
+	    hpp::core::ConnectedComponents_t::const_iterator itcc =
+	      connectedComponents.begin ();
+	    ULong i = 0;
+	    while (i != connectedComponentId) {
+	      i++; 
+	      itcc++;
+	    }
+	     nearest = problemSolver_->roadmap ()->nearestNode (configuration, *itcc, distance);
+	  }
+	    res = vectorToFloatseq (*(nearest->configuration ()));
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}

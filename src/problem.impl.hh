@@ -53,9 +53,6 @@ namespace hpp
 	virtual void
 	resetGoalConfigs ()  throw (hpp::Error);
 
-	virtual hpp::floatSeq*
-	getNearestConfig (const hpp::floatSeq& config, const Long iCC);
-
 	virtual void createOrientationConstraint
 	(const char* constraintName, const char* joint1Name,
 	 const char* joint2Name, const Double* p, const hpp::boolSeq& mask)
@@ -215,6 +212,11 @@ namespace hpp
 	virtual Long numberConnectedComponents () throw (hpp::Error);
 	virtual hpp::floatSeqSeq*
 	nodesConnectedComponent (ULong connectedComponentId) throw (hpp::Error);
+	
+	virtual hpp::floatSeq*
+	getNearestConfig (const hpp::floatSeq& config, const Long connectedComponentId)
+	throw (hpp::Error);
+	
 	virtual void clearRoadmap () throw (hpp::Error);
 	virtual void resetRoadmap ();
         virtual void saveRoadmap (const char* filename) throw (hpp::Error);
