@@ -333,17 +333,20 @@ module hpp
 
     /// Make direct connection between two configurations
     /// \param startConfig, endConfig: the configurations to link.
-    /// \throw Error if steering method fails to create a direct path of if
-    /// direct path is not valid
-    boolean directPath (in floatSeq startConfig, in floatSeq endConfig)
-      raises (Error);
+    /// return TRUE if created path is fully valid.
+    /// \param pathId returns index of copmuted path in path vector.
+    boolean directPath (in floatSeq startConfig, in floatSeq endConfig,
+			out unsigned short pathId) raises (Error);
 
-    ///
+    /// add \param config to roadmap. Creates a node.
     boolean addConfigToRoadmap (in floatSeq config) raises(Error);
 
-    ///
+    /// add an edge to roadmap. If \param bothEdges is FALSE, only add
+    /// edge from \param config1 to \param config2. If TRUE. add edges
+    /// config1->config2 AND config2->config1.
     boolean addEdgeToRoadmap (in floatSeq config1, in floatSeq config2,
-			      in unsigned short pathId) raises (Error);
+			      in unsigned short pathId, in boolean bothEdges) 
+	raises (Error);
 
     /// Append a path to an existing path
     /// \param pathId Id of the path in this problem,
@@ -432,8 +435,11 @@ module hpp
     /// Return nearest neighbour of given input configuration.
     /// \param connectedComponentId is the index of a connected component in the roadmap.
     ///	   	     If connectedComponentId is negative, function goes through all
-    ///		      connected components looking for the nearest node (configuration).
-    floatSeq getNearestConfig(in floatSeq config, in long connectedComponentId) raises (Error);
+    ///		     connected components looking for the nearest node (configuration).
+    /// \param distance returns the one-dimensional distance between \param config and
+    ///              computed nearest node (configuration). 
+    floatSeq getNearestConfig(in floatSeq config, in long connectedComponentId, out double distance) 
+	raises (Error);
 
     /// Clear the roadmap
     void clearRoadmap () raises (Error);

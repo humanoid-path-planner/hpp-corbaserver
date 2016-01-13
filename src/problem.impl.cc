@@ -1137,7 +1137,7 @@ namespace hpp
       // ---------------------------------------------------------------
 
       bool Problem::directPath (const hpp::floatSeq& startConfig,
-				const hpp::floatSeq& endConfig)
+				const hpp::floatSeq& endConfig, UShort& pathId)
 	throw (hpp::Error)
       {
 	ConfigurationPtr_t start;
@@ -1149,7 +1149,7 @@ namespace hpp
 	  if (!problemSolver_->problem ()) {
 	    problemSolver_->resetProblem ();
 	  }
-	  pathValid = problemSolver_->directPath (*start, *end);
+	  pathValid = problemSolver_->directPath (*start, *end, pathId);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -1166,9 +1166,8 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      bool Problem::addEdgeToRoadmap (const hpp::floatSeq& config1, 
-			     const hpp::floatSeq& config2, UShort pathId)
-      throw (hpp::Error)
+      bool Problem::addEdgeToRoadmap (const hpp::floatSeq& config1, const hpp::floatSeq& config2, 
+				       UShort pathId, bool bothEdges) throw (hpp::Error)     
       {
         try {
 	  if (pathId >= problemSolver_->paths ().size ()) {
@@ -1180,6 +1179,10 @@ namespace hpp
           PathVectorPtr_t path = problemSolver_->paths () [pathId];
 	  ConfigurationPtr_t start (floatSeqToConfig (problemSolver_, config1));
 	  ConfigurationPtr_t finish (floatSeqToConfig (problemSolver_, config2));
+	  if (bothEdges) {
+	    return (problemSolver_->addEdgeToRoadmap (start, finish, path) 
+	            && problemSolver_->addEdgeToRoadmap (finish, start, path));
+	  }	  
 	  return problemSolver_->addEdgeToRoadmap (start, finish, path);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -1649,11 +1652,10 @@ namespace hpp
       // ---------------------------------------------------------------
 
       hpp::floatSeq*
-      Problem::getNearestConfig (const hpp::floatSeq& config, const Long connectedComponentId)
-      throw (hpp::Error)
+      Problem::getNearestConfig (const hpp::floatSeq& config, const Long connectedComponentId,
+      				 hpp::core::value_type& distance) throw (hpp::Error)
       {
 	hpp::floatSeq* res;
-	hpp::core::value_type distance;
 	try {
 	  const hpp::core::ConnectedComponents_t& connectedComponents 
 	        (problemSolver_->roadmap ()->connectedComponents ());

@@ -358,8 +358,8 @@ class ProblemSolver (object):
     def addConfigToRoadmap (self, config):
 	return self.client.problem.addConfigToRoadmap(config)
 
-    def addEdgeToRoadmap (self, config1, config2, pathId):
-	return self.client.problem.addEdgeToRoadmap (config1, config2, pathId)
+    def addEdgeToRoadmap (self, config1, config2, pathId, bothEdges):
+	return self.client.problem.addEdgeToRoadmap (config1, config2, pathId, bothEdges)
 
     ## Get Number of paths
     def numberPaths (self):

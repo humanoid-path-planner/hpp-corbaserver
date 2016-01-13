@@ -177,14 +177,13 @@ namespace hpp
 	virtual hpp::intSeq* solve () throw (hpp::Error);
 
 	virtual bool directPath (const hpp::floatSeq& startConfig,
-				  const hpp::floatSeq& endConfig)
+				  const hpp::floatSeq& endConfig, UShort& pathId)
 	  throw (hpp::Error);
 
 	virtual bool addConfigToRoadmap (const hpp::floatSeq& config) throw (hpp::Error);
 
-	virtual bool addEdgeToRoadmap (const hpp::floatSeq& config1, 
-	   			       const hpp::floatSeq& config2, UShort pathId) 
-	throw (hpp::Error);
+	virtual bool addEdgeToRoadmap (const hpp::floatSeq& config1, const hpp::floatSeq& config2, 
+				       UShort pathId, bool bothEdges) throw (hpp::Error);
 
 	virtual void appendDirectPath (UShort pathId,
 				       const hpp::floatSeq& config)
@@ -220,8 +219,8 @@ namespace hpp
 	nodesConnectedComponent (ULong connectedComponentId) throw (hpp::Error);
 	
 	virtual hpp::floatSeq*
-	getNearestConfig (const hpp::floatSeq& config, const Long connectedComponentId)
-	throw (hpp::Error);
+	getNearestConfig (const hpp::floatSeq& config, const Long connectedComponentId, 
+			  hpp::core::value_type& distance) throw (hpp::Error);
 	
 	virtual void clearRoadmap () throw (hpp::Error);
 	virtual void resetRoadmap ();
