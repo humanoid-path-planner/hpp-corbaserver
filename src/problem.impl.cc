@@ -1181,7 +1181,7 @@ namespace hpp
 	  ConfigurationPtr_t finish (floatSeqToConfig (problemSolver_, config2));
 	  if (bothEdges) {
 	    return (problemSolver_->addEdgeToRoadmap (start, finish, path) 
-	            && problemSolver_->addEdgeToRoadmap (finish, start, path));
+	            && problemSolver_->addEdgeToRoadmap (finish, start, path->reverse()));
 	  }	  
 	  return problemSolver_->addEdgeToRoadmap (start, finish, path);
 	} catch (const std::exception& exc) {
