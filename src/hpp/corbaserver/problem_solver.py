@@ -431,7 +431,7 @@ class ProblemSolver (object):
     # \param distance returns the one-dimensional distance between \param config and
     #              computed nearest node (configuration). 
     # \sa numberConnectedComponents
-    def getNearestConfig (self, randomConfig, connectedComponentId):
+    def getNearestConfig (self, randomConfig, connectedComponentId = -1):
 	return self.client.problem.getNearestConfig (randomConfig, connectedComponentId)
 
     ## Add a configuration to the roadmap.
