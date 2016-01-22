@@ -1666,14 +1666,11 @@ namespace hpp
 	    	  } else {
 	    hpp::core::ConnectedComponents_t::const_iterator itcc =
 	      connectedComponents.begin ();
-	    ULong i = 0;
-	    while (i != connectedComponentId) {
-	      i++; 
-	      itcc++;
-	    }
-	     nearest = problemSolver_->roadmap ()->nearestNode (configuration, *itcc, distance);
+            std::advance (itcc, connectedComponentId);
+	    nearest = problemSolver_->roadmap ()->nearestNode (configuration, *itcc, distance);
 	  }
-	    res = vectorToFloatseq (*(nearest->configuration ()));
+          if (!nearest) throw hpp::Error ("Nearest node not found");
+          res = vectorToFloatseq (*(nearest->configuration ()));
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
