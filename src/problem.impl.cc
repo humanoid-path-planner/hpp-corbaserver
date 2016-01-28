@@ -1003,6 +1003,60 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+      void Problem::setGoalNumericalConstraints
+      (const char* constraintName, const Names_t& constraintNames,
+       const hpp::intSeq& priorities)
+	throw (Error)
+      {
+	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
+	try {
+	  for (CORBA::ULong i=0; i<constraintNames.length (); ++i) {
+	    std::string name (constraintNames [i]);
+            problemSolver()->addGoalConstraint (constraintName, name,
+                (std::size_t)priorities[i]);
+	    problemSolver()->robot ()->controlComputation
+	      (model::Device::ALL);
+	  }
+	} catch (const std::exception& exc) {
+	  throw Error (exc.what ());
+	}
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::addGoalLockJoint (const char* jointName,
+          const hpp::floatSeq& value)
+	throw (hpp::Error)
+      {
+	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
+	try {
+	  // Get robot in hppPlanner object.
+	  DevicePtr_t robot = problemSolver()->robot ();
+	  JointPtr_t joint = robot->getJointByName (jointName);
+	  vector_t jointConfig = floatSeqToVector (value);
+
+	  LockedJointPtr_t lockedJoint (LockedJoint::create (joint, jointConfig));
+	  problemSolver()->addGoalConstraint (lockedJoint);
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------
+
+      void Problem::resetGoalConstraints ()
+        throw (hpp::Error)
+      {
+	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
+	try {
+	  problemSolver()->resetGoalConstraint ();
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // ---------------------------------------------------------------
+
       void Problem::setErrorThreshold (Double threshold) throw (Error)
       {
 	problemSolver()->errorThreshold (threshold);

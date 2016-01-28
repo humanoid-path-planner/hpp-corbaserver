@@ -150,6 +150,14 @@ namespace hpp
 	virtual void lockJoint (const char* jointName,
 				const hpp::floatSeq& value)
 	  throw (hpp::Error);
+	virtual void resetGoalConstraints () throw (hpp::Error);
+	virtual void setGoalNumericalConstraints
+	(const char* constraintName, const hpp::Names_t& constraintNames,
+         const hpp::intSeq& priorities)
+	  throw (Error);
+	virtual void addGoalLockJoint (const char* jointName,
+				const hpp::floatSeq& value)
+	  throw (hpp::Error);
 	virtual void setErrorThreshold (Double threshold) throw (Error);
 	virtual void setMaxIterations (UShort iterations) throw (Error);
 
