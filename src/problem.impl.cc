@@ -1224,7 +1224,9 @@ namespace hpp
 	  if (!problemSolver()->problem ()) {
 	    problemSolver()->resetProblem ();
 	  }
-	  pathValid = problemSolver()->directPath (*start, *end, pathId);
+          std::size_t pid;
+	  pathValid = problemSolver()->directPath (*start, *end, pid);
+          pathId = (UShort) pid;
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -1701,11 +1703,11 @@ namespace hpp
 	  while (i != connectedComponentId) {
 	    ++i; itcc++;
 	  }
-      const Nodes_t & nodes ((*itcc)->nodes ());
+      const NodeVector_t & nodes ((*itcc)->nodes ());
 	  res = new hpp::floatSeqSeq;
 	  res->length ((CORBA::ULong)nodes.size ());
 	  i=0;
-	  for (Nodes_t::const_iterator itNode = nodes.begin ();
+	  for (NodeVector_t::const_iterator itNode = nodes.begin ();
 	       itNode != nodes.end (); itNode++) {
 	    ConfigurationPtr_t config = (*itNode)->configuration ();
 	    ULong size = (ULong) config->size ();

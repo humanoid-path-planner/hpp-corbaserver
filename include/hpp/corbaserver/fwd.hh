@@ -58,6 +58,7 @@ namespace hpp
     typedef core::LockedJoint LockedJoint;
     typedef core::LockedJointPtr_t LockedJointPtr_t;
     typedef core::Nodes_t Nodes_t;
+    typedef core::NodeVector_t NodeVector_t;
     typedef model::ObjectVector_t ObjectVector_t;
     typedef model::ObjectIterator ObjectIterator;
     typedef core::PathPtr_t PathPtr_t;
