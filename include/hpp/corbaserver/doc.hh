@@ -27,6 +27,7 @@ that forward corba resquests to the server side:
   \li hpp.corbaserver.robot.Robot to load and handle a robot,
   \li hpp.corbaserver.robot.HumanoidRobot to load and handle a humanoid robot,
   \li hpp.corbaserver.problem_solver.ProblemSolver to set and solve a path planning problem.
+  \li hpp.corbaserver.benchmark.Benchmark to generate statistics on solving time and length of solutions.
 
 \section hppCorbaServer_sec_embedding How to embed a server in an application
 
