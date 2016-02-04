@@ -61,7 +61,6 @@ class _BenchmarkIterator (object):
                 self.current.newCase = True
                 self.current.caseI += 1
                 if self.current.caseI >= self.casesL:
-                    self.current.caseI = 0
                     raise StopIteration
                 self.current.seedI = 0
             self.current.iterPerCaseI = 0
