@@ -235,3 +235,43 @@ class Benchmark (object):
             self.current = pk.load(f)
 
             self.results = pk.load(f)
+
+    def plotTime(self, axes):
+        # Generate datas
+        times = list()
+        i = 0
+        nb = self.iterPerCase * len(self.seedRange)
+        for c in self.cases:
+            times.append(np.array (self.results['time'][i:i+nb]).dot (self.toSeconds))
+            i += nb
+
+        self._boxplot (axes, times, "Time (s)")
+        return times
+
+    def plotPathLength(self, axes):
+        # Generate datas
+        pls = list()
+        i = 0
+        nb = self.iterPerCase * len(self.seedRange)
+        for c in self.cases:
+            pls.append(np.array (self.results['pathLength'][i:i+nb]))
+            i += nb
+
+        self._boxplot (axes, pls, "Path length")
+        return pls
+
+    def _boxplot(self, axes, datas, ylabel):
+        import matplotlib.pyplot as plt
+        # rectangular box plot
+        bplot = axes.boxplot(datas,
+                vert=True,   # vertical box aligmnent
+                patch_artist=True)   # fill with color
+
+        # adding horizontal grid lines
+        axes.yaxis.grid(True)
+        axes.set_xticks([x+1 for x in range(len(self.cases))], )
+        axes.set_ylabel(ylabel)
+
+        # add x-tick labels
+        plt.setp(axes, xticks=[x+1 for x in range(len(self.cases))],
+                xticklabels=[str(c) for c in self.cases])
