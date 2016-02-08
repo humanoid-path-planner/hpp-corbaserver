@@ -85,6 +85,24 @@ class _BenchmarkIterator (object):
 # \sa hpp.corbaserver.benchmark.Benchmark.do
 # hpp.corbaserver.benchmark.Benchmark.seedRange
 # 
+# If you wish to replot datas stored in a file:
+# \code{.py}
+# from hpp.corbaserver import Benchmark
+# import matplotlib.pyplot as plt
+# b = Benchmark (None, None, None)
+# b.resumeFrom ("datafile")
+#
+# fig, axes = plt.subplots(nrows=1, ncols=2)
+# b.plotTime (axes[0])
+# b.plotPathLength (axes[1])
+# plt.show ()
+#
+# \endcode
+#
+# \sa
+# hpp.corbaserver.benchmark.Benchmark.plotTime
+# hpp.corbaserver.benchmark.Benchmark.plotPathLength
+#
 # Advanced usage
 # \code{.py}
 # from hpp.corbaserver import Benchmark
