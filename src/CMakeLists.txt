@@ -85,7 +85,7 @@ FOREACH (FILE __init__.py quaternion.py transform.py)
     )
 ENDFOREACH ()
 
-FOREACH (FILE __init__.py client.py robot.py  problem_solver.py benchmark.py)
+FOREACH (FILE __init__.py client.py robot.py  problem_solver.py benchmark.py ompl_benchmark_statistics.py)
   PYTHON_INSTALL_ON_SITE(
     hpp/corbaserver ${FILE} ${PYTHON_SITELIB}
     )

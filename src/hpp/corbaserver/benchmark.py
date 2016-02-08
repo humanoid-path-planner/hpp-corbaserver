@@ -152,6 +152,7 @@ class Benchmark (object):
         self.results['user'] = []
         self.results['time'] = []
         self.results['pathLength'] = []
+        self.results['states']=[]
 
     ## Solve the same problem for the specified cases, for various random seed.
     # \param initCase a function of 3 arguments:
@@ -170,6 +171,7 @@ class Benchmark (object):
                     self.results['user'].append (initCase (self, self.getCase(iter), iter))
                 self.results['time'].append (self.client.problem.solve ())
                 self.results['pathLength'].append (self.client.problem.pathLength (self.client.problem.numberPaths()-1))
+                self.results['states'].append(self.ps.numberNodes())
             except:
                 # write current data to restart at the same point
                 self.current = iter
@@ -293,3 +295,89 @@ class Benchmark (object):
         # add x-tick labels
         plt.setp(axes, xticks=[x+1 for x in range(len(self.cases))],
                 xticklabels=[str(c) for c in self.cases])
+
+    def writeDatabase(self,nameDatabase,experimentName = 'default',nameLogFile = 'temp.log',append = False):
+        import os
+        if os.path.isfile(nameLogFile) : 
+            os.remove(nameLogFile)
+
+        if not append and os.path.isfile(nameDatabase):
+            os.remove(nameDatabase)
+
+        # write log file :
+        # write experiment header :
+        log = open(nameLogFile,'w')
+        log.write('Experiment '+experimentName+'\n')
+        log.write('0 experiment properties\n')
+        p = os.popen('hostname')
+        log.write('Running on '+p.read())
+        p = os.popen('date --rfc-3339=seconds')
+        log.write('Starting at '+p.read())
+        log.write('<<<| \n')
+        log.write('Configuration of the experiment : \n')
+        log.write('Robot name : '+self.robot.displayName+'\n')
+        log.write('Initial config : '+str(self.ps.getInitialConfig())+'\n')
+        for qgoal in self.ps.getGoalConfigs():
+            log.write('Goal config : '+str(qgoal)+'\n')
+
+        log.write('Joints bounds : \n')
+        for jointName in self.robot.allJointNames :
+            if len(self.robot.client.robot.getJointBounds(jointName)) > 0 :
+                log.write(jointName+' : '+str(self.robot.client.robot.getJointBounds(jointName))+'\n')
+
+        log.write('|>>> \n')
+        log.write('<<<| \n')
+        p = os.popen('cat /proc/cpuinfo')
+        log.write(p.read())
+        log.write('|>>> \n')
+        log.write('0 is the random seed\n')
+        # hardcoded value : time and memory limit for all the benchmark (required by the parser ... )
+        log.write('0 seconds per run\n')
+        log.write('8192 MB per run\n')
+        nbRuns = len(self.seedRange) * self.iterPerCase
+        log.write(str(nbRuns)+' runs per planner\n')
+        t = np.array (self.results['time']).dot (self.toSeconds)
+        log.write(str(t.sum()) +' seconds spent to collect the data\n')
+        log.write('1 enum type\n')
+        log.write('status|Timeout|solved|Crash|Unknown status\n')
+        log.write(str(len(self.cases))+" planners\n")
+
+        i=0
+        # for each algorithm (case ) : 
+        for c in self.cases:
+            if c == 'None' :
+                log.write('Default\n')
+            else :
+                log.write(str(c)+'\n') # need a better way to display this 
+
+            # need to find a way to retrieve important propertie from pathPlanner/problemSolver or add a parameter and ask the user to complete it            
+            log.write('0 common properties\n')
+            log.write('6 properties for each run\n')
+            # solved, status, seed and time are mandatory for the parser
+            log.write('solved BOOLEAN\n')
+            log.write('status ENUM\n')  # for now it's always 1 (= solved)
+            log.write('seed INTEGER\n')
+            log.write('pathLenght INTEGER\n')
+            log.write('graph_states INTEGER\n')
+            log.write('time REAL\n')
+            log.write(str(nbRuns)+' runs\n')
+            # TODO : add more common properties, add a way to customize the list of properties
+            nbSeed = len(self.seedRange)
+            for s in range(nbSeed):
+                for j in range(self.iterPerCase):
+                # write a line for each run 
+                    log.write('1; 1; '+str(self.seedRange[s])+'; '+str(self.results['pathLength'][i+j])+'; '+str(self.results['states'][ i+j])+"; "+str(t[i+j])+'; \n')
+                i += self.iterPerCase
+
+            log.write('. \n')
+        
+        log.close()
+        # compute the database :
+        from hpp.corbaserver import ompl_benchmark_statistics as omplBench
+        omplBench.readBenchmarkLog(nameDatabase,[nameLogFile],False)
+        omplBench.computeViews(nameDatabase,False)
+        if nameLogFile=='temp.log' : 
+            os.remove(nameLogFile)
+
+
+
