@@ -15,6 +15,7 @@
 
 # include "hpp/corbaserver/fwd.hh"
 # include "hpp/corbaserver/problem.hh"
+# include "hpp/corbaserver/problem-solver-map.hh"
 
 # include "hpp/corbaserver/deprecated.hh"
 
@@ -33,6 +34,8 @@ namespace hpp
 	Problem (corbaServer::Server* server);
 
         virtual Names_t* getAvailable (const char* what) throw (hpp::Error);
+
+        virtual bool selectProblem (const char* problemName) throw (hpp::Error);
 
 	virtual void
 	setRandomSeed (const Long seed) throw (hpp::Error) {
@@ -228,11 +231,10 @@ namespace hpp
         virtual void readRoadmap (const char* filename) throw (hpp::Error);
 
       private:
+        /// Return the selected problem solver
+        core::ProblemSolverPtr_t problemSolver ();
 	/// \brief Pointer to the Server owning this object
 	corbaServer::Server* server_;
-	/// \brief Pointer to hppPlanner object of hpp::corbaServer::Server.
-	/// Instantiated at construction.
-	core::ProblemSolverPtr_t problemSolver_;
       };
     } // end of namespace impl.
   } // end of namespace corbaServer.

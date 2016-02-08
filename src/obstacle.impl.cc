@@ -26,9 +26,13 @@ namespace hpp
     namespace impl
     {
       Obstacle::Obstacle (corbaServer::Server* server)
-	: server_ (server),
-	  problemSolver_ (server->problemSolver ())
+	: server_ (server)
       {}
+
+      core::ProblemSolverPtr_t Obstacle::problemSolver()
+      {
+        return server_->problemSolver();
+      }
 
       void Obstacle::loadObstacleModel (const char* package,
 					const char* filename,
@@ -48,7 +52,7 @@ namespace hpp
 	    CollisionObjectPtr_t obj = model::CollisionObject::create
 	      ((*itObj)->fcl ()->collisionGeometry(), (*itObj)->getTransform (),
 	       std::string (prefix) + (*itObj)->name ());
-	    problemSolver_->addObstacle (obj, true, true);
+	    problemSolver()->addObstacle (obj, true, true);
 	    hppDout (info, "Adding obstacle " << obj->name ());
 	  }
 	} catch (const std::exception& exc) {
@@ -69,7 +73,7 @@ namespace hpp
 
 	try {
 	  if (collision) {
-	    problemSolver_->removeObstacleFromJoint (objectName, jointName);
+	    problemSolver()->removeObstacleFromJoint (objectName, jointName);
 	  }
 	  if (distance) {
 	    throw std::runtime_error ("Not implemented.");
@@ -115,13 +119,13 @@ namespace hpp
 	Transform3f pos; pos.setIdentity ();
 	CollisionObjectPtr_t collisionObject
 	  (CollisionObject_t::create (geometry, pos, objName));
-	problemSolver_->addObstacle (collisionObject, collision, distance);
+	problemSolver()->addObstacle (collisionObject, collision, distance);
       }
 
       CollisionObjectPtr_t Obstacle::getObstacleByName (const char* name)
       {
 	const ObjectVector_t& collisionObstacles
-	  (problemSolver_->collisionObstacles ());
+	  (problemSolver()->collisionObstacles ());
 	for (ObjectVector_t::const_iterator it = collisionObstacles.begin ();
 	     it != collisionObstacles.end (); it++) {
 	  CollisionObjectPtr_t object = *it;
@@ -132,7 +136,7 @@ namespace hpp
 	  }
 	}
 	const ObjectVector_t& distanceObstacles
-	  (problemSolver_->distanceObstacles ());
+	  (problemSolver()->distanceObstacles ());
 	for (ObjectVector_t::const_iterator it = distanceObstacles.begin ();
 	     it != distanceObstacles.end (); it++) {
 	  CollisionObjectPtr_t object = *it;
@@ -180,7 +184,7 @@ namespace hpp
 	throw (hpp::Error)
       {
 	std::list <std::string> obstacles =
-	  problemSolver_->obstacleNames (collision, distance);
+	  problemSolver()->obstacleNames (collision, distance);
 	ULong size = (ULong) obstacles.size ();
 	char** nameList = Names_t::allocbuf(size);
 	Names_t *result = new Names_t (size, size, nameList);

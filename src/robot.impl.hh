@@ -235,7 +235,7 @@ namespace hpp
 	/// Pointer to Planner object of hpp::corbaServer::Server.
 	///
 	/// Instantiated at construction.
-	core::ProblemSolverPtr_t problemSolver_;
+	core::ProblemSolverPtr_t problemSolver();
 	model::ObjectFactory objectFactory_;
       };
     } // end of namespace impl.

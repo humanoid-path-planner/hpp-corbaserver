@@ -12,6 +12,8 @@
 #include <hpp/util/debug.hh>
 #include "hpp/corbaserver/server.hh"
 
+#include <hpp/core/problem-solver.hh>
+
 using hpp::corbaServer::Server;
 
 int

@@ -1,4 +1,4 @@
-// Copyright (C) 2009, 2010 by Florent Lamiraux, Thomas Moulard, JRL.
+// Copyright (C) 2009, 2010 by Florent Lamiraux, Thomas Moulard, Joseph Mirabel, JRL.
 //
 // This file is part of the hpp-corbaserver.
 //
@@ -13,7 +13,7 @@
 
 # include <hpp/corbaserver/fwd.hh>
 # include <hpp/corbaserver/config.hh>
-# include <hpp/core/problem-solver.hh>
+# include <hpp/corbaserver/problem-solver-map.hh>
 
 namespace hpp
 {
@@ -64,6 +64,20 @@ namespace hpp
       Server (core::ProblemSolverPtr_t problemSolver, int argc,
 	      const char* argv[], bool multiThread = false);
 
+      /// Constructor
+      /// \param problemSolverMap the object that will handle Corba requests.
+      /// \param argc, argv parameter to feed ORB initialization.
+      /// \param multiThread whether the server may process request using
+      ///        multithred policy.
+      /// \note It is recommended to configure your Corba implementation
+      ///       through environment variables and to set argc to 1 and argv to
+      ///       any string.
+      /// \note It is highly recommended not to enable multi-thread policy in
+      ///       CORBA request processing if this library is run from an openGL
+      ///       based GUI, since OpenGL does not support multithreading.
+      Server (ProblemSolverMapPtr_t problemSolverMap, int argc,
+	      const char* argv[], bool multiThread = false);
+
       /// \brief Shutdown CORBA server
       ~Server ();
 
@@ -77,7 +91,8 @@ namespace hpp
       ///             returns.
       int processRequest (bool loop);
 
-      core::ProblemSolverPtr_t problemSolver () const;
+      ProblemSolverMapPtr_t problemSolverMap ();
+
       core::ProblemSolverPtr_t problemSolver ();
 
     private:
@@ -102,7 +117,7 @@ namespace hpp
       /// processed by this object. Notice that this pointer is passed
       /// to each constructor of implementation classes of the server
       /// Corba interface.
-      core::ProblemSolverPtr_t problemSolver_;
+      ProblemSolverMapPtr_t problemSolverMap_;
     };
 
   } // end of namespace corbaServer.

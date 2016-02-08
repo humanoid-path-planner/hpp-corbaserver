@@ -33,6 +33,7 @@ SET(${PROJECT_NAME}_HEADERS
   include/hpp/corbaserver/doc.hh
   include/hpp/corbaserver/fwd.hh
   include/hpp/corbaserver/orb-singleton.hh
+  include/hpp/corbaserver/problem-solver-map.hh
   include/hpp/corbaserver/server.hh
   include/hpp/corbaserver/client.hh
   )

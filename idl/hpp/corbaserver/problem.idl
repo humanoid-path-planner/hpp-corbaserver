@@ -26,6 +26,12 @@ module hpp
     ///             This is case insensitive.
     Names_t getAvailable (in string type) raises (Error);
 
+    /// Select a problem by its name.
+    /// If no problem with this name exists, a new problem is created and selected.
+    /// \param name the problem name.
+    /// \return true if a new problem was created.
+    boolean selectProblem (in string name) raises (Error);
+
     /// \name Initial and goal configurations
     /// \{
 

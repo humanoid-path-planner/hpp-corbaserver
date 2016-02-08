@@ -49,7 +49,19 @@ namespace hpp
 
     Server::Server(core::ProblemSolverPtr_t problemSolver, int argc,
 		   const char *argv[], bool inMultiThread) :
-      problemSolver_ (problemSolver)
+      problemSolverMap_ (new ProblemSolverMap (problemSolver))
+    {
+      // Register log function.
+      omniORB::setLogFunction (&logFunction);
+
+      private_ = new impl::Server;
+
+      initORBandServers (argc, argv, inMultiThread);
+    }
+
+    Server::Server(ProblemSolverMapPtr_t problemSolverMap, int argc,
+		   const char *argv[], bool inMultiThread) :
+      problemSolverMap_ (problemSolverMap)
     {
       // Register log function.
       omniORB::setLogFunction (&logFunction);
@@ -158,18 +170,15 @@ namespace hpp
       pman->activate();
     }
 
-    core::ProblemSolverPtr_t Server::problemSolver () const
-    {
-      return problemSolver_;
-    }
-
     core::ProblemSolverPtr_t Server::problemSolver ()
     {
-      return problemSolver_;
+      return problemSolverMap_->selected();
     }
 
-
-
+    ProblemSolverMapPtr_t Server::problemSolverMap ()
+    {
+      return problemSolverMap_;
+    }
 
     /// \brief If CORBA requests are pending, process them
     int Server::processRequest (bool loop)

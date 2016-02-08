@@ -91,7 +91,7 @@ namespace hpp
 	corbaServer::Server* server_;
 
 	/// \brief Pointer to hppPlanner object of hpp::corbaServer::Server.
-	core::ProblemSolverPtr_t problemSolver_;
+	core::ProblemSolverPtr_t problemSolver();
       };
 
     } // end of namespace implementation.
