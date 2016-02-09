@@ -44,7 +44,7 @@ import datetime
 plottingEnabled=True
 try:
     import matplotlib
-    matplotlib.use('pdf')
+    #matplotlib.use('pdf')
     from matplotlib import __version__ as matplotlibversion
     from matplotlib.backends.backend_pdf import PdfPages
     import matplotlib.pyplot as plt
