@@ -296,6 +296,12 @@ class Benchmark (object):
         plt.setp(axes, xticks=[x+1 for x in range(len(self.cases))],
                 xticklabels=[str(c) for c in self.cases])
 
+    ## This method create a database which store the benchmark results. 
+    # You can then use it in the platform http://plannerarena.org/ to plot your results.
+    # \param nameDatabase the name of the created file (extension must be in .db)
+    # \param experimentName the name of the current scenario/problem (used when you append several scenario in the same database)
+    # \param nameLogFile the name of the text file writed 
+    # \param append if True, the current result will be added in the given database.
     def writeDatabase(self,nameDatabase,experimentName = 'default',nameLogFile = 'temp.log',append = False):
         import os
         if os.path.isfile(nameLogFile) : 
@@ -331,7 +337,7 @@ class Benchmark (object):
         log.write(p.read())
         log.write('|>>> \n')
         log.write('0 is the random seed\n')
-        # hardcoded value : time and memory limit for all the benchmark (required by the parser ... )
+        # hardcoded value : time and memory limit for all the benchmark (required by the parser)
         log.write('0 seconds per run\n')
         log.write('8192 MB per run\n')
         nbRuns = len(self.seedRange) * self.iterPerCase
@@ -349,8 +355,7 @@ class Benchmark (object):
                 log.write('Default\n')
             else :
                 log.write(str(c)+'\n') # need a better way to display this 
-
-            # need to find a way to retrieve important propertie from pathPlanner/problemSolver or add a parameter and ask the user to complete it            
+           
             log.write('0 common properties\n')
             log.write('6 properties for each run\n')
             # solved, status, seed and time are mandatory for the parser
@@ -361,7 +366,6 @@ class Benchmark (object):
             log.write('graph_states INTEGER\n')
             log.write('time REAL\n')
             log.write(str(nbRuns)+' runs\n')
-            # TODO : add more common properties, add a way to customize the list of properties
             nbSeed = len(self.seedRange)
             for s in range(nbSeed):
                 for j in range(self.iterPerCase):
