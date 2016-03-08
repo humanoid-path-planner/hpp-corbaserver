@@ -75,10 +75,10 @@ def _getIIOPurl ():
   host = os.getenv ("HPP_HOST")
   port = os.getenv ("HPP_PORT")
   if host is None and port is None:
-      url = "corbaloc:rir:/NameService"
+      url = "corbaloc:iiop:/NameService"
   else:
       url = "corbaloc:iiop:" \
-            + host if host is not None else "localhost" \
-            + ":" + port if port is not None else "2809" \
+            + (host if host is not None else "localhost") \
+            + ":" + (port if port is not None else "2809") \
             + "/NameService"
   return url
