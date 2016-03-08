@@ -29,14 +29,21 @@ SET(PROJECT_NAME hpp-corbaserver)
 SET(PROJECT_DESCRIPTION "Corba server for Humanoid Path Planner applications")
 SET(PROJECT_URL "ssh://trac.laas.fr/git/jrl/corba/hpp-corbaserver")
 
+SET(CLIENT_ONLY FALSE CACHE BOOL "Set to true to install the client only")
+
 SET(${PROJECT_NAME}_HEADERS
-  include/hpp/corbaserver/doc.hh
-  include/hpp/corbaserver/fwd.hh
-  include/hpp/corbaserver/orb-singleton.hh
-  include/hpp/corbaserver/problem-solver-map.hh
-  include/hpp/corbaserver/server.hh
   include/hpp/corbaserver/client.hh
   )
+IF (NOT CLIENT_ONLY)
+  SET(${PROJECT_NAME}_HEADERS
+    include/hpp/corbaserver/doc.hh
+    include/hpp/corbaserver/fwd.hh
+    include/hpp/corbaserver/orb-singleton.hh
+    include/hpp/corbaserver/problem-solver-map.hh
+    include/hpp/corbaserver/server.hh
+    ${${PROJECT_NAME}_HEADERS}
+    )
+ENDIF (NOT CLIENT_ONLY)
 
 SETUP_PROJECT ()
 
@@ -47,15 +54,19 @@ IF (HPP_DEBUG)
 ENDIF()
 
 # Dependencies
-ADD_REQUIRED_DEPENDENCY("hpp-core >= 3")
-ADD_REQUIRED_DEPENDENCY("hpp-model-urdf >= 3")
 ADD_REQUIRED_DEPENDENCY("omniORB4 >= 4.1.4")
-ADD_REQUIRED_DEPENDENCY("hpp-constraints >= 3")
-ADD_REQUIRED_DEPENDENCY("hpp-model >= 3")
+IF (NOT CLIENT_ONLY)
+  ADD_REQUIRED_DEPENDENCY("hpp-core >= 3")
+  ADD_REQUIRED_DEPENDENCY("hpp-model-urdf >= 3")
+  ADD_REQUIRED_DEPENDENCY("hpp-constraints >= 3")
+  ADD_REQUIRED_DEPENDENCY("hpp-model >= 3")
+ENDIF (NOT CLIENT_ONLY)
 
 ADD_SUBDIRECTORY(src)
 
-PKG_CONFIG_APPEND_LIBS(${PROJECT_NAME})
+IF (NOT CLIENT_ONLY)
+  PKG_CONFIG_APPEND_LIBS(${PROJECT_NAME})
+ENDIF (NOT CLIENT_ONLY)
 
 SETUP_PROJECT_FINALIZE()
 SETUP_PROJECT_CPACK()

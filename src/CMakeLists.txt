@@ -46,38 +46,49 @@ ENDFOREACH()
 ADD_CUSTOM_TARGET(generate_idl_cpp DEPENDS ${ALL_IDL_CPP_STUBS})
 ADD_CUSTOM_TARGET(generate_idl_python DEPENDS ${ALL_IDL_PYTHON_STUBS})
 
-ADD_LIBRARY(${LIBRARY_NAME}
-  SHARED
-  obstacle.impl.cc
-  obstacle.impl.hh
-  problem.impl.cc
-  problem.impl.hh
-  robot.impl.cc
-  robot.impl.hh
-  client.cc
-  server.cc
-  server-private.cc
-  server-private.hh
-  tools.cc
-  tools.hh
-  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/common.hh
-  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/problem.hh
-  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/obstacle.hh
-  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/robot.hh
-  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/commonSK.cc
-  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/obstacleSK.cc
-  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/robotSK.cc
-  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/problemSK.cc
-)
+IF (NOT CLIENT_ONLY)
+  ADD_LIBRARY(${LIBRARY_NAME}
+    SHARED
+    obstacle.impl.cc
+    obstacle.impl.hh
+    problem.impl.cc
+    problem.impl.hh
+    robot.impl.cc
+    robot.impl.hh
+    client.cc
+    server.cc
+    server-private.cc
+    server-private.hh
+    tools.cc
+    tools.hh
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/common.hh
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/problem.hh
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/obstacle.hh
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/robot.hh
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/commonSK.cc
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/obstacleSK.cc
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/robotSK.cc
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/problemSK.cc
+    )
 
-ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_cpp)
-ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_python)
+  ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_cpp)
+  ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_python)
 
-PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-core)
-PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-model-urdf)
-PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} omniORB4)
+  PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-core)
+  PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-model-urdf)
+  PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} omniORB4)
 
-INSTALL(TARGETS ${LIBRARY_NAME} DESTINATION lib)
+  INSTALL(TARGETS ${LIBRARY_NAME} DESTINATION lib)
+
+  # Standalone corba server
+  ADD_EXECUTABLE (hppcorbaserver hpp-corbaserver.cc)
+  TARGET_LINK_LIBRARIES (hppcorbaserver ${LIBRARY_NAME})
+  PKG_CONFIG_USE_DEPENDENCY(hppcorbaserver hpp-core)
+  PKG_CONFIG_USE_DEPENDENCY(hppcorbaserver hpp-model-urdf)
+  PKG_CONFIG_USE_DEPENDENCY(hppcorbaserver hpp-constraints)
+
+  INSTALL (TARGETS hppcorbaserver DESTINATION bin)
+ENDIF (NOT CLIENT_ONLY)
 
 FOREACH (FILE __init__.py quaternion.py transform.py)
   PYTHON_INSTALL_ON_SITE(
@@ -100,11 +111,3 @@ INSTALL(
   DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/idl/hpp/corbaserver
 )
 
-# Standalone corba server
-ADD_EXECUTABLE (hppcorbaserver hpp-corbaserver.cc)
-TARGET_LINK_LIBRARIES (hppcorbaserver ${LIBRARY_NAME})
-PKG_CONFIG_USE_DEPENDENCY(hppcorbaserver hpp-core)
-PKG_CONFIG_USE_DEPENDENCY(hppcorbaserver hpp-model-urdf)
-PKG_CONFIG_USE_DEPENDENCY(hppcorbaserver hpp-constraints)
-
-INSTALL (TARGETS hppcorbaserver DESTINATION bin)
