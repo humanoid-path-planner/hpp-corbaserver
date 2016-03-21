@@ -90,6 +90,10 @@ class Robot (object):
     def setJointPosition (self, jointName, position):
         return self.client.robot.setJointPosition (jointName, position)
 
+    ## Get joint transformation in world frame for current configuration.
+    def getCurrentTransformation(self, jointName):
+	return self.client.robot.getCurrentTransformation (jointName)
+
     ## Get joint number degrees of freedom.
     def getJointNumberDof (self, jointName):
         return self.client.robot.getJointNumberDof (jointName)

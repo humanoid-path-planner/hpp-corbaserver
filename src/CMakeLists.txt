@@ -23,23 +23,31 @@ SET(IDL_SOURCES
   robot
   )
 
+# search for python
+FINDPYTHON()
+
 OMNIIDL_INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/idl)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src)
+FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver)
+
 FOREACH(IDL ${IDL_SOURCES})
-  GENERATE_IDL_FILE (hpp/corbaserver/${IDL}
-    ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver)
+  GENERATE_IDL_CPP (hpp/corbaserver/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver)
+  GENERATE_IDL_PYTHON (hpp/corbaserver/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver)
+
+  INSTALL(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/${IDL}.hh
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp/corbaserver)
+  INSTALL(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/${IDL}_idl.py
+    DESTINATION ${PYTHON_SITELIB}/hpp/corbaserver
+    )
 ENDFOREACH()
+
+ADD_CUSTOM_TARGET(generate_idl_cpp DEPENDS ${ALL_IDL_CPP_STUBS})
+ADD_CUSTOM_TARGET(generate_idl_python DEPENDS ${ALL_IDL_PYTHON_STUBS})
 
 ADD_LIBRARY(${LIBRARY_NAME}
   SHARED
-  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/common_idl.py
-  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/problem_idl.py
-  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/obstacle_idl.py
-  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/robot_idl.py
-  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/common.hh
-  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/problem.hh
-  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/obstacle.hh
-  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/robot.hh
   obstacle.impl.cc
   obstacle.impl.hh
   problem.impl.cc
@@ -52,43 +60,24 @@ ADD_LIBRARY(${LIBRARY_NAME}
   server-private.hh
   tools.cc
   tools.hh
+  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/common.hh
+  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/problem.hh
+  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/obstacle.hh
+  ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/robot.hh
   ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/commonSK.cc
   ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/obstacleSK.cc
   ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/robotSK.cc
   ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/problemSK.cc
 )
 
+ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_cpp)
+ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_python)
+
 PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-core)
 PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-model-urdf)
 PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} omniORB4)
 
 INSTALL(TARGETS ${LIBRARY_NAME} DESTINATION lib)
-
-# search for python
-FINDPYTHON()
-
-FOREACH (IDL ${IDL_SOURCES})
-  ADD_CUSTOM_COMMAND(
-    OUTPUT
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/${IDL}_idl.py
-    COMMAND ${OMNIIDL}
-    ARGS -bpython -Wbpackage="" -I${CMAKE_SOURCE_DIR}/idl
-    ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/${IDL}.idl
-    MAIN_DEPENDENCY
-    ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/${IDL}.idl
-    )
-  SET_SOURCE_FILES_PROPERTIES(
-    ${CMAKE_CURRENT_BINARY_DIR}/${IDL}_idl.py
-    PROPERTIES GENERATED ON
-    )
-  INSTALL(
-    FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/${IDL}.hh
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp/corbaserver)
-  INSTALL(
-    FILES ${CMAKE_CURRENT_BINARY_DIR}/${IDL}_idl.py
-    DESTINATION ${PYTHON_SITELIB}/hpp/corbaserver
-    )
-ENDFOREACH()
 
 FOREACH (FILE __init__.py quaternion.py transform.py)
   PYTHON_INSTALL_ON_SITE(

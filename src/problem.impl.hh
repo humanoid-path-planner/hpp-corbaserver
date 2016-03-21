@@ -32,6 +32,8 @@ namespace hpp
       public:
 	Problem (corbaServer::Server* server);
 
+        virtual Names_t* getAvailable (const char* what) throw (hpp::Error);
+
 	virtual void
 	setRandomSeed (const Long seed) throw (hpp::Error) {
           srand ((int) seed);
@@ -54,6 +56,11 @@ namespace hpp
 	virtual void createOrientationConstraint
 	(const char* constraintName, const char* joint1Name,
 	 const char* joint2Name, const Double* p, const hpp::boolSeq& mask)
+	  throw (hpp::Error);
+
+	virtual void createTransformationConstraint
+	(const char* constraintName, const char* joint1Name,
+	 const char* joint2Name, const Transform_ p, const hpp::boolSeq& mask)
 	  throw (hpp::Error);
 
         void createRelativeComConstraint (const char* constraintName,
@@ -157,6 +164,9 @@ namespace hpp
 	virtual void selectPathPlanner (const char* pathPlannerType)
 	  throw (Error);
 
+    virtual void selectSteeringMethod (const char* steeringMethodType)
+      throw (Error);
+
     virtual void selectConFigurationShooter (const char* configurationShooterType)
       throw (Error);
 
@@ -166,9 +176,14 @@ namespace hpp
 
 	virtual hpp::intSeq* solve () throw (hpp::Error);
 
-	virtual void directPath (const hpp::floatSeq& startConfig,
-				  const hpp::floatSeq& endConfig)
+	virtual bool directPath (const hpp::floatSeq& startConfig,
+				  const hpp::floatSeq& endConfig, UShort& pathId)
 	  throw (hpp::Error);
+
+	virtual bool addConfigToRoadmap (const hpp::floatSeq& config) throw (hpp::Error);
+
+	virtual bool addEdgeToRoadmap (const hpp::floatSeq& config1, const hpp::floatSeq& config2, 
+				       UShort pathId, bool bothEdges) throw (hpp::Error);
 
 	virtual void appendDirectPath (UShort pathId,
 				       const hpp::floatSeq& config)
@@ -202,6 +217,11 @@ namespace hpp
 	virtual Long numberConnectedComponents () throw (hpp::Error);
 	virtual hpp::floatSeqSeq*
 	nodesConnectedComponent (ULong connectedComponentId) throw (hpp::Error);
+	
+	virtual hpp::floatSeq*
+	getNearestConfig (const hpp::floatSeq& config, const Long connectedComponentId, 
+			  hpp::core::value_type& distance) throw (hpp::Error);
+	
 	virtual void clearRoadmap () throw (hpp::Error);
 	virtual void resetRoadmap ();
         virtual void saveRoadmap (const char* filename) throw (hpp::Error);

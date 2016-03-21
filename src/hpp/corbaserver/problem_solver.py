@@ -325,6 +325,12 @@ class ProblemSolver (object):
     def selectPathProjector (self, pathProjectorType, tolerance):
         return self.client.problem.selectPathProjector (pathProjectorType,
                                                         tolerance)
+    ##  Select steering method type
+    #   \param Name of the steering method type, either
+    #      "SteeringMethodStraight" or any type added by method
+    #      core::ProblemSolver::addSteeringMethodType
+    def selectSteeringMethod (self, steeringMethodType):
+        return self.client.problem.selectSteeringMethod (steeringMethodType)
 
     def prepareSolveStepByStep (self):
         return self.client.problem.prepareSolveStepByStep ()
@@ -341,8 +347,8 @@ class ProblemSolver (object):
 
     ## Make direct connection between two configurations
     #  \param startConfig, endConfig: the configurations to link.
-    #  \throw Error if steering method fails to create a direct path of if
-    #  direct path is not valid
+    #  \return True if the path is fully valid, false otherwise.
+    #  \return the path index of the collission-free part from startConfig
     def directPath (self, startConfig, endConfig):
         return self.client.problem.directPath (startConfig, endConfig)
 
@@ -417,6 +423,28 @@ class ProblemSolver (object):
     #  \return list of nodes of the connected component.
     def nodesConnectedComponent (self, ccId):
         return self.client.problem.nodesConnectedComponent (ccId)
+
+    ## Return nearest neighbour of given input configuration.
+    # \param connectedComponentId is the index of a connected component in the roadmap.
+    #	   	     If connectedComponentId is negative, function goes through all
+    #		     connected components looking for the nearest node (configuration).
+    # \param distance returns the one-dimensional distance between \param config and
+    #              computed nearest node (configuration). 
+    # \sa numberConnectedComponents
+    def getNearestConfig (self, randomConfig, connectedComponentId = -1):
+	return self.client.problem.getNearestConfig (randomConfig, connectedComponentId)
+
+    ## Add a configuration to the roadmap.
+    # \param config to be added to the roadmap.
+    def addConfigToRoadmap (self, config):
+	return self.client.problem.addConfigToRoadmap(config)
+
+    ## Add an edge to roadmap. If
+    # \param config1, config2 the ends of the path,
+    # \param pathId the index if the path in the vector of path,
+    # \param bothEdges if FALSE, only add config1 to config2, otherwise, If TRUE. add edges config1->config2 AND config2->config1.
+    def addEdgeToRoadmap (self, config1, config2, pathId, bothEdges):
+	return self.client.problem.addEdgeToRoadmap (config1, config2, pathId, bothEdges)
 
     ## Clear the roadmap
     def clearRoadmap (self):

@@ -21,6 +21,11 @@ module hpp
   {
     void setRandomSeed (in long seed) raises (Error);
 
+    /// Return a list of available elements of type type
+    /// \param type enter "type" to know what types I know of.
+    ///             This is case insensitive.
+    Names_t getAvailable (in string type) raises (Error);
+
     /// \name Initial and goal configurations
     /// \{
 
@@ -100,6 +105,23 @@ module hpp
     (in string constraintName, in string joint1Name,
      in string joint2Name, in Quaternion_ p,
      in boolSeq mask) raises (Error);
+
+
+    /// Create transformation constraint between two joints
+    ///
+    /// \param constraintName name of the constraint created,
+    /// \param joint1Name name of first joint
+    /// \param joint2Name name of second joint
+    /// \param ref desired transformation of joint2 in the frame of joint1.
+    /// \param mask Select which axis to be constrained.
+    /// If joint1 of joint2 is "", the corresponding joint is replaced by
+    /// the global frame.
+    /// constraints are stored in ProblemSolver object
+    void createTransformationConstraint
+    (in string constraintName, in string joint1Name,
+     in string joint2Name, in Transform_ ref,
+     in boolSeq mask) raises (Error);
+
 
     /// Create ComBeetweenFeet constraint between two joints
     ///
@@ -258,6 +280,12 @@ module hpp
     ///        core::ProblemSolver::addConfigurationShooterType
     void selectConFigurationShooter (in string configurationShooterType) raises (Error);
 
+    /// Select steering method type
+    /// \param Name of the steering method type, either
+    ///        "SteeringMethodStraight" or any type added by method
+    ///        core::ProblemSolver::addSteeringMethodType
+    void selectSteeringMethod (in string steeringMethodType) raises (Error);
+
     /// Add a path optimizer
     /// \param Name of the path optimizer type, either "RandomShortcut" or
     /// any type added by core::ProblemSolver::addPathOptimizerType
@@ -305,10 +333,20 @@ module hpp
 
     /// Make direct connection between two configurations
     /// \param startConfig, endConfig: the configurations to link.
-    /// \throw Error if steering method fails to create a direct path of if
-    /// direct path is not valid
-    void directPath (in floatSeq startConfig, in floatSeq endConfig)
-      raises (Error);
+    /// return TRUE if created path is fully valid.
+    /// \param pathId returns index of copmuted path in path vector.
+    boolean directPath (in floatSeq startConfig, in floatSeq endConfig,
+			out unsigned short pathId) raises (Error);
+
+    /// add \param config to roadmap. Creates a node.
+    boolean addConfigToRoadmap (in floatSeq config) raises(Error);
+
+    /// add an edge to roadmap. If \param bothEdges is FALSE, only add
+    /// edge from \param config1 to \param config2. If TRUE. add edges
+    /// config1->config2 AND config2->config1.
+    boolean addEdgeToRoadmap (in floatSeq config1, in floatSeq config2,
+			      in unsigned short pathId, in boolean bothEdges) 
+	raises (Error);
 
     /// Append a path to an existing path
     /// \param pathId Id of the path in this problem,
@@ -393,6 +431,15 @@ module hpp
     /// \return list of nodes of the connected component.
     floatSeqSeq nodesConnectedComponent (in unsigned long connectedComponentId)
       raises (Error);
+
+    /// Return nearest neighbour of given input configuration.
+    /// \param connectedComponentId is the index of a connected component in the roadmap.
+    ///	   	     If connectedComponentId is negative, function goes through all
+    ///		     connected components looking for the nearest node (configuration).
+    /// \param distance returns the one-dimensional distance between \param config and
+    ///              computed nearest node (configuration). 
+    floatSeq getNearestConfig(in floatSeq config, in long connectedComponentId, out double distance) 
+	raises (Error);
 
     /// Clear the roadmap
     void clearRoadmap () raises (Error);
