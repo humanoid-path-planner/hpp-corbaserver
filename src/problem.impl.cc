@@ -991,6 +991,17 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+      void Problem::filterCollisionPairs () throw (hpp::Error)
+      {
+        try {
+          problemSolver()->filterCollisionPairs ();
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // ---------------------------------------------------------------
+
       void Problem::addPassiveDofs (const char* passiveDofsName,
           const hpp::Names_t& dofNames)
         throw (hpp::Error)

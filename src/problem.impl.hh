@@ -155,6 +155,7 @@ namespace hpp
 	virtual void lockJoint (const char* jointName,
 				const hpp::floatSeq& value)
 	  throw (hpp::Error);
+        virtual void filterCollisionPairs () throw (hpp::Error);
 	virtual void resetGoalConstraints () throw (hpp::Error);
 	virtual void setGoalNumericalConstraints
 	(const char* constraintName, const hpp::Names_t& constraintNames,
