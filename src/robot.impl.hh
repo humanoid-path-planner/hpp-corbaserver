@@ -107,6 +107,8 @@ namespace hpp
           throw (hpp::Error);
 	virtual hpp::floatSeqSeq* getCurrentTransformation(const char* jointName)
 	  throw (hpp::Error);
+        virtual Transform__slice* getJointPositionInParentFrame(const char* jointName)
+          throw (hpp::Error);
 	virtual Transform__slice* getJointPosition(const char* jointName)
 	  throw (hpp::Error);
 	virtual floatSeq* getComPosition() throw (hpp::Error);
@@ -116,7 +118,7 @@ namespace hpp
 	virtual void setRootJointPosition (const  Double* position)
 	  throw (hpp::Error);
 
-	virtual void setJointPosition (const char* jointName,
+        virtual void setJointPositionInParentFrame (const char* jointName,
             const  Double* position)
 	  throw (hpp::Error);
 

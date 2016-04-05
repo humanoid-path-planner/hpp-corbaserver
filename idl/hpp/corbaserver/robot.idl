@@ -128,6 +128,11 @@ module hpp
     /// \throw Error if robot is not set or if joint does not exist.
     Transform_ getJointPosition (in string jointName) raises (Error);
 
+    /// Get the initial joint position (when config parameter corresponds to the identity)
+    /// \param jointName name of the joint
+    /// \throw Error if robot is not set or if joint does not exist.
+    Transform_ getJointPositionInParentFrame (in string jointName) raises (Error);
+
     /// Get position of root joint in world frame
     /// \return constant position of the root joint in world frame in
     ///         initial configuration.
@@ -140,7 +145,7 @@ module hpp
 
     /// Set the static position of joint WRT its parent
     /// \param position constant position of the joint
-    void setJointPosition (in string jointName, in Transform_ position)
+    void setJointPositionInParentFrame (in string jointName, in Transform_ position)
       raises (Error);
 
     /// Get joint number degrees of freedom

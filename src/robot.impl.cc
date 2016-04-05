@@ -463,7 +463,7 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      void Robot::setJointPosition (const char* jointName, const Double* position)
+      void Robot::setJointPositionInParentFrame (const char* jointName, const Double* position)
 	throw (hpp::Error)
       {
 	try {
@@ -490,6 +490,7 @@ namespace hpp
 	  Transform3f t3f;
 	  hppTransformToTransform3f (position, t3f);
 	  joint->positionInParentFrame (t3f);
+          robot->computeForwardKinematics ();
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
@@ -648,6 +649,38 @@ namespace hpp
 	    throw hpp::Error (oss.str ().c_str ());
 	  }
 	  const Transform3f& T = joint->currentTransformation ();
+	  double* res = new Transform_;
+	  res [0] = T.getTranslation () [0];
+	  res [1] = T.getTranslation () [1];
+	  res [2] = T.getTranslation () [2];
+	  res [3] = T.getQuatRotation () [0];
+	  res [4] = T.getQuatRotation () [1];
+	  res [5] = T.getQuatRotation () [2];
+	  res [6] = T.getQuatRotation () [3];
+	  return res;
+	} catch (const std::exception& exc) {
+	  throw Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
+
+      Transform__slice* Robot::getJointPositionInParentFrame(const char* jointName)
+	throw (hpp::Error)
+      {
+	try {
+	  DevicePtr_t robot = problemSolver()->robot ();
+	  if (!robot) {
+	    throw hpp::Error ("no robot");
+	  }
+	  JointPtr_t joint = robot->getJointByName (jointName);
+	  if (!joint) {
+	    std::ostringstream oss ("Robot has no joint with name ");
+	    oss  << jointName;
+	    hppDout (error, oss.str ());
+	    throw hpp::Error (oss.str ().c_str ());
+	  }
+	  const Transform3f& T = joint->positionInParentFrame ();
 	  double* res = new Transform_;
 	  res [0] = T.getTranslation () [0];
 	  res [1] = T.getTranslation () [1];
