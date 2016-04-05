@@ -454,6 +454,7 @@ namespace hpp
 	  Transform3f t3f;
 	  hppTransformToTransform3f (position, t3f);
 	  robot->rootJointPosition (t3f);
+          robot->computeForwardKinematics ();
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
