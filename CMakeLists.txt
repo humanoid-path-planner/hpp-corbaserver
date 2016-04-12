@@ -55,6 +55,7 @@ ENDIF()
 
 # Dependencies
 ADD_REQUIRED_DEPENDENCY("omniORB4 >= 4.1.4")
+ADD_REQUIRED_DEPENDENCY("omniDynamic4 >= 4.1.4")
 IF (NOT CLIENT_ONLY)
   ADD_REQUIRED_DEPENDENCY("hpp-core >= 3")
   ADD_REQUIRED_DEPENDENCY("hpp-model-urdf >= 3")
