@@ -43,9 +43,6 @@ FOREACH(IDL ${IDL_SOURCES})
     )
 ENDFOREACH()
 
-ADD_CUSTOM_TARGET(generate_idl_cpp DEPENDS ${ALL_IDL_CPP_STUBS})
-ADD_CUSTOM_TARGET(generate_idl_python DEPENDS ${ALL_IDL_PYTHON_STUBS})
-
 IF (NOT CLIENT_ONLY)
   ADD_LIBRARY(${LIBRARY_NAME}
     SHARED
@@ -71,6 +68,8 @@ IF (NOT CLIENT_ONLY)
     ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/problemSK.cc
     )
 
+  ADD_CUSTOM_TARGET(generate_idl_cpp DEPENDS ${ALL_IDL_CPP_STUBS})
+  ADD_CUSTOM_TARGET(generate_idl_python DEPENDS ${ALL_IDL_PYTHON_STUBS})
   ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_cpp)
   ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_python)
 
@@ -88,6 +87,9 @@ IF (NOT CLIENT_ONLY)
   PKG_CONFIG_USE_DEPENDENCY(hppcorbaserver hpp-constraints)
 
   INSTALL (TARGETS hppcorbaserver DESTINATION bin)
+ELSE (NOT CLIENT_ONLY)
+  ADD_CUSTOM_TARGET(generate_idl_cpp ALL DEPENDS ${ALL_IDL_CPP_STUBS})
+  ADD_CUSTOM_TARGET(generate_idl_python ALL DEPENDS ${ALL_IDL_PYTHON_STUBS})
 ENDIF (NOT CLIENT_ONLY)
 
 FOREACH (FILE __init__.py quaternion.py transform.py)
