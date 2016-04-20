@@ -289,7 +289,7 @@ namespace hpp
         throw (Error)
       {
         if (problemSolver()->problem() != NULL) {
-          problemSolver()->problem()->add (std::string(name),
+          problemSolver()->problem()->setParameter (std::string(name),
               BoostCorbaAny::boostize (value));
           return;
         }
