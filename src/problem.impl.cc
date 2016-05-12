@@ -271,16 +271,44 @@ namespace hpp
           throw Error ("Type not understood");
         }
 
-        char** nameList = Names_t::allocbuf(ret.size());
-        Names_t *names = new Names_t (ret.size(), ret.size(), nameList);
-        std::size_t i = 0;
-        for (Ret_t::const_iterator it = ret.begin (); it != ret.end(); ++it) {
-          nameList [i] =
-            (char*) malloc (sizeof(char)*(it->length ()+1));
-            strcpy (nameList [i], it->c_str ());
-            ++i;
+        return toNames_t (ret.begin(), ret.end());
+      }
+
+      // ---------------------------------------------------------------
+
+      Names_t* Problem::getSelected (const char* what) throw (hpp::Error)
+      {
+        std::string w (what);
+        boost::algorithm::to_lower(w);
+        typedef std::list <std::string> Ret_t;
+        Ret_t ret;
+        core::value_type tol;
+
+        if (w == "pathoptimizer") {
+          const core::ProblemSolver::PathOptimizerTypes_t& types =
+            problemSolver()->pathOptimizerTypes();
+          ret = Ret_t (types.begin(), types.end());
+        } else if (w == "pathprojector") {
+          ret.push_back (problemSolver()->pathProjectorType (tol));
+        } else if (w == "pathplanner") {
+          ret.push_back (problemSolver()->pathPlannerType ());
+        } else if (w == "configurationshooter") {
+          ret.push_back (problemSolver()->configurationShooterType ());
+        } else if (w == "pathvalidation") {
+          ret.push_back (problemSolver()->pathValidationType (tol));
+        } else if (w == "steeringmethod") {
+          ret.push_back (problemSolver()->steeringMethodType ());
+        } else if (w == "problem") {
+          ret.push_back(server_->problemSolverMap()->selected_);
+        } else if (w == "type") {
+          ret = boost::assign::list_of ("PathOptimizer") ("PathProjector")
+            ("PathPlanner") ("ConfigurationShooter") ("SteeringMethod")
+            ("PathValidation") ("Problem");
+        } else {
+          throw Error ("Type not understood");
         }
-        return names;
+
+        return toNames_t (ret.begin(), ret.end());
       }
 
       // ---------------------------------------------------------------
