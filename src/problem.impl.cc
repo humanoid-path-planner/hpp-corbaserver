@@ -1945,10 +1945,18 @@ namespace hpp
         throw (hpp::Error)
       {
         try {
-          problemSolver()->roadmap (
-              hpp::core::parser::readRoadmap (std::string(filename),
-                problemSolver()->problem())
-              );
+          hpp::core::ProblemSolverPtr_t p = problemSolver();
+          hpp::core::parser::readRoadmap (std::string(filename),
+              p->roadmap(), p->problem());
+          // ProblemSolver should be update to use the init and goal nodes of
+          // the roadmap
+          if (p->roadmap()->initNode())
+            p->initConfig(p->roadmap()->initNode()->configuration());
+          const hpp::core::Nodes_t& goals = p->roadmap()->goalNodes();
+          p->resetGoalConfigs();
+          for (hpp::core::Nodes_t::const_iterator _goals = goals.begin();
+              _goals != goals.end(); ++_goals)
+            p->addGoalConfig ((*_goals)->configuration());
         } catch (const std::exception& exc) {
           throw hpp::Error (exc.what ());
         }
