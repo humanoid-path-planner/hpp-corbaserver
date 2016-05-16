@@ -106,6 +106,10 @@ class Robot (object):
     def setJointBounds (self, jointName, inJointBound):
         return self.client.robot.setJointBounds (jointName, inJointBound)
 
+    ## Get bounds of a given joint
+    def getJointBounds(self, jointName):
+        return self.client.robot.getJointBounds(jointName)
+
     ## Get link position in world frame
     #
     # Joints are oriented in a different way as in urdf standard since
