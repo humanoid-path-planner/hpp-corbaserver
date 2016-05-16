@@ -357,10 +357,12 @@ module hpp
 
     /// Make direct connection between two configurations
     /// \param startConfig, endConfig: the configurations to link.
-    /// return TRUE if created path is fully valid.
-    /// \param pathId returns index of copmuted path in path vector.
+    /// \retval report the reason why the config is not valid.
+    /// \retval pathId returns index of copmuted path in path vector.
+    /// \return TRUE if created path is fully valid.
     boolean directPath (in floatSeq startConfig, in floatSeq endConfig,
-			out unsigned short pathId) raises (Error);
+			out unsigned short pathId, out string report)
+      raises (Error);
 
     /// add \param config to roadmap. Creates a node.
     boolean addConfigToRoadmap (in floatSeq config) raises(Error);
