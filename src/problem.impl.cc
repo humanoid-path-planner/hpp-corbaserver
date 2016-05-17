@@ -43,14 +43,9 @@
 
 #include <hpp/constraints/differentiable-function.hh>
 #include <hpp/constraints/distance-between-bodies.hh>
-#include <hpp/constraints/position.hh>
-#include <hpp/constraints/orientation.hh>
-#include <hpp/constraints/transformation.hh>
 #include <hpp/constraints/relative-com.hh>
 #include <hpp/constraints/com-between-feet.hh>
-#include <hpp/constraints/relative-orientation.hh>
-#include <hpp/constraints/relative-transformation.hh>
-#include <hpp/constraints/relative-position.hh>
+#include <hpp/constraints/generic-transformation.hh>
 #include <hpp/constraints/convex-shape-contact.hh>
 #include <hpp/constraints/static-stability.hh>
 #include <hpp/constraints/configuration-constraint.hh>
@@ -852,7 +847,7 @@ namespace hpp
 	  problemSolver()->addNumericalConstraint
 	    (name, NumericalConstraint::create
 	     (Position::create (name, problemSolver()->robot(), joint,
-				targetInLocalFrame, targetInWorldFrame, I3,m)));
+				targetInLocalFrame, targetInWorldFrame, m)));
 	}
       }
 
