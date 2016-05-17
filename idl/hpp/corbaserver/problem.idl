@@ -357,10 +357,14 @@ module hpp
 
     /// Make direct connection between two configurations
     /// \param startConfig, endConfig: the configurations to link.
+    /// \param validate whether path should be validated. If true, path
+    ///        validation is called and only valid part of path is inserted
+    ///        in the path vector.
     /// \retval report the reason why the config is not valid.
     /// \retval pathId returns index of copmuted path in path vector.
     /// \return TRUE if created path is fully valid.
     boolean directPath (in floatSeq startConfig, in floatSeq endConfig,
+			in boolean validate,
 			out unsigned short pathId, out string report)
       raises (Error);
 
@@ -371,7 +375,7 @@ module hpp
     /// edge from \param config1 to \param config2. If TRUE. add edges
     /// config1->config2 AND config2->config1.
     boolean addEdgeToRoadmap (in floatSeq config1, in floatSeq config2,
-			      in unsigned short pathId, in boolean bothEdges) 
+			      in unsigned short pathId, in boolean bothEdges)
 	raises (Error);
 
     /// Append a path to an existing path

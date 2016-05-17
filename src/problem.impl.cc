@@ -1212,7 +1212,8 @@ namespace hpp
       // ---------------------------------------------------------------
 
       bool Problem::directPath (const hpp::floatSeq& startConfig,
-				const hpp::floatSeq& endConfig, UShort& pathId,
+				const hpp::floatSeq& endConfig,
+				CORBA::Boolean validate, UShort& pathId,
 				CORBA::String_out report)
 	throw (hpp::Error)
       {
@@ -1227,7 +1228,8 @@ namespace hpp
 	  }
           std::size_t pid;
 	  std::string r;
-	  pathValid = problemSolver()->directPath (*start, *end, pid, r);
+	  pathValid = problemSolver()->directPath (*start, *end, validate,
+						   pid, r);
 	  report = CORBA::string_dup(r.c_str ());
           pathId = (UShort) pid;
 	} catch (const std::exception& exc) {

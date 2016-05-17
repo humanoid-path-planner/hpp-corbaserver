@@ -188,7 +188,9 @@ namespace hpp
 	virtual hpp::intSeq* solve () throw (hpp::Error);
 
 	virtual bool directPath (const hpp::floatSeq& startConfig,
-				 const hpp::floatSeq& endConfig, UShort& pathId,
+				 const hpp::floatSeq& endConfig,
+				 CORBA::Boolean validate,
+				 UShort& pathId,
 				 CORBA::String_out report)
 	  throw (hpp::Error);
 
