@@ -35,6 +35,11 @@ namespace hpp
 
         virtual Names_t* getAvailable (const char* what) throw (hpp::Error);
 
+        virtual void setParameter (const char* name, const CORBA::Any& value)
+          throw (Error);
+
+        virtual CORBA::Any* getParameter (const char* name) throw (Error);
+
         virtual bool selectProblem (const char* problemName) throw (hpp::Error);
 
 	virtual void
