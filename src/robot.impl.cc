@@ -82,6 +82,13 @@ namespace hpp
           }
           return ret;
 	}
+
+        DevicePtr_t getRobotOrThrow (core::ProblemSolverPtr_t p)
+        {
+          DevicePtr_t robot = p->robot ();
+          if (!robot) throw hpp::Error ("No robot in problem solver.");
+          return robot;
+        }
       } // end of namespace.
 
       // --------------------------------------------------------------------
@@ -138,8 +145,7 @@ namespace hpp
 
       char* Robot::getRobotName () throw (hpp::Error)
       {
-        DevicePtr_t robot = problemSolver()->robot ();
-        if (!robot) throw hpp::Error ("No robot in problem solver.");
+        DevicePtr_t robot = getRobotOrThrow(problemSolver());
         const std::string& str = robot->name();
         char* name = new char[str.length ()+1];
         strcpy (name, str.c_str ());
@@ -227,7 +233,7 @@ namespace hpp
       Short Robot::getConfigSize () throw (hpp::Error)
       {
 	try {
-	  return (Short) problemSolver()->robot ()->configSize ();
+	  return (Short) getRobotOrThrow(problemSolver())->configSize ();
 	} catch (const std::exception& exc) {
 	  hppDout (error, exc.what ());
 	  throw hpp::Error (exc.what ());
@@ -239,7 +245,7 @@ namespace hpp
       Short Robot::getNumberDof () throw (hpp::Error)
       {
 	try {
-	  return (Short) problemSolver()->robot ()->numberDof ();
+          return (Short) getRobotOrThrow(problemSolver())->numberDof ();
 	} catch (const std::exception& exc) {
 	  hppDout (error, exc.what ());
 	  throw hpp::Error (exc.what ());
@@ -333,7 +339,7 @@ namespace hpp
       Names_t* Robot::getJointNames () throw (hpp::Error)
       {
 	try {
-	  DevicePtr_t robot = problemSolver()->robot ();
+	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	  // Compute number of real urdf joints
 	  ULong size = 0;
 	  JointVector_t jointVector = robot->getJointVector ();
@@ -418,10 +424,7 @@ namespace hpp
       Transform__slice* Robot::getRootJointPosition () throw (hpp::Error)
       {
 	try {
-	  DevicePtr_t robot = problemSolver()->robot ();
-	  if (!robot) {
-	    throw hpp::Error ("no robot");
-	  }
+          DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	  JointPtr_t root = robot->rootJoint ();
 	  if (!root) {
 	    throw hpp::Error ("robot has no root joint");
@@ -447,10 +450,7 @@ namespace hpp
 	throw (hpp::Error)
       {
 	try {
-	  DevicePtr_t robot = problemSolver()->robot ();
-	  if (!robot) {
-	    throw hpp::Error ("no robot");
-	  }
+          DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	  Transform3f t3f;
 	  hppTransformToTransform3f (position, t3f);
 	  robot->rootJointPosition (t3f);
@@ -458,7 +458,6 @@ namespace hpp
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
-
       }
 
       // --------------------------------------------------------------------
@@ -467,10 +466,7 @@ namespace hpp
 	throw (hpp::Error)
       {
 	try {
-	  DevicePtr_t robot = problemSolver()->robot ();
-	  if (!robot) {
-	    throw hpp::Error ("no robot");
-	  }
+          DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	  JointVector_t jv = robot->getJointVector ();
 	  JointPtr_t joint (NULL);
           std::string n (jointName);
@@ -504,8 +500,7 @@ namespace hpp
 	hpp::floatSeq *dofArray;
 	try {
 	  // Get robot in hppPlanner object.
-	  DevicePtr_t robot = problemSolver()->robot ();
-          if (!robot) throw hpp::Error ("No robot in problem solver.");
+          DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	  JointPtr_t joint = robot->getJointByName (jointName);
 	  if (!joint) {
 	    std::ostringstream oss ("Robot has no joint with name ");
@@ -533,8 +528,7 @@ namespace hpp
       {
 	try {
 	  // Get robot in hppPlanner object.
-	  DevicePtr_t robot = problemSolver()->robot ();
-          if (!robot) throw hpp::Error ("No robot in problem solver.");
+          DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	  JointPtr_t joint = robot->getJointByName (jointName);
 	  if (!joint) {
 	    std::ostringstream oss ("Robot has no joint with name ");
@@ -564,8 +558,7 @@ namespace hpp
       {
 	try {
 	  // Get robot in hppPlanner object.
-	  DevicePtr_t robot = problemSolver()->robot ();
-          if (!robot) throw hpp::Error ("No robot in problem solver.");
+          DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	  JointPtr_t joint = robot->getJointByName (jointName);
 	  if (!joint) {
 	    std::ostringstream oss ("Robot has no joint with name ");
@@ -598,10 +591,7 @@ namespace hpp
 	throw (hpp::Error)
       {
 	try {
-	  DevicePtr_t robot = problemSolver()->robot ();
-	  if (!robot) {
-	    throw hpp::Error ("no robot");
-	  }
+          DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	  JointPtr_t joint = robot->getJointByName (jointName);
 	  if (!joint) {
 	    std::ostringstream oss ("Robot has no joint with name ");
@@ -637,10 +627,7 @@ namespace hpp
 	throw (hpp::Error)
       {
 	try {
-	  DevicePtr_t robot = problemSolver()->robot ();
-	  if (!robot) {
-	    throw hpp::Error ("no robot");
-	  }
+	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	  JointPtr_t joint = robot->getJointByName (jointName);
 	  if (!joint) {
 	    std::ostringstream oss ("Robot has no joint with name ");
@@ -669,10 +656,7 @@ namespace hpp
 	throw (hpp::Error)
       {
 	try {
-	  DevicePtr_t robot = problemSolver()->robot ();
-	  if (!robot) {
-	    throw hpp::Error ("no robot");
-	  }
+	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	  JointPtr_t joint = robot->getJointByName (jointName);
 	  if (!joint) {
 	    std::ostringstream oss ("Robot has no joint with name ");
@@ -700,10 +684,7 @@ namespace hpp
       Short Robot::getJointNumberDof (const char* jointName) throw (hpp::Error)
       {
 	try {
-	  DevicePtr_t robot = problemSolver()->robot ();
-	  if (!robot) {
-	    throw hpp::Error ("no robot");
-	  }
+	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	  JointPtr_t joint = robot->getJointByName (jointName);
 	  if (!joint) {
 	    std::ostringstream oss ("Robot has no joint with name ");
@@ -722,10 +703,7 @@ namespace hpp
       Short Robot::getJointConfigSize (const char* jointName) throw (hpp::Error)
       {
 	try {
-	  DevicePtr_t robot = problemSolver()->robot ();
-	  if (!robot) {
-	    throw hpp::Error ("no robot");
-	  }
+	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	  JointPtr_t joint = robot->getJointByName (jointName);
 	  if (!joint) {
 	    std::ostringstream oss ("Robot has no joint with name ");
@@ -746,7 +724,7 @@ namespace hpp
       {
 	try  {
 	  // Get robot in ProblemSolver object.
-	  DevicePtr_t robot = problemSolver()->robot ();
+	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
 
 	  // get joint
 	  JointPtr_t joint = robot->getJointByName (jointName);
@@ -764,7 +742,7 @@ namespace hpp
       {
 	try  {
 	  // Get robot in ProblemSolver object.
-	  DevicePtr_t robot = problemSolver()->robot ();
+	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
 
 	  // get joint
 	  JointPtr_t joint = robot->getJointByName (jointName);
@@ -780,10 +758,7 @@ namespace hpp
 	throw (hpp::Error)
       {
 	try {
-	  DevicePtr_t robot = problemSolver()->robot ();
-	  if (!robot) {
-	    throw hpp::Error ("no robot");
-	  }
+	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	  JointPtr_t joint = robot->getJointByName (jointName);
 	  if (!joint) {
 	    std::ostringstream oss ("Robot has no joint with name ");
@@ -812,10 +787,7 @@ namespace hpp
       char* Robot::getLinkName (const char* jointName) throw (hpp::Error)
       {
 	try {
-	  DevicePtr_t robot = problemSolver()->robot ();
-	  if (!robot) {
-	    throw hpp::Error ("no robot");
-	  }
+	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	  JointPtr_t joint = robot->getJointByName (jointName);
 	  if (!joint) {
 	    std::ostringstream oss ("Robot has no joint with name ");
@@ -838,13 +810,12 @@ namespace hpp
 	throw (hpp::Error)
       {
 	// Get robot in ProblemSolver object.
-	DevicePtr_t robot = problemSolver()->robot ();
-	if (!robot) throw hpp::Error ("Robot is not set");
-	try {
-	  robot->setDimensionExtraConfigSpace (dimension);
-	} catch (const std::exception& exc) {
-	  throw hpp::Error (exc.what ());
-	}
+        try {
+          DevicePtr_t robot = getRobotOrThrow(problemSolver());
+          robot->setDimensionExtraConfigSpace (dimension);
+        } catch (const std::exception& exc) {
+          throw hpp::Error (exc.what ());
+        }
       }
 
       // --------------------------------------------------------------------
@@ -854,10 +825,9 @@ namespace hpp
       {
 	using hpp::model::ExtraConfigSpace;
 	// Get robot in ProblemSolver object.
-	DevicePtr_t robot = problemSolver()->robot ();
-	if (!robot) throw hpp::Error ("Robot is not set");
 	try {
-	  ExtraConfigSpace& extraCS = robot->extraConfigSpace ();
+          DevicePtr_t robot = getRobotOrThrow(problemSolver());
+          ExtraConfigSpace& extraCS = robot->extraConfigSpace ();
 	  size_type nbBounds = (size_type)bounds.length();
 	  size_type dimension = extraCS.dimension ();
 	  if (nbBounds == 2*dimension) {
@@ -892,10 +862,7 @@ namespace hpp
 	size_type configDim = (size_type)dofArray.length();
 	std::vector<double> dofVector;
 	// Get robot
-	DevicePtr_t robot = problemSolver->robot ();
-	if (!robot) {
-	  throw hpp::Error ("No robot in problem solver.");
-	}
+        DevicePtr_t robot = getRobotOrThrow(problemSolver);
 	size_type deviceDim = robot->configSize ();
 	// Fill dof vector with dof array.
 	Configuration_t config; config.resize (configDim);
@@ -919,8 +886,8 @@ namespace hpp
 	try {
 	  Configuration_t config = dofArrayToConfig (problemSolver(), dofArray);
 	  // Create a config for robot initialized with dof vector.
-	  problemSolver()->robot ()->currentConfiguration (config);
-	  problemSolver()->robot ()->computeForwardKinematics ();
+	  getRobotOrThrow(problemSolver())->currentConfiguration (config);
+	  getRobotOrThrow(problemSolver())->computeForwardKinematics ();
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -932,7 +899,7 @@ namespace hpp
       {
 	try {
 	  hpp::floatSeq *dofArray = 0x0;
-	  DevicePtr_t robot = problemSolver()->robot ();
+	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	  hpp::core::BasicConfigurationShooterPtr_t shooter
 			= core::BasicConfigurationShooter::create (robot);
 	  ConfigurationPtr_t configuration = shooter->shoot();
@@ -955,8 +922,7 @@ namespace hpp
 	hpp::floatSeq *dofArray;
 	try {
 	  // Get robot in hppPlanner object.
-	  DevicePtr_t robot = problemSolver()->robot ();
-          if (!robot) throw hpp::Error ("No robot in problem solver.");
+	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	  const vector3_t& com = robot->positionCenterOfMass ();
 	  dofArray = new hpp::floatSeq();
 	  dofArray->length(3);
@@ -975,8 +941,7 @@ namespace hpp
 	hpp::floatSeq *dofArray;
 	try {
 	  // Get robot in hppPlanner object.
-	  DevicePtr_t robot = problemSolver()->robot ();
-          if (!robot) throw hpp::Error ("No robot in problem solver.");
+	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	  vector_t config = robot->currentConfiguration ();
 	  size_type deviceDim = robot->configSize ();
 	  dofArray = new hpp::floatSeq();
@@ -997,7 +962,7 @@ namespace hpp
 	Names_t *innerObjectSeq = 0x0;
 	JointPtr_t joint (0x0);
 	try {
-	  DevicePtr_t robot = problemSolver()->robot ();
+	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	  joint = robot->getJointByName (std::string (jointName));
 	  if (!joint) {
 	    hppDout (error, "No joint with name " << jointName);
@@ -1045,7 +1010,7 @@ namespace hpp
 	JointPtr_t joint (0x0);
 
 	try {
-	  DevicePtr_t robot = problemSolver()->robot ();
+	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	  joint = robot->getJointByName (std::string (jointName));
 	  if (!joint) {
 	    hppDout (error, "No joint with name " << jointName);
@@ -1090,10 +1055,7 @@ namespace hpp
       {
 	using model::ObjectIterator;
 	try {
-	  DevicePtr_t robot = problemSolver()->robot ();
-	  if (!robot) {
-	    throw std::runtime_error ("No robot has been loaded or created");
-	  }
+	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	  for (ObjectIterator it = robot->objectIterator (model::COLLISION);
 	       !it.isEnd (); ++it) {
 	    if ((*it)->name () == name) {
@@ -1153,7 +1115,7 @@ namespace hpp
       {
 	try {
 	  Configuration_t config = dofArrayToConfig (problemSolver(), dofArray);
-	  DevicePtr_t robot = problemSolver()->robot ();
+	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	  core::ValidationReportPtr_t validationReport;
 	  validity = problemSolver()->problem ()->configValidations ()->validate
 	    (config, validationReport);
@@ -1179,7 +1141,7 @@ namespace hpp
 	throw (hpp::Error)
       {
 	try {
-	  DevicePtr_t robot = problemSolver()->robot ();
+	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	  const DistanceBetweenObjectsPtr_t& distanceBetweenObjects =
 	    problemSolver()->distanceBetweenObjects ();
 	  robot->computeDistances ();
@@ -1258,7 +1220,7 @@ namespace hpp
       Double Robot::getMass () throw (hpp::Error)
       {
 	try {
-	  return problemSolver()->robot ()->mass ();
+	  return getRobotOrThrow(problemSolver())->mass ();
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -1270,7 +1232,7 @@ namespace hpp
       {
 	hpp::floatSeq* res = new hpp::floatSeq;
 	try {
-	  vector3_t com = problemSolver()->robot ()->positionCenterOfMass ();
+	  vector3_t com = getRobotOrThrow(problemSolver())->positionCenterOfMass ();
 	  res->length (3);
 	  (*res) [0] = com [0]; (*res) [1] = com [1]; (*res) [2] = com [2];
 	  return res;
@@ -1285,7 +1247,7 @@ namespace hpp
       {
 	try {
 	  const ComJacobian_t& jacobian =
-	    problemSolver()->robot ()->jacobianCenterOfMass ();
+	    getRobotOrThrow(problemSolver())->jacobianCenterOfMass ();
 	  return matrixToFloatSeqSeq (jacobian);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -1425,8 +1387,7 @@ namespace hpp
       void Robot::addPartialCom (const char* comName, const Names_t& jointNames)
         throw (hpp::Error)
       {
-        DevicePtr_t robot = problemSolver()->robot ();
-        if (!robot) throw Error ("You should set the robot before.");
+        DevicePtr_t robot = getRobotOrThrow(problemSolver());
         model::CenterOfMassComputationPtr_t comc =
           model::CenterOfMassComputation::create (robot);
 
