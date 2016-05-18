@@ -30,6 +30,8 @@ SET(PROJECT_DESCRIPTION "Corba server for Humanoid Path Planner applications")
 SET(PROJECT_URL "ssh://trac.laas.fr/git/jrl/corba/hpp-corbaserver")
 
 SET(CLIENT_ONLY FALSE CACHE BOOL "Set to true to install the client only")
+# Ask Doxygen to create a tree view in html documentation
+SET(DOXYGEN_TREEVIEW "NO" CACHE STRING "Set to YES to generate a tree view in the html documentation")
 
 SET(${PROJECT_NAME}_HEADERS
   include/hpp/corbaserver/client.hh
