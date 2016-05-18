@@ -26,6 +26,12 @@ module hpp
     ///             This is case insensitive.
     Names_t getAvailable (in string type) raises (Error);
 
+    /// Return a list of selected elements of type type
+    /// \param type enter "type" to know what types I know of.
+    ///             This is case insensitive.
+    /// \note For most of the types, the list will contain only one element.
+    Names_t getSelected (in string type) raises (Error);
+
     /// Set a parameter
     /// \param value the input type must be long, double, const char*
     void setParameter (in string name, in any value) raises (Error);
