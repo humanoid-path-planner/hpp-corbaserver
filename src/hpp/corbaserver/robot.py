@@ -88,7 +88,7 @@ class Robot (object):
 
     ## Set the static position of joint WRT its parent
     def setJointPosition (self, jointName, position):
-        return self.client.robot.setJointPosition (jointName, position)
+        return self.client.robot.setJointPositionInParentFrame (jointName, position)
 
     ## Get joint transformation in world frame for current configuration.
     def getCurrentTransformation(self, jointName):

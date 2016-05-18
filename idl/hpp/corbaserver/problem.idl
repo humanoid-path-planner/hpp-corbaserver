@@ -288,6 +288,8 @@ module hpp
     void lockJoint (in string jointName, in floatSeq value)
       raises (Error);
 
+    void filterCollisionPairs () raises (Error);
+
     /// Set error threshold in numerical constraint resolution
     void setErrorThreshold (in double threshold) raises (Error);
 
@@ -474,8 +476,8 @@ module hpp
     ///	   	     If connectedComponentId is negative, function goes through all
     ///		     connected components looking for the nearest node (configuration).
     /// \param distance returns the one-dimensional distance between \param config and
-    ///              computed nearest node (configuration). 
-    floatSeq getNearestConfig(in floatSeq config, in long connectedComponentId, out double distance) 
+    ///              computed nearest node (configuration).
+    floatSeq getNearestConfig(in floatSeq config, in long connectedComponentId, out double distance)
 	raises (Error);
 
     /// Clear the roadmap

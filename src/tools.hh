@@ -29,4 +29,21 @@ HPP_CORBASERVER_LOCAL hpp::floatSeq* vectorToFloatseq
 HPP_CORBASERVER_LOCAL hpp::floatSeqSeq* matrixToFloatSeqSeq
 (const hpp::core::matrix_t& input);
 
+template <typename InputIt>
+inline hpp::Names_t* toNames_t (InputIt begin, InputIt end) {
+  using hpp::Names_t;
+  std::size_t len = std::distance (begin, end);
+  char** nameList = Names_t::allocbuf((CORBA::ULong) len);
+  Names_t *ret = new Names_t ((CORBA::ULong) len, (CORBA::ULong) len, nameList);
+
+  std::size_t i = 0;
+  while (begin != end) {
+    nameList[i] = new char[begin->length ()+1];
+    strcpy (nameList[i], begin->c_str ());
+    ++begin;
+    ++i;
+  }
+  return ret;
+}
+
 #endif //! HPPCORBASERVER_TOOLS_HH
