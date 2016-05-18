@@ -284,7 +284,16 @@ class ProblemSolver (object):
     def setMaxIterations (self, iterations):
 	return self.client.problem.setMaxIterations (iterations)
 
+    ## \}
 
+    ## \name Collision Checking
+    # \{
+
+    ## Build matrix of relative motions between joints
+    #
+    #  See hpp::core::Problem::filterCollisionPairs.
+    def filterCollisionPairs (self):
+        return self.client.problem.filterCollisionPairs ()
     ## \}
 
     ## \name Solve problem and get paths

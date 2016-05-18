@@ -288,13 +288,21 @@ module hpp
     void lockJoint (in string jointName, in floatSeq value)
       raises (Error);
 
-    void filterCollisionPairs () raises (Error);
-
     /// Set error threshold in numerical constraint resolution
     void setErrorThreshold (in double threshold) raises (Error);
 
     /// Set maximal number of iterations in numerical constraint resolution
     void setMaxIterations (in unsigned short iterations) raises (Error);
+
+    /// \}
+
+    /// \name Collision checking
+    /// \{
+
+    /// Build matrix of relative motions between joints
+    ///
+    /// See hpp::core::Problem::filterCollisionPairs.
+    void filterCollisionPairs () raises (Error);
 
     /// \}
 
