@@ -48,6 +48,8 @@ namespace hpp
       hpp::corbaserver::Robot_var robot_;
       hpp::corbaserver::Problem_var problem_;
       hpp::corbaserver::Obstacle_var obstacle_;
+
+      CORBA::ORB_var orb_;
     };
 
   } // end of namespace corbaServer.
