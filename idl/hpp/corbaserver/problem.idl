@@ -391,12 +391,21 @@ module hpp
 			out unsigned short pathId, out string report)
       raises (Error);
 
-    /// add \param config to roadmap. Creates a node.
+    /// add a configuration to a roadmap
+    ///
+    /// \param config Configuration to add
+    ///
+    /// A node is created if necessary.
     boolean addConfigToRoadmap (in floatSeq config) raises(Error);
 
-    /// add an edge to roadmap. If \param bothEdges is FALSE, only add
-    /// edge from \param config1 to \param config2. If TRUE. add edges
-    /// config1->config2 AND config2->config1.
+    /// Add an edge to the roadmap.
+    ///
+    /// \param config1 configuration of start node,
+    /// \param config2 configuration of destination node,
+    /// \param pathId index of the path to store in the edge in the path vector,
+    /// \param bothEdges whether to also insert edge from destination node to
+    ///        start node.
+    /// \sa hpp::core::ProblemSolver::addEdgeToRoadmap.
     boolean addEdgeToRoadmap (in floatSeq config1, in floatSeq config2,
 			      in unsigned short pathId, in boolean bothEdges)
 	raises (Error);
