@@ -202,10 +202,12 @@ namespace hpp
 				 CORBA::String_out report)
 	  throw (hpp::Error);
 
-	virtual bool addConfigToRoadmap (const hpp::floatSeq& config) throw (hpp::Error);
+	virtual void addConfigToRoadmap (const hpp::floatSeq& config) throw (hpp::Error);
 
-	virtual bool addEdgeToRoadmap (const hpp::floatSeq& config1, const hpp::floatSeq& config2, 
-				       UShort pathId, bool bothEdges) throw (hpp::Error);
+	virtual void addEdgeToRoadmap (const hpp::floatSeq& config1,
+				       const hpp::floatSeq& config2,
+				       UShort pathId, bool bothEdges)
+	  throw (hpp::Error);
 
 	virtual void appendDirectPath (UShort pathId,
 				       const hpp::floatSeq& config)

@@ -1387,16 +1387,19 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      bool Problem::addConfigToRoadmap (const hpp::floatSeq& config) throw (hpp::Error)
+      void  Problem::addConfigToRoadmap (const hpp::floatSeq& config)
+	throw (hpp::Error)
       {
 	ConfigurationPtr_t configuration (floatSeqToConfig (problemSolver(), config));
-	return problemSolver()->addConfigToRoadmap (configuration);
+	problemSolver()->addConfigToRoadmap (configuration);
       }
 
       // ---------------------------------------------------------------
 
-      bool Problem::addEdgeToRoadmap (const hpp::floatSeq& config1, const hpp::floatSeq& config2, 
-				       UShort pathId, bool bothEdges) throw (hpp::Error)     
+      void Problem::addEdgeToRoadmap (const hpp::floatSeq& config1,
+				      const hpp::floatSeq& config2,
+				      UShort pathId, bool bothEdges)
+	throw (hpp::Error)
       {
         try {
 	  if (pathId >= problemSolver()->paths ().size ()) {
@@ -1409,10 +1412,12 @@ namespace hpp
 	  ConfigurationPtr_t start (floatSeqToConfig (problemSolver(), config1));
 	  ConfigurationPtr_t finish (floatSeqToConfig (problemSolver(), config2));
 	  if (bothEdges) {
-	    return (problemSolver()->addEdgeToRoadmap (start, finish, path) 
-	            && problemSolver()->addEdgeToRoadmap (finish, start, path->reverse()));
-	  }	  
-	  return problemSolver()->addEdgeToRoadmap (start, finish, path);
+	    problemSolver()->addEdgeToRoadmap (start, finish, path);
+	    problemSolver()->addEdgeToRoadmap (finish, start, path->reverse());
+	    return;
+	  }
+	  problemSolver()->addEdgeToRoadmap (start, finish, path);
+	  return;
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}

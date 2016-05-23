@@ -396,7 +396,7 @@ module hpp
     /// \param config Configuration to add
     ///
     /// A node is created if necessary.
-    boolean addConfigToRoadmap (in floatSeq config) raises(Error);
+    void addConfigToRoadmap (in floatSeq config) raises(Error);
 
     /// Add an edge to the roadmap.
     ///
@@ -406,9 +406,9 @@ module hpp
     /// \param bothEdges whether to also insert edge from destination node to
     ///        start node.
     /// \sa hpp::core::ProblemSolver::addEdgeToRoadmap.
-    boolean addEdgeToRoadmap (in floatSeq config1, in floatSeq config2,
-			      in unsigned short pathId, in boolean bothEdges)
-	raises (Error);
+    void addEdgeToRoadmap (in floatSeq config1, in floatSeq config2,
+			   in unsigned short pathId, in boolean bothEdges)
+      raises (Error);
 
     /// Append a path to an existing path
     /// \param pathId Id of the path in this problem,
