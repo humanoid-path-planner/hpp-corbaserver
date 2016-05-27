@@ -1901,6 +1901,13 @@ namespace hpp
 	    hpp::core::ConnectedComponents_t::const_iterator itcc =
 	      connectedComponents.begin ();
             std::advance (itcc, connectedComponentId);
+	    if (itcc == connectedComponents.end ()) {
+	      std::ostringstream oss;
+	      oss << "connectedComponentId=" << connectedComponentId
+		  << " out of range [0," << connectedComponents.size () - 1
+		  << "].";
+	      throw std::runtime_error (oss.str ().c_str ());
+	    }
 	    nearest = problemSolver()->roadmap ()->nearestNode (configuration, *itcc, distance);
 	  }
           if (!nearest) throw hpp::Error ("Nearest node not found");
