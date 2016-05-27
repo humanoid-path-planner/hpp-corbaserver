@@ -17,6 +17,7 @@
 # <http://www.gnu.org/licenses/>.
 
 import numpy as np
+import sys
 
 ## \cond
 class _BenchmarkIter (object):
@@ -69,7 +70,8 @@ class _BenchmarkIterator (object):
 
 ## class to do benchmarking
 #
-# Basic usage
+# ## Basic usage ##
+#
 # \code{.py}
 # # Here goes your script to load the problem.
 # robot = hpp.corbaserver.robot.Robot (...)
@@ -103,7 +105,8 @@ class _BenchmarkIterator (object):
 # hpp.corbaserver.benchmark.Benchmark.plotTime
 # hpp.corbaserver.benchmark.Benchmark.plotPathLength
 #
-# Advanced usage
+# ## Advanced usage ##
+#
 # \code{.py}
 # from hpp.corbaserver import Benchmark
 # b = Benchmark (robot.client, robot, ps)
@@ -128,6 +131,34 @@ class _BenchmarkIterator (object):
 # hpp.corbaserver.benchmark.Benchmark.cases
 # hpp.corbaserver.benchmark.Benchmark.iterPerCase
 # hpp.corbaserver.benchmark.Benchmark.tryResumeAndDelete
+#
+# ## What if HPP crashes ##
+#
+# \note This section assumes you have installed
+# https://github.com/humanoid-path-planner/hpp-tools
+#
+# You can do the following
+# \code{.py}
+# try:
+#   b.do ()
+# except:
+#   import sys
+#   sys.exit(1)
+#
+# b.writeResume (filename = "yourresults")
+# \endcode
+#
+# Then, launch your server with this:
+# \code{bash}
+# hppautorestart hppcorbaserver
+# \endcode
+#
+# Finally, launch your script with this:
+# \code{bash}
+# hpp_run_benchmark path_to_python_script_file.py
+# \endcode
+# This will restart the server whenever it crashes and will resume
+# the benchmarks where it stopped.
 class Benchmark (object):
     ## Used to transform HPP output into seconds
     toSeconds = np.array ([60*60,60,1,1e-3])
@@ -172,10 +203,11 @@ class Benchmark (object):
                 self.results['time'].append (self.client.problem.solve ())
                 self.results['pathLength'].append (self.client.problem.pathLength (self.client.problem.numberPaths()-1))
                 self.results['states'].append(self.ps.numberNodes())
-            except:
+            except Exception as err:
                 # write current data to restart at the same point
                 self.current = iter
                 self.writeResume ()
+                print err
                 print "\nOops, something went wrong.\nTo resume at the benchmark just before the crash, use method thisobject.tryResumeAndDelete () before calling method do()\n"
                 raise
 
