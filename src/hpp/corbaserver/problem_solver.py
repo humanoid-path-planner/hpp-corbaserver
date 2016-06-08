@@ -138,6 +138,21 @@ class ProblemSolver (object):
         return self.client.problem.createOrientationConstraint \
             (constraintName, joint1Name, joint2Name, p, mask)
 
+    ## Create transformation constraint between two joints
+    #
+    #  \param constraintName name of the constraint created,
+    #  \param joint1Name name of first joint
+    #  \param joint2Name name of second joint
+    #  \param ref desired transformation of joint2 in the frame of joint1.
+    #  \param mask Select which axis to be constrained.
+    #  If joint1 of joint2 is "", the corresponding joint is replaced by
+    #  the global frame.
+    #  constraints are stored in ProblemSolver object
+    def createTransformationConstraint (self, constraintName, joint1Name,
+                                        joint2Name, ref, mask) :
+        return self.client.problem.createTransformationConstraint \
+            (constraintName, joint1Name, joint2Name, ref, mask)
+
     ## Create RelativeCom constraint between two joints
     #
     #  \param constraintName name of the constraint created,
@@ -261,6 +276,22 @@ class ProblemSolver (object):
     #  \param dofNames list of names of DOF that may
     def addPassiveDofs (self, name, dofNames):
         return self.client.problem.addPassiveDofs (name, dofNames)
+
+    ## (Dis-)Allow to modify right hand side of a numerical constraint
+    #  \param constraintName Name of the numerical constraint,
+    #  \param constant whether right hand side is constant
+    #
+    #  Constraints should have been added in the ProblemSolver local map,
+    #  but not inserted in the config projector.
+    def setConstantRightHandSide (self, constraintName, constant) :
+        return self.client.problem.setConstantRightHandSide (constraintName,
+                                                             constant)
+
+    ## Get whether right hand side of a numerical constraint is constant
+    #  \param constraintName Name of the numerical constraint,
+    #  \return whether right hand side is constant
+    def getConstantRightHandSide (self, constraintName) :
+        return self.client.problem.getConstantRightHandSide (constraintName)
 
     ## Generate a configuration satisfying the constraints
     #
