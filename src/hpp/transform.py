@@ -64,3 +64,6 @@ class Transform (object):
 
     def __len__ (self):
         return 7
+
+    def toTuple (self):
+        return tuple (self.translation) + self.quaternion.toTuple ()
