@@ -45,7 +45,9 @@
 #include <hpp/constraints/distance-between-bodies.hh>
 #include <hpp/constraints/relative-com.hh>
 #include <hpp/constraints/com-between-feet.hh>
-#include <hpp/constraints/generic-transformation.hh>
+//#include <hpp/constraints/generic-transformation.hh>
+#include <hpp/constraints/transformation.hh>
+#include <hpp/constraints/relative-transformation.hh>
 #include <hpp/constraints/convex-shape-contact.hh>
 #include <hpp/constraints/static-stability.hh>
 #include <hpp/constraints/configuration-constraint.hh>
@@ -73,8 +75,8 @@ using hpp::constraints::RelativeCom;
 using hpp::constraints::RelativeOrientationPtr_t;
 using hpp::constraints::RelativePosition;
 using hpp::constraints::RelativePositionPtr_t;
-using hpp::constraints::RelativeTransformation;
-using hpp::constraints::Transformation;
+using hpp::constraints::deprecated::RelativeTransformation;
+using hpp::constraints::deprecated::Transformation;
 using hpp::constraints::ConvexShapeContact;
 using hpp::constraints::ConvexShapeContactPtr_t;
 using hpp::constraints::StaticStability;
