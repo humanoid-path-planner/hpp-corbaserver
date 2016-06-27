@@ -45,6 +45,14 @@ module hpp
     /// \return true if a new problem was created.
     boolean selectProblem (in string name) raises (Error);
 
+    /// Move a path from the current problem to another problem.
+    /// \param problemName the destination problem
+    /// \param jointNames a list of joint names representing the subchain to
+    ///        extract from the original path.
+    /// \todo the configuration parameter can be selected but not reorganized.
+    void movePathToProblem (in unsigned short pathId, in string problemName,
+        in Names_t jointNames) raises (Error);
+
     /// \name Initial and goal configurations
     /// \{
 

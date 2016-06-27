@@ -14,6 +14,7 @@
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <boost/assign/list_of.hpp>
 #include <boost/algorithm/string.hpp>    
+#include <boost/icl/interval_set.hpp>
 
 #include <hpp/util/debug.hh>
 #include <hpp/util/portability.hh>
@@ -35,6 +36,7 @@
 #include <hpp/core/path-validation-report.hh>
 #include <hpp/core/straight-path.hh>
 #include <hpp/core/path.hh>
+#include <hpp/core/subchain-path.hh>
 #include <hpp/core/roadmap.hh>
 #include <hpp/core/problem-solver.hh>
 #include <hpp/core/steering-method.hh>
@@ -81,6 +83,33 @@ using hpp::constraints::StaticStability;
 using hpp::constraints::StaticStabilityPtr_t;
 
 using hpp::core::NumericalConstraint;
+
+namespace boost {
+  namespace icl {
+    template<>
+      struct interval_traits< hpp::core::SizeInterval_t >
+      {
+        typedef hpp::core::SizeInterval_t interval_type;
+        typedef hpp::core::size_type      domain_type;
+        typedef std::less<domain_type>    domain_compare;
+
+        static interval_type construct(const domain_type& lo, const domain_type& up) 
+        { return interval_type(lo, up - lo); }
+
+        static domain_type lower(const interval_type& inter){ return inter.first; };
+        static domain_type upper(const interval_type& inter){ return inter.first + inter.second; };
+      };
+
+    template<>
+      struct interval_bound_type<hpp::core::SizeInterval_t>
+      {
+        typedef interval_bound_type type;
+        BOOST_STATIC_CONSTANT(bound_type, value = interval_bounds::static_right_open);//[lo..up)
+      };
+
+  } // namespace icl
+} // namespace boost
+
 
 namespace hpp
 {
@@ -214,6 +243,19 @@ namespace hpp
         template <> inline
           const char* BoostCorbaAny::as<std::string, const char*> (std::string f)
           { return f.c_str(); }
+
+        typedef hpp::core::SizeInterval_t SizeInterval_t;
+        typedef hpp::core::SizeIntervals_t SizeIntervals_t;
+        typedef boost::icl::interval_set<size_type, std::less, SizeInterval_t>
+          BoostIntervalSet_t;
+
+        SizeIntervals_t convertInterval (const BoostIntervalSet_t& intSet)
+        {
+          SizeIntervals_t ret;
+          for (BoostIntervalSet_t::const_iterator _int = intSet.begin (); _int != intSet.end (); ++_int)
+            ret.push_back(*_int);
+          return ret;
+        }
       }
 
       // ---------------------------------------------------------------
@@ -347,6 +389,38 @@ namespace hpp
         if (!has) psMap->map_[psName] = core::ProblemSolver::create ();
         psMap->selected_ = psName;
         return !has;
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::movePathToProblem (UShort pathId, const char* name,
+          const Names_t& jointNames) throw (hpp::Error)
+      {
+        ProblemSolverMapPtr_t psMap (server_->problemSolverMap());
+        if (!psMap->has (std::string(name))) throw Error ("No ProblemSolver of this name");
+        core::ProblemSolverPtr_t current = problemSolver(),
+                                 other = psMap->map_[std::string(name)];
+
+        BoostIntervalSet_t ints;
+        for (CORBA::ULong i = 0; i < jointNames.length (); ++i) {
+          JointPtr_t joint = problemSolver()->robot ()->getJointByName(std::string(jointNames[i]));
+          if (joint == NULL) throw hpp::Error ("Joint not found.");
+          ints.insert(SizeInterval_t(joint->rankInConfiguration(), joint->configSize()));
+        }
+        SizeIntervals_t intervals = convertInterval(ints);
+
+        if (pathId >= current->paths().size()) {
+          std::ostringstream oss ("wrong path id: ");
+          oss << pathId << ", number path: "
+            << current->paths ().size () << ".";
+          throw Error (oss.str().c_str());
+        }
+        core::SubchainPathPtr_t nPath =
+          core::SubchainPath::create (current->paths()[pathId], intervals);
+        core::PathVectorPtr_t pv =
+            core::PathVector::create(nPath->outputSize(), nPath->outputDerivativeSize());
+        pv->appendPath(nPath);
+        other->addPath(pv);
       }
 
       // ---------------------------------------------------------------
