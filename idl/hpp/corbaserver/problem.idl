@@ -433,6 +433,8 @@ module hpp
     void concatenatePath (in unsigned short startId, in unsigned short endId)
       raises (Error);
 
+    /// Apply the path projector method to the path
+    /// \return true in case of success.
     boolean projectPath (in unsigned short patId) raises (Error);
 
     /// Get Number of paths
