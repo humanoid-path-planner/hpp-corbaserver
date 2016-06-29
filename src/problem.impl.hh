@@ -216,6 +216,9 @@ namespace hpp
 				       const hpp::floatSeq& config)
 	  throw (hpp::Error);
 
+        virtual void concatenatePath (UShort startId, UShort endId)
+          throw (hpp::Error);
+
 	virtual bool projectPath (UShort pathId)
 	  throw (hpp::Error);
 

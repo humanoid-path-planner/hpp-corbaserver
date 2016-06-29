@@ -428,6 +428,11 @@ module hpp
     void appendDirectPath (in unsigned short pathId, in floatSeq config)
       raises (Error);
 
+    /// Concatenate path endId at the end of startId.
+    /// \note No path are created. The resulting path is at rank startId.
+    void concatenatePath (in unsigned short startId, in unsigned short endId)
+      raises (Error);
+
     boolean projectPath (in unsigned short patId) raises (Error);
 
     /// Get Number of paths

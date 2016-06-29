@@ -1533,6 +1533,26 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+      void Problem::concatenatePath (UShort startId, UShort endId)
+	throw (hpp::Error)
+      {
+	try {
+          if ( startId >= problemSolver()->paths ().size ()
+              || endId >= problemSolver()->paths ().size ()) {
+	    std::ostringstream oss ("wrong path id. ");
+	    oss << "Number path: " << problemSolver()->paths ().size () << ".";
+	    throw std::runtime_error (oss.str ());
+	  }
+	  PathVectorPtr_t start = problemSolver()->paths () [startId];
+	  PathVectorPtr_t end   = problemSolver()->paths () [  endId];
+          start->concatenate(*end);
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // ---------------------------------------------------------------
+
       bool Problem::projectPath (UShort pathId)
 	throw (hpp::Error)
       {
