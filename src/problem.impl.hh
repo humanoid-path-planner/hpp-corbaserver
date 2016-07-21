@@ -222,6 +222,9 @@ namespace hpp
         virtual void concatenatePath (UShort startId, UShort endId)
           throw (hpp::Error);
 
+        virtual void erasePath (UShort pathId)
+          throw (hpp::Error);
+
 	virtual bool projectPath (UShort pathId)
 	  throw (hpp::Error);
 

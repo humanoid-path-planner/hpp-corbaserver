@@ -440,6 +440,10 @@ module hpp
     void concatenatePath (in unsigned short startId, in unsigned short endId)
       raises (Error);
 
+    /// Erase path pathId from stored.
+    void erasePath (in unsigned short pathId)
+      raises (Error);
+
     /// Apply the path projector method to the path
     /// \return true in case of success.
     boolean projectPath (in unsigned short patId) raises (Error);

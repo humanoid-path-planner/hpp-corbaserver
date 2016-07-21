@@ -1569,6 +1569,23 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+      void Problem::erasePath (UShort pathId)
+	throw (hpp::Error)
+      {
+	try {
+          if (pathId >= problemSolver()->paths ().size ()) {
+	    std::ostringstream oss ("wrong path id. ");
+	    oss << "Number path: " << problemSolver()->paths ().size () << ".";
+	    throw std::runtime_error (oss.str ());
+	  }
+	  problemSolver()->erasePath(pathId);
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // ---------------------------------------------------------------
+
       bool Problem::projectPath (UShort pathId)
 	throw (hpp::Error)
       {
