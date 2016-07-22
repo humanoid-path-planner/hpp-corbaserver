@@ -335,6 +335,13 @@ module hpp
     ///        core::ProblemSolver::addConfigurationShooterType
     void selectConFigurationShooter (in string configurationShooterType) raises (Error);
 
+    /// Select distance type
+    /// \param Name of the distance type, either
+    ///        "WeighedDistance" or any type added by method
+    ///        core::ProblemSolver::addDistanceType
+    void selectDistance (in string distanceType) raises (Error);
+
+
     /// Select steering method type
     /// \param Name of the steering method type, either
     ///        "SteeringMethodStraight" or any type added by method

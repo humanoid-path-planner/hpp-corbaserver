@@ -365,12 +365,23 @@ class ProblemSolver (object):
     def selectPathProjector (self, pathProjectorType, tolerance):
         return self.client.problem.selectPathProjector (pathProjectorType,
                                                         tolerance)
+
+
+    ##  Select distance type
+    #   \param Name of the distance type, either
+    #      "WeighedDistance" or any type added by method
+    #      core::ProblemSolver::addDistanceType
+    def selectDistance (self, distanceType):
+        return self.client.problem.selectDistance (distanceType)
+
+
     ##  Select steering method type
     #   \param Name of the steering method type, either
     #      "SteeringMethodStraight" or any type added by method
     #      core::ProblemSolver::addSteeringMethodType
     def selectSteeringMethod (self, steeringMethodType):
         return self.client.problem.selectSteeringMethod (steeringMethodType)
+
 
     def prepareSolveStepByStep (self):
         return self.client.problem.prepareSolveStepByStep ()
