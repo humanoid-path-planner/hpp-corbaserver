@@ -186,6 +186,9 @@ namespace hpp
 	virtual void selectPathPlanner (const char* pathPlannerType)
 	  throw (Error);
 
+    virtual void selectDistance (const char* distanceType)
+      throw (Error);
+
     virtual void selectSteeringMethod (const char* steeringMethodType)
       throw (Error);
 

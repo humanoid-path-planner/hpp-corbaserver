@@ -292,6 +292,8 @@ namespace hpp
           ret = problemSolver()->getKeys <core::PathValidationBuilder_t, Ret_t> ();
         } else if (w == "steeringmethod") {
           ret = problemSolver()->getKeys <core::SteeringMethodBuilder_t, Ret_t> ();
+        } else if (w == "distance") {
+          ret = problemSolver()->getKeys <core::DistanceBuilder_t, Ret_t> ();
         } else if (w == "numericalconstraint") {
           ret = problemSolver()->getKeys <core::NumericalConstraintPtr_t, Ret_t> ();
         } else if (w == "problem") {
@@ -302,7 +304,7 @@ namespace hpp
           ret = problemSolver()->problem()->getKeys <boost::any, Ret_t> ();
         } else if (w == "type") {
           ret = boost::assign::list_of ("PathOptimizer") ("PathProjector")
-            ("PathPlanner") ("ConfigurationShooter") ("SteeringMethod")
+            ("PathPlanner") ("ConfigurationShooter") ("Distance") ("SteeringMethod")
             ("PathValidation") ("NumericalConstraint")("Problem")("Parameter");
         } else {
           throw Error ("Type not understood");
@@ -333,13 +335,15 @@ namespace hpp
           ret.push_back (problemSolver()->configurationShooterType ());
         } else if (w == "pathvalidation") {
           ret.push_back (problemSolver()->pathValidationType (tol));
+        } else if (w == "distance") {
+          ret.push_back (problemSolver()->distanceType());
         } else if (w == "steeringmethod") {
           ret.push_back (problemSolver()->steeringMethodType ());
         } else if (w == "problem") {
           ret.push_back(server_->problemSolverMap()->selected_);
         } else if (w == "type") {
           ret = boost::assign::list_of ("PathOptimizer") ("PathProjector")
-            ("PathPlanner") ("ConfigurationShooter") ("SteeringMethod")
+            ("PathPlanner") ("ConfigurationShooter") ("Distance") ("SteeringMethod")
             ("PathValidation") ("Problem");
         } else {
           throw Error ("Type not understood");
@@ -1308,6 +1312,18 @@ namespace hpp
       {
     try {
       problemSolver()->configurationShooterType (std::string (configurationShooterType));
+    } catch (const std::exception& exc) {
+      throw hpp::Error (exc.what ());
+    }
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::selectDistance (const char* distanceType)
+    throw (Error)
+      {
+    try {
+      problemSolver()->distanceType(std::string (distanceType));
     } catch (const std::exception& exc) {
       throw hpp::Error (exc.what ());
     }
