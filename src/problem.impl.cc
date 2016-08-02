@@ -358,8 +358,12 @@ namespace hpp
         throw (Error)
       {
         if (problemSolver()->problem() != NULL) {
-          problemSolver()->problem()->setParameter (std::string(name),
-              BoostCorbaAny::boostize (value));
+          try {
+            problemSolver()->problem()->setParameter (std::string(name),
+                BoostCorbaAny::boostize (value));
+          } catch (const std::exception& e) {
+            throw hpp::Error (e.what ());
+          }
           return;
         }
         throw Error ("No problem in the ProblemSolver");
@@ -373,7 +377,7 @@ namespace hpp
           boost::any val;
           try {
             val = problemSolver()->problem()->get<boost::any> (std::string(name));
-          } catch (const std::runtime_error& e) {
+          } catch (const std::exception& e) {
             throw hpp::Error (e.what ());
           }
           CORBA::Any* ap = new CORBA::Any;
