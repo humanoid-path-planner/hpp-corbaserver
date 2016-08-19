@@ -117,6 +117,17 @@ class ProblemSolver (object):
     def getObstacleNames (self, collision, distance):
         return self.client.obstacle.getObstacleNames (collision, distance)
 
+    def getObstacleLinkPosition (self, objectName):
+        return self.client.obstacle.getObstacleLinkPosition (objectName)
+
+    ## Get list of obstacles
+    #
+    #  \param collision whether to return obstacle for collision,
+    #  \param distance whether to return obstacles for distance computation
+    # \return list of obstacles
+    def getObstacleLinkNames (self):
+        return self.client.obstacle.getObstacleLinkNames ()
+
     ##\}
 
     ## \name Constraints

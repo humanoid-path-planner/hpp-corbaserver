@@ -47,12 +47,18 @@ namespace hpp
 	moveObstacle (const char* polyName, const Double* cfg)
 	  throw (hpp::Error);
 
-
 	virtual void getObstaclePosition (const char* objectName,
 					  Double* cfg)
 	  throw (hpp::Error);
 
 	virtual Names_t* getObstacleNames (bool collision, bool distance)
+	  throw (hpp::Error);
+
+	virtual void getObstacleLinkPosition (const char* linkName,
+					      Double* cfg)
+	  throw (hpp::Error);
+
+	virtual Names_t* getObstacleLinkNames ()
 	  throw (hpp::Error);
 
 	virtual void

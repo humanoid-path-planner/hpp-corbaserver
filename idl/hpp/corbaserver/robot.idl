@@ -182,13 +182,13 @@ module hpp
     ///
     /// \param jointName name of the joint
     /// \return position of the link in world frame.
-    Transform_ getLinkPosition (in string jointName) raises (Error);
+    Transform_ getLinkPosition (in string linkName) raises (Error);
 
-    /// Get link name
+    /// Get link names
     ///
     /// \param jointName name of the joint,
-    /// \return name of the link.
-    string getLinkName (in string jointName) raises (Error);
+    /// \return names of the links.
+    Names_t getLinkNames (in string jointName) raises (Error);
 
     /// \}
 
@@ -300,80 +300,80 @@ module hpp
     /// \name Create and register robot
     /// \{
 
-    /// Create an empty device and store it temporarily
-    /// \param robotName name of the robot.
-    ///  Fails if another robot is already in construction.
-    void createRobot(in string robotName) raises (Error);
-
-    /// Create a new joint
-    /// \param jointName name of the joint,
-    /// \param jointType among ["anchor", "SO3", "bounded-rotation",
-    ///                         "unbounded-rotation", "translation",
-    ///                         "translation2", "translation3"]
-    /// \param pos initial position of the joint
-    /// \param joinBounds bounds of the joint. See setJointBounds for details.
-    void createJoint(in string jointName, in string jointType,
-		     in Transform_ pos, in jointBoundSeq jointBounds)
-      raises (Error);
-
-    ///  Add a child joint to a joint.
-    /// \param inParentName name of the joint to which a child is added.
-    /// \param inChildName name of the child joint added to the previous one.
-    /// \throw Error.
-    void addJoint(in string inParentName, in string inChildName)
-      raises (Error);
-
-    /// Add a robot to the ProblemSolver
-    /// \throw Error.
-    void setRobot (in string inRobotName) raises (Error);
-
-    ///  Set a joint as root joint to a robot.
-    /// \param inRobotName name of the robot (ChppDevice).
-    /// \param inJointName name of the joint.
-    void setRobotRootJoint(in string inRobotName, in string inJointName)
-      raises (Error);
-
-    ///  create an empty polyhedron.
-    /// \param inPolyName name of the polyhedron.
-    /// \throw Error.
-    void createPolyhedron(in string inPolyName) raises (Error);
-
-    ///  Create a box
-    /// \param name name of the box
-    /// \param x, y, z Size of the box
-    void createBox (in string name, in double x, in double y, in double z)
-      raises (Error);
-
-    ///  Create a sphere
-    /// \param name name of the sphere
-    /// \param radius radius of the sphere
-    void createSphere (in string name, in double radius) raises (Error);
-
-    ///  Add a point to a polyhedron
-    /// \param inPolyName the name of the polyhedron.
-    /// \param x coordinate of the point.
-    /// \param y coordinate of the point.
-    /// \param z coordinate of the point.
-    /// \return rank of point in polyhedron
-    short addPoint(in string inPolyName, in double x, in double y, in double z)
-      raises (Error);
-
-    ///  Add a point to a polyhedron
-    /// \param inPolyName the name of the polyhedron.
-    /// \param pt1 rank of first point in polyhedron.
-    /// \param pt2 rank of second point in polyhedron.
-    /// \param pt3 rank of third point in polyhedron.
-    /// \return rank of triangle in polyhedron
-    short addTriangle(in string inPolyName, in unsigned long pt1,
-		      in unsigned long pt2, in unsigned long pt3)
-      raises (Error);
-
-    ///  Attach an object to a joint.
-    /// \param jointName name of the body
-    /// \param objectName name of the object
-    /// \param pos relative position of the polyhedron in the body
-    void addObjectToJoint(in string jointName, in string objectName,
-			  in Transform_ pos) raises (Error);
+//DEPREC    /// Create an empty device and store it temporarily
+//DEPREC    /// \param robotName name of the robot.
+//DEPREC    ///  Fails if another robot is already in construction.
+//DEPREC    void createRobot(in string robotName) raises (Error);
+//DEPREC
+//DEPREC    // Create a new joint
+//DEPREC    // \param jointName name of the joint,
+//DEPREC    // \param jointType among ["anchor", "SO3", "bounded-rotation",
+//DEPREC    //                         "unbounded-rotation", "translation",
+//DEPREC    //                         "translation2", "translation3"]
+//DEPREC    // \param pos initial position of the joint
+//DEPREC    // \param joinBounds bounds of the joint. See setJointBounds for details.
+//DEPREC    // void createJoint(in string jointName, in string jointType,
+//DEPREC		     // in Transform_ pos, in jointBoundSeq jointBounds)
+//DEPREC      // raises (Error);
+//DEPREC
+//DEPREC    ///  Add a child joint to a joint.
+//DEPREC    /// \param inParentName name of the joint to which a child is added.
+//DEPREC    /// \param inChildName name of the child joint added to the previous one.
+//DEPREC    /// \throw Error.
+//DEPREC    void addJoint(in string inParentName, in string inChildName)
+//DEPREC      raises (Error);
+//DEPREC
+//DEPREC    /// Add a robot to the ProblemSolver
+//DEPREC    /// \throw Error.
+//DEPREC    void setRobot (in string inRobotName) raises (Error);
+//DEPREC
+//DEPREC    ///  Set a joint as root joint to a robot.
+//DEPREC    /// \param inRobotName name of the robot (ChppDevice).
+//DEPREC    /// \param inJointName name of the joint.
+//DEPREC    void setRobotRootJoint(in string inRobotName, in string inJointName)
+//DEPREC      raises (Error);
+//DEPREC
+//DEPREC    ///  create an empty polyhedron.
+//DEPREC    /// \param inPolyName name of the polyhedron.
+//DEPREC    /// \throw Error.
+//DEPREC    void createPolyhedron(in string inPolyName) raises (Error);
+//DEPREC
+//DEPREC    ///  Create a box
+//DEPREC    /// \param name name of the box
+//DEPREC    /// \param x, y, z Size of the box
+//DEPREC    void createBox (in string name, in double x, in double y, in double z)
+//DEPREC      raises (Error);
+//DEPREC
+//DEPREC    ///  Create a sphere
+//DEPREC    /// \param name name of the sphere
+//DEPREC    /// \param radius radius of the sphere
+//DEPREC    void createSphere (in string name, in double radius) raises (Error);
+//DEPREC
+//DEPREC    ///  Add a point to a polyhedron
+//DEPREC    /// \param inPolyName the name of the polyhedron.
+//DEPREC    /// \param x coordinate of the point.
+//DEPREC    /// \param y coordinate of the point.
+//DEPREC    /// \param z coordinate of the point.
+//DEPREC    /// \return rank of point in polyhedron
+//DEPREC    short addPoint(in string inPolyName, in double x, in double y, in double z)
+//DEPREC      raises (Error);
+//DEPREC
+//DEPREC    ///  Add a point to a polyhedron
+//DEPREC    /// \param inPolyName the name of the polyhedron.
+//DEPREC    /// \param pt1 rank of first point in polyhedron.
+//DEPREC    /// \param pt2 rank of second point in polyhedron.
+//DEPREC    /// \param pt3 rank of third point in polyhedron.
+//DEPREC    /// \return rank of triangle in polyhedron
+//DEPREC    short addTriangle(in string inPolyName, in unsigned long pt1,
+//DEPREC		      in unsigned long pt2, in unsigned long pt3)
+//DEPREC      raises (Error);
+//DEPREC
+//DEPREC    ///  Attach an object to a joint.
+//DEPREC    /// \param jointName name of the body
+//DEPREC    /// \param objectName name of the object
+//DEPREC    /// \param pos relative position of the polyhedron in the body
+//DEPREC    void addObjectToJoint(in string jointName, in string objectName,
+//DEPREC			  in Transform_ pos) raises (Error);
 
     /// Add an object to compute a partial COM of the robot.
     /// \param name of the partial com

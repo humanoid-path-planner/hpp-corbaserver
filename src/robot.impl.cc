@@ -14,13 +14,16 @@
 #include <hpp/fcl/shape/geometric_shapes.h>
 
 #include <hpp/util/debug.hh>
-#include <hpp/model/fwd.hh>
-#include <hpp/model/joint.hh>
-#include <hpp/model/urdf/util.hh>
-#include <hpp/model/object-factory.hh>
-#include <hpp/model/object-iterator.hh>
-#include <hpp/model/collision-object.hh>
-#include <hpp/model/center-of-mass-computation.hh>
+#include <hpp/pinocchio/fwd.hh>
+#include <hpp/pinocchio/body.hh>
+#include <hpp/pinocchio/joint.hh>
+#include <hpp/pinocchio/device.hh>
+#include <hpp/pinocchio/humanoid-robot.hh>
+#include <hpp/pinocchio/urdf/util.hh>
+// #include <hpp/pinocchio/object-factory.hh>
+// #include <hpp/pinocchio/object-iterator.hh>
+#include <hpp/pinocchio/collision-object.hh>
+#include <hpp/pinocchio/center-of-mass-computation.hh>
 #include <hpp/core/basic-configuration-shooter.hh>
 #include <hpp/core/config-validations.hh>
 #include <hpp/core/distance-between-objects.hh>
@@ -50,7 +53,7 @@ namespace hpp
 	      double vMax = jointBounds[(CORBA::ULong) (2*iDof+1)];
 	      if (vMin <= vMax) {
 		/* Dof is actually bounded */
-		joint->isBounded(iDof, true);
+		// joint->isBounded(iDof, true);
 		joint->lowerBound(iDof, vMin);
 		joint->upperBound(iDof, vMax);
 	      }
@@ -82,13 +85,6 @@ namespace hpp
           }
           return ret;
 	}
-
-        DevicePtr_t getRobotOrThrow (core::ProblemSolverPtr_t p)
-        {
-          DevicePtr_t robot = p->robot ();
-          if (!robot) throw hpp::Error ("No robot in problem solver.");
-          return robot;
-        }
       } // end of namespace.
 
       // --------------------------------------------------------------------
@@ -105,41 +101,41 @@ namespace hpp
         return server_->problemSolver();
       }
 
-      // --------------------------------------------------------------------
-
-      void Robot::createRobot(const char* inRobotName)
-	throw (hpp::Error)
-      {
-	std::string robotName (inRobotName);
-	// Check that no robot of this name already exists.
-	if (robotMap_.count (robotName) != 0) {
-	  std::ostringstream oss ("robot ");
-	  oss << robotName << " already exists.";
-	  hppDout (error, oss.str ());
-	  throw hpp::Error (oss.str ().c_str ());
-	}
-	// Try to create a robot.
-	DevicePtr_t robot = Device_t::create (robotName);
-	// Store robot in map.
-	robotMap_ [robotName] = robot;
-      }
-
-      // --------------------------------------------------------------------
-
-      void Robot::setRobot(const char* inRobotName) throw (hpp::Error)
-      {
-	std::string robotName (inRobotName);
-	// Check that robot of this name exists.
-	if (robotMap_.count (robotName) != 1) {
-	  std::ostringstream oss ("robot ");
-	  oss << robotName << " does not exists.";
-	  hppDout (error, oss.str ());
-	  throw Error (oss.str ().c_str ());
-	}
-	DevicePtr_t robot = robotMap_ [robotName];
-	// Create a new problem with this robot.
-	problemSolver()->robot (robot);
-      }
+//DEPREC      // --------------------------------------------------------------------
+//DEPREC
+//DEPREC      void Robot::createRobot(const char* inRobotName)
+//DEPREC	throw (hpp::Error)
+//DEPREC      {
+//DEPREC	std::string robotName (inRobotName);
+//DEPREC	// Check that no robot of this name already exists.
+//DEPREC	if (robotMap_.count (robotName) != 0) {
+//DEPREC	  std::ostringstream oss ("robot ");
+//DEPREC	  oss << robotName << " already exists.";
+//DEPREC	  hppDout (error, oss.str ());
+//DEPREC	  throw hpp::Error (oss.str ().c_str ());
+//DEPREC	}
+//DEPREC	// Try to create a robot.
+//DEPREC	DevicePtr_t robot = Device_t::create (robotName);
+//DEPREC	// Store robot in map.
+//DEPREC	robotMap_ [robotName] = robot;
+//DEPREC      }
+//DEPREC
+//DEPREC      // --------------------------------------------------------------------
+//DEPREC
+//DEPREC      void Robot::setRobot(const char* inRobotName) throw (hpp::Error)
+//DEPREC      {
+//DEPREC	std::string robotName (inRobotName);
+//DEPREC	// Check that robot of this name exists.
+//DEPREC	if (robotMap_.count (robotName) != 1) {
+//DEPREC	  std::ostringstream oss ("robot ");
+//DEPREC	  oss << robotName << " does not exists.";
+//DEPREC	  hppDout (error, oss.str ());
+//DEPREC	  throw Error (oss.str ().c_str ());
+//DEPREC	}
+//DEPREC	DevicePtr_t robot = robotMap_ [robotName];
+//DEPREC	// Create a new problem with this robot.
+//DEPREC	problemSolver()->robot (robot);
+//DEPREC      }
 
       // --------------------------------------------------------------------
 
@@ -154,24 +150,24 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      void Robot::setRobotRootJoint(const char* inRobotName,
-				     const char* inJointName)
-	throw (hpp::Error)
-      {
-	std::string robotName(inRobotName);
-
-	// Check that robot of this name exists.
-	if (robotMap_.count (robotName) != 1) {
-	  std::ostringstream oss ("robot ");
-	  oss << robotName << " does not exists.";
-	  hppDout (error, oss.str ());
-	  throw hpp::Error (oss.str ().c_str ());
-	}
-	DevicePtr_t robot = robotMap_ [robotName];
-	JointPtr_t joint = getJointByName (inJointName);
-
-	robot->rootJoint (joint);
-      }
+//DEPREC      void Robot::setRobotRootJoint(const char* inRobotName,
+//DEPREC				     const char* inJointName)
+//DEPREC	throw (hpp::Error)
+//DEPREC      {
+//DEPREC	std::string robotName(inRobotName);
+//DEPREC
+//DEPREC	// Check that robot of this name exists.
+//DEPREC	if (robotMap_.count (robotName) != 1) {
+//DEPREC	  std::ostringstream oss ("robot ");
+//DEPREC	  oss << robotName << " does not exists.";
+//DEPREC	  hppDout (error, oss.str ());
+//DEPREC	  throw hpp::Error (oss.str ().c_str ());
+//DEPREC	}
+//DEPREC	DevicePtr_t robot = robotMap_ [robotName];
+//DEPREC	JointPtr_t joint = getJointByName (inJointName);
+//DEPREC
+//DEPREC	robot->rootJoint (joint);
+//DEPREC      }
 
       // --------------------------------------------------------------------
 
@@ -183,8 +179,8 @@ namespace hpp
 				 const char* srdfSuffix) throw (hpp::Error)
       {
 	try {
-	  model::DevicePtr_t device (model::Device::create (robotName));
-	  hpp::model::urdf::loadRobotModel (device,
+	  pinocchio::DevicePtr_t device (pinocchio::Device::create (robotName));
+	  hpp::pinocchio::urdf::loadRobotModel (device,
 					    std::string (rootJointType),
 					    std::string (packageName),
 					    std::string (modelName),
@@ -193,7 +189,7 @@ namespace hpp
 	  // Add device to the planner
 	  problemSolver()->robot (device);
 	  problemSolver()->robot ()->controlComputation
-	    (model::Device::JOINT_POSITION);
+	    (pinocchio::Device::JOINT_POSITION);
 	} catch (const std::exception& exc) {
 	  hppDout (error, exc.what ());
 	  throw hpp::Error (exc.what ());
@@ -210,9 +206,9 @@ namespace hpp
 				     const char* srdfSuffix) throw (hpp::Error)
       {
 	try {
-	  model::HumanoidRobotPtr_t robot
-	    (model::HumanoidRobot::create (robotName));
-	  hpp::model::urdf::loadHumanoidModel (robot,
+	  pinocchio::HumanoidRobotPtr_t robot
+	    (pinocchio::HumanoidRobot::create (robotName));
+	  hpp::pinocchio::urdf::loadHumanoidModel (robot,
 					       std::string (rootJointType),
 					       std::string (packageName),
 					       std::string (modelName),
@@ -221,7 +217,7 @@ namespace hpp
 	  // Add robot to the planner
 	  problemSolver()->robot (robot);
 	  problemSolver()->robot ()->controlComputation
-	    (model::Device::JOINT_POSITION);
+	    (pinocchio::Device::JOINT_POSITION);
 	} catch (const std::exception& exc) {
 	  hppDout (error, exc.what ());
 	  throw hpp::Error (exc.what ());
@@ -254,85 +250,85 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      void Robot::createJoint (const char* jointName,
-			        const char* jointType,
-				const Double* pos,
-				const jointBoundSeq& jointBounds)
-	throw (hpp::Error)
-      {
-	std::string jn(jointName);
-	std::string jt(jointType);
-
-	// Check that joint of this name does not already exist.
-	if (jointMap_.count(jn) != 0) {
-	  std::ostringstream oss ("joint ");
-	  oss << jn << " already exists.";
-	  hppDout (error, oss.str ());
-	  throw hpp::Error (oss.str ().c_str ());
-	}
-	JointPtr_t joint;
-	// Fill position matrix
-	Transform3f posMatrix;
-	hppTransformToTransform3f (pos, posMatrix);
-
-	// Determine type of joint.
-	if (jt == "anchor") {
-	  joint = objectFactory_.createJointAnchor (posMatrix);
-	}
-	else if (jt == "SO3") {
-	  joint =
-	    objectFactory_.createJointSO3 (posMatrix);
-	}
-	else if (jt == "bounded-rotation") {
-	  joint = objectFactory_.createBoundedJointRotation (posMatrix);
-	}
-	else if (jt == "unbounded-rotation") {
-	  joint = objectFactory_.createUnBoundedJointRotation (posMatrix);
-	}
-	else if (jt == "translation") {
-	  joint =
-	    objectFactory_.createJointTranslation (posMatrix);
-	}
-	else if (jt == "translation2") {
-	  joint =
-	    objectFactory_.createJointTranslation2 (posMatrix);
-	}
-	else if (jt == "translation3") {
-	  joint =
-	    objectFactory_.createJointTranslation3 (posMatrix);
-	}
-	else if (jt == "rotation") {
-	  throw hpp::Error ("joint type \"rotation\" is not supported anymore,"
-			    "please choose between \"bounded-rotation\" "
-			    "and \"unbounded-rotation\"");
-	}
-	else {
-	  std::ostringstream oss ("joint type");
-	  oss << jt << " does not exist.";
-	  hppDout (error, oss.str ());
-	  throw hpp::Error (oss.str ().c_str ());
-	}
-	// Set the bounds of the joint
-	// Bound joint if needed.
-	localSetJointBounds(joint, jointBounds);
-	BodyPtr_t body = objectFactory_.createBody ();
-	body->name (jn);
-	joint->setLinkedBody (body);
-	// Store joint in jointMap_.
-	jointMap_[jn] = joint;
-	joint->name (jn);
-      }
-
-      // --------------------------------------------------------------------
-
-      void Robot::addJoint(const char* inParentName,
-			    const char* inChildName)
-	throw (hpp::Error)
-      {
-	JointPtr_t parentJoint = getJointByName (inParentName);
-	JointPtr_t childJoint = getJointByName (inChildName);
-	parentJoint->addChildJoint (childJoint);
-      }
+//DEPREC      void Robot::createJoint (const char* jointName,
+//DEPREC			        const char* jointType,
+//DEPREC				const Double* pos,
+//DEPREC				const jointBoundSeq& jointBounds)
+//DEPREC	throw (hpp::Error)
+//DEPREC      {
+//DEPREC	std::string jn(jointName);
+//DEPREC	std::string jt(jointType);
+//DEPREC
+//DEPREC	// Check that joint of this name does not already exist.
+//DEPREC	if (jointMap_.count(jn) != 0) {
+//DEPREC	  std::ostringstream oss ("joint ");
+//DEPREC	  oss << jn << " already exists.";
+//DEPREC	  hppDout (error, oss.str ());
+//DEPREC	  throw hpp::Error (oss.str ().c_str ());
+//DEPREC	}
+//DEPREC	JointPtr_t joint;
+//DEPREC	// Fill position matrix
+//DEPREC	Transform3f posMatrix;
+//DEPREC	hppTransformToTransform3f (pos, posMatrix);
+//DEPREC
+//DEPREC	// Determine type of joint.
+//DEPREC	if (jt == "anchor") {
+//DEPREC	  joint = objectFactory_.createJointAnchor (posMatrix);
+//DEPREC	}
+//DEPREC	else if (jt == "SO3") {
+//DEPREC	  joint =
+//DEPREC	    objectFactory_.createJointSO3 (posMatrix);
+//DEPREC	}
+//DEPREC	else if (jt == "bounded-rotation") {
+//DEPREC	  joint = objectFactory_.createBoundedJointRotation (posMatrix);
+//DEPREC	}
+//DEPREC	else if (jt == "unbounded-rotation") {
+//DEPREC	  joint = objectFactory_.createUnBoundedJointRotation (posMatrix);
+//DEPREC	}
+//DEPREC	else if (jt == "translation") {
+//DEPREC	  joint =
+//DEPREC	    objectFactory_.createJointTranslation (posMatrix);
+//DEPREC	}
+//DEPREC	else if (jt == "translation2") {
+//DEPREC	  joint =
+//DEPREC	    objectFactory_.createJointTranslation2 (posMatrix);
+//DEPREC	}
+//DEPREC	else if (jt == "translation3") {
+//DEPREC	  joint =
+//DEPREC	    objectFactory_.createJointTranslation3 (posMatrix);
+//DEPREC	}
+//DEPREC	else if (jt == "rotation") {
+//DEPREC	  throw hpp::Error ("joint type \"rotation\" is not supported anymore,"
+//DEPREC			    "please choose between \"bounded-rotation\" "
+//DEPREC			    "and \"unbounded-rotation\"");
+//DEPREC	}
+//DEPREC	else {
+//DEPREC	  std::ostringstream oss ("joint type");
+//DEPREC	  oss << jt << " does not exist.";
+//DEPREC	  hppDout (error, oss.str ());
+//DEPREC	  throw hpp::Error (oss.str ().c_str ());
+//DEPREC	}
+//DEPREC	// Set the bounds of the joint
+//DEPREC	// Bound joint if needed.
+//DEPREC	localSetJointBounds(joint, jointBounds);
+//DEPREC	BodyPtr_t body = objectFactory_.createBody ();
+//DEPREC	body->name (jn);
+//DEPREC	joint->setLinkedBody (body);
+//DEPREC	// Store joint in jointMap_.
+//DEPREC	jointMap_[jn] = joint;
+//DEPREC	joint->name (jn);
+//DEPREC      }
+//DEPREC
+//DEPREC      // --------------------------------------------------------------------
+//DEPREC
+//DEPREC      void Robot::addJoint(const char* inParentName,
+//DEPREC			    const char* inChildName)
+//DEPREC	throw (hpp::Error)
+//DEPREC      {
+//DEPREC	JointPtr_t parentJoint = getJointByName (inParentName);
+//DEPREC	JointPtr_t childJoint = getJointByName (inChildName);
+//DEPREC	parentJoint->addChildJoint (childJoint);
+//DEPREC      }
 
       // --------------------------------------------------------------------
 
@@ -431,13 +427,7 @@ namespace hpp
 	  }
 	  const Transform3f& T = root->positionInParentFrame ();
 	  double* res = new Transform_;
-	  res [0] = T.getTranslation () [0];
-	  res [1] = T.getTranslation () [1];
-	  res [2] = T.getTranslation () [2];
-	  res [3] = T.getQuatRotation () [0];
-	  res [4] = T.getQuatRotation () [1];
-	  res [5] = T.getQuatRotation () [2];
-	  res [6] = T.getQuatRotation () [3];
+          Transform3fTohppTransform (T, res);
 	  return res;
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
@@ -453,7 +443,7 @@ namespace hpp
           DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	  Transform3f t3f;
 	  hppTransformToTransform3f (position, t3f);
-	  robot->rootJointPosition (t3f);
+	  robot->rootJoint()->positionInParentFrame(t3f);
           robot->computeForwardKinematics ();
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
@@ -468,7 +458,7 @@ namespace hpp
 	try {
           DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	  JointVector_t jv = robot->getJointVector ();
-	  JointPtr_t joint (NULL);
+	  JointPtr_t joint;
           std::string n (jointName);
           for (JointVector_t::iterator it = jv.begin ();
               it != jv.end (); ++it) {
@@ -577,7 +567,7 @@ namespace hpp
           size_type riv = joint->rankInVelocity ();
 	  for(size_type i=0; i<dim; ++i)
             dqAll [riv + i] = dq[(CORBA::ULong) i];
-          joint->configuration ()->integrate (config, dqAll, ric, riv, config);
+          config.segment(ric, dim) = joint->jointModel().integrate (config, dqAll);
           robot->currentConfiguration (config);
           robot->computeForwardKinematics ();
 	} catch (const std::exception& exc) {
@@ -600,20 +590,11 @@ namespace hpp
 	    throw hpp::Error (oss.str ().c_str ());
 	  }
 	  
-	  // create eigen::matrix from fcl transformation 
-	  const Transform3f& T = joint->currentTransformation ();
-	  Eigen::Matrix< hpp::model::value_type, 3, 1 > translation;
-	  hpp::model::vector3_t fclTrans (T.getTranslation ());
-	  hpp::model::toEigen (fclTrans, translation);
-
-	  Eigen::Matrix< hpp::model::value_type, 3, 3 > rotation;
-          hpp::model::matrix3_t fclRot (T.getRotation ());
-	  hpp::model::toEigen (fclRot, rotation);
-	 
 	  // join translation & rotation into homog. transformation 
-	  Eigen::Matrix< hpp::model::value_type, 4, 4 > trafo;
-	  trafo.block<3,3>(0,0) = rotation;
-	  trafo.block<3,1>(0,3) = translation;
+	  const Transform3f& T = joint->currentTransformation ();
+	  Eigen::Matrix< hpp::pinocchio::value_type, 4, 4 > trafo;
+	  trafo.block<3,3>(0,0) = T.rotation();
+	  trafo.block<3,1>(0,3) = T.translation();
 	  trafo.block<1,4>(3,0) << 0, 0, 0, 1;
 	  return matrixToFloatSeqSeq(trafo);
 	} catch (const std::exception& exc) {
@@ -637,13 +618,7 @@ namespace hpp
 	  }
 	  const Transform3f& T = joint->currentTransformation ();
 	  double* res = new Transform_;
-	  res [0] = T.getTranslation () [0];
-	  res [1] = T.getTranslation () [1];
-	  res [2] = T.getTranslation () [2];
-	  res [3] = T.getQuatRotation () [0];
-	  res [4] = T.getQuatRotation () [1];
-	  res [5] = T.getQuatRotation () [2];
-	  res [6] = T.getQuatRotation () [3];
+          Transform3fTohppTransform (T, res);
 	  return res;
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
@@ -666,13 +641,7 @@ namespace hpp
 	  }
 	  const Transform3f& T = joint->positionInParentFrame ();
 	  double* res = new Transform_;
-	  res [0] = T.getTranslation () [0];
-	  res [1] = T.getTranslation () [1];
-	  res [2] = T.getTranslation () [2];
-	  res [3] = T.getQuatRotation () [0];
-	  res [4] = T.getQuatRotation () [1];
-	  res [5] = T.getQuatRotation () [2];
-	  res [6] = T.getQuatRotation () [3];
+          Transform3fTohppTransform (T, res);
 	  return res;
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
@@ -754,37 +723,44 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      Transform__slice* Robot::getLinkPosition (const char* jointName)
+      Transform__slice* Robot::getLinkPosition (const char* linkName)
 	throw (hpp::Error)
       {
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
-	  JointPtr_t joint = robot->getJointByName (jointName);
-	  if (!joint) {
-	    std::ostringstream oss ("Robot has no joint with name ");
-	    oss  << jointName;
-	    hppDout (error, oss.str ());
-	    throw hpp::Error (oss.str ().c_str ());
-	  }
-	  Transform3f T = joint->currentTransformation () *
-	    joint->linkInJointFrame ();
-	  double* res = new Transform_;
-	  res [0] = T.getTranslation () [0];
-	  res [1] = T.getTranslation () [1];
-	  res [2] = T.getTranslation () [2];
-	  res [3] = T.getQuatRotation () [0];
-	  res [4] = T.getQuatRotation () [1];
-	  res [5] = T.getQuatRotation () [2];
-	  res [6] = T.getQuatRotation () [3];
-	  return res;
+          if (!robot->model().existBodyName (std::string(linkName))) {
+            throw BuildException<Error>() << "Robot has no link with name " << linkName << BuildExceptionEnd();
+          }
+          se3::FrameIndex body = robot->model().getBodyId(std::string(linkName));
+          se3::JointIndex joint = robot->model().getFrameParent(body);
+          if (robot->model().getFrameType(body) != se3::BODY)
+            throw BuildException<Error>() << linkName << " is not a link" << BuildExceptionEnd();
+          if (robot->model().njoint < joint)
+            throw BuildException<Error>() << "Joint index of link " << linkName << " out of bounds: " << joint << BuildExceptionEnd();
+
+          double* res = new Transform_;
+          Transform3f T = 
+            robot->data().oMi[joint] * robot->model().getFramePlacement(body);
+          if (robot->model().getFramePlacement(body).rotation().hasNaN()
+              || 
+              robot->model().getFramePlacement(body).translation().hasNaN()
+              )
+            throw BuildException<Error>() << "Placement has nan: " << linkName << BuildExceptionEnd();
+          if (robot->data().oMi[joint].rotation().hasNaN()
+              || 
+              robot->data().oMi[joint].translation().hasNaN()
+              )
+            throw BuildException<Error>() << "oMi[" << joint << "] has nan: " << linkName << BuildExceptionEnd();
+          Transform3fTohppTransform (T, res);
+          return res;
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
-	}
+        }
       }
 
       // --------------------------------------------------------------------
 
-      char* Robot::getLinkName (const char* jointName) throw (hpp::Error)
+      Names_t* Robot::getLinkNames (const char* jointName) throw (hpp::Error)
       {
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -795,10 +771,13 @@ namespace hpp
 	    hppDout (error, oss.str ());
 	    throw hpp::Error (oss.str ().c_str ());
 	  }
-	  std::string linkName = joint->linkName ();
-	  char* res = new char [linkName.size () + 1];
-	  strcpy (res, linkName.c_str ());
-	  return res;
+          std::vector<std::string> names;
+          for (std::size_t i = 0; i < robot->model().nFrames; ++i)
+            if (robot->model().getFrameType(i) == se3::BODY
+                && robot->model().getFrameParent(i) == joint->index()) {
+              names.push_back(robot->model().getFrameName(i));
+            }
+          return toNames_t(names.begin(), names.end());
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
@@ -823,7 +802,7 @@ namespace hpp
       void Robot::setExtraConfigSpaceBounds
       (const hpp::corbaserver::jointBoundSeq& bounds) throw (hpp::Error)
       {
-	using hpp::model::ExtraConfigSpace;
+	using hpp::pinocchio::ExtraConfigSpace;
 	// Get robot in ProblemSolver object.
 	try {
           DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -855,7 +834,7 @@ namespace hpp
 	}
       }
 
-      static model::Configuration_t
+      static pinocchio::Configuration_t
       dofArrayToConfig (const core::ProblemSolverPtr_t& problemSolver,
 			const hpp::floatSeq& dofArray)
       {
@@ -944,11 +923,8 @@ namespace hpp
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	  vector_t config = robot->currentConfiguration ();
 	  size_type deviceDim = robot->configSize ();
-	  dofArray = new hpp::floatSeq();
-	  dofArray->length((CORBA::ULong) deviceDim);
-	  for(size_type i=0; i<deviceDim; i++)
-	    (*dofArray)[(CORBA::ULong) i] = config [i];
-	  return dofArray;
+          assert(deviceDim == config.size());
+          return vectorToFloatseq (config);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -960,7 +936,7 @@ namespace hpp
 	throw (hpp::Error)
       {
 	Names_t *innerObjectSeq = 0x0;
-	JointPtr_t joint (0x0);
+	JointPtr_t joint;
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	  joint = robot->getJointByName (std::string (jointName));
@@ -976,7 +952,7 @@ namespace hpp
 	    return innerObjectSeq;
 	  }
 
-	  ObjectVector_t objects = body->innerObjects (model::COLLISION);
+	  ObjectVector_t objects = body->innerObjects ();
 	  if (objects.size() > 0) {
 	    std::size_t nbObjects = objects.size();
 	    // Allocate result now that the size is known.
@@ -985,7 +961,7 @@ namespace hpp
 	    innerObjectSeq = new Names_t(size, size, nameList);
 	    ObjectVector_t::const_iterator itObj = objects.begin ();
 	    for (std::size_t iObject=0; iObject < nbObjects; iObject++) {
-	      CollisionObjectPtr_t object = *itObj;
+	      CollisionObjectConstPtr_t object = *itObj;
 	      std::string geometryName = object->name();
 	      nameList[iObject] =
 		(char*)malloc(sizeof(char)*(geometryName.length()+1));
@@ -1007,7 +983,7 @@ namespace hpp
 	throw (hpp::Error)
       {
 	Names_t *outerObjectSeq = 0x0;
-	JointPtr_t joint (0x0);
+	JointPtr_t joint;
 
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -1024,7 +1000,7 @@ namespace hpp
 	    return outerObjectSeq;
 	  }
 
-	  ObjectVector_t objects = body->outerObjects (model::COLLISION);
+	  ObjectVector_t objects = body->outerObjects ();
 	  if (objects.size() > 0) {
 	    std::size_t nbObjects = objects.size();
 	    // Allocate result now that the size is known.
@@ -1033,7 +1009,7 @@ namespace hpp
 	    outerObjectSeq = new Names_t(size, size, nameList);
 	    ObjectVector_t::const_iterator itObj = objects.begin ();
 	    for (std::size_t iObject=0; iObject < nbObjects; iObject++) {
-	      CollisionObjectPtr_t object = *itObj;
+	      CollisionObjectConstPtr_t object = *itObj;
 	      std::string geometryName = object->name();
 	      nameList[iObject] =
 		(char*)malloc(sizeof(char)*(geometryName.length()+1));
@@ -1051,19 +1027,14 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      CollisionObjectPtr_t Robot::getObjectByName (const char* name)
+      CollisionObjectConstPtr_t Robot::getObjectByName (const char* name)
       {
-	using model::ObjectIterator;
+	using pinocchio::DeviceObjectVector;
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
-	  for (ObjectIterator it = robot->objectIterator (model::COLLISION);
-	       !it.isEnd (); ++it) {
-	    if ((*it)->name () == name) {
-	      return *it;
-	    }
-	  }
-	  for (ObjectIterator it = robot->objectIterator (model::DISTANCE);
-	       !it.isEnd (); ++it) {
+          const DeviceObjectVector& objs = robot->objectVector();
+	  for (DeviceObjectVector::const_iterator it = objs.begin();
+	       it != objs.end(); ++it) {
 	    if ((*it)->name () == name) {
 	      return *it;
 	    }
@@ -1098,7 +1069,7 @@ namespace hpp
 	throw (hpp::Error)
       {
 	try {
-	  CollisionObjectPtr_t object = getObjectByName (objectName);
+	  CollisionObjectConstPtr_t object = getObjectByName (objectName);
 	  Transform3f transform = object->getTransform ();
 	  Transform3fTohppTransform (transform, cfg);
 	  return;
@@ -1164,20 +1135,20 @@ namespace hpp
 	  for (DistanceResults_t::const_iterator itDistance = dr1.begin ();
 	       itDistance != dr1.end (); itDistance++) {
 	    (*distances_ptr) [(CORBA::ULong) distPairId] =
-	      itDistance->fcl.min_distance;
+	      itDistance->fcl_distance_result.min_distance;
 	    (*innerObjects_ptr) [(CORBA::ULong) distPairId] =
-	      itDistance->innerObject->name ().c_str ();
+              robot->geomModel().getGeometryName(itDistance->object1).c_str();
 	    (*outerObjects_ptr) [(CORBA::ULong) distPairId] =
-	      itDistance->outerObject->name ().c_str ();
+              robot->geomModel().getGeometryName(itDistance->object2).c_str();
 	    hpp::floatSeq pointBody_seq;
 	    pointBody_seq.length (3);
 	    hpp::floatSeq pointObstacle_seq;
 	    pointObstacle_seq.length (3);
 	    for (std::size_t j=0; j<3; ++j) {
 	      pointBody_seq [(CORBA::ULong) j] =
-		itDistance->fcl.nearest_points [0][j];
+		itDistance->fcl_distance_result.nearest_points [0][j];
 	      pointObstacle_seq [(CORBA::ULong) j] =
-		itDistance->fcl.nearest_points [1][j];
+		itDistance->fcl_distance_result.nearest_points [1][j];
 	    }
 	    (*innerPoints_ptr) [(CORBA::ULong) distPairId] = pointBody_seq;
 	    (*outerPoints_ptr) [(CORBA::ULong) distPairId] = pointObstacle_seq;
@@ -1186,20 +1157,20 @@ namespace hpp
 	  for (DistanceResults_t::const_iterator itDistance = dr2.begin ();
 	       itDistance != dr2.end (); itDistance++) {
 	    (*distances_ptr) [(CORBA::ULong) distPairId] =
-	      itDistance->fcl.min_distance;
+              itDistance->fcl_distance_result.min_distance;
 	    (*innerObjects_ptr) [(CORBA::ULong) distPairId] =
-	      itDistance->innerObject->name ().c_str ();
+              robot->geomModel().getGeometryName(itDistance->object1).c_str();
 	    (*outerObjects_ptr) [(CORBA::ULong) distPairId] =
-	      itDistance->outerObject->name ().c_str ();
+              robot->geomModel().getGeometryName(itDistance->object2).c_str();
 	    hpp::floatSeq pointBody_seq;
 	    pointBody_seq.length (3);
 	    hpp::floatSeq pointObstacle_seq;
 	    pointObstacle_seq.length (3);
 	    for (std::size_t j=0; j<3; ++j) {
 	      pointBody_seq [(CORBA::ULong) j] =
-		itDistance->fcl.nearest_points [0][j];
+		itDistance->fcl_distance_result.nearest_points [0][j];
 	      pointObstacle_seq [(CORBA::ULong) j] =
-		itDistance->fcl.nearest_points [1][j];
+		itDistance->fcl_distance_result.nearest_points [1][j];
 	    }
 	    (*innerPoints_ptr) [(CORBA::ULong) distPairId] = pointBody_seq;
 	    (*outerPoints_ptr) [(CORBA::ULong) distPairId] = pointObstacle_seq;
@@ -1254,142 +1225,142 @@ namespace hpp
 	}
       }
 
-      // --------------------------------------------------------------------
-
-      void Robot::createPolyhedron(const char* inPolyhedronName)
-	throw (hpp::Error)
-      {
-	std::string polyhedronName(inPolyhedronName);
-
-	// Check that polyhedron does not already exist.
-	if (vertexMap_.find(polyhedronName) != vertexMap_.end ()) {
-	  std::ostringstream oss ("polyhedron ");
-	  oss << polyhedronName << " already exists.";
-	  throw hpp::Error (oss.str ().c_str ());
-	}
-	vertexMap_ [polyhedronName] = std::vector <fcl::Vec3f> ();
-	triangleMap_ [polyhedronName] = std::vector <fcl::Triangle> ();
-      }
-
-
-      // --------------------------------------------------------------------
-
-      void Robot::createBox(const char* name, Double x, Double y, Double z)
-	throw (hpp::Error)
-      {
-	std::string shapeName(name);
-	// Check that object does not already exist.
-	if (vertexMap_.find(shapeName) != vertexMap_.end () ||
-	    shapeMap_.find (shapeName) != shapeMap_.end ()) {
-	  std::ostringstream oss ("object ");
-	  oss << shapeName << " already exists.";
-	  throw hpp::Error (oss.str ().c_str ());
-	}
-	BasicShapePtr_t box (new fcl::Box (x, y, z));
-	shapeMap_ [shapeName] = box;
-      }
-
-      // --------------------------------------------------------------------
-
-      void Robot::createSphere (const char* name, Double radius)
-	throw (hpp::Error)
-      {
-	if (vertexMap_.find(name) != vertexMap_.end () ||
-	    shapeMap_.find (name) != shapeMap_.end ()) {
-	  std::ostringstream oss ("object ");
-	  oss << name << " already exists.";
-	  throw hpp::Error (oss.str ().c_str ());
-	}
-	BasicShapePtr_t sphere (new fcl::Sphere (radius));
-	shapeMap_ [name] = sphere;
-      }
-
-      // --------------------------------------------------------------------
-
-      Short Robot::addPoint(const char* polyhedronName, Double x, Double y,
-			    Double z)
-	throw (hpp::Error)
-      {
-	// Check that polyhedron exists.
-	VertexMap_t::iterator itVertex = vertexMap_.find (polyhedronName);
-	if (itVertex == vertexMap_.end ()) {
-	  std::ostringstream oss ("polyhedron ");
-	  oss << polyhedronName << " does not exist.";
-	  throw hpp::Error (oss.str ().c_str ());
-	}
-	itVertex->second.push_back (fcl::Vec3f (x, y, z));
-	return static_cast<Short> (vertexMap_.size ());
-      }
-
-      // --------------------------------------------------------------------
-
-      Short Robot::addTriangle(const char* polyhedronName,
-			       ULong pt1, ULong pt2, ULong pt3)
-	throw (hpp::Error)
-      {
-	// Check that polyhedron exists.
-	TriangleMap_t::iterator itTriangle = triangleMap_.find (polyhedronName);
-	if (itTriangle == triangleMap_.end ()) {
-	  std::ostringstream oss ("polyhedron ");
-	  oss << polyhedronName << " does not exist.";
-	  throw hpp::Error (oss.str ().c_str ());
-	}
-	itTriangle->second.push_back (fcl::Triangle (pt1, pt2, pt3));
-	return static_cast<Short> (triangleMap_.size ());
-      }
-
-      // --------------------------------------------------------------------
-
-      void Robot::addObjectToJoint (const char* jointName,
-				     const char* objectName,
-				     const Double* inConfig)
-	throw (hpp::Error)
-      {
-	try {
-	  JointPtr_t joint = getJointByName (jointName);
-	  CollisionGeometryPtr_t geometry;
-	  // Check that polyhedron exists.
-	  VertexMap_t::const_iterator itVertex = vertexMap_.find(objectName);
-	  if (itVertex != vertexMap_.end ()) {
-	    PolyhedronPtr_t polyhedron = PolyhedronPtr_t (new Polyhedron_t);
-	    int res = polyhedron->beginModel ();
-	    if (res != fcl::BVH_OK) {
-	      std::ostringstream oss ("fcl BVHReturnCode = ");
-	      oss << res;
-	      throw hpp::Error (oss.str ().c_str ());
-	    }
-	    polyhedron->addSubModel (itVertex->second,
-				     triangleMap_ [objectName]);
-	    polyhedron->endModel ();
-	    geometry = polyhedron;
-	  } else {
-	    ShapeMap_t::const_iterator itShape = shapeMap_.find (objectName);
-	    if (itShape != shapeMap_.end ()) {
-	      geometry = itShape->second;
-	    }
-	  }
-	  if (!geometry) {
-	    std::ostringstream oss ("object ");
-	    oss << objectName << " does not exist.";
-	    throw hpp::Error (oss.str ().c_str ());
-	  }
-
-	  Transform3f pos;
-	  hppTransformToTransform3f (inConfig, pos);
-	  CollisionObjectPtr_t collisionObject
-	    (CollisionObject_t::create (geometry, pos, objectName));
-	  joint->linkedBody ()->addInnerObject(collisionObject, true, true);
-	} catch (const std::exception& exc) {
-	  throw hpp::Error (exc.what ());
-	}
-      }
+//DEPREC      // --------------------------------------------------------------------
+//DEPREC
+//DEPREC      void Robot::createPolyhedron(const char* inPolyhedronName)
+//DEPREC	throw (hpp::Error)
+//DEPREC      {
+//DEPREC	std::string polyhedronName(inPolyhedronName);
+//DEPREC
+//DEPREC	// Check that polyhedron does not already exist.
+//DEPREC	if (vertexMap_.find(polyhedronName) != vertexMap_.end ()) {
+//DEPREC	  std::ostringstream oss ("polyhedron ");
+//DEPREC	  oss << polyhedronName << " already exists.";
+//DEPREC	  throw hpp::Error (oss.str ().c_str ());
+//DEPREC	}
+//DEPREC	vertexMap_ [polyhedronName] = std::vector <fcl::Vec3f> ();
+//DEPREC	triangleMap_ [polyhedronName] = std::vector <fcl::Triangle> ();
+//DEPREC      }
+//DEPREC
+//DEPREC
+//DEPREC      // --------------------------------------------------------------------
+//DEPREC
+//DEPREC      void Robot::createBox(const char* name, Double x, Double y, Double z)
+//DEPREC	throw (hpp::Error)
+//DEPREC      {
+//DEPREC	std::string shapeName(name);
+//DEPREC	// Check that object does not already exist.
+//DEPREC	if (vertexMap_.find(shapeName) != vertexMap_.end () ||
+//DEPREC	    shapeMap_.find (shapeName) != shapeMap_.end ()) {
+//DEPREC	  std::ostringstream oss ("object ");
+//DEPREC	  oss << shapeName << " already exists.";
+//DEPREC	  throw hpp::Error (oss.str ().c_str ());
+//DEPREC	}
+//DEPREC	BasicShapePtr_t box (new fcl::Box (x, y, z));
+//DEPREC	shapeMap_ [shapeName] = box;
+//DEPREC      }
+//DEPREC
+//DEPREC      // --------------------------------------------------------------------
+//DEPREC
+//DEPREC      void Robot::createSphere (const char* name, Double radius)
+//DEPREC	throw (hpp::Error)
+//DEPREC      {
+//DEPREC	if (vertexMap_.find(name) != vertexMap_.end () ||
+//DEPREC	    shapeMap_.find (name) != shapeMap_.end ()) {
+//DEPREC	  std::ostringstream oss ("object ");
+//DEPREC	  oss << name << " already exists.";
+//DEPREC	  throw hpp::Error (oss.str ().c_str ());
+//DEPREC	}
+//DEPREC	BasicShapePtr_t sphere (new fcl::Sphere (radius));
+//DEPREC	shapeMap_ [name] = sphere;
+//DEPREC      }
+//DEPREC
+//DEPREC      // --------------------------------------------------------------------
+//DEPREC
+//DEPREC      Short Robot::addPoint(const char* polyhedronName, Double x, Double y,
+//DEPREC			    Double z)
+//DEPREC	throw (hpp::Error)
+//DEPREC      {
+//DEPREC	// Check that polyhedron exists.
+//DEPREC	VertexMap_t::iterator itVertex = vertexMap_.find (polyhedronName);
+//DEPREC	if (itVertex == vertexMap_.end ()) {
+//DEPREC	  std::ostringstream oss ("polyhedron ");
+//DEPREC	  oss << polyhedronName << " does not exist.";
+//DEPREC	  throw hpp::Error (oss.str ().c_str ());
+//DEPREC	}
+//DEPREC	itVertex->second.push_back (fcl::Vec3f (x, y, z));
+//DEPREC	return static_cast<Short> (vertexMap_.size ());
+//DEPREC      }
+//DEPREC
+//DEPREC      // --------------------------------------------------------------------
+//DEPREC
+//DEPREC      Short Robot::addTriangle(const char* polyhedronName,
+//DEPREC			       ULong pt1, ULong pt2, ULong pt3)
+//DEPREC	throw (hpp::Error)
+//DEPREC      {
+//DEPREC	// Check that polyhedron exists.
+//DEPREC	TriangleMap_t::iterator itTriangle = triangleMap_.find (polyhedronName);
+//DEPREC	if (itTriangle == triangleMap_.end ()) {
+//DEPREC	  std::ostringstream oss ("polyhedron ");
+//DEPREC	  oss << polyhedronName << " does not exist.";
+//DEPREC	  throw hpp::Error (oss.str ().c_str ());
+//DEPREC	}
+//DEPREC	itTriangle->second.push_back (fcl::Triangle (pt1, pt2, pt3));
+//DEPREC	return static_cast<Short> (triangleMap_.size ());
+//DEPREC      }
+//DEPREC
+//DEPREC      // --------------------------------------------------------------------
+//DEPREC
+//DEPREC      void Robot::addObjectToJoint (const char* jointName,
+//DEPREC				     const char* objectName,
+//DEPREC				     const Double* inConfig)
+//DEPREC	throw (hpp::Error)
+//DEPREC      {
+//DEPREC	try {
+//DEPREC	  JointPtr_t joint = getJointByName (jointName);
+//DEPREC	  CollisionGeometryPtr_t geometry;
+//DEPREC	  // Check that polyhedron exists.
+//DEPREC	  VertexMap_t::const_iterator itVertex = vertexMap_.find(objectName);
+//DEPREC	  if (itVertex != vertexMap_.end ()) {
+//DEPREC	    PolyhedronPtr_t polyhedron = PolyhedronPtr_t (new Polyhedron_t);
+//DEPREC	    int res = polyhedron->beginModel ();
+//DEPREC	    if (res != fcl::BVH_OK) {
+//DEPREC	      std::ostringstream oss ("fcl BVHReturnCode = ");
+//DEPREC	      oss << res;
+//DEPREC	      throw hpp::Error (oss.str ().c_str ());
+//DEPREC	    }
+//DEPREC	    polyhedron->addSubModel (itVertex->second,
+//DEPREC				     triangleMap_ [objectName]);
+//DEPREC	    polyhedron->endModel ();
+//DEPREC	    geometry = polyhedron;
+//DEPREC	  } else {
+//DEPREC	    ShapeMap_t::const_iterator itShape = shapeMap_.find (objectName);
+//DEPREC	    if (itShape != shapeMap_.end ()) {
+//DEPREC	      geometry = itShape->second;
+//DEPREC	    }
+//DEPREC	  }
+//DEPREC	  if (!geometry) {
+//DEPREC	    std::ostringstream oss ("object ");
+//DEPREC	    oss << objectName << " does not exist.";
+//DEPREC	    throw hpp::Error (oss.str ().c_str ());
+//DEPREC	  }
+//DEPREC
+//DEPREC	  Transform3f pos;
+//DEPREC	  hppTransformToTransform3f (inConfig, pos);
+//DEPREC	  CollisionObjectPtr_t collisionObject
+//DEPREC	    (CollisionObject_t::create (geometry, pos, objectName));
+//DEPREC	  joint->linkedBody ()->addInnerObject(collisionObject, true, true);
+//DEPREC	} catch (const std::exception& exc) {
+//DEPREC	  throw hpp::Error (exc.what ());
+//DEPREC	}
+//DEPREC      }
 
       void Robot::addPartialCom (const char* comName, const Names_t& jointNames)
         throw (hpp::Error)
       {
         DevicePtr_t robot = getRobotOrThrow(problemSolver());
-        model::CenterOfMassComputationPtr_t comc =
-          model::CenterOfMassComputation::create (robot);
+        pinocchio::CenterOfMassComputationPtr_t comc =
+          pinocchio::CenterOfMassComputation::create (robot);
 
         for (CORBA::ULong i=0; i<jointNames.length (); ++i) {
           std::string name (jointNames[i]);
@@ -1397,7 +1368,6 @@ namespace hpp
           if (!j) throw hpp::Error ("One joint not found.");
           comc->add (j);
         }
-        comc->computeMass ();
         problemSolver()->addCenterOfMassComputation (std::string (comName), comc);
       }
     } // end of namespace impl.

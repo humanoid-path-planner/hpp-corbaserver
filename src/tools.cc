@@ -8,8 +8,10 @@
 //
 // See the COPYING file for more information.
 
-#include <hpp/fcl/math/transform.h>
 #include "tools.hh"
+
+// #include <hpp/fcl/math/transform.h>
+#include <pinocchio/spatial/se3.hpp>
 
 using hpp::corbaServer::size_type;
 using CORBA::ULong;
@@ -18,29 +20,30 @@ void
 hppTransformToTransform3f
 (const CORBA::Double* inConfig, hpp::corbaServer::Transform3f& transform)
 {
-  fcl::Quaternion3f Q (inConfig [3], inConfig [4],
-		       inConfig [5], inConfig [6]);
-  fcl::Vec3f T (inConfig [0], inConfig [1], inConfig [2]);
-  transform.setTransform (Q, T);
+  using hpp::corbaServer::Transform3f;
+  Transform3f::Quaternion_t Q (inConfig [6], inConfig [3], inConfig [4], inConfig [5]);
+  transform.translation() << inConfig [0], inConfig [1], inConfig [2];
+  transform.rotation() = Q.matrix();
 }
 
 void
 Transform3fTohppTransform (const hpp::corbaServer::Transform3f& transform,
 			   CORBA::Double* config)
 {
-  fcl::Quaternion3f Q = transform.getQuatRotation ();
-  fcl::Vec3f T = transform.getTranslation ();
+  using hpp::corbaServer::Transform3f;
+  Transform3f::Quaternion_t q (transform.rotation());
   /*
   for(int i=0; i<3; i++) {
     for(int j=0; j<3; j++)
       config.rot[i*3+j] = R (i,j);
   }
   */
-  for(int i=0; i<4; i++) {
-    config [i+3] = Q [i];
-  }
+  config[3] = q.x();
+  config[4] = q.y();
+  config[5] = q.z();
+  config[6] = q.w();
   for(int i=0; i<3; i++)
-    config [i] = T [i];
+    config [i] = transform.translation() [i];
 }
 
 hpp::floatSeq* vectorToFloatseq (const hpp::core::vector_t& input)
@@ -67,4 +70,11 @@ hpp::floatSeqSeq* matrixToFloatSeqSeq (const hpp::core::matrix_t& input)
     (*res) [(ULong) i] = row;
   }
   return res;
+}
+
+hpp::corbaServer::DevicePtr_t getRobotOrThrow (hpp::core::ProblemSolverPtr_t p)
+{
+  hpp::corbaServer::DevicePtr_t robot = p->robot ();
+  if (!robot) throw hpp::Error ("No robot in problem solver.");
+  return robot;
 }

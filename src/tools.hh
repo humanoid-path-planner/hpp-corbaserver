@@ -15,6 +15,8 @@
 # include <hpp/corbaserver/fwd.hh>
 # include "hpp/corbaserver/common.hh"
 
+# include "hpp/core/problem-solver.hh"
+
 HPP_CORBASERVER_LOCAL void
 hppTransformToTransform3f (const CORBA::Double* inConfig,
 			    hpp::corbaServer::Transform3f& outMatrix4);
@@ -44,6 +46,60 @@ inline hpp::Names_t* toNames_t (InputIt begin, InputIt end) {
     ++i;
   }
   return ret;
+}
+
+hpp::corbaServer::DevicePtr_t getRobotOrThrow (hpp::core::ProblemSolverPtr_t p);
+
+// ----------------------------------------
+// BuildException
+// ----------------------------------------
+
+struct BuildExceptionEnd {};
+
+template <typename exception> struct BuildException;
+
+namespace internal {
+  template <typename exception, typename In>
+    struct BuildExceptionOut {
+      typedef BuildException<exception>& type;
+
+      static type run(BuildException<exception>& be, const In& t) { be.ss << t; return be; }
+    };
+}
+
+template <typename exception>
+struct BuildException
+{
+  std::stringstream ss;
+
+  template <typename T> typename internal::BuildExceptionOut<exception, T>::type operator<< (const T& t) {
+    return internal::BuildExceptionOut<exception, T>::run (*this, t);
+  }
+
+  void raise () {
+    exception exc = internal::BuildExceptionOut<exception, BuildExceptionEnd>::
+      run(*this, BuildExceptionEnd());
+    throw exc;
+  }
+};
+
+// ----------------------------------------
+// BuildException - template specialization
+// ----------------------------------------
+namespace internal {
+  template <typename exception>
+    struct BuildExceptionOut<exception, BuildExceptionEnd> {
+      typedef exception type;
+
+      static type run(BuildException<exception>& be, const BuildExceptionEnd&) { return exception(be.ss.str()); }
+    };
+
+  template <>
+    struct BuildExceptionOut<hpp::Error, BuildExceptionEnd> {
+      typedef hpp::Error type;
+
+      static type run(BuildException<hpp::Error>& be, const BuildExceptionEnd&) { return hpp::Error(be.ss.str().c_str()); }
+    };
 }
 
 #endif //! HPPCORBASERVER_TOOLS_HH

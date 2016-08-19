@@ -13,11 +13,10 @@
 # include <map>
 # include <string>
 # include <hpp/fcl/BVH/BVH_model.h>
-# include <hpp/model/object-factory.hh>
+// # include <hpp/pinocchio/object-factory.hh>
 # include "hpp/core/problem-solver.hh"
 # include "hpp/corbaserver/fwd.hh"
 # include "hpp/corbaserver/robot.hh" 
-# include "hpp/model/fcl-to-eigen.hh"
 
 namespace hpp
 {
@@ -53,15 +52,15 @@ namespace hpp
       public:
 	Robot (corbaServer::Server* server);
 
-	virtual void
-	createRobot (const char* robotName) throw (hpp::Error);
+//DEPREC	virtual void
+//DEPREC	createRobot (const char* robotName) throw (hpp::Error);
 
-	virtual void
-	setRobot(const char* robotName) throw (hpp::Error);
+//DEPREC	virtual void
+//DEPREC	setRobot(const char* robotName) throw (hpp::Error);
 
-	virtual void
-	setRobotRootJoint(const char* robotName, const char* jointName)
-	  throw (hpp::Error);
+//DEPREC	virtual void
+//DEPREC	setRobotRootJoint(const char* robotName, const char* jointName)
+//DEPREC	  throw (hpp::Error);
 
 	virtual void loadRobotModel (const char* robotName,
 				     const char* rootJointType,
@@ -84,16 +83,16 @@ namespace hpp
 
 	virtual Short getNumberDof () throw (hpp::Error);
 
-	virtual void
-	createJoint
-	(const char* jointName, const char* jointType,
-	 const  Double* pos,
-	 const hpp::corbaserver::jointBoundSeq& jointBound)
-	  throw (hpp::Error);
-
-	virtual void
-	addJoint
-	(const char* parentName, const char* childName) throw (hpp::Error);
+//DEPREC	virtual void
+//DEPREC	createJoint
+//DEPREC	(const char* jointName, const char* jointType,
+//DEPREC	 const  Double* pos,
+//DEPREC	 const hpp::corbaserver::jointBoundSeq& jointBound)
+//DEPREC	  throw (hpp::Error);
+//DEPREC
+//DEPREC	virtual void
+//DEPREC	addJoint
+//DEPREC	(const char* parentName, const char* childName) throw (hpp::Error);
 
 	virtual Names_t* getJointNames () throw (hpp::Error);
 	virtual Names_t* getAllJointNames () throw (hpp::Error);
@@ -133,10 +132,10 @@ namespace hpp
 	(const char* jointName,
 	 const hpp::corbaserver::jointBoundSeq& jointBound) throw (hpp::Error);
 
-	virtual Transform__slice* getLinkPosition (const char* jointName)
+	virtual Transform__slice* getLinkPosition (const char* linkName)
 	  throw (hpp::Error);
 
-	virtual char* getLinkName(const char* jointName)
+	virtual Names_t* getLinkNames(const char* jointName)
 	  throw (hpp::Error);
 
 	virtual void setDimensionExtraConfigSpace (ULong dimension)
@@ -180,38 +179,38 @@ namespace hpp
 
 	virtual hpp::floatSeqSeq* getJacobianCenterOfMass () throw (hpp::Error);
 
-	virtual void
-	createPolyhedron
-	(const char* polyhedronName) throw (hpp::Error);
-
-	virtual void
-	createBox (const char* name, Double x, Double y, Double z)
-	  throw (hpp::Error);
-
-	virtual void
-	createSphere (const char* name, Double radius)
-	  throw (hpp::Error);
-
-	virtual Short
-	addPoint (const char* polyhedronName, Double x, Double y, Double z)
-	  throw (hpp::Error);
-
-	virtual Short
-	addTriangle
-	(const char* polyhedronName, ULong pt1, ULong pt2, ULong pt3)
-	  throw (hpp::Error);
-
-	virtual void
-	addObjectToJoint (const char* bodyName, const char* objectName,
-			  const Double* config)
-	  throw (hpp::Error);
+//DEPREC	virtual void
+//DEPREC	createPolyhedron
+//DEPREC	(const char* polyhedronName) throw (hpp::Error);
+//DEPREC
+//DEPREC	virtual void
+//DEPREC	createBox (const char* name, Double x, Double y, Double z)
+//DEPREC	  throw (hpp::Error);
+//DEPREC
+//DEPREC	virtual void
+//DEPREC	createSphere (const char* name, Double radius)
+//DEPREC	  throw (hpp::Error);
+//DEPREC
+//DEPREC	virtual Short
+//DEPREC	addPoint (const char* polyhedronName, Double x, Double y, Double z)
+//DEPREC	  throw (hpp::Error);
+//DEPREC
+//DEPREC	virtual Short
+//DEPREC	addTriangle
+//DEPREC	(const char* polyhedronName, ULong pt1, ULong pt2, ULong pt3)
+//DEPREC	  throw (hpp::Error);
+//DEPREC
+//DEPREC	virtual void
+//DEPREC	addObjectToJoint (const char* bodyName, const char* objectName,
+//DEPREC			  const Double* config)
+//DEPREC	  throw (hpp::Error);
 
         virtual void
         addPartialCom (const char* comName, const Names_t& jointNames)
           throw (hpp::Error);
 
       private:
-	CollisionObjectPtr_t getObjectByName (const char* name);
+	CollisionObjectConstPtr_t getObjectByName (const char* name);
 	typedef std::map <std::string, JointPtr_t> JointMap_t;
 	// Look for joint in jointMap_. If not found look into the robot.
 	JointPtr_t getJointByName (const char* name);
@@ -238,7 +237,6 @@ namespace hpp
 	///
 	/// Instantiated at construction.
 	core::ProblemSolverPtr_t problemSolver();
-	model::ObjectFactory objectFactory_;
       };
     } // end of namespace impl.
   } // end of namespace corbaServer.

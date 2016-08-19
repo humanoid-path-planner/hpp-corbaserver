@@ -21,7 +21,7 @@
 
 #include <hpp/fcl/shape/geometric_shapes.h>
 
-#include <hpp/model/configuration.hh>
+#include <hpp/pinocchio/configuration.hh>
 #include <hpp/core/config-projector.hh>
 #include <hpp/core/basic-configuration-shooter.hh>
 #include <hpp/core/connected-component.hh>
@@ -52,15 +52,15 @@
 #include <hpp/constraints/static-stability.hh>
 #include <hpp/constraints/configuration-constraint.hh>
 #include <hpp/corbaserver/server.hh>
-#include <hpp/model/body.hh>
-#include <hpp/model/center-of-mass-computation.hh>
+#include <hpp/pinocchio/body.hh>
+#include <hpp/pinocchio/center-of-mass-computation.hh>
 
 #include "problem.impl.hh"
 #include "tools.hh"
 
-using hpp::model::ObjectVector_t;
-using hpp::model::CenterOfMassComputation;
-using hpp::model::CenterOfMassComputationPtr_t;
+using hpp::pinocchio::ObjectVector_t;
+using hpp::pinocchio::CenterOfMassComputation;
+using hpp::pinocchio::CenterOfMassComputationPtr_t;
 
 using hpp::constraints::DistanceBetweenBodies;
 using hpp::constraints::Orientation;
@@ -539,33 +539,32 @@ namespace hpp
 	JointPtr_t joint1;
 	JointPtr_t joint2;
 	size_type constrainedJoint = 0;
-	fcl::Quaternion3f quat (p [0], p [1], p [2], p [3]);
-	hpp::model::matrix3_t rotation;
-	quat.toRotation (rotation);
+        Transform3f::Quaternion_t quat (p [0], p [1], p [2], p [3]);
+	hpp::pinocchio::Transform3f rotation (quat.matrix(), vector3_t::Zero());
 
 	std::vector<bool> m = boolSeqToBoolVector (mask, 3);
-	try {
-	  // Test whether joint1 is world frame
-	  if (std::string (joint1Name) == std::string ("")) {
-	    constrainedJoint = 2;
-	  } else {
-	    joint1 =
-	      problemSolver()->robot()->getJointByName(joint1Name);
-	  }
-	  // Test whether joint2 is world frame
-	  if (std::string (joint2Name) == std::string ("")) {
-	    if (constrainedJoint == 2) {
-	      throw hpp::Error ("At least one joint should be provided.");
-	    }
-	    constrainedJoint = 1;
-	  } else {
-	    joint2 =
-	      problemSolver()->robot()->getJointByName(joint2Name);
-	  }
-	} catch (const std::exception& exc) {
-	  throw hpp::Error (exc.what ());
-	}
-  std::string name (constraintName);
+        try {
+          // Test whether joint1 is world frame
+          if (std::string (joint1Name) == std::string ("")) {
+            constrainedJoint = 2;
+          } else {
+            joint1 =
+              problemSolver()->robot()->getJointByName(joint1Name);
+          }
+          // Test whether joint2 is world frame
+          if (std::string (joint2Name) == std::string ("")) {
+            if (constrainedJoint == 2) {
+              throw hpp::Error ("At least one joint should be provided.");
+            }
+            constrainedJoint = 1;
+          } else {
+            joint2 =
+              problemSolver()->robot()->getJointByName(joint2Name);
+          }
+        } catch (const std::exception& exc) {
+          throw hpp::Error (exc.what ());
+        }
+        std::string name (constraintName);
 	if (constrainedJoint == 0) {
 	  // Both joints are provided
 	  problemSolver()->addNumericalConstraint
@@ -592,9 +591,9 @@ namespace hpp
 	JointPtr_t joint1;
 	JointPtr_t joint2;
 	size_type constrainedJoint = 0;
-        fcl::Vec3f vec (p[0], p[1], p[2]);
-	fcl::Quaternion3f quat (p [3], p [4], p [5], p [6]);
-        fcl::Transform3f ref (quat, vec);
+        Transform3f::Linear_t vec (p[0], p[1], p[2]);
+        Transform3f::Quaternion_t quat (p [3], p [4], p [5], p [6]);
+        Transform3f ref (quat.matrix(), vec);
 
 	std::vector<bool> m = boolSeqToBoolVector (mask, 6);
 	try {
@@ -643,7 +642,7 @@ namespace hpp
       {
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
 	JointPtr_t joint;
-        model::CenterOfMassComputationPtr_t comc;
+        CenterOfMassComputationPtr_t comc;
 	vector3_t point = floatSeqToVector3 (p);
 
 	std::vector<bool> m = boolSeqToBoolVector (mask);
@@ -680,7 +679,7 @@ namespace hpp
       {
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
 	JointPtr_t jointL, jointR, jointRef;
-        model::CenterOfMassComputationPtr_t comc;
+        CenterOfMassComputationPtr_t comc;
 	vector3_t pointL = floatSeqToVector3 (pL);
 	vector3_t pointR = floatSeqToVector3 (pR);
 	vector3_t pointRef (0,0,0);
@@ -770,7 +769,7 @@ namespace hpp
 	    std::string jointName (objectJoints [i]);
 	    JointPtr_t joint;
 	    if (jointName == "None") {
-	      joint = 0x0;
+	      // joint = 0x0;
 	    } else {
 	      joint = problemSolver()->robot ()->getJointByName (jointName);
 	    }
@@ -798,7 +797,7 @@ namespace hpp
 	    std::string jointName (floorJoints [i]);
 	    JointPtr_t joint;
 	    if (jointName == "None") {
-	      joint = 0x0;
+	      // joint = 0x0;
 	    } else {
 	      joint = problemSolver()->robot ()->getJointByName (jointName);
 	    }
@@ -831,7 +830,6 @@ namespace hpp
           CenterOfMassComputationPtr_t com =
             CenterOfMassComputation::create (robot);
           com->add (comRJ);
-          com->computeMass ();
 
           /// Create the contacts
           StaticStability::Contacts_t contacts;
@@ -844,9 +842,9 @@ namespace hpp
             // Set joints
             std::string jn1 (jointNames[i  ]);
             std::string jn2 (jointNames[i+1]);
-            if (jn1.empty ()) c.joint1 = NULL;
+            if (jn1.empty ()) c.joint1.reset();
             else c.joint1 = robot->getJointByName (jn1);
-            if (jn2.empty ()) c.joint2 = NULL;
+            if (jn2.empty ()) c.joint2.reset();
             else c.joint2 = robot->getJointByName (jn2);
             // Set points and normals
             if (points[i].length () != 3 || points[i+1].length () != 3
@@ -881,6 +879,7 @@ namespace hpp
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
 	JointPtr_t joint1;
 	JointPtr_t joint2;
+        hpp::pinocchio::matrix3_t I3; I3.setIdentity();
 	vector3_t targetInWorldFrame;
 	vector3_t targetInLocalFrame;
 	vector3_t p1 = floatSeqToVector3 (point1);
@@ -918,14 +917,14 @@ namespace hpp
 	  problemSolver()->addNumericalConstraint
 	    (name, NumericalConstraint::create
 	     (RelativePosition::create
-	      (name, problemSolver()->robot(), joint1, joint2, p1, p2, m)));
+	      (name, problemSolver()->robot(), joint1, joint2, Transform3f(I3, p1), Transform3f(I3, p2), m)));
 	} else {
-	  hpp::model::matrix3_t I3; I3.setIdentity ();
 	  JointPtr_t joint = constrainedJoint == 1 ? joint1 : joint2;
 	  problemSolver()->addNumericalConstraint
 	    (name, NumericalConstraint::create
 	     (Position::create (name, problemSolver()->robot(), joint,
-				targetInLocalFrame, targetInWorldFrame, m)));
+				Transform3f(I3, targetInLocalFrame),
+                                Transform3f(I3, targetInWorldFrame), m)));
 	}
       }
 
@@ -976,7 +975,7 @@ namespace hpp
 	try {
 	  JointPtr_t joint1 = problemSolver()->robot ()->getJointByName
 	    (joint1Name);
-	  ObjectVector_t objectList;
+          std::vector<CollisionObjectPtr_t> objectList;
 	  for (CORBA::ULong i=0; i<objects.length (); ++i) {
 	    objectList.push_back (problemSolver()->obstacle
 				  (std::string (objects [i])));
@@ -1084,7 +1083,7 @@ namespace hpp
 	try {
 	  problemSolver()->resetConstraints ();
 	  problemSolver()->robot ()->controlComputation
-	    (model::Device::JOINT_POSITION);
+	    (pinocchio::Device::JOINT_POSITION);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -1199,7 +1198,7 @@ namespace hpp
             problemSolver()->addFunctionToConfigProjector (constraintName, name,
                 (std::size_t)priorities[i]);
 	    problemSolver()->robot ()->controlComputation
-	      (model::Device::ALL);
+	      (pinocchio::Device::ALL);
 	  }
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
@@ -1240,7 +1239,7 @@ namespace hpp
             problemSolver()->addGoalConstraint (constraintName, name,
                 (std::size_t)priorities[i]);
 	    problemSolver()->robot ()->controlComputation
-	      (model::Device::ALL);
+	      (pinocchio::Device::ALL);
 	  }
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());

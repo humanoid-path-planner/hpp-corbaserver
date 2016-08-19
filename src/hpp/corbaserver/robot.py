@@ -119,15 +119,15 @@ class Robot (object):
     #
     # \param jointName name of the joint
     # \return position of the link in world frame.
-    def getLinkPosition (self, jointName):
-        return self.client.robot.getLinkPosition (jointName)
+    def getLinkPosition (self, linkName):
+        return self.client.robot.getLinkPosition (linkName)
 
     ## Get link name
     #
     # \param jointName name of the joint,
     # \return name of the link.
-    def getLinkName (self, jointName):
-        return self.client.robot.getLinkName (jointName)
+    def getLinkNames (self, jointName):
+        return self.client.robot.getLinkNames (jointName)
 
     ## \}
 

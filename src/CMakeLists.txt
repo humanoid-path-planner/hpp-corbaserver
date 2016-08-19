@@ -74,7 +74,7 @@ IF (NOT CLIENT_ONLY)
   ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_python)
 
   PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-core)
-  PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-model-urdf)
+  PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-pinocchio)
   PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} omniORB4)
   PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} omniDynamic4)
 
@@ -84,7 +84,7 @@ IF (NOT CLIENT_ONLY)
   ADD_EXECUTABLE (hppcorbaserver hpp-corbaserver.cc)
   TARGET_LINK_LIBRARIES (hppcorbaserver ${LIBRARY_NAME})
   PKG_CONFIG_USE_DEPENDENCY(hppcorbaserver hpp-core)
-  PKG_CONFIG_USE_DEPENDENCY(hppcorbaserver hpp-model-urdf)
+  PKG_CONFIG_USE_DEPENDENCY(hppcorbaserver hpp-pinocchio)
   PKG_CONFIG_USE_DEPENDENCY(hppcorbaserver hpp-constraints)
 
   INSTALL (TARGETS hppcorbaserver DESTINATION bin)
