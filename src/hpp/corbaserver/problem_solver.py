@@ -308,13 +308,20 @@ class ProblemSolver (object):
         return self.client.problem.lockJoint (jointName, value)
 
     ## error threshold in numerical constraint resolution
+    def getErrorThreshold (self):
+        return self.client.problem.getErrorThreshold ()
+
+    ## error threshold in numerical constraint resolution
     def setErrorThreshold (self, threshold):
         return self.client.problem.setErrorThreshold (threshold)
 
     ## Set the maximal number of iterations
+    def getMaxIterations (self):
+	return self.client.problem.getMaxIterations ()
+
+    ## Set the maximal number of iterations
     def setMaxIterations (self, iterations):
 	return self.client.problem.setMaxIterations (iterations)
-
     ## \}
 
     ## \name Collision Checking

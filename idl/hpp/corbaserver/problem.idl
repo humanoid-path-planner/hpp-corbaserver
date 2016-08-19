@@ -302,8 +302,14 @@ module hpp
     void lockJoint (in string jointName, in floatSeq value)
       raises (Error);
 
+    /// Get error threshold in numerical constraint resolution
+    double getErrorThreshold () raises (Error);
+
     /// Set error threshold in numerical constraint resolution
     void setErrorThreshold (in double threshold) raises (Error);
+
+    /// Set maximal number of iterations in numerical constraint resolution
+    unsigned short getMaxIterations () raises (Error);
 
     /// Set maximal number of iterations in numerical constraint resolution
     void setMaxIterations (in unsigned short iterations) raises (Error);

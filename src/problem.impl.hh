@@ -169,7 +169,9 @@ namespace hpp
 	virtual void addGoalLockJoint (const char* jointName,
 				const hpp::floatSeq& value)
 	  throw (hpp::Error);
+	virtual Double getErrorThreshold () throw (Error);
 	virtual void setErrorThreshold (Double threshold) throw (Error);
+	virtual UShort getMaxIterations () throw (Error);
 	virtual void setMaxIterations (UShort iterations) throw (Error);
 
 	virtual void addPathOptimizer (const char* pathOptimizerType)
