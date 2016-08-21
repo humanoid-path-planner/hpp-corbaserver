@@ -34,6 +34,8 @@ namespace hpp
   {
     namespace impl
     {
+      using pinocchio::DeviceObjectVector;
+
       Obstacle::Obstacle (corbaServer::Server* server)
 	: server_ (server)
       {}
@@ -48,61 +50,26 @@ namespace hpp
 					const char* prefix)
 	throw (hpp::Error)
       {
-        DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	try {
-	  pinocchio::DevicePtr_t device (pinocchio::Device::create
-				     (std::string (filename)));
+          DevicePtr_t device (Device::create (std::string (filename)));
 	  hpp::pinocchio::urdf::loadUrdfModel (device,
-					   "freeflyer",
+					   "anchor",
 					   std::string (package),
 					   std::string (filename));
-
+          device->controlComputation(Device::JOINT_POSITION);
           device->computeForwardKinematics();
-          se3::updateGeometryPlacements(device->model(), device->data(),
-              device->geomModel(), device->geomData());
-
-          using pinocchio::DeviceObjectVector;
-          const se3::Model & obsModel = device->model();
-          const se3::Data  & obsData  = device->data ();
-          se3::Model &       robModel = robot->model();
-	  // Copy the bodies
-          for(se3::FrameIndex fid = 0; fid < obsModel.nFrames; ++fid) {
-            const se3::Frame& frame = obsModel.frames[fid];
-            if (frame.type != se3::BODY) continue;
-            robModel.addFrame (
-                std::string (prefix) + frame.name,
-                0,
-                obsData.oMi[frame.parent] * frame.placement,
-                se3::BODY
-                );
-          }
+          device->updateGeometryPlacements();
 
 	  // Detach objects from joints
           DeviceObjectVector& objects = device->objectVector();
           for (DeviceObjectVector::iterator itObj = objects.begin();
               itObj != objects.end(); ++itObj) {
-            CollisionObjectPtr_t obj = *itObj;
-            se3::FrameIndex fid = robModel.getBodyId(
-                std::string (prefix) + obsModel.getFrameName(obj->pinocchio().parentFrame)
-                );
-            assert (robModel.getFrameParent(fid) == 0);
-            assert (robModel.getFrameType(fid) == se3::BODY);
-            se3::GeomIndex idx =
-              robot->geomModel().addGeometryObject (
-                  robModel,
-                  fid, 
-                  obj->fcl()->collisionGeometry(),
-                  obj->getTransform (),
-                  std::string (prefix) + obj->name ());
-	    CollisionObjectPtr_t newObj (new pinocchio::CollisionObject (robot, idx));
-	    problemSolver()->addObstacle (newObj, true, true);
-	    hppDout (info, "Adding obstacle " << newObj->name ());
+            problemSolver()->addObstacle (
+                std::string (prefix) + (*itObj)->name (),
+                *(*itObj)->fcl (),
+                true, true);
+	    hppDout (info, "Adding obstacle " << obj->name ());
 	  }
-
-          robot->computeForwardKinematics();
-          se3::updateGeometryPlacements(robot->model(), robot->data(),
-              robot->geomModel(), robot->geomData());
-
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -166,13 +133,9 @@ namespace hpp
 	  throw hpp::Error (oss.str ().c_str ());
 	}
 
-	Transform3f pos; pos.setIdentity ();
-        se3::GeomIndex idx =
-          robot->geomModel().addGeometryObject (
-              robot->model(), robot->model().getFrameId(objName),
-              geometry, pos, objName);
-        CollisionObjectPtr_t obj (new pinocchio::CollisionObject (robot, idx));
-	problemSolver()->addObstacle (obj, collision, distance);
+        fcl::Transform3f pos; pos.setIdentity ();
+        core::FclCollisionObject object (geometry, pos);
+	problemSolver()->addObstacle (objName, object, collision, distance);
       }
 
       CollisionObjectPtr_t Obstacle::getObstacleByName (const char* name)
@@ -249,49 +212,6 @@ namespace hpp
 	  ++i;
 	}
 	return result;
-      }
-
-      void Obstacle::getObstacleLinkPosition (const char* linkName,
-					      Double* cfg)
-	  throw (hpp::Error)
-      {
-        DevicePtr_t robot = getRobotOrThrow(problemSolver());
-	try {
-          /// Get body frame
-          const se3::Model & model = robot->model();
-          se3::FrameIndex fid = model.getBodyId(linkName);
-          if (fid > model.nFrames)
-            throw BuildException<std::invalid_argument>() << "No body named " << linkName << BuildExceptionEnd();
-          const se3::Frame& body = model.frames[fid];
-          if (body.type != se3::BODY)
-            throw BuildException<std::invalid_argument>() << "No body named " << linkName << BuildExceptionEnd();
-
-          /// Compute body position
-          const se3::Data  & data  = robot->data ();
-          Transform3fTohppTransform (
-              data.oMi[body.parent] * body.placement,
-              cfg);
-        } catch (const std::exception& e) {
-          throw hpp::Error (e.what ());
-        }
-      }
-
-      Names_t* Obstacle::getObstacleLinkNames ()
-	throw (hpp::Error)
-      {
-        DevicePtr_t robot = getRobotOrThrow(problemSolver());
-	try {
-          std::vector<std::string> names;
-          const se3::Model & model = robot->model();
-          for (se3::FrameIndex fid = 0; fid < model.nFrames; ++fid) {
-            const se3::Frame& frame = model.frames[fid];
-            if (frame.type == se3::BODY && frame.parent == 0)
-              names.push_back(frame.name);
-          }
-          return toNames_t (names.begin(), names.end());
-        } catch (const std::exception& e) {
-          throw hpp::Error (e.what ());
-        }
       }
 
       void Obstacle::createPolyhedron

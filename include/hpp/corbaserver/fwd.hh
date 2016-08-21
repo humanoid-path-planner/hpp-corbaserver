@@ -45,7 +45,7 @@ namespace hpp
     typedef core::ConnectedComponent ConnectedComponent;
     typedef core::ConnectedComponents_t ConnectedComponents_t;
     typedef core::ConnectedComponentPtr_t ConnectedComponentPtr_t;
-    typedef pinocchio::Device Device_t;
+    typedef pinocchio::Device Device;
     typedef pinocchio::DevicePtr_t DevicePtr_t;
     // typedef pinocchio::DistanceResult DistanceResult_t;
     typedef pinocchio::DistanceResults_t DistanceResults_t;

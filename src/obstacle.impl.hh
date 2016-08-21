@@ -54,13 +54,6 @@ namespace hpp
 	virtual Names_t* getObstacleNames (bool collision, bool distance)
 	  throw (hpp::Error);
 
-	virtual void getObstacleLinkPosition (const char* linkName,
-					      Double* cfg)
-	  throw (hpp::Error);
-
-	virtual Names_t* getObstacleLinkNames ()
-	  throw (hpp::Error);
-
 	virtual void
 	createPolyhedron (const char* polyhedronName)
 	  throw (hpp::Error);

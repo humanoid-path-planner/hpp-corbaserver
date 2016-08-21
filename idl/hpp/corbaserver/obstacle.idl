@@ -92,21 +92,6 @@ module hpp
     Names_t getObstacleNames (in boolean collision, in boolean distance)
       raises (Error);
 
-    /// Get the position of an obstacle link
-    ///
-    /// \param linkName name of the polyhedron.
-    /// \retval cfg Position of the obstacle.
-    /// \throw Error.
-    void getObstacleLinkPosition (in string objectName, out Transform_ cfg)
-      raises (Error);
-
-    /// Get list of obstacle links
-    ///
-    /// \param collision whether to return obstacle for collision,
-    /// \param distance whether to return obstacles for distance computation
-    /// \return list of obstacles
-    Names_t getObstacleLinkNames ()
-      raises (Error);
     /// \}
 
     /// \name Polyhedra
