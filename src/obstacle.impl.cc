@@ -11,6 +11,7 @@
 #include "obstacle.impl.hh"
 
 #include <iostream>
+
 #include <pinocchio/multibody/geometry.hpp>
 #include <pinocchio/algorithm/geometry.hpp>
 
@@ -19,6 +20,7 @@
 #include <hpp/fcl/BVH/BVH_model.h>
 #include <hpp/fcl/shape/geometric_shapes.h>
 
+#include <hpp/pinocchio/device.hh>
 #include <hpp/pinocchio/collision-object.hh>
 #include <hpp/pinocchio/urdf/util.hh>
 

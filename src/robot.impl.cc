@@ -13,6 +13,9 @@
 #include <hpp/fcl/BVH/BVH_model.h>
 #include <hpp/fcl/shape/geometric_shapes.h>
 
+#include <pinocchio/multibody/fcl.hpp>
+#include <pinocchio/multibody/geometry.hpp>
+
 #include <hpp/util/debug.hh>
 #include <hpp/pinocchio/fwd.hh>
 #include <hpp/pinocchio/body.hh>
@@ -24,6 +27,8 @@
 // #include <hpp/pinocchio/object-iterator.hh>
 #include <hpp/pinocchio/collision-object.hh>
 #include <hpp/pinocchio/center-of-mass-computation.hh>
+
+#include <hpp/core/problem.hh>
 #include <hpp/core/basic-configuration-shooter.hh>
 #include <hpp/core/config-validations.hh>
 #include <hpp/core/distance-between-objects.hh>
