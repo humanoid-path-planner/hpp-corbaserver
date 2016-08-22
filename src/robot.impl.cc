@@ -353,7 +353,7 @@ namespace hpp
 	  char** nameList = Names_t::allocbuf(size);
 	  Names_t *jointNames = new Names_t (size, size, nameList);
 	  std::size_t rankInConfig = 0;
-	  for (std::size_t i = 0; i < jointVector.size (); ++i) {
+	  for (size_type i = 0; i < jointVector.size (); ++i) {
 	    const JointPtr_t joint = jointVector [i];
 	    std::string name = joint->name ();
 	    std::size_t dimension = joint->numberDof ();
@@ -383,7 +383,7 @@ namespace hpp
 	  ULong size = (CORBA::ULong) jointVector.size ();
 	  char** nameList = Names_t::allocbuf(size);
 	  Names_t *jointNames = new Names_t (size, size, nameList);
-	  for (std::size_t i = 0; i < jointVector.size (); ++i) {
+	  for (size_type i = 0; i < jointVector.size (); ++i) {
 	    const JointPtr_t joint = jointVector [i];
 	    std::string name = joint->name ();
 	    nameList [i] =
@@ -564,7 +564,7 @@ namespace hpp
 	    throw hpp::Error (oss.str ().c_str ());
 	  }
 	  size_type dim = joint->numberDof ();
-          if (dim != (CORBA::ULong) dq.length ()) {
+          if (dim != (size_type) dq.length ()) {
 	    throw Error ("Wrong speed dimension");
 	  }
           vector_t config = robot->currentConfiguration ();
@@ -739,14 +739,15 @@ namespace hpp
             HPP_THROW(Error, "Robot has no link with name " << linkName);
           }
           se3::FrameIndex body = robot->model().getBodyId(std::string(linkName));
-          se3::JointIndex joint = robot->model().getFrameParent(body);
-          if (robot->model().getFrameType(body) != se3::BODY)
+          const se3::Frame& frame = robot->model().frames[body];
+          se3::JointIndex joint = frame.parent;
+          if (frame.type != se3::BODY)
             HPP_THROW(Error, linkName << " is not a link");
-          if (robot->model().njoint < joint)
+          if (robot->model().njoint < (size_type)joint)
             HPP_THROW(Error, "Joint index of link " << linkName << " out of bounds: " << joint);
 
           double* res = new Transform_;
-          Transform3f T = robot->data().oMi[joint] * robot->model().getFramePlacement(body);
+          Transform3f T = robot->data().oMi[joint] * frame.placement;
           Transform3fTohppTransform (T, res);
           return res;
 	} catch (const std::exception& exc) {
@@ -768,11 +769,11 @@ namespace hpp
 	    throw hpp::Error (oss.str ().c_str ());
 	  }
           std::vector<std::string> names;
-          for (std::size_t i = 0; i < robot->model().nFrames; ++i)
-            if (robot->model().getFrameType(i) == se3::BODY
-                && robot->model().getFrameParent(i) == joint->index()) {
-              names.push_back(robot->model().getFrameName(i));
-            }
+          for (size_type i = 0; i < robot->model().nFrames; ++i) {
+            const se3::Frame& frame = robot->model().frames[i];
+            if (frame.type == se3::BODY && frame.parent == joint->index())
+              names.push_back(frame.name);
+          }
           return toNames_t(names.begin(), names.end());
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
@@ -913,7 +914,6 @@ namespace hpp
 
       hpp::floatSeq* Robot::getCurrentConfig() throw (hpp::Error)
       {
-	hpp::floatSeq *dofArray;
 	try {
 	  // Get robot in hppPlanner object.
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
