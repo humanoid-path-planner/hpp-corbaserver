@@ -17,6 +17,8 @@
 #include <pinocchio/multibody/geometry.hpp>
 
 #include <hpp/util/debug.hh>
+#include <hpp/util/exception-factory.hh>
+
 #include <hpp/pinocchio/fwd.hh>
 #include <hpp/pinocchio/body.hh>
 #include <hpp/pinocchio/joint.hh>
@@ -734,28 +736,17 @@ namespace hpp
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
           if (!robot->model().existBodyName (std::string(linkName))) {
-            throw BuildException<Error>() << "Robot has no link with name " << linkName << BuildExceptionEnd();
+            HPP_THROW(Error, "Robot has no link with name " << linkName);
           }
           se3::FrameIndex body = robot->model().getBodyId(std::string(linkName));
           se3::JointIndex joint = robot->model().getFrameParent(body);
           if (robot->model().getFrameType(body) != se3::BODY)
-            throw BuildException<Error>() << linkName << " is not a link" << BuildExceptionEnd();
+            HPP_THROW(Error, linkName << " is not a link");
           if (robot->model().njoint < joint)
-            throw BuildException<Error>() << "Joint index of link " << linkName << " out of bounds: " << joint << BuildExceptionEnd();
+            HPP_THROW(Error, "Joint index of link " << linkName << " out of bounds: " << joint);
 
           double* res = new Transform_;
-          Transform3f T = 
-            robot->data().oMi[joint] * robot->model().getFramePlacement(body);
-          if (robot->model().getFramePlacement(body).rotation().hasNaN()
-              || 
-              robot->model().getFramePlacement(body).translation().hasNaN()
-              )
-            throw BuildException<Error>() << "Placement has nan: " << linkName << BuildExceptionEnd();
-          if (robot->data().oMi[joint].rotation().hasNaN()
-              || 
-              robot->data().oMi[joint].translation().hasNaN()
-              )
-            throw BuildException<Error>() << "oMi[" << joint << "] has nan: " << linkName << BuildExceptionEnd();
+          Transform3f T = robot->data().oMi[joint] * robot->model().getFramePlacement(body);
           Transform3fTohppTransform (T, res);
           return res;
 	} catch (const std::exception& exc) {
