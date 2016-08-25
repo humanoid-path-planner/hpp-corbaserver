@@ -74,10 +74,6 @@ namespace hpp
     typedef fcl::ShapeBase BasicShape_t;
     typedef boost::shared_ptr <BasicShape_t> BasicShapePtr_t;
 
-    typedef std::map <std::string, BasicShapePtr_t> ShapeMap_t;
-    typedef std::map <std::string, std::vector <fcl::Triangle> > TriangleMap_t;
-    typedef std::map <std::string, std::vector <fcl::Vec3f> > VertexMap_t;
-
     typedef pinocchio::value_type value_type;
     typedef pinocchio::matrix_t matrix_t;
     typedef pinocchio::vector_t vector_t;

@@ -13,6 +13,8 @@
 # include <map>
 # include <string>
 
+#include <hpp/fcl/math/vec_3f.h>
+
 # include <hpp/core/problem-solver.hh>
 # include <hpp/corbaserver/fwd.hh>
 # include <hpp/corbaserver/obstacle.hh>
