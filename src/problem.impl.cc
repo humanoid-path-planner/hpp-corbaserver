@@ -541,7 +541,7 @@ namespace hpp
 	JointPtr_t joint1;
 	JointPtr_t joint2;
 	size_type constrainedJoint = 0;
-        Transform3f::Quaternion_t quat (p [0], p [1], p [2], p [3]);
+        Transform3f::Quaternion_t quat (p [3], p [0], p [1], p [2]);
 	hpp::pinocchio::Transform3f rotation (quat.matrix(), vector3_t::Zero());
 
 	std::vector<bool> m = boolSeqToBoolVector (mask, 3);
@@ -593,9 +593,8 @@ namespace hpp
 	JointPtr_t joint1;
 	JointPtr_t joint2;
 	size_type constrainedJoint = 0;
-        Transform3f::Linear_t vec (p[0], p[1], p[2]);
-        Transform3f::Quaternion_t quat (p [3], p [4], p [5], p [6]);
-        Transform3f ref (quat.matrix(), vec);
+        Transform3f ref;
+        hppTransformToTransform3f (p, ref);
 
 	std::vector<bool> m = boolSeqToBoolVector (mask, 6);
 	try {
