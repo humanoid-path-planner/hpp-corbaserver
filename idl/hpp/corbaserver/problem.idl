@@ -19,6 +19,7 @@ module hpp
   /// \brief To define and solve a path planning problem.
   interface Problem
   {
+    /// Set random seed of random number generator
     void setRandomSeed (in long seed) raises (Error);
 
     /// Return a list of available elements of type type
@@ -36,7 +37,8 @@ module hpp
     /// \param value the input type must be long, double, const char*
     void setParameter (in string name, in any value) raises (Error);
 
-    /// Throw an exception when the parameter couldn't be found.
+    /// Get parameter with given name
+    /// raise an exception when the parameter is not found.
     any getParameter (in string name) raises (Error);
 
     /// Select a problem by its name.
