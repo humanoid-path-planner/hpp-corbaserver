@@ -43,6 +43,9 @@ FOREACH(IDL ${IDL_SOURCES})
     )
 ENDFOREACH()
 
+ADD_CUSTOM_TARGET(generate_idl_cpp DEPENDS ${ALL_IDL_CPP_STUBS})
+ADD_CUSTOM_TARGET(generate_idl_python DEPENDS ${ALL_IDL_PYTHON_STUBS})
+
 IF (NOT CLIENT_ONLY)
   ADD_LIBRARY(${LIBRARY_NAME}
     SHARED
@@ -68,11 +71,6 @@ IF (NOT CLIENT_ONLY)
     ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/problemSK.cc
     )
 
-  ADD_CUSTOM_TARGET(generate_idl_cpp DEPENDS ${ALL_IDL_CPP_STUBS})
-  ADD_CUSTOM_TARGET(generate_idl_python DEPENDS ${ALL_IDL_PYTHON_STUBS})
-  ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_cpp)
-  ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_python)
-
   PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-core)
   PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-pinocchio)
   PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} omniORB4)
@@ -89,9 +87,26 @@ IF (NOT CLIENT_ONLY)
 
   INSTALL (TARGETS hppcorbaserver DESTINATION bin)
 ELSE (NOT CLIENT_ONLY)
-  ADD_CUSTOM_TARGET(generate_idl_cpp ALL DEPENDS ${ALL_IDL_CPP_STUBS})
-  ADD_CUSTOM_TARGET(generate_idl_python ALL DEPENDS ${ALL_IDL_PYTHON_STUBS})
+  ADD_LIBRARY(${LIBRARY_NAME}
+    SHARED
+    client.cc
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/common.hh
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/problem.hh
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/obstacle.hh
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/robot.hh
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/commonSK.cc
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/obstacleSK.cc
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/robotSK.cc
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/problemSK.cc
+    )
+
+  PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} omniORB4)
+
+  INSTALL(TARGETS ${LIBRARY_NAME} DESTINATION lib)
 ENDIF (NOT CLIENT_ONLY)
+
+ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_cpp)
+ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_python)
 
 FOREACH (FILE __init__.py quaternion.py transform.py)
   PYTHON_INSTALL_ON_SITE(
