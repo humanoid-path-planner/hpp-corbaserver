@@ -83,6 +83,7 @@ using hpp::constraints::ConvexShapeContact;
 using hpp::constraints::ConvexShapeContactPtr_t;
 using hpp::constraints::StaticStability;
 using hpp::constraints::StaticStabilityPtr_t;
+using hpp::constraints::DifferentiableFunctionPtr_t;
 
 using hpp::core::NumericalConstraint;
 
@@ -120,6 +121,9 @@ namespace hpp
     namespace impl
     {
       namespace {
+        static const pinocchio::matrix3_t I3 (pinocchio::matrix3_t::Identity());
+        static const pinocchio::vector3_t zero (pinocchio::vector3_t::Zero());
+
         static ConfigurationPtr_t floatSeqToConfig
           (hpp::core::ProblemSolverPtr_t problemSolver,
            const hpp::floatSeq& dofArray)
@@ -258,6 +262,63 @@ namespace hpp
             ret.push_back(*_int);
           return ret;
         }
+
+        template <int PositionOrientationFlag> DifferentiableFunctionPtr_t
+          buildGenericFunc(const DevicePtr_t& robot,
+              const std::string& name,
+              const std::string& nameF1, const std::string& nameF2,
+              const Transform3f& M1,     const Transform3f& M2,
+              const std::vector<bool> mask)
+          {
+            if (nameF1.empty() && nameF2.empty())
+	      throw hpp::Error ("At least one joint should be provided.");
+            if (nameF2.empty())
+              return buildGenericFunc<PositionOrientationFlag>
+                (robot, name, nameF2, nameF1, M2, M1, mask);
+            // From here, nameF2 is not empty.
+
+            const se3::Model& model (robot->model());
+            bool relative = (!nameF1.empty());
+            JointPtr_t joint1, joint2;
+            Transform3f ref1 = M1, ref2 = M2;
+            if (relative) {
+              if (!model.existFrame(nameF1))
+                throw hpp::Error ("Joint 1 not found.");
+              const se3::Frame& f1 = model.frames[model.getFrameId(nameF1)];
+              switch (f1.type) {
+                case se3::FIXED_JOINT:
+                  ref1 = f1.placement * M1;
+                case se3::JOINT:
+                  joint1 = JointPtr_t (new Joint (robot, f1.parent));
+                  break;
+                default:
+                  throw hpp::Error ("Joint 1 not found.");
+              }
+            }
+
+            if (!model.existFrame(nameF2))
+              throw hpp::Error ("Joint 2 not found.");
+            const se3::Frame& f2 = model.frames[model.getFrameId(nameF2)];
+            switch (f2.type) {
+              case se3::FIXED_JOINT:
+                ref2 = f2.placement * M2;
+              case se3::JOINT:
+                joint2 = JointPtr_t (new Joint (robot, f2.parent));
+                break;
+              default:
+                throw hpp::Error ("Joint 2 not found.");
+            }
+
+            if (relative) {
+              // Both joints are provided
+              return constraints::GenericTransformation
+                <PositionOrientationFlag | constraints::RelativeBit>
+                ::create (name, robot, joint1, joint2, ref1, ref2, mask);
+            } else {
+              return constraints::GenericTransformation<PositionOrientationFlag>
+                ::create (name, robot, joint2, ref2, ref1, mask);
+            }
+          }
       }
 
       // ---------------------------------------------------------------
@@ -593,8 +654,7 @@ namespace hpp
 	JointPtr_t joint1;
 	JointPtr_t joint2;
 	size_type constrainedJoint = 0;
-        Transform3f ref;
-        hppTransformToTransform3f (p, ref);
+        Transform3f ref (toTransform3f(p));
 
 	std::vector<bool> m = boolSeqToBoolVector (mask, 6);
 	try {
@@ -878,55 +938,18 @@ namespace hpp
 	throw (hpp::Error)
       {
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
-	JointPtr_t joint1;
-	JointPtr_t joint2;
-        hpp::pinocchio::matrix3_t I3; I3.setIdentity();
-	vector3_t targetInWorldFrame;
-	vector3_t targetInLocalFrame;
 	vector3_t p1 = floatSeqToVector3 (point1);
 	vector3_t p2 = floatSeqToVector3 (point2);
-	size_type constrainedJoint = 0;
-	std::vector<bool> m = boolSeqToBoolVector (mask);
-	try {
-	  // Test whether joint1 is world frame
-	  if (std::string (joint1Name) == std::string ("")) {
-	    constrainedJoint = 2;
-	    targetInWorldFrame = p1;
-	    targetInLocalFrame = p2;
-	  } else {
-	    joint1 =
-	      problemSolver()->robot()->getJointByName(joint1Name);
-	  }
-	  // Test whether joint2 is world frame
-	  if (std::string (joint2Name) == std::string ("")) {
-	    if (constrainedJoint == 2) {
-	      throw hpp::Error ("At least one joint should be provided.");
-	    }
-	    constrainedJoint = 1;
-	    targetInWorldFrame = p2;
-	    targetInLocalFrame = p1;
-	  } else {
-	    joint2 =
-	      problemSolver()->robot()->getJointByName(joint2Name);
-	  }
-	} catch (const std::exception& exc) {
-	  throw hpp::Error (exc.what ());
-	}
 	std::string name (constraintName);
-	if (constrainedJoint == 0) {
-	  // Both joints are provided
-	  problemSolver()->addNumericalConstraint
-	    (name, NumericalConstraint::create
-	     (RelativePosition::create
-	      (name, problemSolver()->robot(), joint1, joint2, Transform3f(I3, p1), Transform3f(I3, p2), m)));
-	} else {
-	  JointPtr_t joint = constrainedJoint == 1 ? joint1 : joint2;
-	  problemSolver()->addNumericalConstraint
-	    (name, NumericalConstraint::create
-	     (Position::create (name, problemSolver()->robot(), joint,
-				Transform3f(I3, targetInLocalFrame),
-                                Transform3f(I3, targetInWorldFrame), m)));
-	}
+
+        DifferentiableFunctionPtr_t func = buildGenericFunc<constraints::PositionBit> (
+              problemSolver()->robot(), name,
+              joint1Name          , joint2Name,
+              Transform3f (I3, p1), Transform3f (I3, p2),
+              boolSeqToBoolVector(mask));
+
+        problemSolver()->addNumericalConstraint
+          (name, NumericalConstraint::create (func));
       }
 
       // ---------------------------------------------------------------
@@ -1439,7 +1462,7 @@ namespace hpp
           (*ret)[0] = time.hours ();
           (*ret)[1] = time.minutes ();
           (*ret)[2] = time.seconds ();
-          (*ret)[3] = (long) (time.fractional_seconds () / 1000);
+          (*ret)[3] = (::CORBA::Long) (time.fractional_seconds () / 1000);
           return ret;
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -1642,7 +1665,7 @@ namespace hpp
           (*ret)[0] = time.hours ();
           (*ret)[1] = time.minutes ();
           (*ret)[2] = time.seconds ();
-          (*ret)[3] = (long) (time.fractional_seconds () / 1000);
+          (*ret)[3] = (::CORBA::Long) (time.fractional_seconds () / 1000);
           return ret;
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());

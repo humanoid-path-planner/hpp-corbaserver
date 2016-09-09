@@ -16,6 +16,7 @@
 #include <pinocchio/algorithm/geometry.hpp>
 
 #include <hpp/util/debug.hh>
+#include <hpp/util/exception-factory.hh>
 
 #include <hpp/fcl/BVH/BVH_model.h>
 #include <hpp/fcl/shape/geometric_shapes.h>
@@ -165,34 +166,28 @@ namespace hpp
       }
 
       void Obstacle::moveObstacle
-      (const char* objectName, const CORBA::Double* cfg)
+      (const char* objectName, const Transform_ cfg)
 	throw(hpp::Error)
       {
 	CollisionObjectPtr_t object = getObstacleByName (objectName);
 	if (object) {
-	  Transform3f mat;
-	  hppTransformToTransform3f (cfg, mat);
-	  object->move (mat);
+	  object->move (toTransform3f(cfg));
 	  return;
-	}
-	std::ostringstream oss ("Object ");
-	oss << objectName <<  " not found";
-	throw hpp::Error (oss.str ().c_str ());
+        }
+        HPP_THROW(Error, "Object " << objectName << " not found");
       }
 
       void Obstacle::getObstaclePosition (const char* objectName,
-					  Double* cfg)
+					  Transform_ cfg)
 	  throw (hpp::Error)
       {
 	CollisionObjectPtr_t object = getObstacleByName (objectName);
 	if (object) {
 	  Transform3f transform = object->getTransform ();
-	  Transform3fTohppTransform (transform, cfg);
+          toHppTransform (transform, cfg);
 	  return;
 	}
-	std::ostringstream oss ("Object ");
-	oss << objectName <<  " not found";
-	throw hpp::Error (oss.str ().c_str ());
+        HPP_THROW(Error, "Object " << objectName << " not found");
       }
 
       Names_t* Obstacle::getObstacleNames (bool collision, bool distance)

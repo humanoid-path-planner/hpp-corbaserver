@@ -47,12 +47,12 @@ namespace hpp
     typedef core::ConnectedComponentPtr_t ConnectedComponentPtr_t;
     typedef pinocchio::Device Device;
     typedef pinocchio::DevicePtr_t DevicePtr_t;
-    // typedef pinocchio::DistanceResult DistanceResult_t;
     typedef pinocchio::DistanceResults_t DistanceResults_t;
+    typedef core::CollisionPairs_t CollisionPairs_t;
     typedef core::DistanceBetweenObjects DistanceBetweenObjects;
     typedef core::DistanceBetweenObjectsPtr_t DistanceBetweenObjectsPtr_t;
     typedef core::Edges_t Edges_t;
-    typedef pinocchio::Joint Joint_t;
+    typedef pinocchio::Joint Joint;
     typedef pinocchio::JointPtr_t JointPtr_t;
     typedef pinocchio::JointVector_t JointVector_t;
     typedef core::LockedJoint LockedJoint;

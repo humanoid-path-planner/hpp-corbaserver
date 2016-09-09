@@ -114,11 +114,11 @@ namespace hpp
 
 	virtual Transform__slice* getRootJointPosition () throw (hpp::Error);
 
-	virtual void setRootJointPosition (const  Double* position)
+	virtual void setRootJointPosition (const Transform_ position)
 	  throw (hpp::Error);
 
         virtual void setJointPositionInParentFrame (const char* jointName,
-            const  Double* position)
+            const Transform_ position)
 	  throw (hpp::Error);
 
 	virtual Short getJointNumberDof (const char* jointName)
@@ -158,7 +158,7 @@ namespace hpp
 	(const char* bodyName)
 	  throw (hpp::Error);
 
-	virtual void getObjectPosition (const char* objectName, Double* cfg)
+	virtual void getObjectPosition (const char* objectName, Transform_ cfg)
 	  throw (hpp::Error);
 
 	virtual void isConfigValid

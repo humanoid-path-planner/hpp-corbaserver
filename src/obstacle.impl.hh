@@ -46,11 +46,11 @@ namespace hpp
 	  throw (hpp::Error);
 
 	virtual void
-	moveObstacle (const char* polyName, const Double* cfg)
+	moveObstacle (const char* polyName, const Transform_ cfg)
 	  throw (hpp::Error);
 
 	virtual void getObstaclePosition (const char* objectName,
-					  Double* cfg)
+					  Transform_ cfg)
 	  throw (hpp::Error);
 
 	virtual Names_t* getObstacleNames (bool collision, bool distance)

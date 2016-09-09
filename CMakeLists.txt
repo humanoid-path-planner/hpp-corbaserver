@@ -42,6 +42,7 @@ IF (NOT CLIENT_ONLY)
     include/hpp/corbaserver/fwd.hh
     include/hpp/corbaserver/problem-solver-map.hh
     include/hpp/corbaserver/server.hh
+    include/hpp/corbaserver/conversions.hh
     ${${PROJECT_NAME}_HEADERS}
     )
 ENDIF (NOT CLIENT_ONLY)

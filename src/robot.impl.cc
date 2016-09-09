@@ -379,18 +379,8 @@ namespace hpp
           if (!robot)
             return new Names_t (0, 0, Names_t::allocbuf (0));
 	  // Compute number of real urdf joints
-	  JointVector_t jointVector = robot->getJointVector ();
-	  ULong size = (CORBA::ULong) jointVector.size ();
-	  char** nameList = Names_t::allocbuf(size);
-	  Names_t *jointNames = new Names_t (size, size, nameList);
-	  for (size_type i = 0; i < jointVector.size (); ++i) {
-	    const JointPtr_t joint = jointVector [i];
-	    std::string name = joint->name ();
-	    nameList [i] =
-	      (char*) malloc (sizeof(char)*(name.length ()+1));
-	    strcpy (nameList [i], name.c_str ());
-	  }
-	  return jointNames;
+          const se3::Model& model = robot->model();
+	  return toNames_t (model.names.begin(), model.names.end());
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -432,10 +422,7 @@ namespace hpp
 	  if (!root) {
 	    throw hpp::Error ("robot has no root joint");
 	  }
-	  const Transform3f& T = root->positionInParentFrame ();
-	  double* res = new Transform_;
-          Transform3fTohppTransform (T, res);
-	  return res;
+          return toHppTransform (root->positionInParentFrame());
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
@@ -443,13 +430,12 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      void Robot::setRootJointPosition (const Double* position)
+      void Robot::setRootJointPosition (const Transform_ position)
 	throw (hpp::Error)
       {
 	try {
           DevicePtr_t robot = getRobotOrThrow(problemSolver());
-	  Transform3f t3f;
-	  hppTransformToTransform3f (position, t3f);
+	  Transform3f t3f (toTransform3f (position));
 	  robot->rootJoint()->positionInParentFrame(t3f);
           robot->computeForwardKinematics ();
 	} catch (const std::exception& exc) {
@@ -459,7 +445,7 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      void Robot::setJointPositionInParentFrame (const char* jointName, const Double* position)
+      void Robot::setJointPositionInParentFrame (const char* jointName, const Transform_ position)
 	throw (hpp::Error)
       {
 	try {
@@ -480,8 +466,7 @@ namespace hpp
 	    hppDout (error, oss.str ());
 	    throw hpp::Error (oss.str ().c_str ());
 	  }
-	  Transform3f t3f;
-	  hppTransformToTransform3f (position, t3f);
+          Transform3f t3f (toTransform3f (position));
 	  joint->positionInParentFrame (t3f);
           robot->computeForwardKinematics ();
 	} catch (const std::exception& exc) {
@@ -623,10 +608,7 @@ namespace hpp
 	    hppDout (error, oss.str ());
 	    throw hpp::Error (oss.str ().c_str ());
 	  }
-	  const Transform3f& T = joint->currentTransformation ();
-	  double* res = new Transform_;
-          Transform3fTohppTransform (T, res);
-	  return res;
+          return toHppTransform (joint->currentTransformation ());
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
@@ -646,10 +628,7 @@ namespace hpp
 	    hppDout (error, oss.str ());
 	    throw hpp::Error (oss.str ().c_str ());
 	  }
-	  const Transform3f& T = joint->positionInParentFrame ();
-	  double* res = new Transform_;
-          Transform3fTohppTransform (T, res);
-	  return res;
+          return toHppTransform (joint->positionInParentFrame());
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
@@ -746,10 +725,8 @@ namespace hpp
           if (robot->model().njoint < (size_type)joint)
             HPP_THROW(Error, "Joint index of link " << linkName << " out of bounds: " << joint);
 
-          double* res = new Transform_;
           Transform3f T = robot->data().oMi[joint] * frame.placement;
-          Transform3fTohppTransform (T, res);
-          return res;
+          return toHppTransform (T);
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
         }
@@ -1061,13 +1038,13 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      void Robot::getObjectPosition (const char* objectName, Double* cfg)
+      void Robot::getObjectPosition (const char* objectName, Transform_ cfg)
 	throw (hpp::Error)
       {
 	try {
 	  CollisionObjectConstPtr_t object = getObjectByName (objectName);
 	  Transform3f transform = object->getTransform ();
-	  Transform3fTohppTransform (transform, cfg);
+	  toHppTransform (transform, cfg);
 	  return;
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -1112,71 +1089,47 @@ namespace hpp
 	  const DistanceBetweenObjectsPtr_t& distanceBetweenObjects =
 	    problemSolver()->distanceBetweenObjects ();
 	  robot->computeDistances ();
+          const pinocchio::GeomModel& geomModel (robot->geomModel());
+          const pinocchio::GeomData & geomData  (robot->geomData ());
+
 	  distanceBetweenObjects->computeDistances ();
-	  const DistanceResults_t& dr1 = robot->distanceResults ();
-	  const DistanceResults_t& dr2 =
-	    distanceBetweenObjects->distanceResults ();
-	  std::size_t nbDistPairs = dr1.size () + dr2.size ();
-	  hpp::floatSeq* distances_ptr = new hpp::floatSeq ();
-	  distances_ptr->length ((CORBA::ULong) nbDistPairs);
-	  Names_t* innerObjects_ptr = new Names_t ();
-	  innerObjects_ptr->length ((CORBA::ULong) nbDistPairs);
-	  Names_t* outerObjects_ptr = new Names_t ();
-	  outerObjects_ptr->length ((CORBA::ULong) nbDistPairs);
-	  hpp::floatSeqSeq* innerPoints_ptr = new hpp::floatSeqSeq ();
-	  innerPoints_ptr->length ((CORBA::ULong) nbDistPairs);
-	  hpp::floatSeqSeq* outerPoints_ptr = new hpp::floatSeqSeq ();
-	  outerPoints_ptr->length ((CORBA::ULong) nbDistPairs);
-	  std::size_t distPairId = 0;
-	  for (DistanceResults_t::const_iterator itDistance = dr1.begin ();
-	       itDistance != dr1.end (); itDistance++) {
-	    (*distances_ptr) [(CORBA::ULong) distPairId] =
-	      itDistance->fcl_distance_result.min_distance;
-	    (*innerObjects_ptr) [(CORBA::ULong) distPairId] =
-              robot->geomModel().getGeometryName(itDistance->object1).c_str();
-	    (*outerObjects_ptr) [(CORBA::ULong) distPairId] =
-              robot->geomModel().getGeometryName(itDistance->object2).c_str();
-	    hpp::floatSeq pointBody_seq;
-	    pointBody_seq.length (3);
-	    hpp::floatSeq pointObstacle_seq;
-	    pointObstacle_seq.length (3);
-	    for (std::size_t j=0; j<3; ++j) {
-	      pointBody_seq [(CORBA::ULong) j] =
-		itDistance->fcl_distance_result.nearest_points [0][j];
-	      pointObstacle_seq [(CORBA::ULong) j] =
-		itDistance->fcl_distance_result.nearest_points [1][j];
-	    }
-	    (*innerPoints_ptr) [(CORBA::ULong) distPairId] = pointBody_seq;
-	    (*outerPoints_ptr) [(CORBA::ULong) distPairId] = pointObstacle_seq;
-	    ++distPairId;
+	  const CollisionPairs_t & cps = distanceBetweenObjects->collisionPairs ();
+	  const DistanceResults_t& drs = distanceBetweenObjects->distanceResults ();
+
+          const std::size_t nbAutoCol = geomModel.collisionPairs.size();
+	  const std::size_t nbObsCol = drs.size ();
+          const std::size_t nbDistPairs = nbAutoCol + nbObsCol;
+
+          hpp::core::vector_t dists (nbDistPairs);
+          std::vector<std::string> innerObj (nbDistPairs);
+          std::vector<std::string> outerObj (nbDistPairs);
+          hpp::core::matrix_t innerPts (3, nbDistPairs);
+          hpp::core::matrix_t outerPts (3, nbDistPairs);
+
+          for (std::size_t i = 0; i < nbAutoCol; ++i)
+          {
+            const se3::CollisionPair& cp (geomModel.collisionPairs[i]);
+	    dists    [i] = geomData.distanceResults[i].min_distance;
+	    innerObj [i] = geomModel.geometryObjects[cp.first ].name;
+	    outerObj [i] = geomModel.geometryObjects[cp.second].name;
+
+            innerPts.col(i) = geomData.distanceResults[i].nearest_points[0];
+            outerPts.col(i) = geomData.distanceResults[i].nearest_points[1];
 	  }
-	  for (DistanceResults_t::const_iterator itDistance = dr2.begin ();
-	       itDistance != dr2.end (); itDistance++) {
-	    (*distances_ptr) [(CORBA::ULong) distPairId] =
-              itDistance->fcl_distance_result.min_distance;
-	    (*innerObjects_ptr) [(CORBA::ULong) distPairId] =
-              robot->geomModel().getGeometryName(itDistance->object1).c_str();
-	    (*outerObjects_ptr) [(CORBA::ULong) distPairId] =
-              robot->geomModel().getGeometryName(itDistance->object2).c_str();
-	    hpp::floatSeq pointBody_seq;
-	    pointBody_seq.length (3);
-	    hpp::floatSeq pointObstacle_seq;
-	    pointObstacle_seq.length (3);
-	    for (std::size_t j=0; j<3; ++j) {
-	      pointBody_seq [(CORBA::ULong) j] =
-		itDistance->fcl_distance_result.nearest_points [0][j];
-	      pointObstacle_seq [(CORBA::ULong) j] =
-		itDistance->fcl_distance_result.nearest_points [1][j];
-	    }
-	    (*innerPoints_ptr) [(CORBA::ULong) distPairId] = pointBody_seq;
-	    (*outerPoints_ptr) [(CORBA::ULong) distPairId] = pointObstacle_seq;
-	    ++distPairId;
+	  for (std::size_t i = 0; i < nbObsCol; ++i)
+          {
+	    dists    [nbAutoCol + i] = drs[i].min_distance;
+	    innerObj [nbAutoCol + i] = cps[i].first ->name();
+	    outerObj [nbAutoCol + i] = cps[i].second->name();
+
+            innerPts.col(nbAutoCol + i) = drs[i].nearest_points[0];
+            outerPts.col(nbAutoCol + i) = drs[i].nearest_points[1];
 	  }
-	  distances = distances_ptr;
-	  innerObjects = innerObjects_ptr;
-	  outerObjects = outerObjects_ptr;
-	  innerPoints = innerPoints_ptr;
-	  outerPoints = outerPoints_ptr;
+	  distances = vectorToFloatseq(dists);
+	  innerObjects = toNames_t (innerObj.begin(), innerObj.end());
+	  outerObjects = toNames_t (outerObj.begin(), outerObj.end());
+	  innerPoints = matrixToFloatSeqSeq (innerPts);
+	  outerPoints = matrixToFloatSeqSeq (outerPts);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}

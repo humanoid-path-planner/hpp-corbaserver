@@ -61,6 +61,7 @@ IF (NOT CLIENT_ONLY)
     server-private.hh
     tools.cc
     tools.hh
+    conversions.cc
     ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/common.hh
     ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/problem.hh
     ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/obstacle.hh
