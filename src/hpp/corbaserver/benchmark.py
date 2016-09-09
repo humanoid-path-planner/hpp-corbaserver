@@ -217,20 +217,26 @@ class Benchmark (object):
         for c in self.cases:
             t = np.array (self.results['time'][i:i+nb]).dot (self.toSeconds)
             pl = np.array (self.results['pathLength'][i:i+nb])
+            nodes = np.array (self.results['states'])
             print "====================================================="
             print "Case", c
             print "Mean time (s):", np.mean(t)
             print "Std dev time (s):",  np.std(t)
+            print "Mean number of nodes:", np.mean(nodes)
+            print "Std dev nb nodes:",  np.std(nodes)
             print "Average length:", np.mean(pl)
             print "std dev length:", np.std(pl)
             print "====================================================="
             i += nb
         t = np.array (self.results['time']).dot (self.toSeconds)
+        nodes = np.array (self.results['states'])
         pl = np.array (self.results['pathLength'])
         print "====================================================="
         print "All cases together"
         print "Mean time (s):", np.mean(t)
         print "Std dev time (s):",  np.std(t)
+        print "Mean number of nodes:", np.mean(nodes)
+        print "Std dev nb nodes:",  np.std(nodes)
         print "Average length:", np.mean(pl)
         print "std dev length:", np.std(pl)
         print "====================================================="
@@ -415,5 +421,22 @@ class Benchmark (object):
         if nameLogFile=='temp.log' : 
             os.remove(nameLogFile)
 
+    def _printStats(self, times, nodes, pathLengths):
+        return "Mean time (s): " + str(np.mean(times)) + '\n' \
+            + "Std dev time (s): " + str(np.std(times)) + '\n' \
+            + "Mean number of nodes: " + str(np.mean(nodes)) + '\n' \
+            + "Std dev nb nodes: " +  str(np.std(nodes)) + '\n' \
+            + "Average length: " + str(np.mean(pathLengths)) + '\n' \
+            + "std dev length: " + str(np.std(pathLengths))
 
-
+    def __str__(self):
+        res = ""
+        for i in xrange(len(self.results['time'])):
+            res += "Time (s): " + str(np.array (self.results['time'][i]).dot (self.toSeconds)) \
+                    + "\nNumber of nodes: " + str(self.results['states'][i]) \
+                    + "\nLength: " + str(self.results['pathLength'][i]) + '\n'
+        times = np.array (self.results['time']).dot (self.toSeconds)
+        nodes = np.array (self.results['states'])
+        pathLengths = np.array (self.results['pathLength'])
+        res += self._printStats(times, nodes, pathLengths)
+        return res

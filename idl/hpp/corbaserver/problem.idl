@@ -19,6 +19,7 @@ module hpp
   /// \brief To define and solve a path planning problem.
   interface Problem
   {
+    /// Set random seed of random number generator
     void setRandomSeed (in long seed) raises (Error);
 
     /// Return a list of available elements of type type
@@ -36,7 +37,8 @@ module hpp
     /// \param value the input type must be long, double, const char*
     void setParameter (in string name, in any value) raises (Error);
 
-    /// Throw an exception when the parameter couldn't be found.
+    /// Get parameter with given name
+    /// raise an exception when the parameter is not found.
     any getParameter (in string name) raises (Error);
 
     /// Select a problem by its name.
@@ -302,8 +304,14 @@ module hpp
     void lockJoint (in string jointName, in floatSeq value)
       raises (Error);
 
+    /// Get error threshold in numerical constraint resolution
+    double getErrorThreshold () raises (Error);
+
     /// Set error threshold in numerical constraint resolution
     void setErrorThreshold (in double threshold) raises (Error);
+
+    /// Set maximal number of iterations in numerical constraint resolution
+    unsigned short getMaxIterations () raises (Error);
 
     /// Set maximal number of iterations in numerical constraint resolution
     void setMaxIterations (in unsigned short iterations) raises (Error);
@@ -438,6 +446,10 @@ module hpp
     /// Concatenate path endId at the end of startId.
     /// \note No path are created. The resulting path is at rank startId.
     void concatenatePath (in unsigned short startId, in unsigned short endId)
+      raises (Error);
+
+    /// Erase path pathId from stored.
+    void erasePath (in unsigned short pathId)
       raises (Error);
 
     /// Apply the path projector method to the path

@@ -29,6 +29,50 @@ class ProblemSolver (object):
         self.client = robot.client
         self.robot = robot
 
+    ## Set random seed of random number generator
+    def setRandomSeed (self, seed):
+        return self.client.problem.setRandomSeed (seed)
+
+    ## Return a list of available elements of type type
+    #  \param type enter "type" to know what types I know of.
+    #              This is case insensitive.
+    def getAvailable (self, type):
+        return self.client.problem.getAvailable (type)
+
+    ## Return a list of selected elements of type type
+    #  \param type enter "type" to know what types I know of.
+    #              This is case insensitive.
+    #  \note For most of the types, the list will contain only one element.
+    def getSelected (self, type):
+        return self.client.problem.getSelected (type)
+
+    ## Set a parameter
+    #  \param value the input type must be long, double, const char*
+    def setParameter (self, name, value):
+        return self.client.problem.setParameter (name, value)
+
+    ## Get parameter with given name
+    #  raise an exception when the parameter is not found.
+    def getParameter (self, name):
+        return self.client.problem.getParameter (name)
+
+    #  Select a problem by its name.
+    #  If no problem with this name exists, a new problem is created and
+    #  selected.
+    #  \param name the problem name.
+    #  \return true if a new problem was created.
+    def selectProblem (self, name):
+        return self.client.problem.selectProblem (name)
+
+    #  Move a path from the current problem to another problem.
+    #  \param problemName the destination problem
+    #  \param jointNames a list of joint names representing the subchain to
+    #         extract from the original path.
+    #  \todo the configuration parameter can be selected but not reorganized.
+    def movePathToProblem (self, pathId, problemName, jointNames):
+        return self.client.problem.movePathToProblem \
+            (pathId, problemName, jointNames)
+
     ## \name Initial and goal configurations
     # \{
 
@@ -319,13 +363,20 @@ class ProblemSolver (object):
         return self.client.problem.lockJoint (jointName, value)
 
     ## error threshold in numerical constraint resolution
+    def getErrorThreshold (self):
+        return self.client.problem.getErrorThreshold ()
+
+    ## error threshold in numerical constraint resolution
     def setErrorThreshold (self, threshold):
         return self.client.problem.setErrorThreshold (threshold)
 
     ## Set the maximal number of iterations
+    def getMaxIterations (self):
+	return self.client.problem.getMaxIterations ()
+
+    ## Set the maximal number of iterations
     def setMaxIterations (self, iterations):
 	return self.client.problem.setMaxIterations (iterations)
-
     ## \}
 
     ## \name Collision Checking

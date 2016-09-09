@@ -379,8 +379,12 @@ namespace hpp
         throw (Error)
       {
         if (problemSolver()->problem() != NULL) {
-          problemSolver()->problem()->setParameter (std::string(name),
-              BoostCorbaAny::boostize (value));
+          try {
+            problemSolver()->problem()->setParameter (std::string(name),
+                BoostCorbaAny::boostize (value));
+          } catch (const std::exception& e) {
+            throw hpp::Error (e.what ());
+          }
           return;
         }
         throw Error ("No problem in the ProblemSolver");
@@ -394,7 +398,7 @@ namespace hpp
           boost::any val;
           try {
             val = problemSolver()->problem()->get<boost::any> (std::string(name));
-          } catch (const std::runtime_error& e) {
+          } catch (const std::exception& e) {
             throw hpp::Error (e.what ());
           }
           CORBA::Any* ap = new CORBA::Any;
@@ -1204,9 +1208,22 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+      Double Problem::getErrorThreshold () throw (Error)
+      {
+	return problemSolver()->errorThreshold ();
+      }
+
+      // ---------------------------------------------------------------
+
       void Problem::setErrorThreshold (Double threshold) throw (Error)
       {
 	problemSolver()->errorThreshold (threshold);
+      }
+
+      // ---------------------------------------------------------------
+      UShort Problem::getMaxIterations () throw (Error)
+      {
+	return (UShort) problemSolver()->maxIterations ();
       }
 
       // ---------------------------------------------------------------
@@ -1484,6 +1501,23 @@ namespace hpp
 	  PathVectorPtr_t start = problemSolver()->paths () [startId];
 	  PathVectorPtr_t end   = problemSolver()->paths () [  endId];
           start->concatenate(*end);
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::erasePath (UShort pathId)
+	throw (hpp::Error)
+      {
+	try {
+          if (pathId >= problemSolver()->paths ().size ()) {
+	    std::ostringstream oss ("wrong path id. ");
+	    oss << "Number path: " << problemSolver()->paths ().size () << ".";
+	    throw std::runtime_error (oss.str ());
+	  }
+	  problemSolver()->erasePath(pathId);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
