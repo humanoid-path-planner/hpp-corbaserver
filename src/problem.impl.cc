@@ -121,60 +121,18 @@ namespace hpp
     namespace impl
     {
       namespace {
-        static const pinocchio::matrix3_t I3 (pinocchio::matrix3_t::Identity());
-        static const pinocchio::vector3_t zero (pinocchio::vector3_t::Zero());
+        static const matrix3_t   I3   (matrix3_t  ::Identity());
+        static const vector3_t   zero (vector3_t  ::Zero());
+        static const Transform3f Id   (Transform3f::Identity());
 
         static ConfigurationPtr_t floatSeqToConfig
           (hpp::core::ProblemSolverPtr_t problemSolver,
            const hpp::floatSeq& dofArray)
           {
-            size_type configDim = (size_type)dofArray.length();
-            ConfigurationPtr_t config (new Configuration_t (configDim));
-
-            // Get robot in hppPlanner object.
-            DevicePtr_t robot = problemSolver->robot ();
-
-            // Compare size of input array with number of degrees of freedom of
-            // robot.
-            if (configDim != robot->configSize ()) {
-              hppDout (error, "robot nb dof=" << configDim <<
-                  " is different from config size=" << robot->configSize());
-              throw std::runtime_error
-                ("robot nb dof is different from config size");
-            }
-
-            // Fill dof vector with dof array.
-            for (size_type iDof=0; iDof < configDim; ++iDof) {
-              (*config) [iDof] = dofArray [(CORBA::ULong)iDof];
-            }
-            return config;
+            return ConfigurationPtr_t (new Configuration_t (
+                  floatSeqToVector (dofArray, problemSolver->robot()->configSize())
+                  ));
           }
-
-        static vector3_t floatSeqToVector3 (const hpp::floatSeq& dofArray)
-        {
-          if (dofArray.length() != 3) {
-            std::ostringstream oss
-              ("Expecting vector of size 3, got vector of size");
-            oss << dofArray.length() << ".";
-            throw hpp::Error (oss.str ().c_str ());
-          }
-          // Fill dof vector with dof array.
-          vector3_t result;
-          for (unsigned int iDof=0; iDof < 3; ++iDof) {
-            result [iDof] = dofArray [iDof];
-          }
-          return result;
-        }
-
-        static vector_t floatSeqToVector (const hpp::floatSeq& dofArray)
-        {
-          // Fill dof vector with dof array.
-          vector_t result (dofArray.length ());
-          for (size_type iDof=0; iDof < result.size (); ++iDof) {
-            result [iDof] = dofArray [(CORBA::ULong)iDof];
-          }
-          return result;
-        }
 
         struct BoostCorbaAny {
           private:
@@ -599,48 +557,18 @@ namespace hpp
 	throw (hpp::Error)
       {
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
-	JointPtr_t joint1;
-	JointPtr_t joint2;
-	size_type constrainedJoint = 0;
         Transform3f::Quaternion_t quat (p [3], p [0], p [1], p [2]);
-	hpp::pinocchio::Transform3f rotation (quat.matrix(), vector3_t::Zero());
-
-	std::vector<bool> m = boolSeqToBoolVector (mask, 3);
-        try {
-          // Test whether joint1 is world frame
-          if (std::string (joint1Name) == std::string ("")) {
-            constrainedJoint = 2;
-          } else {
-            joint1 =
-              problemSolver()->robot()->getJointByName(joint1Name);
-          }
-          // Test whether joint2 is world frame
-          if (std::string (joint2Name) == std::string ("")) {
-            if (constrainedJoint == 2) {
-              throw hpp::Error ("At least one joint should be provided.");
-            }
-            constrainedJoint = 1;
-          } else {
-            joint2 =
-              problemSolver()->robot()->getJointByName(joint2Name);
-          }
-        } catch (const std::exception& exc) {
-          throw hpp::Error (exc.what ());
-        }
+	Transform3f rotation (quat.matrix(), vector3_t::Zero());
         std::string name (constraintName);
-	if (constrainedJoint == 0) {
-	  // Both joints are provided
-	  problemSolver()->addNumericalConstraint
-	    (name, NumericalConstraint::create
-	     (RelativeOrientation::create
-	      (name, problemSolver()->robot(), joint1, joint2, rotation, m)));
-	} else {
-	  JointPtr_t joint = constrainedJoint == 1 ? joint1 : joint2;
-	  problemSolver()->addNumericalConstraint
-	    (name, NumericalConstraint::create
-	     (Orientation::create (name, problemSolver()->robot(), joint,
-				   rotation, m)));
-	}
+
+        DifferentiableFunctionPtr_t func = buildGenericFunc<constraints::OrientationBit> (
+              problemSolver()->robot(), name,
+              joint1Name          , joint2Name,
+              Id                  , rotation,
+              boolSeqToBoolVector(mask));
+
+        problemSolver()->addNumericalConstraint
+          (name, NumericalConstraint::create (func));
       }
 
       // ---------------------------------------------------------------
@@ -651,47 +579,18 @@ namespace hpp
 	throw (hpp::Error)
       {
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
-	JointPtr_t joint1;
-	JointPtr_t joint2;
-	size_type constrainedJoint = 0;
         Transform3f ref (toTransform3f(p));
+        std::string name (constraintName);
 
-	std::vector<bool> m = boolSeqToBoolVector (mask, 6);
-	try {
-	  // Test whether joint1 is world frame
-	  if (std::string (joint1Name) == std::string ("")) {
-	    constrainedJoint = 2;
-	  } else {
-	    joint1 =
-	      problemSolver()->robot()->getJointByName(joint1Name);
-	  }
-	  // Test whether joint2 is world frame
-	  if (std::string (joint2Name) == std::string ("")) {
-	    if (constrainedJoint == 2) {
-	      throw hpp::Error ("At least one joint should be provided.");
-	    }
-	    constrainedJoint = 1;
-	  } else {
-	    joint2 =
-	      problemSolver()->robot()->getJointByName(joint2Name);
-	  }
-	} catch (const std::exception& exc) {
-	  throw hpp::Error (exc.what ());
-	}
-  std::string name (constraintName);
-	if (constrainedJoint == 0) {
-	  // Both joints are provided
-	  problemSolver()->addNumericalConstraint
-	    (name, NumericalConstraint::create
-	     (RelativeTransformation::create
-	      (name, problemSolver()->robot(), joint1, joint2, ref, m)));
-	} else {
-	  JointPtr_t joint = constrainedJoint == 1 ? joint1 : joint2;
-	  problemSolver()->addNumericalConstraint
-	    (name, NumericalConstraint::create
-	     (Transformation::create (name, problemSolver()->robot(), joint,
-				   ref, m)));
-	}
+        DifferentiableFunctionPtr_t func = buildGenericFunc
+          <constraints::PositionBit | constraints::OrientationBit> (
+              problemSolver()->robot(), name,
+              joint1Name          , joint2Name,
+              Id                  , ref,
+              boolSeqToBoolVector(mask));
+
+        problemSolver()->addNumericalConstraint
+          (name, NumericalConstraint::create (func));
       }
 
       // ---------------------------------------------------------------

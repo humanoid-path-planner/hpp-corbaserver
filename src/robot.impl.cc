@@ -1103,8 +1103,8 @@ namespace hpp
           hpp::core::vector_t dists (nbDistPairs);
           std::vector<std::string> innerObj (nbDistPairs);
           std::vector<std::string> outerObj (nbDistPairs);
-          hpp::core::matrix_t innerPts (3, nbDistPairs);
-          hpp::core::matrix_t outerPts (3, nbDistPairs);
+          hpp::core::matrix_t innerPts (nbDistPairs, 3);
+          hpp::core::matrix_t outerPts (nbDistPairs, 3);
 
           for (std::size_t i = 0; i < nbAutoCol; ++i)
           {
@@ -1113,8 +1113,8 @@ namespace hpp
 	    innerObj [i] = geomModel.geometryObjects[cp.first ].name;
 	    outerObj [i] = geomModel.geometryObjects[cp.second].name;
 
-            innerPts.col(i) = geomData.distanceResults[i].nearest_points[0];
-            outerPts.col(i) = geomData.distanceResults[i].nearest_points[1];
+            innerPts.row(i) = geomData.distanceResults[i].nearest_points[0];
+            outerPts.row(i) = geomData.distanceResults[i].nearest_points[1];
 	  }
 	  for (std::size_t i = 0; i < nbObsCol; ++i)
           {
@@ -1122,8 +1122,8 @@ namespace hpp
 	    innerObj [nbAutoCol + i] = cps[i].first ->name();
 	    outerObj [nbAutoCol + i] = cps[i].second->name();
 
-            innerPts.col(nbAutoCol + i) = drs[i].nearest_points[0];
-            outerPts.col(nbAutoCol + i) = drs[i].nearest_points[1];
+            innerPts.row(nbAutoCol + i) = drs[i].nearest_points[0];
+            outerPts.row(nbAutoCol + i) = drs[i].nearest_points[1];
 	  }
 	  distances = vectorToFloatseq(dists);
 	  innerObjects = toNames_t (innerObj.begin(), innerObj.end());

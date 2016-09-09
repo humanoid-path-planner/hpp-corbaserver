@@ -80,5 +80,35 @@ namespace hpp {
       }
       return res;
     }
+
+    vector3_t floatSeqToVector3 (const floatSeq& dofArray)
+    {
+      if (dofArray.length() != 3) {
+        HPP_THROW (Error,
+            "Expecting vector of size 3, got vector of size " << dofArray.length() << ".");
+      }
+      // Fill dof vector with dof array.
+      vector3_t result;
+      for (unsigned int iDof=0; iDof < 3; ++iDof) {
+        result [iDof] = dofArray [iDof];
+      }
+      return result;
+    }
+
+    vector_t floatSeqToVector (const floatSeq& dofArray, const size_type expectedSize)
+    {
+      size_type inputDim = (size_type)dofArray.length();
+      if (expectedSize >=0 && inputDim != expectedSize) {
+        HPP_THROW (std::runtime_error,
+            "size of input array (" << inputDim <<
+            ") is different from the expected size (" << expectedSize << ")");
+      }
+      // Fill dof vector with dof array.
+      vector_t result (inputDim);
+      for (size_type iDof=0; iDof < inputDim; ++iDof) {
+        result [iDof] = dofArray [(CORBA::ULong)iDof];
+      }
+      return result;
+    }
   } // namespace corbaServer
 } // namespace hpp

@@ -76,6 +76,7 @@ namespace hpp
 
     typedef pinocchio::value_type value_type;
     typedef pinocchio::matrix_t matrix_t;
+    typedef pinocchio::matrix3_t matrix3_t;
     typedef pinocchio::vector_t vector_t;
     typedef pinocchio::vector3_t vector3_t;
     typedef pinocchio::ComJacobian_t ComJacobian_t;
