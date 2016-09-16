@@ -29,6 +29,7 @@
 // #include <hpp/pinocchio/object-iterator.hh>
 #include <hpp/pinocchio/collision-object.hh>
 #include <hpp/pinocchio/center-of-mass-computation.hh>
+#include <hpp/pinocchio/configuration.hh>
 
 #include <hpp/core/problem.hh>
 #include <hpp/core/basic-configuration-shooter.hh>
@@ -560,6 +561,8 @@ namespace hpp
 
           vector_t config (robot->currentConfiguration ());
           config.segment(ric, nq) = joint->jointModel().integrate (config, dqAll);
+
+          pinocchio::saturate (robot, config);
 
           robot->currentConfiguration (config);
           robot->computeForwardKinematics ();
