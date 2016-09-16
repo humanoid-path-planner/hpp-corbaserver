@@ -173,6 +173,14 @@ module hpp
       raises (Error);
     jointBoundSeq getJointBounds(in string jointName) raises (Error);
 
+    /// Set the translation bounds of joint (must have universe as parent joint)
+    /// using a bounding box of the obstacles.
+    /// \param jointName name of the joint (must be a child of universe)
+    /// \param extend bounds will be augmented by this value.
+    void setJointBoundsFromObstaclesBoundingBox (in string jointName,
+                                                 in double extend)
+      raises (Error);
+
     /// Get link position in world frame
     ///
     /// Joints are oriented in a different way as in urdf standard since

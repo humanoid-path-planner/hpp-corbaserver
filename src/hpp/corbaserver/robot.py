@@ -106,6 +106,11 @@ class Robot (object):
     def setJointBounds (self, jointName, inJointBound):
         return self.client.robot.setJointBounds (jointName, inJointBound)
 
+    ## Set the translation bounds of joint
+    # The joint given as argument must have universe as parent joint
+    def setJointBoundsFromObstaclesBoundingBox (self, jointName = "root_joint", extend = 0):
+        return self.client.robot.setJointBoundsFromObstaclesBoundingBox (jointName, extend)
+
     ## Get bounds of a given joint
     def getJointBounds(self, jointName):
         return self.client.robot.getJointBounds(jointName)

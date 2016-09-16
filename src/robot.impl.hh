@@ -131,6 +131,8 @@ namespace hpp
 	virtual void setJointBounds
 	(const char* jointName,
 	 const hpp::corbaserver::jointBoundSeq& jointBound) throw (hpp::Error);
+	virtual void setJointBoundsFromObstaclesBoundingBox
+	(const char* jointName, CORBA::Double extend) throw (hpp::Error);
 
 	virtual Transform__slice* getLinkPosition (const char* linkName)
 	  throw (hpp::Error);

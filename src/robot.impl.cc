@@ -713,6 +713,19 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
+      void Robot::setJointBoundsFromObstaclesBoundingBox (const char* jointName,
+          CORBA::Double extend)
+	throw (hpp::Error)
+      {
+	try  {
+          problemSolver()->setJointBoundsFromObstaclesBoundingBox (jointName, extend);
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
+
       Transform__slice* Robot::getLinkPosition (const char* linkName)
 	throw (hpp::Error)
       {
