@@ -548,18 +548,19 @@ namespace hpp
 	    hppDout (error, oss.str ());
 	    throw hpp::Error (oss.str ().c_str ());
 	  }
-	  size_type dim = joint->numberDof ();
-          if (dim != (size_type) dq.length ()) {
+	  const size_type nv  = joint->numberDof (),
+	                  nq  = joint->configSize (),
+                          ric = joint->rankInConfiguration (),
+                          riv = joint->rankInVelocity ();
+          if (nv != (size_type) dq.length ()) {
 	    throw Error ("Wrong speed dimension");
 	  }
-          vector_t config = robot->currentConfiguration ();
-          vector_t dqAll (robot->numberDof ());
-          dqAll.setZero ();
-          size_type ric = joint->rankInConfiguration ();
-          size_type riv = joint->rankInVelocity ();
-	  for(size_type i=0; i<dim; ++i)
-            dqAll [riv + i] = dq[(CORBA::ULong) i];
-          config.segment(ric, dim) = joint->jointModel().integrate (config, dqAll);
+          vector_t dqAll (vector_t::Zero(robot->numberDof ()));
+          dqAll .segment(riv, nv) = floatSeqToVector (dq, nv);
+
+          vector_t config (robot->currentConfiguration ());
+          config.segment(ric, nq) = joint->jointModel().integrate (config, dqAll);
+
           robot->currentConfiguration (config);
           robot->computeForwardKinematics ();
 	} catch (const std::exception& exc) {
