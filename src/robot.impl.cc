@@ -726,7 +726,7 @@ namespace hpp
           se3::JointIndex joint = frame.parent;
           if (frame.type != se3::BODY)
             HPP_THROW(Error, linkName << " is not a link");
-          if (robot->model().njoint < (size_type)joint)
+          if (robot->model().joints.size() < (size_type)joint)
             HPP_THROW(Error, "Joint index of link " << linkName << " out of bounds: " << joint);
 
           Transform3f T = robot->data().oMi[joint] * frame.placement;
@@ -750,7 +750,7 @@ namespace hpp
 	    throw hpp::Error (oss.str ().c_str ());
 	  }
           std::vector<std::string> names;
-          for (size_type i = 0; i < robot->model().nFrames; ++i) {
+          for (size_type i = 0; i < robot->model().frames.size(); ++i) {
             const se3::Frame& frame = robot->model().frames[i];
             if (frame.type == se3::BODY && frame.parent == joint->index())
               names.push_back(frame.name);
