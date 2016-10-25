@@ -35,7 +35,7 @@ module hpp
 
     /// Set a parameter
     /// \param value the input type must be long, double, const char*
-    void setParameter (in string name, in any value) raises (Error);
+    void setParameter (in string name, in double value) raises (Error);
 
     /// Get parameter with given name
     /// raise an exception when the parameter is not found.
