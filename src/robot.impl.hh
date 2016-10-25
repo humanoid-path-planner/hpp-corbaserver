@@ -152,6 +152,9 @@ namespace hpp
 	virtual void setDimensionExtraConfigSpace (ULong dimension)
 	  throw (hpp::Error);
 
+  virtual Short getDimensionExtraConfigSpace ()
+    throw (hpp::Error);
+
 	virtual void setExtraConfigSpaceBounds
 	(const hpp::floatSeq& bounds) throw (hpp::Error);
 
