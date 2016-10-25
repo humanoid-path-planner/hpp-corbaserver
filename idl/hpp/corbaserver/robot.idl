@@ -202,6 +202,12 @@ module hpp
     void setDimensionExtraConfigSpace (in unsigned long dimension)
       raises (Error);
 
+    /// Get the dimension of the extra configuration space
+    ///
+    /// \sa hpp::model::ExtraConfigSpace
+    short getDimensionExtraConfigSpace ()
+      raises (Error);
+
     /// Set bounds of extra configuration variables
     /// \param inJointBound sequence of joint dof bounds in order
     ///        [v0_min,v0_max,v1_min,v1_max,...].
