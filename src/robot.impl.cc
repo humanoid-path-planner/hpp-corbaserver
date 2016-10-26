@@ -1414,6 +1414,19 @@ namespace hpp
         comc->computeMass ();
         problemSolver()->addCenterOfMassComputation (std::string (comName), comc);
       }
+
+      hpp::floatSeq* Robot::quaternionFromVector (const floatSeq& u)throw (hpp::Error){
+        Eigen::Quaterniond quat = Eigen::Quaterniond::FromTwoVectors(Eigen::Vector3d::UnitX(),Eigen::Vector3d(u[0],u[1],u[2]));
+        hpp::floatSeq *quatCorba;
+        quatCorba = new hpp::floatSeq();
+        quatCorba->length((CORBA::ULong) 4);
+        (*quatCorba)[(CORBA::ULong)0]=quat.w();
+        (*quatCorba)[(CORBA::ULong)1]=quat.x();
+        (*quatCorba)[(CORBA::ULong)2]=quat.y();
+        (*quatCorba)[(CORBA::ULong)3]=quat.z();
+        return quatCorba;
+      }
+
     } // end of namespace impl.
   } // end of namespace corbaServer.
 } // end of namespace hpp.

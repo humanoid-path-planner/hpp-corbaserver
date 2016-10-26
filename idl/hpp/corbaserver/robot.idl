@@ -392,6 +392,10 @@ module hpp
     /// Get the name of the current robot.
     string getRobotName () raises (Error);
     /// \}
+
+    /// Convert a direction vector to a quaternion (use Eigen::Quaterniond::FromTwoVectors with Z vector)
+    /// \param u the vector director
+    floatSeq quaternionFromVector(in floatSeq u)raises (Error);
   };
   };
 };
