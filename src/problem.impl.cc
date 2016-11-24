@@ -591,7 +591,7 @@ namespace hpp
               problemSolver()->robot(), name,
               joint1Name          , joint2Name,
               Id                  , ref,
-              boolSeqToBoolVector(mask));
+              boolSeqToBoolVector(mask, 6));
 
         problemSolver()->addNumericalConstraint
           (name, NumericalConstraint::create (func));
@@ -609,7 +609,7 @@ namespace hpp
         CenterOfMassComputationPtr_t comc;
 	vector3_t point = floatSeqToVector3 (p);
 
-	std::vector<bool> m = boolSeqToBoolVector (mask);
+	std::vector<bool> m = boolSeqToBoolVector (mask, 4);
 	try {
           joint = problemSolver()->robot()->getJointByName(jointName);
 	  // Test whether joint1 is world frame
