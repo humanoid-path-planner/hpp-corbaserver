@@ -240,8 +240,11 @@ namespace hpp
             JointPtr_t joint1, joint2;
             Transform3f ref1 = M1, ref2 = M2;
             if (relative) {
-              if (!model.existFrame(nameF1))
-                throw hpp::Error ("Joint 1 not found.");
+              if (!model.existFrame(nameF1)) {
+		std::ostringstream oss;
+		oss << "Joint " << nameF1 << " not found.";
+                throw hpp::Error (oss.str ().c_str ());
+	      }
               const se3::Frame& f1 = model.frames[model.getFrameId(nameF1)];
               switch (f1.type) {
                 case se3::FIXED_JOINT:
@@ -250,12 +253,17 @@ namespace hpp
                   joint1 = JointPtr_t (new Joint (robot, f1.parent));
                   break;
                 default:
-                  throw hpp::Error ("Joint 1 not found.");
+		  std::ostringstream oss;
+		  oss << "Joint " << nameF1 << " not found.";
+		  throw hpp::Error (oss.str ().c_str ());
               }
             }
 
-            if (!model.existFrame(nameF2))
-              throw hpp::Error ("Joint 2 not found.");
+            if (!model.existFrame(nameF2)) {
+		std::ostringstream oss;
+		oss << "Joint " << nameF2 << " not found.";
+                throw hpp::Error (oss.str ().c_str ());
+	    }
             const se3::Frame& f2 = model.frames[model.getFrameId(nameF2)];
             switch (f2.type) {
               case se3::FIXED_JOINT:
@@ -264,7 +272,9 @@ namespace hpp
                 joint2 = JointPtr_t (new Joint (robot, f2.parent));
                 break;
               default:
-                throw hpp::Error ("Joint 2 not found.");
+		std::ostringstream oss;
+		oss << "Joint " << nameF2 << " not found.";
+                throw hpp::Error (oss.str ().c_str ());
             }
 
             if (relative) {
@@ -432,8 +442,13 @@ namespace hpp
 
         BoostIntervalSet_t ints;
         for (CORBA::ULong i = 0; i < jointNames.length (); ++i) {
-          JointPtr_t joint = problemSolver()->robot ()->getJointByName(std::string(jointNames[i]));
-          if (joint == NULL) throw hpp::Error ("Joint not found.");
+          JointPtr_t joint = problemSolver()->robot ()->getJointByName
+	    (std::string(jointNames[i]));
+          if (joint == NULL) {
+	    std::ostringstream oss;
+	    oss << "Joint " << jointNames[i] << "not found.";
+	    throw hpp::Error (oss.str ().c_str ());
+	  }
           ints.insert(SizeInterval_t(joint->rankInConfiguration(), joint->configSize()));
         }
         SizeIntervals_t intervals = convertInterval(ints);
@@ -1040,8 +1055,11 @@ namespace hpp
         for (CORBA::ULong i=0; i<dofNames.length (); ++i) {
           std::string name (dofNames[i]);
           JointPtr_t j = robot->getJointByName (name);
-          if (!j)
-            throw hpp::Error ("One joint not found.");
+          if (!j) {
+	    std::ostringstream oss;
+	    oss << "Joint " << name << " not found.";
+            throw hpp::Error (oss.str ().c_str ());
+	  }
           for (size_type i = 0; i < j->numberDof (); i++)
             dofs.push_back (j->rankInVelocity() + i);
         }
