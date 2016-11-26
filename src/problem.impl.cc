@@ -600,12 +600,11 @@ namespace hpp
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
         Transform3f ref (toTransform3f(p));
         std::string name (constraintName);
-
         DifferentiableFunctionPtr_t func = buildGenericFunc
           <constraints::PositionBit | constraints::OrientationBit> (
               problemSolver()->robot(), name,
               joint1Name          , joint2Name,
-              Id                  , ref,
+              ref                  , Id,
               boolSeqToBoolVector(mask, 6));
 
         problemSolver()->addNumericalConstraint
