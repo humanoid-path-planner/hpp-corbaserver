@@ -452,8 +452,10 @@ class ProblemSolver (object):
     #  \param validate whether path should be validated. If true, path
     #         validation is called and only valid part of path is inserted
     #         in the path vector.
-    #  \return True if the path is fully valid, false otherwise.
-    #  \return the path index of the collission-free part from startConfig
+    #  \return True if the path is fully valid, False otherwise.
+    #  \return the path index of the collision-free part from startConfig,
+    #  \return a message explaining the reason why the path is not valid if
+    #          relevant
     def directPath (self, startConfig, endConfig, validate):
         return self.client.problem.directPath (startConfig, endConfig, validate)
 
