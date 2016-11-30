@@ -406,8 +406,8 @@ module hpp
     /// \param validate whether path should be validated. If true, path
     ///        validation is called and only valid part of path is inserted
     ///        in the path vector.
-    /// \retval report the reason why the config is not valid.
     /// \retval pathId returns index of copmuted path in path vector.
+    /// \retval report the reason why the config is not valid.
     /// \return TRUE if created path is fully valid.
     boolean directPath (in floatSeq startConfig, in floatSeq endConfig,
 			in boolean validate,
