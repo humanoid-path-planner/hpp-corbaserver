@@ -1299,15 +1299,27 @@ namespace hpp
       }
 
       // ---------------------------------------------------------------
-      UShort Problem::getMaxIterations () throw (Error)
+      void Problem::setMaxIterProjection (UShort iterations) throw (Error)
       {
-	return (UShort) problemSolver()->maxIterations ();
+	problemSolver()->maxIterProjection ((size_type)iterations);
       }
 
       // ---------------------------------------------------------------
-      void Problem::setMaxIterations (UShort iterations) throw (Error)
+      UShort Problem::getMaxIterProjection () throw (Error)
       {
-	problemSolver()->maxIterations (iterations);
+	return (UShort) problemSolver()->maxIterProjection ();
+      }
+
+      // ---------------------------------------------------------------
+      void Problem::setMaxIterPathPlanning (UShort iterations) throw (Error)
+      {
+	problemSolver()->maxIterPathPlanning ((size_type)iterations);
+      }
+
+      // ---------------------------------------------------------------
+      UShort Problem::getMaxIterPathPlanning () throw (Error)
+      {
+	return (UShort) problemSolver()->maxIterPathPlanning ();
       }
 
       // ---------------------------------------------------------------

@@ -311,10 +311,16 @@ module hpp
     void setErrorThreshold (in double threshold) raises (Error);
 
     /// Set maximal number of iterations in numerical constraint resolution
-    unsigned short getMaxIterations () raises (Error);
+    unsigned short getMaxIterProjection () raises (Error);
 
     /// Set maximal number of iterations in numerical constraint resolution
-    void setMaxIterations (in unsigned short iterations) raises (Error);
+    void setMaxIterProjection (in unsigned short iterations) raises (Error);
+
+    /// Set maximal number of iterations in path planning
+    unsigned short getMaxIterPathPlanning () raises (Error);
+
+    /// Set maximal number of iterations in path planning
+    void setMaxIterPathPlanning (in unsigned short iterations) raises (Error);
 
     /// \}
 

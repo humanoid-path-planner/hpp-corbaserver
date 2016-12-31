@@ -359,13 +359,35 @@ class ProblemSolver (object):
     def setErrorThreshold (self, threshold):
         return self.client.problem.setErrorThreshold (threshold)
 
-    ## Set the maximal number of iterations
+    ## Set the maximal number of iterations in projection
     def getMaxIterations (self):
-	return self.client.problem.getMaxIterations ()
+        from warnings import warn
+        warn ("method getMaxIterations is deprecated: use getMaxIterProjection"+
+              " instead")
+	return self.client.problem.getMaxIterProjection ()
 
-    ## Set the maximal number of iterations
+    ## Set the maximal number of iterations in projection
     def setMaxIterations (self, iterations):
-	return self.client.problem.setMaxIterations (iterations)
+        from warnings import warn
+        warn ("method setMaxIterations is deprecated: use setMaxIterProjection"+
+              " instead")
+	return self.client.problem.setMaxIterProjection (iterations)
+
+    ## Get the maximal number of iterations in projection
+    def getMaxIterPathPlanning (self):
+	return self.client.problem.getMaxIterPathPlanning ()
+
+    ## Set the maximal number of iterations in projection
+    def setMaxIterPathPlanning (self, iterations):
+	return self.client.problem.setMaxIterPathPlanning (iterations)
+
+    ## Get the maximal number of iterations in projection
+    def getMaxIterProjection (self):
+	return self.client.problem.getMaxIterProjection ()
+
+    ## Set the maximal number of iterations in projection
+    def setMaxIterProjection (self, iterations):
+	return self.client.problem.setMaxIterProjection (iterations)
     ## \}
 
     ## \name Collision Checking

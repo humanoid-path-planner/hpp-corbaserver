@@ -171,8 +171,10 @@ namespace hpp
 	  throw (hpp::Error);
 	virtual Double getErrorThreshold () throw (Error);
 	virtual void setErrorThreshold (Double threshold) throw (Error);
-	virtual UShort getMaxIterations () throw (Error);
-	virtual void setMaxIterations (UShort iterations) throw (Error);
+	virtual UShort getMaxIterProjection () throw (Error);
+	virtual void setMaxIterProjection (UShort iterations) throw (Error);
+	virtual UShort getMaxIterPathPlanning () throw (Error);
+	virtual void setMaxIterPathPlanning (UShort iterations) throw (Error);
 
 	virtual void addPathOptimizer (const char* pathOptimizerType)
 	  throw (Error);
