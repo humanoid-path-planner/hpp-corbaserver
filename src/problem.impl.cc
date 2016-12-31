@@ -49,7 +49,9 @@
 #include <hpp/constraints/com-between-feet.hh>
 #include <hpp/constraints/generic-transformation.hh>
 #include <hpp/constraints/convex-shape-contact.hh>
-#include <hpp/constraints/static-stability.hh>
+#ifdef HPP_CONSTRAINTS_USE_QPOASES
+# include <hpp/constraints/static-stability.hh>
+#endif
 #include <hpp/constraints/configuration-constraint.hh>
 #include <hpp/corbaserver/server.hh>
 #include <hpp/model/body.hh>
@@ -79,9 +81,10 @@ using hpp::constraints::RelativeTransformation;
 using hpp::constraints::Transformation;
 using hpp::constraints::ConvexShapeContact;
 using hpp::constraints::ConvexShapeContactPtr_t;
+#ifdef HPP_CONSTRAINTS_USE_QPOASES
 using hpp::constraints::StaticStability;
 using hpp::constraints::StaticStabilityPtr_t;
-
+#endif
 using hpp::core::NumericalConstraint;
 
 namespace boost {
@@ -819,6 +822,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+#ifdef HPP_CONSTRAINTS_USE_QPOASES
       void Problem::createStaticStabilityConstraint
       (const char* constraintName, const hpp::Names_t& jointNames,
        const hpp::floatSeqSeq& points, const hpp::floatSeqSeq& normals,
@@ -873,6 +877,15 @@ namespace hpp
           throw hpp::Error (exc.what ());
         }
       }
+#else
+      void Problem::createStaticStabilityConstraint
+      (const char*, const hpp::Names_t&, const hpp::floatSeqSeq&,
+       const hpp::floatSeqSeq&, const char*)
+        throw (hpp::Error)
+      {
+	throw hpp::Error ("Not implemented");
+      }
+#endif
 
       // ---------------------------------------------------------------
 
