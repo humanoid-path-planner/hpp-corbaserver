@@ -244,6 +244,10 @@ namespace hpp
 					      Double atDistance)
 	  throw (hpp::Error);
 
+	virtual hpp::floatSeq* velocityAtParam (UShort pathId,
+						Double atDistance)
+	  throw (hpp::Error);
+
 	virtual hpp::floatSeqSeq* getWaypoints (UShort inPathId)
 	  throw (hpp::Error);
 	virtual hpp::floatSeqSeq* nodes () throw (hpp::Error);
