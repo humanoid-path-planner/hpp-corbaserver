@@ -1481,7 +1481,7 @@ namespace hpp
           (*ret)[0] = time.hours ();
           (*ret)[1] = time.minutes ();
           (*ret)[2] = time.seconds ();
-          (*ret)[3] = (long) (time.fractional_seconds () / 1000);
+          (*ret)[3] = (long) ((int) time.fractional_seconds () / 1000);
           return ret;
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -1603,7 +1603,7 @@ namespace hpp
 	  }
 	  PathVectorPtr_t start = problemSolver()->paths () [startId];
 	  PathVectorPtr_t end   = problemSolver()->paths () [  endId];
-          start->concatenate(*end);
+          start->concatenate(end);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -1701,7 +1701,7 @@ namespace hpp
           (*ret)[0] = time.hours ();
           (*ret)[1] = time.minutes ();
           (*ret)[2] = time.seconds ();
-          (*ret)[3] = (long) (time.fractional_seconds () / 1000);
+          (*ret)[3] = (long) ((int) time.fractional_seconds () / 1000);
           return ret;
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -1968,7 +1968,7 @@ namespace hpp
               core::ConnectedComponents_t::const_iterator itcc = ccs.begin();
               for (std::size_t i = 0; i < ccs.size (); ++i) {
                 if (*itcc == (*itEdge)->from()->connectedComponent ()) {
-                  return i;
+                  return (CORBA::Long) i;
                 }
                 itcc++;
               }
@@ -1994,7 +1994,7 @@ namespace hpp
               core::ConnectedComponents_t::const_iterator itcc = ccs.begin();
               for (std::size_t i = 0; i < ccs.size (); ++i) {
                 if (*itcc == (*itNode)->connectedComponent ()) {
-                  return i;
+                  return (CORBA::Long) i;
                 }
                 itcc++;
               }

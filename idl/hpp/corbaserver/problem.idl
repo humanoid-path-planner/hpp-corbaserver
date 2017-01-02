@@ -477,7 +477,7 @@ module hpp
     /// \return length of path if path exists.
     double pathLength(in unsigned short inPathId) raises (Error);
 
-    /// Get the robot config at param on the a path
+    /// Get the robot config at param on a path
     /// \param inPathId rank of the path in the problem
     /// \param atDistance : the user parameter choice
     /// \return dofseq : the config at param
