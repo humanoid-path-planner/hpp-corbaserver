@@ -484,6 +484,13 @@ module hpp
     floatSeq configAtParam(in unsigned short inPathId, in double atDistance)
       raises (Error);
 
+    /// Get the robot velocity at param on a path
+    /// \param inPathId rank of the path in the problem
+    /// \param atDistance : the user parameter choice
+    /// \return dofseq : the velocity at param
+    floatSeq velocityAtParam(in unsigned short inPathId, in double atDistance)
+      raises (Error);
+
     /// Get way points of a path
     /// \param pathId rank of the path in the problem
     floatSeqSeq getWaypoints (in unsigned short pathId) raises (Error);

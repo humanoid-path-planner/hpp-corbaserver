@@ -502,12 +502,19 @@ class ProblemSolver (object):
     def pathLength(self, inPathId):
         return self.client.problem.pathLength(inPathId)
 
-    ## Get the robot's config at param on the a path
+    ## Get the robot config at param on a path
     # \param inPathId rank of the path in the problem
-    # \param atDistance : the user parameter choice
+    # \param param : the user parameter choice
     # \return dofseq : the config at param
-    def configAtParam (self, inPathId, atDistance):
-        return self.client.problem.configAtParam (inPathId, atDistance)
+    def configAtParam (self, inPathId, param):
+        return self.client.problem.configAtParam (inPathId, param)
+
+    ## Get the robot velocity at param on a path
+    # \param inPathId rank of the path in the problem
+    # \param param : the user parameter choice
+    # \return dofseq : the velocity at param
+    def velocityAtParam (self, inPathId, param):
+        return self.client.problem.velocityAtParam (inPathId, param)
 
     ## Get way points of a path
     #  \param pathId rank of the path in the problem
