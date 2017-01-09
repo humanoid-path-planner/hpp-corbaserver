@@ -16,9 +16,6 @@
 module hpp
 {
   module corbaserver {
-  /// Array of joint bounds.in order [v1_min,v1_max,v2_min,v2_max,...].
-  typedef sequence<double> jointBoundSeq;
-
   /// Creation of a device, joints and bodies.
   interface Robot {
     ///  Load robot model
@@ -169,9 +166,9 @@ module hpp
     /// \note The roadmap must be reset after all the joints bounds has been set.
     ///       See Problem::resetRoadmap
     void setJointBounds(in string jointName,
-			in jointBoundSeq inJointBound)
+			in floatSeq inJointBound)
       raises (Error);
-    jointBoundSeq getJointBounds(in string jointName) raises (Error);
+    floatSeq getJointBounds(in string jointName) raises (Error);
 
     /// Get link position in world frame
     ///
@@ -208,7 +205,7 @@ module hpp
     /// \li If vi_min > vi_max, dof of rank i is not bounded.
     /// \li If size of sequence is different from twice the number of dofs,
     ///     raise error.
-    void setExtraConfigSpaceBounds (in jointBoundSeq bounds) raises (Error);
+    void setExtraConfigSpaceBounds (in floatSeq bounds) raises (Error);
 
     /// \}
 
@@ -313,7 +310,7 @@ module hpp
 //DEPREC    // \param pos initial position of the joint
 //DEPREC    // \param joinBounds bounds of the joint. See setJointBounds for details.
 //DEPREC    // void createJoint(in string jointName, in string jointType,
-//DEPREC		     // in Transform_ pos, in jointBoundSeq jointBounds)
+//DEPREC		     // in Transform_ pos, in floatSeq jointBounds)
 //DEPREC      // raises (Error);
 //DEPREC
 //DEPREC    ///  Add a child joint to a joint.

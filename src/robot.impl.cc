@@ -48,39 +48,33 @@ namespace hpp
     {
       namespace
       {
-	using hpp::corbaserver::jointBoundSeq;
-
 	static void localSetJointBounds(const JointPtr_t& joint,
-					const jointBoundSeq& jointBounds)
+					vector_t jointBounds)
 	{
-	  std::size_t nbJointBounds = (std::size_t)jointBounds.length();
-	  std::size_t jointNbDofs = joint->configSize ();
-	  if (nbJointBounds == 2*jointNbDofs) {
-	    for (std::size_t iDof=0; iDof<jointNbDofs; iDof++) {
-	      double vMin = jointBounds[(CORBA::ULong) (2*iDof)];
-	      double vMax = jointBounds[(CORBA::ULong) (2*iDof+1)];
-	      if (vMin <= vMax) {
-		/* Dof is actually bounded */
-		// joint->isBounded(iDof, true);
-		joint->lowerBound(iDof, vMin);
-		joint->upperBound(iDof, vMax);
-	      }
-	      else {
-		/* Dof is not bounded */
-		joint->isBounded(iDof, false);
-	      }
-	    }
-	  } else {
-	    std::ostringstream oss ("Expected list of ");
-	    oss << 2*jointNbDofs << "float, got " << nbJointBounds << ".";
-	    throw hpp::Error (oss.str ().c_str ());
-	  }
+          static const value_type inf = std::numeric_limits<value_type>::infinity();
+          if (jointBounds.size() %2 == 1) {
+            HPP_THROW(std::invalid_argument, "Expect a vector of even size");
+          }
+          for (std::size_t i = 0; i < jointBounds.size() / 2; i++) {
+            value_type& vMin = jointBounds[2*i  ];
+            value_type& vMax = jointBounds[2*i+1];
+            if (vMin > vMax) {
+              vMin = -inf;
+              vMax =  inf;
+            }
+          }
+          Eigen::Map<vector_t, Eigen::Unaligned, Eigen::InnerStride<2> >
+            lower (&jointBounds[0], ( jointBounds.size() + 1 ) / 2 );
+          Eigen::Map<vector_t, Eigen::Unaligned, Eigen::InnerStride<2> >
+            upper (&jointBounds[1], ( jointBounds.size()     ) / 2 );
+          joint->lowerBounds (lower);
+          joint->upperBounds (upper);
 	}
 
-	static jointBoundSeq* localGetJointBounds(const JointPtr_t& joint)
+	static floatSeq* localGetJointBounds(const JointPtr_t& joint)
 	{
 	  std::size_t jointNbDofs = joint->configSize ();
-          jointBoundSeq* ret = new jointBoundSeq;
+          floatSeq* ret = new floatSeq;
           ret->length ((CORBA::ULong) (2*jointNbDofs));
           for (std::size_t iDof=0; iDof<jointNbDofs; iDof++) {
             if (joint->isBounded (iDof)) {
@@ -678,7 +672,7 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      jointBoundSeq* Robot::getJointBounds (const char* jointName)
+      floatSeq* Robot::getJointBounds (const char* jointName)
 	throw (hpp::Error)
       {
 	try  {
@@ -696,7 +690,7 @@ namespace hpp
       // --------------------------------------------------------------------
 
       void Robot::setJointBounds (const char* jointName,
-				  const jointBoundSeq& jointBounds)
+				  const floatSeq& jointBounds)
 	throw (hpp::Error)
       {
 	try  {
@@ -705,7 +699,7 @@ namespace hpp
 
 	  // get joint
 	  JointPtr_t joint = robot->getJointByName (jointName);
-	  localSetJointBounds(joint, jointBounds);
+	  localSetJointBounds(joint, floatSeqToVector(jointBounds));
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -778,7 +772,7 @@ namespace hpp
       // --------------------------------------------------------------------
 
       void Robot::setExtraConfigSpaceBounds
-      (const hpp::corbaserver::jointBoundSeq& bounds) throw (hpp::Error)
+      (const hpp::floatSeq& bounds) throw (hpp::Error)
       {
 	using hpp::pinocchio::ExtraConfigSpace;
 	// Get robot in ProblemSolver object.

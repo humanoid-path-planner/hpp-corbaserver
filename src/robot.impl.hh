@@ -126,11 +126,11 @@ namespace hpp
 	virtual Short getJointConfigSize (const char* jointName)
 	  throw (hpp::Error);
 
-        virtual hpp::corbaserver::jointBoundSeq* getJointBounds (const char* jointName)
+        virtual hpp::floatSeq* getJointBounds (const char* jointName)
           throw (hpp::Error);
 	virtual void setJointBounds
 	(const char* jointName,
-	 const hpp::corbaserver::jointBoundSeq& jointBound) throw (hpp::Error);
+	 const hpp::floatSeq& jointBound) throw (hpp::Error);
 
 	virtual Transform__slice* getLinkPosition (const char* linkName)
 	  throw (hpp::Error);
@@ -142,7 +142,7 @@ namespace hpp
 	  throw (hpp::Error);
 
 	virtual void setExtraConfigSpaceBounds
-	(const hpp::corbaserver::jointBoundSeq& bounds) throw (hpp::Error);
+	(const hpp::floatSeq& bounds) throw (hpp::Error);
 
 	virtual void setCurrentConfig
 	(const hpp::floatSeq& dofArray) throw (hpp::Error);
