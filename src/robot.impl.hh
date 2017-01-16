@@ -98,6 +98,8 @@ namespace hpp
 	virtual Names_t* getAllJointNames () throw (hpp::Error);
 	virtual Names_t* getChildJointNames (const char* jointName)
           throw (hpp::Error);
+	virtual char* getParentJointName (const char* jointName)
+          throw (hpp::Error);
         virtual hpp::floatSeq* getJointConfig(const char* jointName)
           throw (hpp::Error);
         virtual void setJointConfig(const char* jointName, const floatSeq& cfg)

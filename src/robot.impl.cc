@@ -48,6 +48,9 @@ namespace hpp
     {
       namespace
       {
+        typedef se3::FrameIndex FrameIndex;
+        const se3::FrameType JOINT_FRAME = (se3::FrameType)(se3::JOINT | se3::FIXED_JOINT);
+
 	static void localSetJointBounds(const JointPtr_t& joint,
 					vector_t jointBounds)
 	{
@@ -375,7 +378,13 @@ namespace hpp
             return new Names_t (0, 0, Names_t::allocbuf (0));
 	  // Compute number of real urdf joints
           const se3::Model& model = robot->model();
-	  return toNames_t (model.names.begin(), model.names.end());
+          std::vector<std::string> jns;
+          for(std::size_t i = 0; i < model.frames.size(); ++i) {
+            if(    model.frames[i].type == se3::JOINT
+                || model.frames[i].type == se3::FIXED_JOINT)
+              jns.push_back(model.frames[i].name);
+          }
+	  return toNames_t (jns.begin(), jns.end());
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -403,6 +412,35 @@ namespace hpp
 	    strcpy (nameList [i], name.c_str ());
 	  }
 	  return jointNames;
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
+
+      char* Robot::getParentJointName (const char* jointName)
+        throw (hpp::Error)
+      {
+	try {
+          DevicePtr_t robot = getRobotOrThrow(problemSolver());
+          const std::string jn (jointName);
+          const se3::Model& model = robot->model();
+          if (!model.existFrame(jn, JOINT_FRAME)) {
+            HPP_THROW(std::invalid_argument, jn << " not found.");
+          }
+          se3::FrameIndex fid = model.getFrameId(jn, JOINT_FRAME);
+          char* name;
+          if (fid == 0) {
+            name = CORBA::string_dup("");
+          } else {
+            se3::FrameIndex pfid = model.frames[fid].previousFrame;
+            assert (pfid >= 0 && pfid < model.frames.size());
+
+            const std::string& str = model.frames[pfid].name;
+            name = CORBA::string_dup(str.c_str());
+          }
+          return name;
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -478,6 +516,8 @@ namespace hpp
 	try {
 	  // Get robot in hppPlanner object.
           DevicePtr_t robot = getRobotOrThrow(problemSolver());
+          if (robot->model().existFrame(jointName, se3::FIXED_JOINT))
+            return new hpp::floatSeq();
 	  JointPtr_t joint = robot->getJointByName (jointName);
 	  if (!joint) {
 	    std::ostringstream oss ("Robot has no joint with name ");
@@ -638,14 +678,16 @@ namespace hpp
       {
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
+	  if (robot->model().existFrame(jointName, se3::FIXED_JOINT))
+            return 0;
 	  JointPtr_t joint = robot->getJointByName (jointName);
-	  if (!joint) {
-	    std::ostringstream oss ("Robot has no joint with name ");
-	    oss  << jointName;
-	    hppDout (error, oss.str ());
-	    throw hpp::Error (oss.str ().c_str ());
-	  }
-	  return (Short)joint->numberDof ();
+          if (!joint) {
+            std::ostringstream oss ("Robot has no joint with name ");
+            oss  << jointName;
+            hppDout (error, oss.str ());
+            throw hpp::Error (oss.str ().c_str ());
+          }
+          return (Short)joint->numberDof ();
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
@@ -657,6 +699,8 @@ namespace hpp
       {
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
+	  if (robot->model().existFrame(jointName, se3::FIXED_JOINT))
+            return 0;
 	  JointPtr_t joint = robot->getJointByName (jointName);
 	  if (!joint) {
 	    std::ostringstream oss ("Robot has no joint with name ");
@@ -678,10 +722,15 @@ namespace hpp
 	try  {
 	  // Get robot in ProblemSolver object.
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
+	  if (robot->model().existFrame(jointName, se3::FIXED_JOINT))
+            return new hpp::floatSeq();
 
 	  // get joint
 	  JointPtr_t joint = robot->getJointByName (jointName);
-	  return localGetJointBounds(joint);
+          if (!joint) {
+            HPP_THROW(std::invalid_argument, "Joint " << jointName << " not found.");
+          }
+          return localGetJointBounds(joint);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -736,17 +785,16 @@ namespace hpp
       {
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
-	  JointPtr_t joint = robot->getJointByName (jointName);
-	  if (!joint) {
-	    std::ostringstream oss ("Robot has no joint with name ");
-	    oss  << jointName;
-	    hppDout (error, oss.str ());
-	    throw hpp::Error (oss.str ().c_str ());
-	  }
+          const std::string jn (jointName);
+          const se3::Model& model = robot->model();
+          if (!model.existFrame(jn, JOINT_FRAME)) {
+            HPP_THROW(std::invalid_argument, "Joint " << jn << " not found.");
+          }
+          FrameIndex jid = model.getFrameId(jn, JOINT_FRAME);
           std::vector<std::string> names;
-          for (size_type i = 0; i < robot->model().frames.size(); ++i) {
+          for (size_type i = 0; i < model.frames.size(); ++i) {
             const se3::Frame& frame = robot->model().frames[i];
-            if (frame.type == se3::BODY && frame.parent == joint->index())
+            if (frame.type == se3::BODY && frame.previousFrame == jid)
               names.push_back(frame.name);
           }
           return toNames_t(names.begin(), names.end());
