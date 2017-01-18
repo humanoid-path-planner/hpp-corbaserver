@@ -22,6 +22,7 @@
 #include <hpp/pinocchio/fwd.hh>
 #include <hpp/pinocchio/body.hh>
 #include <hpp/pinocchio/joint.hh>
+#include <hpp/pinocchio/frame.hh>
 #include <hpp/pinocchio/device.hh>
 #include <hpp/pinocchio/humanoid-robot.hh>
 #include <hpp/pinocchio/urdf/util.hh>
@@ -451,11 +452,8 @@ namespace hpp
       {
 	try {
           DevicePtr_t robot = getRobotOrThrow(problemSolver());
-	  JointPtr_t root = robot->rootJoint ();
-	  if (!root) {
-	    throw hpp::Error ("robot has no root joint");
-	  }
-          return toHppTransform (root->positionInParentFrame());
+	  Frame root = robot->rootFrame ();
+          return toHppTransform (root.positionInParentFrame());
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
@@ -469,7 +467,7 @@ namespace hpp
 	try {
           DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	  Transform3f t3f (toTransform3f (position));
-	  robot->rootJoint()->positionInParentFrame(t3f);
+	  robot->rootFrame().positionInParentFrame(t3f);
           robot->computeForwardKinematics ();
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
@@ -483,24 +481,8 @@ namespace hpp
       {
 	try {
           DevicePtr_t robot = getRobotOrThrow(problemSolver());
-	  JointVector_t jv = robot->getJointVector ();
-	  JointPtr_t joint;
-          std::string n (jointName);
-          for (JointVector_t::iterator it = jv.begin ();
-              it != jv.end (); ++it) {
-            if (n.compare ((*it)->name ()) == 0) {
-              joint = *it;
-              break;
-            }
-          }
-	  if (!joint) {
-	    std::ostringstream oss ("Robot has no joint with name ");
-	    oss  << n;
-	    hppDout (error, oss.str ());
-	    throw hpp::Error (oss.str ().c_str ());
-	  }
-          Transform3f t3f (toTransform3f (position));
-	  joint->positionInParentFrame (t3f);
+          Frame frame = robot->getFrameByName(jointName);
+          frame.positionInParentFrame(toTransform3f(position));
           robot->computeForwardKinematics ();
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
@@ -512,27 +494,17 @@ namespace hpp
       hpp::floatSeq* Robot::getJointConfig(const char* jointName)
 	throw (hpp::Error)
       {
-	hpp::floatSeq *dofArray;
 	try {
 	  // Get robot in hppPlanner object.
           DevicePtr_t robot = getRobotOrThrow(problemSolver());
-          if (robot->model().existFrame(jointName, se3::FIXED_JOINT))
+          Frame frame = robot->getFrameByName(jointName);
+          if (frame.isFixed())
             return new hpp::floatSeq();
-	  JointPtr_t joint = robot->getJointByName (jointName);
-	  if (!joint) {
-	    std::ostringstream oss ("Robot has no joint with name ");
-	    oss  << jointName;
-	    hppDout (error, oss.str ());
-	    throw hpp::Error (oss.str ().c_str ());
-	  }
+	  Joint joint = frame.joint();
           vector_t config = robot->currentConfiguration ();
-          size_type ric = joint->rankInConfiguration ();
-	  size_type dim = joint->configSize ();
-	  dofArray = new hpp::floatSeq();
-	  dofArray->length((CORBA::ULong) dim);
-	  for(std::size_t i=0; i< (std::size_t) dim; ++i)
-	    (*dofArray)[(CORBA::ULong) i] = config [ric + i];
-	  return dofArray;
+          size_type ric = joint.rankInConfiguration ();
+	  size_type dim = joint.configSize ();
+          return vectorToFloatseq(config.segment(ric, dim));
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -639,14 +611,8 @@ namespace hpp
       {
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
-	  JointPtr_t joint = robot->getJointByName (jointName);
-	  if (!joint) {
-	    std::ostringstream oss ("Robot has no joint with name ");
-	    oss  << jointName;
-	    hppDout (error, oss.str ());
-	    throw hpp::Error (oss.str ().c_str ());
-	  }
-          return toHppTransform (joint->currentTransformation ());
+          Frame frame = robot->getFrameByName(jointName);
+          return toHppTransform(frame.currentTransformation());
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
@@ -659,14 +625,8 @@ namespace hpp
       {
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
-	  JointPtr_t joint = robot->getJointByName (jointName);
-	  if (!joint) {
-	    std::ostringstream oss ("Robot has no joint with name ");
-	    oss  << jointName;
-	    hppDout (error, oss.str ());
-	    throw hpp::Error (oss.str ().c_str ());
-	  }
-          return toHppTransform (joint->positionInParentFrame());
+          Frame frame = robot->getFrameByName(jointName);
+          return toHppTransform (frame.positionInParentFrame());
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
@@ -678,16 +638,9 @@ namespace hpp
       {
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
-	  if (robot->model().existFrame(jointName, se3::FIXED_JOINT))
-            return 0;
-	  JointPtr_t joint = robot->getJointByName (jointName);
-          if (!joint) {
-            std::ostringstream oss ("Robot has no joint with name ");
-            oss  << jointName;
-            hppDout (error, oss.str ());
-            throw hpp::Error (oss.str ().c_str ());
-          }
-          return (Short)joint->numberDof ();
+          Frame frame = robot->getFrameByName(jointName);
+          if (frame.isFixed()) return 0;
+          else                 return (Short) frame.joint().numberDof();
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
@@ -699,16 +652,9 @@ namespace hpp
       {
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
-	  if (robot->model().existFrame(jointName, se3::FIXED_JOINT))
-            return 0;
-	  JointPtr_t joint = robot->getJointByName (jointName);
-	  if (!joint) {
-	    std::ostringstream oss ("Robot has no joint with name ");
-	    oss  << jointName;
-	    hppDout (error, oss.str ());
-	    throw hpp::Error (oss.str ().c_str ());
-	  }
-	  return (Short) joint->configSize ();
+          Frame frame = robot->getFrameByName(jointName);
+          if (frame.isFixed()) return 0;
+          else                 return (Short) frame.joint().configSize();
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
@@ -722,9 +668,6 @@ namespace hpp
 	try  {
 	  // Get robot in ProblemSolver object.
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
-	  if (robot->model().existFrame(jointName, se3::FIXED_JOINT))
-            return new hpp::floatSeq();
-
 	  // get joint
 	  JointPtr_t joint = robot->getJointByName (jointName);
           if (!joint) {
@@ -785,17 +728,14 @@ namespace hpp
       {
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
-          const std::string jn (jointName);
           const se3::Model& model = robot->model();
-          if (!model.existFrame(jn, JOINT_FRAME)) {
-            HPP_THROW(std::invalid_argument, "Joint " << jn << " not found.");
-          }
-          FrameIndex jid = model.getFrameId(jn, JOINT_FRAME);
+          Frame frame = robot->getFrameByName(jointName);
+
           std::vector<std::string> names;
           for (size_type i = 0; i < model.frames.size(); ++i) {
-            const se3::Frame& frame = robot->model().frames[i];
-            if (frame.type == se3::BODY && frame.previousFrame == jid)
-              names.push_back(frame.name);
+            const se3::Frame& f = model.frames[i];
+            if (f.type == se3::BODY && f.previousFrame == frame.index())
+              names.push_back(f.name);
           }
           return toNames_t(names.begin(), names.end());
 	} catch (const std::exception& exc) {

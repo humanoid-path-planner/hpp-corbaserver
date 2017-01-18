@@ -53,6 +53,7 @@ namespace hpp
     typedef core::DistanceBetweenObjectsPtr_t DistanceBetweenObjectsPtr_t;
     typedef core::Edges_t Edges_t;
     typedef pinocchio::Joint Joint;
+    typedef pinocchio::Frame Frame;
     typedef pinocchio::JointPtr_t JointPtr_t;
     typedef pinocchio::JointVector_t JointVector_t;
     typedef core::LockedJoint LockedJoint;
