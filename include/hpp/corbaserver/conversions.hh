@@ -24,6 +24,8 @@
 
 namespace hpp {
   namespace corbaServer {
+    typedef Eigen::Matrix<CORBA::Long, Eigen::Dynamic, Eigen::Dynamic> IntMatrix_t;
+
     void toTransform3f (const Transform_ in, Transform3f& out);
 
     Transform3f toTransform3f (const Transform_ in);
@@ -32,11 +34,13 @@ namespace hpp {
 
     Transform__slice* toHppTransform (const Transform3f& in);
 
-    floatSeq* vectorToFloatseq (const vector_t& input);
+    floatSeq* vectorToFloatSeq (core::vectorIn_t input);
 
     /// Returns a sequence of the rows of the input matrix.
     // Return [ [input.row(0)], [input.row(1)], ...]
-    floatSeqSeq* matrixToFloatSeqSeq (const matrix_t& input);
+    floatSeqSeq* matrixToFloatSeqSeq (core::matrixIn_t input);
+
+    intSeqSeq* matrixToIntSeqSeq (Eigen::Ref<const IntMatrix_t > input);
 
     vector3_t floatSeqToVector3 (const floatSeq& dofArray);
 

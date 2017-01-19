@@ -504,7 +504,7 @@ namespace hpp
           vector_t config = robot->currentConfiguration ();
           size_type ric = joint.rankInConfiguration ();
 	  size_type dim = joint.configSize ();
-          return vectorToFloatseq(config.segment(ric, dim));
+          return vectorToFloatSeq(config.segment(ric, dim));
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -883,7 +883,7 @@ namespace hpp
 	  vector_t config = robot->currentConfiguration ();
 	  size_type deviceDim = robot->configSize ();
           assert(deviceDim == config.size());
-          return vectorToFloatseq (config);
+          return vectorToFloatSeq (config);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -1111,7 +1111,7 @@ namespace hpp
             innerPts.row(nbAutoCol + i) = drs[i].nearest_points[0];
             outerPts.row(nbAutoCol + i) = drs[i].nearest_points[1];
 	  }
-	  distances = vectorToFloatseq(dists);
+	  distances = vectorToFloatSeq(dists);
 	  innerObjects = toNames_t (innerObj.begin(), innerObj.end());
 	  outerObjects = toNames_t (outerObj.begin(), outerObj.end());
 	  innerPoints = matrixToFloatSeqSeq (innerPts);

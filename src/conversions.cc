@@ -55,7 +55,7 @@ namespace hpp {
       return out;
     }
 
-    floatSeq* vectorToFloatseq (const vector_t& input)
+    floatSeq* vectorToFloatSeq (core::vectorIn_t input)
     {
       ULong size = (ULong) input.size ();
       floatSeq* q_ptr = new floatSeq ();
@@ -67,12 +67,26 @@ namespace hpp {
       return q_ptr;
     }
 
-    floatSeqSeq* matrixToFloatSeqSeq (const matrix_t& input)
+    floatSeqSeq* matrixToFloatSeqSeq (core::matrixIn_t input)
     {
       floatSeqSeq* res = new floatSeqSeq;
       res->length ((ULong) input.rows ());
       for (size_type i=0; i<input.rows (); ++i) {
         floatSeq row; row.length ((ULong) input.cols ());
+        for (size_type j=0; j<input.cols (); ++j) {
+          row [(ULong) j] = input (i, j);
+        }
+        (*res) [(ULong) i] = row;
+      }
+      return res;
+    }
+
+    intSeqSeq* matrixToIntSeqSeq (Eigen::Ref<const IntMatrix_t > input)
+    {
+      intSeqSeq* res = new intSeqSeq;
+      res->length ((ULong) input.rows ());
+      for (size_type i=0; i<input.rows (); ++i) {
+        intSeq row; row.length ((ULong) input.cols ());
         for (size_type j=0; j<input.cols (); ++j) {
           row [(ULong) j] = input (i, j);
         }

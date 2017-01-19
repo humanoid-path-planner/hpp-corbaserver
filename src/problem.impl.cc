@@ -950,7 +950,7 @@ namespace hpp
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
-	output = vectorToFloatseq (*config);
+	output = vectorToFloatSeq (*config);
 	return success;
       }
 
@@ -967,7 +967,7 @@ namespace hpp
 	  vector_t v;
 	  matrix_t J;
 	  problemSolver()->computeValueAndJacobian (*configuration, v, J);
-	  value = vectorToFloatseq (v);
+	  value = vectorToFloatSeq (v);
 	  jacobian = matrixToFloatSeqSeq (J);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -1994,7 +1994,7 @@ namespace hpp
 	    nearest = problemSolver()->roadmap ()->nearestNode (configuration, *itcc, distance);
 	  }
           if (!nearest) throw hpp::Error ("Nearest node not found");
-          res = vectorToFloatseq (*(nearest->configuration ()));
+          res = vectorToFloatSeq (*(nearest->configuration ()));
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
