@@ -51,7 +51,9 @@
 #include <hpp/constraints/com-between-feet.hh>
 #include <hpp/constraints/generic-transformation.hh>
 #include <hpp/constraints/convex-shape-contact.hh>
-#include <hpp/constraints/static-stability.hh>
+#ifdef HPP_CONSTRAINTS_USE_QPOASES
+# include <hpp/constraints/static-stability.hh>
+#endif
 #include <hpp/constraints/configuration-constraint.hh>
 #include <hpp/corbaserver/server.hh>
 #include <hpp/pinocchio/body.hh>
@@ -81,8 +83,10 @@ using hpp::constraints::RelativeTransformation;
 using hpp::constraints::Transformation;
 using hpp::constraints::ConvexShapeContact;
 using hpp::constraints::ConvexShapeContactPtr_t;
+#ifdef HPP_CONSTRAINTS_USE_QPOASES
 using hpp::constraints::StaticStability;
 using hpp::constraints::StaticStabilityPtr_t;
+#endif
 using hpp::constraints::DifferentiableFunctionPtr_t;
 
 using hpp::core::NumericalConstraint;
@@ -792,6 +796,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+#ifdef HPP_CONSTRAINTS_USE_QPOASES
       void Problem::createStaticStabilityConstraint
       (const char* constraintName, const hpp::Names_t& jointNames,
        const hpp::floatSeqSeq& points, const hpp::floatSeqSeq& normals,
@@ -845,6 +850,15 @@ namespace hpp
           throw hpp::Error (exc.what ());
         }
       }
+#else
+      void Problem::createStaticStabilityConstraint
+      (const char*, const hpp::Names_t&, const hpp::floatSeqSeq&,
+       const hpp::floatSeqSeq&, const char*)
+        throw (hpp::Error)
+      {
+	throw hpp::Error ("Not implemented");
+      }
+#endif
 
       // ---------------------------------------------------------------
 
@@ -1238,15 +1252,27 @@ namespace hpp
       }
 
       // ---------------------------------------------------------------
-      UShort Problem::getMaxIterations () throw (Error)
+      void Problem::setMaxIterProjection (UShort iterations) throw (Error)
       {
-	return (UShort) problemSolver()->maxIterations ();
+	problemSolver()->maxIterProjection ((size_type)iterations);
       }
 
       // ---------------------------------------------------------------
-      void Problem::setMaxIterations (UShort iterations) throw (Error)
+      UShort Problem::getMaxIterProjection () throw (Error)
       {
-	problemSolver()->maxIterations (iterations);
+	return (UShort) problemSolver()->maxIterProjection ();
+      }
+
+      // ---------------------------------------------------------------
+      void Problem::setMaxIterPathPlanning (UShort iterations) throw (Error)
+      {
+	problemSolver()->maxIterPathPlanning ((size_type)iterations);
+      }
+
+      // ---------------------------------------------------------------
+      UShort Problem::getMaxIterPathPlanning () throw (Error)
+      {
+	return (UShort) problemSolver()->maxIterPathPlanning ();
       }
 
       // ---------------------------------------------------------------
@@ -1395,7 +1421,7 @@ namespace hpp
           (*ret)[0] = time.hours ();
           (*ret)[1] = time.minutes ();
           (*ret)[2] = time.seconds ();
-          (*ret)[3] = (::CORBA::Long) (time.fractional_seconds () / 1000);
+          (*ret)[3] = (long) ((int) time.fractional_seconds () / 1000);
           return ret;
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -1517,7 +1543,7 @@ namespace hpp
 	  }
 	  PathVectorPtr_t start = problemSolver()->paths () [startId];
 	  PathVectorPtr_t end   = problemSolver()->paths () [  endId];
-          start->concatenate(*end);
+          start->concatenate(end);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -1615,7 +1641,7 @@ namespace hpp
           (*ret)[0] = time.hours ();
           (*ret)[1] = time.minutes ();
           (*ret)[2] = time.seconds ();
-          (*ret)[3] = (::CORBA::Long) (time.fractional_seconds () / 1000);
+          (*ret)[3] = (long) ((int) time.fractional_seconds () / 1000);
           return ret;
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -1666,6 +1692,36 @@ namespace hpp
 	    ((CORBA::ULong)size, (CORBA::ULong)size, dofArray, true);
 	  for (std::size_t i=0; i < size; ++i) {
 	    dofArray[(CORBA::ULong)i] =  config [i];
+	  }
+	  return floatSeq;
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // ---------------------------------------------------------------
+
+      hpp::floatSeq* Problem::velocityAtParam (UShort pathId,
+					       Double atDistance)
+	throw (hpp::Error)
+      {
+	try {
+	  if (pathId >= problemSolver()->paths ().size ()) {
+	    std::ostringstream oss ("wrong path id: ");
+	    oss << pathId << ", number path: "
+		<< problemSolver()->paths ().size () << ".";
+	    throw std::runtime_error (oss.str ());
+	  }
+	  PathPtr_t path = problemSolver()->paths () [pathId];
+	  vector_t velocity (problemSolver ()->robot ()->numberDof ());
+	  path->derivative (velocity, atDistance, 1);
+	  // Allocate result now that the size is known.
+	  std::size_t size =  velocity.size ();
+	  double* dofArray = hpp::floatSeq::allocbuf((ULong)size);
+	  hpp::floatSeq* floatSeq = new hpp::floatSeq
+	    ((CORBA::ULong)size, (CORBA::ULong)size, dofArray, true);
+	  for (std::size_t i=0; i < size; ++i) {
+	    dofArray[(CORBA::ULong)i] =  velocity [i];
 	  }
 	  return floatSeq;
 	} catch (const std::exception& exc) {
@@ -1882,7 +1938,7 @@ namespace hpp
               core::ConnectedComponents_t::const_iterator itcc = ccs.begin();
               for (std::size_t i = 0; i < ccs.size (); ++i) {
                 if (*itcc == (*itEdge)->from()->connectedComponent ()) {
-                  return i;
+                  return (CORBA::Long) i;
                 }
                 itcc++;
               }
@@ -1908,7 +1964,7 @@ namespace hpp
               core::ConnectedComponents_t::const_iterator itcc = ccs.begin();
               for (std::size_t i = 0; i < ccs.size (); ++i) {
                 if (*itcc == (*itNode)->connectedComponent ()) {
-                  return i;
+                  return (CORBA::Long) i;
                 }
                 itcc++;
               }

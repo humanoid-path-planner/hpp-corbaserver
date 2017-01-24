@@ -311,10 +311,16 @@ module hpp
     void setErrorThreshold (in double threshold) raises (Error);
 
     /// Set maximal number of iterations in numerical constraint resolution
-    unsigned short getMaxIterations () raises (Error);
+    unsigned short getMaxIterProjection () raises (Error);
 
     /// Set maximal number of iterations in numerical constraint resolution
-    void setMaxIterations (in unsigned short iterations) raises (Error);
+    void setMaxIterProjection (in unsigned short iterations) raises (Error);
+
+    /// Set maximal number of iterations in path planning
+    unsigned short getMaxIterPathPlanning () raises (Error);
+
+    /// Set maximal number of iterations in path planning
+    void setMaxIterPathPlanning (in unsigned short iterations) raises (Error);
 
     /// \}
 
@@ -471,11 +477,18 @@ module hpp
     /// \return length of path if path exists.
     double pathLength(in unsigned short inPathId) raises (Error);
 
-    /// Get the robot config at param on the a path
+    /// Get the robot config at param on a path
     /// \param inPathId rank of the path in the problem
     /// \param atDistance : the user parameter choice
     /// \return dofseq : the config at param
     floatSeq configAtParam(in unsigned short inPathId, in double atDistance)
+      raises (Error);
+
+    /// Get the robot velocity at param on a path
+    /// \param inPathId rank of the path in the problem
+    /// \param atDistance : the user parameter choice
+    /// \return dofseq : the velocity at param
+    floatSeq velocityAtParam(in unsigned short inPathId, in double atDistance)
       raises (Error);
 
     /// Get way points of a path

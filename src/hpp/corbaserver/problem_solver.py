@@ -370,13 +370,35 @@ class ProblemSolver (object):
     def setErrorThreshold (self, threshold):
         return self.client.problem.setErrorThreshold (threshold)
 
-    ## Set the maximal number of iterations
+    ## Set the maximal number of iterations in projection
     def getMaxIterations (self):
-	return self.client.problem.getMaxIterations ()
+        from warnings import warn
+        warn ("method getMaxIterations is deprecated: use getMaxIterProjection"+
+              " instead")
+	return self.client.problem.getMaxIterProjection ()
 
-    ## Set the maximal number of iterations
+    ## Set the maximal number of iterations in projection
     def setMaxIterations (self, iterations):
-	return self.client.problem.setMaxIterations (iterations)
+        from warnings import warn
+        warn ("method setMaxIterations is deprecated: use setMaxIterProjection"+
+              " instead")
+	return self.client.problem.setMaxIterProjection (iterations)
+
+    ## Get the maximal number of iterations in projection
+    def getMaxIterPathPlanning (self):
+	return self.client.problem.getMaxIterPathPlanning ()
+
+    ## Set the maximal number of iterations in projection
+    def setMaxIterPathPlanning (self, iterations):
+	return self.client.problem.setMaxIterPathPlanning (iterations)
+
+    ## Get the maximal number of iterations in projection
+    def getMaxIterProjection (self):
+	return self.client.problem.getMaxIterProjection ()
+
+    ## Set the maximal number of iterations in projection
+    def setMaxIterProjection (self, iterations):
+	return self.client.problem.setMaxIterProjection (iterations)
     ## \}
 
     ## \name Collision Checking
@@ -491,12 +513,19 @@ class ProblemSolver (object):
     def pathLength(self, inPathId):
         return self.client.problem.pathLength(inPathId)
 
-    ## Get the robot's config at param on the a path
+    ## Get the robot config at param on a path
     # \param inPathId rank of the path in the problem
-    # \param atDistance : the user parameter choice
+    # \param param : the user parameter choice
     # \return dofseq : the config at param
-    def configAtParam (self, inPathId, atDistance):
-        return self.client.problem.configAtParam (inPathId, atDistance)
+    def configAtParam (self, inPathId, param):
+        return self.client.problem.configAtParam (inPathId, param)
+
+    ## Get the robot velocity at param on a path
+    # \param inPathId rank of the path in the problem
+    # \param param : the user parameter choice
+    # \return dofseq : the velocity at param
+    def velocityAtParam (self, inPathId, param):
+        return self.client.problem.velocityAtParam (inPathId, param)
 
     ## Get way points of a path
     #  \param pathId rank of the path in the problem
