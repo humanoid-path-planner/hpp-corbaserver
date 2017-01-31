@@ -825,8 +825,12 @@ namespace hpp
 	try {
 	  Configuration_t config = dofArrayToConfig (problemSolver(), dofArray);
 	  // Create a config for robot initialized with dof vector.
-	  getRobotOrThrow(problemSolver())->currentConfiguration (config);
-	  getRobotOrThrow(problemSolver())->computeForwardKinematics ();
+          DevicePtr_t robot = getRobotOrThrow(problemSolver());
+          const value_type eps = std::sqrt(std::numeric_limits<value_type>::epsilon());
+          if (pinocchio::isValidConfiguration(robot, config, eps))
+            throw hpp::Error ("Configuration is not valid (wrong quaternion or complex norm).");
+	  robot->currentConfiguration (config);
+	  robot->computeForwardKinematics ();
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
