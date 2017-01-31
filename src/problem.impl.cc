@@ -129,15 +129,6 @@ namespace hpp
         static const vector3_t   zero (vector3_t  ::Zero());
         static const Transform3f Id   (Transform3f::Identity());
 
-        static ConfigurationPtr_t floatSeqToConfig
-          (hpp::core::ProblemSolverPtr_t problemSolver,
-           const hpp::floatSeq& dofArray)
-          {
-            return ConfigurationPtr_t (new Configuration_t (
-                  floatSeqToVector (dofArray, problemSolver->robot()->configSize())
-                  ));
-          }
-
         struct BoostCorbaAny {
           private:
             template <typename first, typename second>
@@ -477,8 +468,8 @@ namespace hpp
 	throw (hpp::Error)
       {
 	try {
-	  ConfigurationPtr_t config = floatSeqToConfig (problemSolver(),
-							dofArray);
+          DevicePtr_t robot = getRobotOrThrow(problemSolver());
+	  ConfigurationPtr_t config = floatSeqToConfigPtr (robot, dofArray, true);
 	  problemSolver()->initConfig (config);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -517,8 +508,8 @@ namespace hpp
 	throw (hpp::Error)
       {
 	try {
-	  ConfigurationPtr_t config = floatSeqToConfig (problemSolver(),
-							dofArray);
+          DevicePtr_t robot = getRobotOrThrow(problemSolver());
+	  ConfigurationPtr_t config = floatSeqToConfigPtr (robot, dofArray, true);
 	  problemSolver()->addGoalConfig (config);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -888,8 +879,8 @@ namespace hpp
       void Problem::createConfigurationConstraint (const char* constraintName,
           const hpp::floatSeq& goal) throw (hpp::Error)
       {
-	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
-	ConfigurationPtr_t config = floatSeqToConfig (problemSolver(), goal);
+        DevicePtr_t robot = getRobotOrThrow(problemSolver());
+	ConfigurationPtr_t config = floatSeqToConfigPtr (robot, goal, true);
 	std::string name (constraintName);
         problemSolver()->add
           (name, NumericalConstraint::create
@@ -952,9 +943,9 @@ namespace hpp
 				      double& residualError)
 	throw (hpp::Error)
       {
-	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
 	bool success = false;
-	ConfigurationPtr_t config = floatSeqToConfig (problemSolver(), input);
+        DevicePtr_t robot = getRobotOrThrow(problemSolver());
+	ConfigurationPtr_t config = floatSeqToConfigPtr (robot, input, true);
 	try {
 	  success = problemSolver()->constraints ()->apply (*config);
 	  if (hpp::core::ConfigProjectorPtr_t configProjector =
@@ -974,10 +965,9 @@ namespace hpp
       (const hpp::floatSeq& config, hpp::floatSeq_out value,
        hpp::floatSeqSeq_out jacobian) throw (hpp::Error)
       {
-	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
+        DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	try {
-	  ConfigurationPtr_t configuration = floatSeqToConfig
-	    (problemSolver(), config);
+	  ConfigurationPtr_t configuration = floatSeqToConfigPtr (robot, config, true);
 	  vector_t v;
 	  matrix_t J;
 	  problemSolver()->computeValueAndJacobian (*configuration, v, J);
@@ -1439,9 +1429,10 @@ namespace hpp
 	ConfigurationPtr_t start;
 	ConfigurationPtr_t end;
 	bool pathValid = false;
+        DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	try {
-	  start = floatSeqToConfig (problemSolver(), startConfig);
-	  end = floatSeqToConfig (problemSolver(), endConfig);
+	  start = floatSeqToConfigPtr (robot, startConfig, true);
+	  end = floatSeqToConfigPtr (robot, endConfig, true);
 	  if (!problemSolver()->problem ()) {
 	    problemSolver()->resetProblem ();
 	  }
@@ -1462,7 +1453,8 @@ namespace hpp
       void  Problem::addConfigToRoadmap (const hpp::floatSeq& config)
 	throw (hpp::Error)
       {
-	ConfigurationPtr_t configuration (floatSeqToConfig (problemSolver(), config));
+        DevicePtr_t robot = getRobotOrThrow(problemSolver());
+	ConfigurationPtr_t configuration (floatSeqToConfigPtr (robot, config, true));
 	problemSolver()->addConfigToRoadmap (configuration);
       }
 
@@ -1481,8 +1473,9 @@ namespace hpp
 	    throw std::runtime_error (oss.str ());
 	  }
           PathVectorPtr_t path = problemSolver()->paths () [pathId];
-	  ConfigurationPtr_t start (floatSeqToConfig (problemSolver(), config1));
-	  ConfigurationPtr_t finish (floatSeqToConfig (problemSolver(), config2));
+          DevicePtr_t robot = getRobotOrThrow(problemSolver());
+	  ConfigurationPtr_t start (floatSeqToConfigPtr (robot, config1, true));
+	  ConfigurationPtr_t finish (floatSeqToConfigPtr (robot, config2, true));
 	  if (bothEdges) {
 	    problemSolver()->addEdgeToRoadmap (start, finish, path);
 	    problemSolver()->addEdgeToRoadmap (finish, start, path->reverse());
@@ -1509,7 +1502,8 @@ namespace hpp
 	  }
 	  PathVectorPtr_t path = problemSolver()->paths () [pathId];
 	  Configuration_t start (path->end ());
-	  ConfigurationPtr_t end (floatSeqToConfig (problemSolver(), config));
+          DevicePtr_t robot = getRobotOrThrow(problemSolver());
+	  ConfigurationPtr_t end (floatSeqToConfigPtr (robot, config, true));
 	  if (!problemSolver()->problem ()) {
 	    problemSolver()->resetProblem ();
 	  }
@@ -2033,7 +2027,8 @@ namespace hpp
 	  const hpp::core::ConnectedComponents_t& connectedComponents 
 	        (problemSolver()->roadmap ()->connectedComponents ());
 	  hpp::core::NodePtr_t nearest;
-	  hpp::core::ConfigurationPtr_t configuration = floatSeqToConfig (problemSolver(), config); 
+          DevicePtr_t robot = getRobotOrThrow(problemSolver());
+	  ConfigurationPtr_t configuration = floatSeqToConfigPtr (robot, config, true); 
 	  if (connectedComponentId < 0) {
 	    nearest = problemSolver()->roadmap ()->nearestNode (configuration, distance);
 	    	  } else {

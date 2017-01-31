@@ -46,6 +46,10 @@ namespace hpp {
 
     vector_t floatSeqToVector (const floatSeq& dofArray, const size_type expectedSize = -1);
 
+    Configuration_t floatSeqToConfig (const DevicePtr_t& robot, const floatSeq& dofArray, bool throwIfNotNormalized);
+
+    ConfigurationPtr_t floatSeqToConfigPtr (const DevicePtr_t& robot, const floatSeq& dofArray, bool throwIfNotNormalized);
+
     template <typename InputIt> inline Names_t* toNames_t (InputIt begin, InputIt end)
     {
       std::size_t len = std::distance (begin, end);

@@ -794,41 +794,15 @@ namespace hpp
 	}
       }
 
-      static pinocchio::Configuration_t
-      dofArrayToConfig (const core::ProblemSolverPtr_t& problemSolver,
-			const hpp::floatSeq& dofArray)
-      {
-	size_type configDim = (size_type)dofArray.length();
-	std::vector<double> dofVector;
-	// Get robot
-        DevicePtr_t robot = getRobotOrThrow(problemSolver);
-	size_type deviceDim = robot->configSize ();
-	// Fill dof vector with dof array.
-	Configuration_t config; config.resize (configDim);
-	for (size_type iDof = 0; iDof < configDim; iDof++) {
-	  config [iDof] = dofArray[(CORBA::ULong) iDof];
-	}
-	// fill the vector by zero
-	hppDout (info, "config dimension: " <<configDim
-		 <<",  deviceDim "<<deviceDim);
-	if(configDim != deviceDim){
-	  throw hpp::Error ("dofVector Does not match");
-	}
-	return config;
-      }
-
       // --------------------------------------------------------------------
 
       void Robot::setCurrentConfig(const hpp::floatSeq& dofArray)
 	throw (hpp::Error)
       {
 	try {
-	  Configuration_t config = dofArrayToConfig (problemSolver(), dofArray);
-	  // Create a config for robot initialized with dof vector.
           DevicePtr_t robot = getRobotOrThrow(problemSolver());
-          const value_type eps = std::sqrt(std::numeric_limits<value_type>::epsilon());
-          if (pinocchio::isValidConfiguration(robot, config, eps))
-            throw hpp::Error ("Configuration is not valid (wrong quaternion or complex norm).");
+	  // Create a config for robot initialized with dof vector.
+	  Configuration_t config = floatSeqToConfig (robot, dofArray, true);
 	  robot->currentConfiguration (config);
 	  robot->computeForwardKinematics ();
 	} catch (const std::exception& exc) {
@@ -1047,9 +1021,9 @@ namespace hpp
 				 Boolean& validity, CORBA::String_out report)
 	throw (hpp::Error)
       {
-	try {
-	  Configuration_t config = dofArrayToConfig (problemSolver(), dofArray);
-	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
+        try {
+          DevicePtr_t robot = getRobotOrThrow(problemSolver());
+	  Configuration_t config = floatSeqToConfig (robot, dofArray, true);
 	  core::ValidationReportPtr_t validationReport;
 	  validity = problemSolver()->problem ()->configValidations ()->validate
 	    (config, validationReport);

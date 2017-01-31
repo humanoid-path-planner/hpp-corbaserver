@@ -19,6 +19,9 @@
 #include <pinocchio/spatial/se3.hpp>
 #include <hpp/corbaserver/config.hh>
 
+#include <hpp/pinocchio/device.hh>
+#include <hpp/pinocchio/configuration.hh>
+
 namespace hpp {
   namespace corbaServer {
     using CORBA::ULong;
@@ -123,6 +126,24 @@ namespace hpp {
         result [iDof] = dofArray [(CORBA::ULong)iDof];
       }
       return result;
+    }
+
+    Configuration_t floatSeqToConfig (const DevicePtr_t& robot, const floatSeq& dofArray, bool throwIfNotNormalized)
+    {
+      Configuration_t q (floatSeqToVector (dofArray, robot->configSize()));
+      if (throwIfNotNormalized) {
+        const value_type eps = std::sqrt(std::numeric_limits<value_type>::epsilon());
+        if (!pinocchio::isValidConfiguration(robot, q, eps))
+          throw Error ("Configuration is not valid (wrong quaternion or complex norm).");
+      }
+      return q;
+    }
+
+    ConfigurationPtr_t floatSeqToConfigPtr (const DevicePtr_t& robot, const floatSeq& dofArray, bool throwIfNotNormalized)
+    {
+      return ConfigurationPtr_t (new Configuration_t(
+            floatSeqToConfig(robot, dofArray, throwIfNotNormalized)
+            ));
     }
   } // namespace corbaServer
 } // namespace hpp
