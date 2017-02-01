@@ -60,7 +60,7 @@ namespace hpp
           if (jointBounds.size() %2 == 1) {
             HPP_THROW(std::invalid_argument, "Expect a vector of even size");
           }
-          for (std::size_t i = 0; i < jointBounds.size() / 2; i++) {
+          for (std::size_t i = 0; i < (std::size_t)jointBounds.size() / 2; i++) {
             value_type& vMin = jointBounds[2*i  ];
             value_type& vMax = jointBounds[2*i+1];
             if (vMin > vMax) {
@@ -427,19 +427,13 @@ namespace hpp
 	try {
           DevicePtr_t robot = getRobotOrThrow(problemSolver());
           const std::string jn (jointName);
-          const se3::Model& model = robot->model();
-          if (!model.existFrame(jn, JOINT_FRAME)) {
-            HPP_THROW(std::invalid_argument, jn << " not found.");
-          }
-          se3::FrameIndex fid = model.getFrameId(jn, JOINT_FRAME);
+          const Frame f = robot->getFrameByName(jn);
+
           char* name;
-          if (fid == 0) {
+          if (f.isRootFrame()) {
             name = CORBA::string_dup("");
           } else {
-            se3::FrameIndex pfid = model.frames[fid].previousFrame;
-            assert (pfid >= 0 && pfid < model.frames.size());
-
-            const std::string& str = model.frames[pfid].name;
+            const std::string str = f.parentFrame().name();
             name = CORBA::string_dup(str.c_str());
           }
           return name;
@@ -557,8 +551,6 @@ namespace hpp
 	    throw hpp::Error (oss.str ().c_str ());
 	  }
 	  const size_type nv  = joint->numberDof (),
-	                  nq  = joint->configSize (),
-                          ric = joint->rankInConfiguration (),
                           riv = joint->rankInVelocity ();
           if (nv != (size_type) dq.length ()) {
 	    throw Error ("Wrong speed dimension");
@@ -711,7 +703,7 @@ namespace hpp
           se3::JointIndex joint = frame.parent;
           if (frame.type != se3::BODY)
             HPP_THROW(Error, linkName << " is not a link");
-          if (robot->model().joints.size() < (size_type)joint)
+          if (robot->model().joints.size() <= (std::size_t)joint)
             HPP_THROW(Error, "Joint index of link " << linkName << " out of bounds: " << joint);
 
           Transform3f T = robot->data().oMi[joint] * frame.placement;
@@ -731,7 +723,7 @@ namespace hpp
           Frame frame = robot->getFrameByName(jointName);
 
           std::vector<std::string> names;
-          for (size_type i = 0; i < model.frames.size(); ++i) {
+          for (size_type i = 0; i < (size_type)model.frames.size(); ++i) {
             const se3::Frame& f = model.frames[i];
             if (f.type == se3::BODY && f.previousFrame == frame.index())
               names.push_back(f.name);
