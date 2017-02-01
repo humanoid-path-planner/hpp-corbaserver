@@ -31,6 +31,7 @@
 #include <hpp/pinocchio/collision-object.hh>
 #include <hpp/pinocchio/center-of-mass-computation.hh>
 #include <hpp/pinocchio/configuration.hh>
+#include <hpp/pinocchio/liegroup.hh>
 
 #include <hpp/core/problem.hh>
 #include <hpp/core/basic-configuration-shooter.hh>
@@ -566,9 +567,7 @@ namespace hpp
           dqAll .segment(riv, nv) = floatSeqToVector (dq, nv);
 
           vector_t config (robot->currentConfiguration ());
-          config.segment(ric, nq) = joint->jointModel().integrate (config, dqAll);
-
-          pinocchio::saturate (robot, config);
+          pinocchio::integrate<true, pinocchio::LieGroupTpl> (robot, config, dqAll, config);
 
           robot->currentConfiguration (config);
           robot->computeForwardKinematics ();

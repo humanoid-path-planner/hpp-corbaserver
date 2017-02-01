@@ -133,8 +133,8 @@ namespace hpp {
       Configuration_t q (floatSeqToVector (dofArray, robot->configSize()));
       if (throwIfNotNormalized) {
         const value_type eps = std::sqrt(std::numeric_limits<value_type>::epsilon());
-        if (!pinocchio::isValidConfiguration(robot, q, eps))
-          throw Error ("Configuration is not valid (wrong quaternion or complex norm).");
+        if (!pinocchio::isNormalized(robot, q, eps))
+          throw Error ("Configuration is not normalized (wrong quaternion or complex norm).");
       }
       return q;
     }
