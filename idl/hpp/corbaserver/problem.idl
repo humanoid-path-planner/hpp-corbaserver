@@ -454,6 +454,11 @@ module hpp
     void concatenatePath (in unsigned short startId, in unsigned short endId)
       raises (Error);
 
+		/// extract path pathId from param start to end
+		/// \note a New path is added to problem-solver
+		void extractPath (in unsigned short pathId, in double start, in double end)
+			raises (Error);
+
     /// Erase path pathId from stored.
     void erasePath (in unsigned short pathId)
       raises (Error);

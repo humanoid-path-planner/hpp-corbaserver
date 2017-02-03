@@ -1608,6 +1608,36 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+      void Problem::extractPath (UShort pathId, Double start, Double end)
+      throw (hpp::Error)
+      {
+        try {
+          if ( pathId >= problemSolver()->paths ().size ()) {
+            std::ostringstream oss ("wrong path id. ");
+            oss << "Number path: " << problemSolver()->paths ().size () << ".";
+            throw std::runtime_error (oss.str ());
+          }
+          PathVectorPtr_t initPath = problemSolver()->paths () [pathId];
+          if((start < initPath->timeRange().first) || end > initPath->timeRange().second){
+            std::ostringstream oss ("Parameters out of bounds. ");
+            oss << "For pathId =  "<<pathId<<", lenght  = ["<<initPath->timeRange().first<<" ; "<<initPath->timeRange().second<<"].";
+            throw std::runtime_error (oss.str ());
+          }
+          core::PathPtr_t path = initPath->extract(core::interval_t (start,end));
+          PathVectorPtr_t pathVector = boost::dynamic_pointer_cast<core::PathVector>(path);
+          if(pathVector)
+            problemSolver()->addPath(pathVector);
+          else{
+            std::ostringstream oss ("Error during dynamic-cast in extractPath ");
+            throw std::runtime_error (oss.str ());
+          }
+        } catch (const std::exception& exc) {
+          throw hpp::Error (exc.what ());
+        }
+      }
+
+      // ---------------------------------------------------------------
+
       void Problem::erasePath (UShort pathId)
 	throw (hpp::Error)
       {

@@ -226,6 +226,9 @@ namespace hpp
         virtual void concatenatePath (UShort startId, UShort endId)
           throw (hpp::Error);
 
+        virtual void extractPath (UShort pathId, Double start, Double end)throw (hpp::Error);
+
+
         virtual void erasePath (UShort pathId)
           throw (hpp::Error);
 
