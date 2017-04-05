@@ -36,6 +36,7 @@
 #include <hpp/core/path-validation-report.hh>
 #include <hpp/core/straight-path.hh>
 #include <hpp/core/path.hh>
+#include <hpp/core/path-vector.hh>
 #include <hpp/core/subchain-path.hh>
 #include <hpp/core/roadmap.hh>
 #include <hpp/core/problem-solver.hh>
@@ -1789,66 +1790,6 @@ namespace hpp
 	}
       }
 
-      //---------------------------------
-
-      // Get end point of path (start if points == 0, end if points == 1)
-      void findExtremes (PathPtr_t path, hpp::floatSeqSeq& configSequence,
-			 const std::size_t points)
-      {
-	const std::size_t size_increment = 1;
-	Configuration_t config, config_1;
-	std::vector<Configuration_t> configs;
-	hpp::floatSeq dofArray;
-	bool success;
-	config = (*path) (0, success);
-	if (!success) {
-	  throw std::runtime_error ("Failed to apply constraint in path "
-				    "evaluation.");
-	}
-	configs.push_back(config);
-	config_1 = (*path) (path->length(), success);
-	if (!success) {
-	  throw std::runtime_error ("Failed to apply constraint in path "
-				    "evaluation.");
-	}
-	configs.push_back(config_1);
-	dofArray.length ((CORBA::ULong)config.size());
-	// modify configsequence
-	configSequence.length (configSequence.length() +
-			       (CORBA::ULong)size_increment);
-	CORBA::ULong ptr = configSequence.length() -
-	  (CORBA::ULong)size_increment;
-	for (std::size_t i=0; i<size_increment; ++i) {
-	  for (std::size_t j=0; j < ((std::size_t)config.size()); ++j) {
-	    dofArray [(CORBA::ULong)j] = configs [points][j];
-	  }
-	  (configSequence)[ptr+(CORBA::ULong)i] = dofArray;
-	}
-      }
-
-      //---------------------------------
-
-      void findExtremities (PathVectorPtr_t path,
-			    hpp::floatSeqSeq& configSequence)
-      {
-        std::size_t num_subpaths  = (*path).numberPaths ();
-        if (num_subpaths == 1) {
-	  findExtremes (path,configSequence,1);
-	}
-        else {
-	  for (std::size_t i = 0; i < num_subpaths; ++i) {
-	    PathPtr_t subpath = (*path).pathAtRank(i);
-	    PathVectorPtr_t sp =
-	      HPP_DYNAMIC_PTR_CAST (hpp::core::PathVector,subpath);
-	    if (sp) {
-	      findExtremities(sp, configSequence);
-	    } else {
-	      findExtremes (subpath,configSequence, 1);
-	    }
-	  }
-	}
-      }
-
       // --------------------------------------------------------------
 
       hpp::floatSeqSeq* Problem::getWaypoints (UShort pathId)
@@ -1864,10 +1805,13 @@ namespace hpp
 	  hpp::floatSeqSeq *configSequence;
 	  configSequence = new hpp::floatSeqSeq ();
 	  PathVectorPtr_t path = problemSolver()->paths () [pathId];
-	  //init path
-	  findExtremes (path, *configSequence, 0);
-	  findExtremities (path, *configSequence);
-	  return configSequence;
+          PathVectorPtr_t flat = core::PathVector::create(path->outputSize(), path->outputDerivativeSize());
+          path->flatten(flat);
+          core::matrix_t points (flat->numberPaths() + 1, path->outputSize());
+          for (std::size_t i = 0; i < flat->numberPaths(); ++i)
+            points.row(i) = flat->pathAtRank(i)->initial();
+          points.row(flat->numberPaths()) = flat->end();
+	  return matrixToFloatSeqSeq(points);
 	}
 	catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
