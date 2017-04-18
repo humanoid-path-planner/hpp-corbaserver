@@ -304,7 +304,7 @@ namespace hpp
         } else if (w == "parameter") {
           if (problemSolver()->problem() == NULL)
             throw Error ("No problem in the ProblemSolver");
-          ret = problemSolver()->problem()->getKeys <double, Ret_t> ();
+          ret = problemSolver()->problem()->getKeys <boost::any, Ret_t> ();
         } else if (w == "type") {
           ret = boost::assign::list_of ("PathOptimizer") ("PathProjector")
             ("PathPlanner") ("ConfigurationShooter") ("Distance") ("SteeringMethod")
@@ -357,12 +357,13 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::setParameter (const char* name, ::CORBA::Double value)
+      void Problem::setParameter (const char* name, const CORBA::Any& value)
         throw (Error)
       {
         if (problemSolver()->problem() != NULL) {
           try {
-            problemSolver()->problem()->setParameter (std::string(name),value);
+            problemSolver()->problem()->setParameter (std::string(name),
+                BoostCorbaAny::boostize (value));
           } catch (const std::exception& e) {
             throw hpp::Error (e.what ());
           }
@@ -373,16 +374,18 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      ::CORBA::Double Problem::getParameter (const char* name) throw (Error)
+      CORBA::Any* Problem::getParameter (const char* name) throw (Error)
       {
         if (problemSolver()->problem() != NULL) {
-          Double val;
+          boost::any val;
           try {
-            val = problemSolver()->problem()->get<double> (std::string(name));
+            val = problemSolver()->problem()->get<boost::any> (std::string(name));
           } catch (const std::exception& e) {
             throw hpp::Error (e.what ());
           }
-          return val;
+          CORBA::Any* ap = new CORBA::Any;
+          *ap = BoostCorbaAny::corbaize(val);
+          return ap;
         }
         throw Error ("No problem in the ProblemSolver");
       }
