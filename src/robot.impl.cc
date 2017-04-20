@@ -850,8 +850,7 @@ namespace hpp
 	  // Get robot in hppPlanner object.
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	  vector_t config = robot->currentConfiguration ();
-	  size_type deviceDim = robot->configSize ();
-          assert(deviceDim == config.size());
+          assert(robot->configSize () == config.size());
           return vectorToFloatSeq (config);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());

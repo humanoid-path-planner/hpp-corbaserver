@@ -1736,8 +1736,6 @@ namespace hpp
 		<< problemSolver()->paths ().size () << ".";
 	    throw std::runtime_error (oss.str ().c_str ());
 	  }
-	  hpp::floatSeqSeq *configSequence;
-	  configSequence = new hpp::floatSeqSeq ();
 	  PathVectorPtr_t path = problemSolver()->paths () [pathId];
           PathVectorPtr_t flat = core::PathVector::create(path->outputSize(), path->outputDerivativeSize());
           path->flatten(flat);
