@@ -175,6 +175,22 @@ namespace hpp
 			      hpp::floatSeqSeq_out outerPoints)
 	  throw (hpp::Error);
 
+	virtual void
+	autocollisionCheck (hpp::boolSeq_out collide)
+	  throw (hpp::Error);
+
+	virtual void
+	autocollisionPairs (Names_t_out innerObjects,
+			Names_t_out outerObjects,
+                        boolSeq_out active)
+	  throw (hpp::Error);
+
+	virtual void
+	setAutoCollision (const char* innerObject,
+			  const char* outerObject,
+                          bool active)
+	  throw (hpp::Error);
+
 	virtual Double getMass () throw (hpp::Error);
 
 	virtual hpp::floatSeq* getCenterOfMass () throw (hpp::Error);

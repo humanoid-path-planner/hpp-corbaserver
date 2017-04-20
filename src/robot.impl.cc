@@ -1091,6 +1091,102 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
+      void
+      Robot::autocollisionCheck (hpp::boolSeq_out collide)
+	throw (hpp::Error)
+      {
+	try {
+	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
+	  robot->collisionTest (false);
+          const pinocchio::GeomModel& geomModel (robot->geomModel());
+          const pinocchio::GeomData & geomData  (robot->geomData ());
+
+          const std::size_t nbColPairs = geomModel.collisionPairs.size();
+
+          boolSeq* col_ptr = new boolSeq ();
+          col_ptr->length ((ULong) nbColPairs);
+          collide = col_ptr;
+
+          for (std::size_t i = 0; i < nbColPairs; ++i)
+	    (*col_ptr) [(ULong)i] = geomData.collisionResults[i].isCollision();
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
+
+      void
+      Robot::autocollisionPairs (Names_t_out innerObjects,
+                                 Names_t_out outerObjects,
+                                 boolSeq_out active)
+	throw (hpp::Error)
+      {
+	try {
+	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
+          const pinocchio::GeomModel& geomModel (robot->geomModel());
+          const pinocchio::GeomData & geomData  (robot->geomData ());
+
+          const std::size_t nbAutoCol = geomModel.collisionPairs.size();
+
+          std::vector<std::string> innerObj (nbAutoCol);
+          std::vector<std::string> outerObj (nbAutoCol);
+
+          boolSeq* active_ptr = new boolSeq ();
+          active_ptr->length ((ULong) nbAutoCol);
+          active = active_ptr;
+
+          for (std::size_t i = 0; i < nbAutoCol; ++i)
+          {
+            const se3::CollisionPair& cp (geomModel.collisionPairs[i]);
+	    innerObj [i] = geomModel.geometryObjects[cp.first ].name;
+	    outerObj [i] = geomModel.geometryObjects[cp.second].name;
+	    (*active_ptr) [(ULong)i] = geomData.activeCollisionPairs[i];
+	  }
+	  innerObjects = toNames_t (innerObj.begin(), innerObj.end());
+	  outerObjects = toNames_t (outerObj.begin(), outerObj.end());
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
+
+      void
+      Robot::setAutoCollision (const char* innerObject,
+                               const char* outerObject,
+                               bool active)
+	throw (hpp::Error)
+      {
+	try {
+	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
+
+          const pinocchio::GeomModel& geomModel (robot->geomModel());
+          pinocchio::GeomData & geomData  (robot->geomData ());
+
+          if (!geomModel.existGeometryName(innerObject))
+            HPP_THROW(Error, "Object " << innerObject << " not found");
+          if (!geomModel.existGeometryName(outerObject))
+            HPP_THROW(Error, "Object " << outerObject << " not found");
+          se3::GeomIndex idxI = geomModel.getGeometryId(innerObject);
+          se3::GeomIndex idxO = geomModel.getGeometryId(outerObject);
+          se3::PairIndex pid = geomModel.findCollisionPair(se3::CollisionPair(idxI, idxO));
+
+          if (pid >= geomModel.collisionPairs.size()) {
+            HPP_THROW(Error, "Collision pair (" << innerObject << ", " << outerObject << ") not found");
+          }
+
+          geomData.activateCollisionPair(pid, active);
+
+          problemSolver()->initPathValidation();
+          problemSolver()->problem()->resetConfigValidations();
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
+
       Double Robot::getMass () throw (hpp::Error)
       {
 	try {

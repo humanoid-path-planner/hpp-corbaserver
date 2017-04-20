@@ -285,6 +285,21 @@ module hpp
 			       out floatSeqSeq innerPoints,
 			       out floatSeqSeq outerPoints) raises (Error);
 
+    /// Check each auto-collision pair for collision and return the result.
+    ///
+    /// \retval collide a list of boolean corresponding to the return value of
+    ///                 of collisionPairs
+    void autocollisionCheck (out boolSeq collide) raises (Error);
+
+    /// Returns the list of auto collision pairs.
+    ///
+    /// \retval innerObjects names of the objects belonging to a body
+    /// \retval outerObjects names of the objects tested with inner objects,
+    /// \retval active vector of boolean saying whether a collision pair is active
+    void autocollisionPairs (out Names_t innerObjects, out Names_t outerObjects, out boolSeq active) raises (Error);
+
+    void setAutoCollision (in string innerObject, in string outerObject, in boolean active) raises (Error);
+
     /// \}
 
     /// \name Mass and inertia
