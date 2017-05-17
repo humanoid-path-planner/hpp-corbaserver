@@ -161,6 +161,7 @@ namespace hpp
 				const hpp::floatSeq& value)
 	  throw (hpp::Error);
         virtual void filterCollisionPairs () throw (hpp::Error);
+        /*
 	virtual void resetGoalConstraints () throw (hpp::Error);
 	virtual void setGoalNumericalConstraints
 	(const char* constraintName, const hpp::Names_t& constraintNames,
@@ -169,6 +170,7 @@ namespace hpp
 	virtual void addGoalLockJoint (const char* jointName,
 				const hpp::floatSeq& value)
 	  throw (hpp::Error);
+          */
 	virtual Double getErrorThreshold () throw (Error);
 	virtual void setErrorThreshold (Double threshold) throw (Error);
 	virtual UShort getMaxIterProjection () throw (Error);

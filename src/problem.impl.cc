@@ -1176,6 +1176,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+      /*
       void Problem::setGoalNumericalConstraints
       (const char* constraintName, const Names_t& constraintNames,
        const hpp::intSeq& priorities)
@@ -1227,6 +1228,7 @@ namespace hpp
 	  throw hpp::Error (exc.what ());
 	}
       }
+      */
 
       // ---------------------------------------------------------------
 
