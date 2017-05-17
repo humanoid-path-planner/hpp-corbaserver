@@ -2042,9 +2042,9 @@ namespace hpp
           // the roadmap
           if (p->roadmap()->initNode())
             p->initConfig(p->roadmap()->initNode()->configuration());
-          const hpp::core::Nodes_t& goals = p->roadmap()->goalNodes();
+          const hpp::core::NodeVector_t& goals = p->roadmap()->goalNodes();
           p->resetGoalConfigs();
-          for (hpp::core::Nodes_t::const_iterator _goals = goals.begin();
+          for (hpp::core::NodeVector_t::const_iterator _goals = goals.begin();
               _goals != goals.end(); ++_goals)
             p->addGoalConfig ((*_goals)->configuration());
         } catch (const std::exception& exc) {
