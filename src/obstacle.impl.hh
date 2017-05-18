@@ -40,6 +40,9 @@ namespace hpp
 	(const char* objectName, const char* jointName, Boolean collision,
 	 Boolean distance) throw (hpp::Error);
 
+        virtual void cutObstacle (const char* objectName, const floatSeq& aabb)
+        throw (Error);
+
 	virtual	void
 	addObstacle (const char* polyhedronName, Boolean collision,
 		     Boolean distance)

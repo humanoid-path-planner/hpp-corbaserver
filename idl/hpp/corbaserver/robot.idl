@@ -300,6 +300,9 @@ module hpp
 
     void setAutoCollision (in string innerObject, in string outerObject, in boolean active) raises (Error);
 
+    /// Get the aligned axes bounding box around the robot.
+    floatSeq getRobotAABB () raises (Error);
+
     /// \}
 
     /// \name Mass and inertia

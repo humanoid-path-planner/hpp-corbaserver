@@ -47,6 +47,11 @@ module hpp
 				  in boolean collision, in boolean distance)
       raises (Error);
 
+    /// Cut the obstacle with the given AABB
+    /// \param aabb a vector of 6 floats. The 3 first represent one corner
+    ///             and the 3 last represent the opposite corner.
+    void cutObstacle (in string objectName, in floatSeq aabb) raises (Error);
+
     /// \brief Add an obstacle to the set of obstacles
     ///
     /// \param objectName name of the object.

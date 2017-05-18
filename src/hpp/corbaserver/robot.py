@@ -219,6 +219,12 @@ class Robot (object):
     # body.
     def distancesToCollision (self):
         return self.client.robot.distancesToCollision ()
+
+    ## Get the aligned axes bounding box around the robot.
+    # \return a vector a 6 floats. The 3 first are one corner of the box (lowest in all dimensions),
+    #         the 3 last are the opposite corner.
+    def getRobotAABB(self):
+        return self.client.robot.getRobotAABB ()
     ## \}
     ## \name Mass and inertia
     # \{

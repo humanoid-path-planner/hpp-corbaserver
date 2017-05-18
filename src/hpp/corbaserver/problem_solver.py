@@ -134,6 +134,12 @@ class ProblemSolver (object):
         return self.client.obstacle.removeObstacleFromJoint \
             (objectName, jointName, collision, distance)
 
+    ## Cut the obstacle with the given AABB
+    # \param aabb a vector of 6 floats. The 3 first represent one corner
+    #             and the 3 last represent the opposite corner.
+    def cutObstacle (self, objectName, aabb):
+        return self.client.obstacle.cutObstacle(objectName, aabb)
+
     ## Move an obstacle to a given configuration.
     #  \param objectName name of the polyhedron.
     #  \param cfg the configuration of the obstacle.

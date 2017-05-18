@@ -1369,6 +1369,21 @@ namespace hpp
         }
         problemSolver()->addCenterOfMassComputation (std::string (comName), comc);
       }
+
+      floatSeq* Robot::getRobotAABB()
+        throw (hpp::Error)
+      {
+        DevicePtr_t robot = getRobotOrThrow(problemSolver());
+        try {
+          fcl::AABB aabb = robot->computeAABB();
+          vector_t v (6);
+          v.head<3>() = aabb.min_;
+          v.tail<3>() = aabb.max_;
+          return vectorToFloatSeq(v);
+        } catch (const std::exception& exc) {
+          throw hpp::Error (exc.what ());
+        }
+      }
     } // end of namespace impl.
   } // end of namespace corbaServer.
 } // end of namespace hpp.

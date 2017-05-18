@@ -99,6 +99,18 @@ namespace hpp
 	}
       }
 
+      void Obstacle::cutObstacle (const char* objectName, const floatSeq& aabb)
+        throw (Error)
+      {
+        try {
+          vector_t _aabb = floatSeqToVector(aabb, 6);
+          fcl::AABB fclaabb (_aabb.head<3>(), _aabb.tail<3>());
+          problemSolver()->cutObstacle(objectName, fclaabb);
+        } catch (const std::exception& e) {
+          throw hpp::Error (e.what ());
+        }
+      }
+
       void
       Obstacle::addObstacle(const char* objectName, Boolean collision,
 			    Boolean distance)

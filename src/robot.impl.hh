@@ -227,6 +227,8 @@ namespace hpp
         addPartialCom (const char* comName, const Names_t& jointNames)
           throw (hpp::Error);
 
+        virtual floatSeq* getRobotAABB() throw (hpp::Error);
+
       private:
 	CollisionObjectConstPtr_t getObjectByName (const char* name);
 	typedef std::map <std::string, JointPtr_t> JointMap_t;
