@@ -23,12 +23,12 @@ class Client:
 
   defaultClients = ['problem', 'obstacle', 'robot']
 
-  def makeClient(self, serviceName):
+  def makeClient(self, serviceName, postContextId):
     """
     Create a client to a new CORBA service and add it to this class.
     """
     serviceName = serviceName.lower ()
-    name = [CosNaming.NameComponent ("hpp", "corbaserver"),
+    name = [CosNaming.NameComponent ("hpp" + postContextId, "corbaserver"),
             CosNaming.NameComponent ("basic", serviceName)]
 
     try:
@@ -50,7 +50,7 @@ class Client:
     self.__dict__[serviceName] = client
 
 
-  def __init__(self, clients = defaultClients, url = None):
+  def __init__(self, clients = defaultClients, url = None, postContextId=""):
     """
     Initialize CORBA and create default clients.
     :param url: URL in the IOR, corbaloc, corbalocs, and corbanames formats.
@@ -68,7 +68,7 @@ class Client:
       raise CorbaError ('failed to narrow the root context')
 
     for client in clients:
-      self.makeClient (client)
+      self.makeClient (client, postContextId)
 
 def _getIIOPurl ():
   import os
