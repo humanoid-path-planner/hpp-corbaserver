@@ -131,7 +131,7 @@ namespace hpp
       private_->createAndActivateServers(this);
     }
 
-    void Server::startCorbaServer()
+    void Server::startCorbaServer(std::string nb_server)
     {
       // Obtain a reference to objects, and register them in
       // the naming service.
@@ -139,7 +139,7 @@ namespace hpp
       Object_var obstacleObj = private_->obstacleServant_->_this();
       Object_var problemObj = private_->problemServant_->_this();
 
-      private_->createHppContext ();
+      private_->createHppContext (nb_server);
       // Bind robotObj with name Robot to the hppContext:
       CosNaming::Name objectName;
       objectName.length(1);

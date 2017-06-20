@@ -23,6 +23,11 @@ main (int argc, const char* argv[])
     hpp::core::ProblemSolver::create ();
   Server server (problemSolver, argc, argv, true);
 
-  server.startCorbaServer ();
+  std::string postContextId("");
+  if(argc>1) {
+      postContextId = std::string(argv[1]);
+  }
+
+  server.startCorbaServer (postContextId);
   server.processRequest(true);
 }
