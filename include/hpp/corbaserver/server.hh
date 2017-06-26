@@ -83,7 +83,13 @@ namespace hpp
 
       /// \brief Initialize CORBA server to process requests from clients
       /// \return 0 if success, -1 if failure.
-      void startCorbaServer (std::string nb_server);
+      void startCorbaServer ();
+
+      /// Get main context ID
+      const std::string& mainContextId () const
+      {
+        return mainContextId_;
+      }
 
       /// \brief If ORB work is pending, process it
       /// \param loop if true, the function never returns,
@@ -106,9 +112,13 @@ namespace hpp
       ///        multithred policy.
       void initORBandServers (int argc, const char* argv[], bool multiThread);
 
+      void parseArguments (int argc, const char* argv[]);
+
       /// \}
 
       impl::Server* private_;
+
+      std::string mainContextId_;
 
       /// pointer to core::ProblemSolver Object.
       ///

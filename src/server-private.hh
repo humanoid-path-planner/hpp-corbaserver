@@ -57,7 +57,7 @@ namespace hpp
 	CosNaming::NamingContext_var hppContext_;
 
 	/// \brief Create context.
-    void createHppContext (std::string nb_server);
+    void createHppContext (const std::string& nb_server);
 
 	/// \brief Store objects in Corba name service.
 	void bindObjectToName

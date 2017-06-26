@@ -44,6 +44,11 @@ namespace hpp
       {
 	hppDout (info, "omniORB: " << msg);
       }
+
+      void usage (const char* app)
+      {
+        std::cerr << "Usage: " << app << " [--name <name>] [--help]" << std::endl;
+      }
     } // end of anonymous namespace.
 
 
@@ -56,6 +61,8 @@ namespace hpp
 
       private_ = new impl::Server;
 
+      parseArguments (argc, argv);
+
       initORBandServers (argc, argv, inMultiThread);
     }
 
@@ -67,6 +74,8 @@ namespace hpp
       omniORB::setLogFunction (&logFunction);
 
       private_ = new impl::Server;
+
+      parseArguments (argc, argv);
 
       initORBandServers (argc, argv, inMultiThread);
     }
@@ -131,7 +140,21 @@ namespace hpp
       private_->createAndActivateServers(this);
     }
 
-    void Server::startCorbaServer(std::string nb_server)
+    void Server::parseArguments (int argc, const char* argv[])
+    {
+      mainContextId_ = "hpp";
+
+      for (int i = 1; i < argc; ++i) {
+        if (strcmp(argv[i], "--name") == 0) {
+          if (i < argc - 1) mainContextId_.append(argv[i+1]);
+          else              usage(argv[0]);
+        } else if (strcmp(argv[i], "--help") == 0) {
+          usage(argv[0]);
+        }
+      }
+    }
+
+    void Server::startCorbaServer()
     {
       // Obtain a reference to objects, and register them in
       // the naming service.
@@ -139,7 +162,7 @@ namespace hpp
       Object_var obstacleObj = private_->obstacleServant_->_this();
       Object_var problemObj = private_->problemServant_->_this();
 
-      private_->createHppContext (nb_server);
+      private_->createHppContext (mainContextId());
       // Bind robotObj with name Robot to the hppContext:
       CosNaming::Name objectName;
       objectName.length(1);

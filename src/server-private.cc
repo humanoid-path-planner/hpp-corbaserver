@@ -66,7 +66,7 @@ namespace hpp
       }
 
 
-      void Server::createHppContext (std::string nb_server)
+      void Server::createHppContext (const std::string& mainContextId)
       {
 	CosNaming::NamingContext_var rootContext;
 	Object_var localObj;
@@ -90,10 +90,8 @@ namespace hpp
 	  throw std::runtime_error (msg.c_str ());
 	}
 	// Bind a context called "hpp" to the root context:
-	contextName.length(1);
-    std::string contextId("hpp");
-    contextId.append(nb_server);
-    contextName[0].id   = (const char*) contextId.c_str();       // string copied
+        contextName.length(1);
+        contextName[0].id   = (const char*) mainContextId.c_str(); // string copied
 	contextName[0].kind = (const char*) "corbaserver"; // string copied
 	// Note on kind: The kind field is used to indicate the type
 	// of the object. This is to avoid conventions such as that used
