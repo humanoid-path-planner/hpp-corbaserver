@@ -1357,17 +1357,21 @@ namespace hpp
       void Robot::addPartialCom (const char* comName, const Names_t& jointNames)
         throw (hpp::Error)
       {
-        DevicePtr_t robot = getRobotOrThrow(problemSolver());
-        pinocchio::CenterOfMassComputationPtr_t comc =
-          pinocchio::CenterOfMassComputation::create (robot);
+        try {
+          DevicePtr_t robot = getRobotOrThrow(problemSolver());
+          pinocchio::CenterOfMassComputationPtr_t comc =
+            pinocchio::CenterOfMassComputation::create (robot);
 
-        for (CORBA::ULong i=0; i<jointNames.length (); ++i) {
-          std::string name (jointNames[i]);
-          JointPtr_t j = robot->getJointByName (name);
-          if (!j) throw hpp::Error ("One joint not found.");
-          comc->add (j);
+          for (CORBA::ULong i=0; i<jointNames.length (); ++i) {
+            std::string name (jointNames[i]);
+            JointPtr_t j = robot->getJointByName (name);
+            if (!j) throw hpp::Error ("One joint not found.");
+            comc->add (j);
+          }
+          problemSolver()->addCenterOfMassComputation (std::string (comName), comc);
+        } catch (const std::exception& exc) {
+          throw hpp::Error (exc.what ());
         }
-        problemSolver()->addCenterOfMassComputation (std::string (comName), comc);
       }
 
       floatSeq* Robot::getRobotAABB()
