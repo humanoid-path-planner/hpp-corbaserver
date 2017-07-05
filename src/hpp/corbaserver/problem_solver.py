@@ -48,6 +48,12 @@ class ProblemSolver (object):
 
     ## Set a parameter
     #  \param value the input type must be long, double, const char*
+    #
+    #  \code
+    #  import CORBA
+    #  ProblemSolver ps(robot)
+    #  ps.setParameter ("name", CORBA.Any(CORBA.TC_double, 3.2233))
+    #  \endcode
     def setParameter (self, name, value):
         return self.client.problem.setParameter (name, value)
 
