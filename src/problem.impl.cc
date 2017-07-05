@@ -620,7 +620,7 @@ namespace hpp
         CenterOfMassComputationPtr_t comc;
 	vector3_t point = floatSeqToVector3 (p);
 
-	std::vector<bool> m = boolSeqToBoolVector (mask, 4);
+	std::vector<bool> m = boolSeqToBoolVector (mask, 3);
 	try {
           joint = problemSolver()->robot()->getJointByName(jointName);
 	  // Test whether joint1 is world frame
