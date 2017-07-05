@@ -176,6 +176,7 @@ namespace hpp
               std::pair<unsigned long       , CORBA::ULong>,
               std::pair<double              , CORBA::Double>,
               std::pair<float               , CORBA::Float>,
+              std::pair<bool                , CORBA::Boolean>,
               std::pair<std::string         , const char*>
                 > BoostCorbaPairs_t;
 
