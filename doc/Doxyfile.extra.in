@@ -3,6 +3,8 @@ FILE_PATTERNS          = *.idl *.hh
 INPUT                  = @CMAKE_SOURCE_DIR@/include \
                          @CMAKE_SOURCE_DIR@/idl	  \
                          @CMAKE_SOURCE_DIR@/doc \
+		  	 @CMAKE_SOURCE_DIR@/src/hpp/quaternion.py \
+		  	 @CMAKE_SOURCE_DIR@/src/hpp/transform.py \
 		  	 @CMAKE_SOURCE_DIR@/src/hpp/corbaserver/problem_solver.py \
  		  	 @CMAKE_SOURCE_DIR@/src/hpp/corbaserver/robot.py \
  		  	 @CMAKE_SOURCE_DIR@/src/hpp/corbaserver/benchmark.py
