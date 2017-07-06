@@ -1374,6 +1374,36 @@ namespace hpp
         }
       }
 
+      hpp::floatSeq* Robot::getPartialCom (const char* comName) throw (hpp::Error)
+      {
+	try {
+          pinocchio::CenterOfMassComputationPtr_t comc =
+            problemSolver()->centerOfMassComputation(comName);
+          if (!comc) {
+            HPP_THROW(std::invalid_argument, "Partial COM " << comName << " not found.");
+          }
+          comc->compute (pinocchio::Device::COM);
+	  return vectorToFloatSeq (comc->com());
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      hpp::floatSeqSeq* Robot::getJacobianPartialCom (const char* comName) throw (hpp::Error)
+      {
+	try {
+          pinocchio::CenterOfMassComputationPtr_t comc =
+            problemSolver()->centerOfMassComputation(comName);
+          if (!comc) {
+            HPP_THROW(std::invalid_argument, "Partial COM " << comName << " not found.");
+          }
+          comc->compute (pinocchio::Device::JACOBIAN);
+	  return matrixToFloatSeqSeq (comc->jacobian());
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
       floatSeq* Robot::getRobotAABB()
         throw (hpp::Error)
       {
