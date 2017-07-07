@@ -628,7 +628,7 @@ namespace hpp
           if (comN.compare ("") == 0) {
             problemSolver()->addNumericalConstraint
               (name, NumericalConstraint::create
-	       (RelativeCom::create (problemSolver()->robot(),
+	       (RelativeCom::create (name, problemSolver()->robot(),
 				     joint, point, m)));
           } else {
             comc = problemSolver()->centerOfMassComputation (comN);
@@ -636,7 +636,7 @@ namespace hpp
               throw hpp::Error ("Partial COM not found.");
             problemSolver()->addNumericalConstraint
               (name, NumericalConstraint::create
-	       (RelativeCom::create (problemSolver()->robot(), comc,
+	       (RelativeCom::create (name, problemSolver()->robot(), comc,
 				     joint, point, m)));
           }
 	} catch (const std::exception& exc) {
