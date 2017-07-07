@@ -1729,7 +1729,7 @@ namespace hpp
 
       // --------------------------------------------------------------
 
-      hpp::floatSeqSeq* Problem::getWaypoints (UShort pathId)
+      hpp::floatSeqSeq* Problem::getWaypoints (UShort pathId, hpp::floatSeq_out times)
 	throw (hpp::Error)
       {
 	try {
@@ -1743,9 +1743,14 @@ namespace hpp
           PathVectorPtr_t flat = core::PathVector::create(path->outputSize(), path->outputDerivativeSize());
           path->flatten(flat);
           core::matrix_t points (flat->numberPaths() + 1, path->outputSize());
-          for (std::size_t i = 0; i < flat->numberPaths(); ++i)
+          core::vector_t ts (flat->numberPaths() + 1);
+          ts(0) = flat->timeRange().first;
+          for (std::size_t i = 0; i < flat->numberPaths(); ++i) {
             points.row(i) = flat->pathAtRank(i)->initial();
+            ts(i+1) = ts(i) + flat->pathAtRank(i)->length();
+          }
           points.row(flat->numberPaths()) = flat->end();
+          times = vectorToFloatSeq (ts);
 	  return matrixToFloatSeqSeq(points);
 	}
 	catch (const std::exception& exc) {

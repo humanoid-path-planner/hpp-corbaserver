@@ -250,7 +250,7 @@ namespace hpp
 						Double atDistance)
 	  throw (hpp::Error);
 
-	virtual hpp::floatSeqSeq* getWaypoints (UShort inPathId)
+	virtual hpp::floatSeqSeq* getWaypoints (UShort inPathId, floatSeq_out times)
 	  throw (hpp::Error);
 	virtual hpp::floatSeqSeq* nodes () throw (hpp::Error);
 	virtual Long numberEdges () throw (hpp::Error);
