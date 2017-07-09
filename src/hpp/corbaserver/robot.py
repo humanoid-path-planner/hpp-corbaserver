@@ -25,14 +25,19 @@ from hpp.corbaserver.client import Client
 #  This class is also a wrapper of idl methods defined by
 #  hpp::corbaserver::Robot. Most methods call idl methods.
 class Robot (object):
-    def __init__ (self, robotName, rootJointType, load = True):
-        self.name = robotName
-        self.displayName = robotName
-        self.tf_root = "base_link"
-        self.rootJointType = rootJointType
-        self.client = Client ()
-        if load:
-            self.loadModel (robotName, rootJointType)
+    def __init__ (self, robotName = None, rootJointType = None, load = True, client = Client ()):
+        self.client = client
+        if robotName is None:
+            # assert (rootJointType is None), "rootJointType is ignore when robotName is None"
+            self.name = self.client.robot.getRobotName()
+            self.rootJointType = rootJointType
+            self.displayName = self.name
+        else:
+            self.name = robotName
+            self.displayName = robotName
+            self.rootJointType = rootJointType
+            if load:
+                self.loadModel (robotName, rootJointType)
         self.jointNames = self.client.robot.getJointNames ()
         self.allJointNames = self.client.robot.getAllJointNames ()
         self.rankInConfiguration = dict ()
@@ -246,8 +251,8 @@ class Robot (object):
 #  Method loadModel builds a humanoid robot.
 class HumanoidRobot (Robot):
 
-    def __init__ (self, robotName, rootJointType, load = True):
-        Robot.__init__ (self, robotName, rootJointType, load)
+    def __init__ (self, robotName = None, rootJointType = None, load = True, client = Client ()):
+        Robot.__init__ (self, robotName, rootJointType, load, client)
     def loadModel (self, robotName, rootJointType):
         self.client.robot.loadHumanoidModel (robotName, rootJointType,
                                           self.packageName, self.urdfName,

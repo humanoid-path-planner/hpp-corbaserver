@@ -227,6 +227,12 @@ namespace hpp
         addPartialCom (const char* comName, const Names_t& jointNames)
           throw (hpp::Error);
 
+        virtual hpp::floatSeq* getPartialCom (const char* comName)
+          throw (hpp::Error);
+
+        virtual hpp::floatSeqSeq* getJacobianPartialCom (const char* comName)
+          throw (hpp::Error);
+
         virtual floatSeq* getRobotAABB() throw (hpp::Error);
 
       private:

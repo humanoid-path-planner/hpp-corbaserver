@@ -405,6 +405,12 @@ module hpp
     void addPartialCom (in string comName, in Names_t jointNames)
         raises (Error);
 
+    /// Get position of partial center of mass
+    floatSeq getPartialCom (in string comName) raises (Error);
+
+    /// Get Jacobian of the partial center of mass
+    floatSeqSeq getJacobianPartialCom (in string comName) raises (Error);
+
     /// Get the name of the current robot.
     string getRobotName () raises (Error);
     /// \}

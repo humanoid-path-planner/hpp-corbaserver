@@ -494,7 +494,7 @@ module hpp
 
     /// Get way points of a path
     /// \param pathId rank of the path in the problem
-    floatSeqSeq getWaypoints (in unsigned short pathId) raises (Error);
+    floatSeqSeq getWaypoints (in unsigned short pathId, out floatSeq times) raises (Error);
 
     /// \}
 
