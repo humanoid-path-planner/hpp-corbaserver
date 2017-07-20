@@ -169,14 +169,13 @@ namespace hpp
             /// TODO: This list of CORBA types is not complete.
             typedef boost::mpl::vector<
               // There is no operator<<= (CORBA::Any, CORBA::Boolean)
-              // std::pair<bool                , CORBA::Boolean>,
+              std::pair<bool                , CORBA::Boolean>,
               std::pair<int                 , CORBA::Short>,
               std::pair<unsigned int        , CORBA::UShort>,
               std::pair<long                , CORBA::Long>,
               std::pair<unsigned long       , CORBA::ULong>,
               std::pair<double              , CORBA::Double>,
               std::pair<float               , CORBA::Float>,
-              std::pair<bool                , CORBA::Boolean>,
               std::pair<std::string         , const char*>
                 > BoostCorbaPairs_t;
 
