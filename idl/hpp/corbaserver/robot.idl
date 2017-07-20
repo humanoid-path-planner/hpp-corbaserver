@@ -162,7 +162,7 @@ module hpp
     /// \throw Error if robot is not set or if joint does not exist.
     short getJointConfigSize (in string jointName) raises (Error);
 
-    ///  set a bound for the joint
+    ///  set bounds for a joint
 
     /// \param jointName name of the joint
     /// \param inJointBound sequence of joint dof bounds in order
@@ -175,6 +175,14 @@ module hpp
     void setJointBounds(in string jointName,
 			in floatSeq inJointBound)
       raises (Error);
+
+    /// Get bounds for a joint
+    ///
+    /// \param jointName name of the joint
+    /// \return sequence of bounds in order [v0_min,v0_max,v1_min,v1_max,...]
+    ///         where vi_min, vi_max are the bounds of the i-th degree of
+    ///         freedom of the joint if the degree of freedom is bounded, 1, 0
+    ///         otherwise.
     floatSeq getJointBounds(in string jointName) raises (Error);
 
     /// Get link position in world frame
