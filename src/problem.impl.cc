@@ -13,7 +13,7 @@
 
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <boost/assign/list_of.hpp>
-#include <boost/algorithm/string.hpp>    
+#include <boost/algorithm/string.hpp>
 #include <boost/icl/interval_set.hpp>
 
 #include <hpp/util/debug.hh>
@@ -101,7 +101,7 @@ namespace boost {
         typedef hpp::core::size_type      domain_type;
         typedef std::less<domain_type>    domain_compare;
 
-        static interval_type construct(const domain_type& lo, const domain_type& up) 
+        static interval_type construct(const domain_type& lo, const domain_type& up)
         { return interval_type(lo, up - lo); }
 
         static domain_type lower(const interval_type& inter){ return inter.first; };
@@ -1104,10 +1104,10 @@ namespace hpp
 	       std::string ("can not be found."));
 	  if (constant) {
 	    problemSolver()->comparisonType (constraintName,
-					   core::EqualToZero::create ());
+					   core::ComparisonType::EqualToZero);
 	  } else {
 	    problemSolver()->comparisonType (constraintName,
-					   core::Equality::create ());
+					   core::ComparisonType::Equality);
 	  }
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -1973,11 +1973,11 @@ namespace hpp
       {
 	hpp::floatSeq* res;
 	try {
-	  const hpp::core::ConnectedComponents_t& connectedComponents 
+	  const hpp::core::ConnectedComponents_t& connectedComponents
 	        (problemSolver()->roadmap ()->connectedComponents ());
 	  hpp::core::NodePtr_t nearest;
           DevicePtr_t robot = getRobotOrThrow(problemSolver());
-	  ConfigurationPtr_t configuration = floatSeqToConfigPtr (robot, config, true); 
+	  ConfigurationPtr_t configuration = floatSeqToConfigPtr (robot, config, true);
 	  if (connectedComponentId < 0) {
 	    nearest = problemSolver()->roadmap ()->nearestNode (configuration, distance);
 	    	  } else {
