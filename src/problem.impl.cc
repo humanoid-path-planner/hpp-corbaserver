@@ -1178,7 +1178,7 @@ namespace hpp
       // ---------------------------------------------------------------
 
       void Problem::setNumericalConstraints
-      (const char* constraintName, const Names_t& constraintNames,
+      (const char* configProjName, const Names_t& constraintNames,
        const hpp::intSeq& priorities)
 	throw (Error)
       {
@@ -1186,8 +1186,29 @@ namespace hpp
 	try {
 	  for (CORBA::ULong i=0; i<constraintNames.length (); ++i) {
 	    std::string name (constraintNames [i]);
-            problemSolver()->addFunctionToConfigProjector (constraintName, name,
+            problemSolver()->addNumericalConstraintToConfigProjector
+              (configProjName, name,
                 (std::size_t)priorities[i]);
+	    problemSolver()->robot ()->controlComputation
+	      (pinocchio::Device::ALL);
+	  }
+	} catch (const std::exception& exc) {
+	  throw Error (exc.what ());
+	}
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::setLockedJointConstraints
+      (const char* configProjName,const hpp::Names_t& lockedJointNames)
+        throw (Error)
+      {
+        if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
+	try {
+	  for (CORBA::ULong i=0; i<lockedJointNames.length (); ++i) {
+	    std::string name (lockedJointNames [i]);
+            problemSolver()->addLockedJointToConfigProjector
+              (configProjName, name);
 	    problemSolver()->robot ()->controlComputation
 	      (pinocchio::Device::ALL);
 	  }

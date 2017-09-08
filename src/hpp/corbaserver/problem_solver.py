@@ -325,14 +325,24 @@ class ProblemSolver (object):
 
     ## Set numerical constraints in ConfigProjector
     #
-    #  \param name name of the resulting numerical constraint obtained
-    #         by stacking elementary numerical constraints,
-    #  \param names list of names of the numerical constraints as
-    #         inserted by method hpp::core::ProblemSolver::addNumericalConstraint.
+    #  \param name name of the config projector created if any,
+    #  \param names list of names of the numerical constraints previously
+    #         created by methods createTransformationConstraint,
+    #         createRelativeComConstraint, ...
     def setNumericalConstraints (self, name, names, priorities = None):
         if priorities is None:
             priorities = [ 0 for i in names ]
-        return self.client.problem.setNumericalConstraints (name, names, priorities)
+        return self.client.problem.setNumericalConstraints \
+            (name, names, priorities)
+
+    ## Set locked joint in ConfigProjector
+    #
+    #  \param name name of the config projector created if any,
+    #  \param names list of names of the locked joints previously created by
+    #         method createLockedJoint.
+    def setLockedJointConstraints (self, name, names, priorities = None):
+        return self.client.problem.setLockedJointConstraints \
+            (name, names, priorities)
 
     ## Apply constraints
     #
@@ -390,6 +400,9 @@ class ProblemSolver (object):
     # \param jointName name of the joint
     # \param value value of the joint configuration
     def lockJoint (self, jointName, value):
+        from warnings import warn
+        warn ("method lockJoint is deprecated: use createLockedJoint and "
+              + "setConstraints instead")
         return self.client.problem.lockJoint (jointName, value)
 
     ## error threshold in numerical constraint resolution

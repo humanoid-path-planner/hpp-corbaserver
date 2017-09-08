@@ -167,6 +167,11 @@ namespace hpp
 	(const char* constraintName, const hpp::Names_t& constraintNames,
          const hpp::intSeq& priorities)
 	  throw (Error);
+
+        virtual void setLockedJointConstraints
+        (const char* configProjName,const hpp::Names_t& lockedJointNames)
+          throw (Error);
+
 	virtual void lockJoint (const char* jointName,
 				const hpp::floatSeq& value)
 	  throw (hpp::Error);
