@@ -1175,6 +1175,56 @@ namespace hpp
 	}
       }
 
+      void Problem::setRightHandSide (const hpp::floatSeq& rhs)
+          throw (hpp::Error)
+      {
+        try {
+          hpp::core::ConfigProjectorPtr_t configProjector
+            (problemSolver ()->constraints ()->configProjector ());
+          if (!configProjector) {
+            throw std::runtime_error ("No constraint has been set.");
+          }
+          vector_t rightHandSide (floatSeqToVector (rhs));
+          configProjector->rightHandSide (rightHandSide);
+        } catch (const std::exception& exc) {
+          throw hpp::Error (exc.what ());
+        }
+      }
+
+      void Problem::setRightHandSideByName (const char* constraintName,
+                                            const hpp::floatSeq& rhs)
+        throw (hpp::Error)
+      {
+        try {
+          hpp::core::ConfigProjectorPtr_t configProjector
+            (problemSolver ()->constraints ()->configProjector ());
+          if (!configProjector) {
+            throw std::runtime_error ("No constraint has been set.");
+          }
+          vector_t rightHandSide (floatSeqToVector (rhs));
+          // look for constraint with this key
+          if (problemSolver ()->has <core::NumericalConstraintPtr_t>
+              (constraintName)) {
+            core::NumericalConstraintPtr_t nc
+              (problemSolver ()->get <core::NumericalConstraintPtr_t>
+               (constraintName));
+            configProjector->rightHandSide (nc, rightHandSide);
+            return;
+          }
+          if (problemSolver ()->has <LockedJointPtr_t> (constraintName)) {
+            LockedJointPtr_t lj
+              (problemSolver ()->get <LockedJointPtr_t> (constraintName));
+            configProjector->rightHandSide (lj, rightHandSide);
+            return;
+          }
+          std::string msg ("Config projector does not contain any constraint or locked joint with name ");
+          msg += constraintName;
+          throw std::runtime_error (msg.c_str ());
+        } catch (const std::exception& exc) {
+          throw hpp::Error (exc.what ());
+        }
+      }
+
       // ---------------------------------------------------------------
 
       void Problem::setNumericalConstraints
