@@ -344,6 +344,20 @@ class ProblemSolver (object):
         return self.client.problem.setLockedJointConstraints \
             (name, names, priorities)
 
+    ## Set right hand side of constraints in config projector
+    #  \param rhs right hand side of constraints. Contains only right hand side
+    #         of non-constant constraints
+    #  \note Locked joints are also considered.
+    def setRightHandSide (self, rhs):
+        return self.client.problem.setRightHandSide (rhs)
+
+    ## Set right hand side of given constraint in config projector
+    #  \param constraintName name of the numerical constraint or locked joint
+    #  \param rhs right hand side of constraint. raises an exception if
+    #         constraint has constant right hand side.
+    def setRightHandSideByName (self, constraintName, rhs):
+        return self.client.problem.setRightHandSideByName (constraintName, rhs)
+
     ## Apply constraints
     #
     #  \param q initial configuration

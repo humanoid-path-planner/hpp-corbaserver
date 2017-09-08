@@ -162,6 +162,13 @@ namespace hpp
         virtual bool getConstantRightHandSide (const char* constraintName)
           throw (hpp::Error);
 
+        virtual void setRightHandSide (const hpp::floatSeq& rhs)
+          throw (hpp::Error);
+
+        virtual void setRightHandSideByName (const char* constraintName,
+                                             const hpp::floatSeq& rhs)
+          throw (hpp::Error);
+
 	virtual void resetConstraints () throw (hpp::Error);
 	virtual void setNumericalConstraints
 	(const char* constraintName, const hpp::Names_t& constraintNames,

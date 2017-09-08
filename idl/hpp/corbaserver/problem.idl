@@ -307,6 +307,19 @@ module hpp
     boolean getConstantRightHandSide (in string constraintName)
       raises (Error);
 
+    /// Set right hand side of constraints in config projector
+    /// \param rhs right hand side of constraints. Contains only right hand side
+    ///        of non-constant constraints
+    /// \note Locked joints are also considered.
+    void setRightHandSide (in floatSeq rhs) raises (Error);
+
+    /// Set right hand side of given constraint in config projector
+    /// \param constraintName name of the numerical constraint or locked joint
+    /// \param rhs right hand side of constraint. raises an exception if
+    ///        constraint has constant right hand side.
+    void setRightHandSideByName (in string constraintName, in floatSeq rhs)
+      raises (Error);
+
     /// Set numerical constraints by names in ConfigProjector
     /// \param configProjName Name of the config projector if created by this
     ///        method,
