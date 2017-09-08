@@ -164,11 +164,29 @@ module hpp
     /// \param mask Select which axis to be constrained.
     /// If joint1 of joint2 is "", the corresponding joint is replaced by
     /// the global frame.
-    /// constraints are stored in ProblemSolver object
+    /// constraints are stored in ProblemSolver object with key constraintName
     void createTransformationConstraint
     (in string constraintName, in string joint1Name,
      in string joint2Name, in Transform_ ref,
      in boolSeq mask) raises (Error);
+
+    /// Create a LockedJoint constraint with given value
+    /// \param lockedJointName key of the constraint in the ProblemSolver map,
+    /// \param jointName name of the joint,
+    /// \param value value of the joint configuration,
+    void createLockedJoint (in string lockedJointName,
+                            in string jointName,
+                            in floatSeq value) raises (Error);
+
+    /// Create a locked extradof
+    ///        hpp::manipulation::ProblemSolver map
+    /// \param lockedDofName key of the constraint in the Problem Solver map
+    /// \param index index of the extra dof (0 means the first extra dof)
+    /// \param value value of the extra dof configuration. The size
+    ///              of this vector defines the size of the constraints.
+    void createLockedExtraDof (in string lockedDofName,
+                               in unsigned long index,
+                               in floatSeq value) raises (Error);
 
 
     /// Create ComBeetweenFeet constraint between two joints

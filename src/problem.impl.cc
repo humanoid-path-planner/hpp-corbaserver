@@ -323,6 +323,8 @@ namespace hpp
           ret = problemSolver()->getKeys <core::DistanceBuilder_t, Ret_t> ();
         } else if (w == "numericalconstraint") {
           ret = problemSolver()->getKeys <core::NumericalConstraintPtr_t, Ret_t> ();
+        } else if (w == "lockedjoint") {
+          ret = problemSolver()->getKeys <core::LockedJointPtr_t, Ret_t> ();
         } else if (w == "problem") {
           ret = server_->problemSolverMap()->keys <Ret_t> ();
         } else if (w == "parameter") {
@@ -331,10 +333,11 @@ namespace hpp
           ret = problemSolver()->problem()->getKeys <boost::any, Ret_t> ();
         } else if (w == "type") {
           ret = boost::assign::list_of ("PathOptimizer") ("PathProjector")
-            ("PathPlanner") ("ConfigurationShooter") ("Distance") ("SteeringMethod")
-            ("PathValidation") ("NumericalConstraint")("Problem")("Parameter");
+            ("PathPlanner") ("ConfigurationShooter") ("Distance")
+            ("SteeringMethod") ("PathValidation") ("NumericalConstraint")
+            ("LockedJoint") ("Problem") ("Parameter");
         } else {
-          throw Error ("Type not understood");
+          throw Error ("Type not known");
         }
 
         return toNames_t (ret.begin(), ret.end());
@@ -605,6 +608,45 @@ namespace hpp
 
         problemSolver()->addNumericalConstraint
           (name, NumericalConstraint::create (func));
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::createLockedJoint
+      (const char* lockedJointName, const char* jointName,
+       const hpp::floatSeq& value)
+	throw (hpp::Error)
+      {
+	try {
+	  // Get robot in hppPlanner object.
+          DevicePtr_t robot = getRobotOrThrow (problemSolver());
+	  JointPtr_t joint = robot->getJointByName (jointName);
+	  vector_t config = floatSeqToVector (value, joint->configSize());
+          LockedJointPtr_t lockedJoint (LockedJoint::create (joint, config));
+          problemSolver()->add <LockedJointPtr_t> (lockedJointName, lockedJoint);
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::createLockedExtraDof
+      (const char* lockedDofName, const CORBA::ULong index,
+       const hpp::floatSeq& value)
+	throw (hpp::Error)
+      {
+	try {
+	  // Get robot in hppPlanner object.
+          DevicePtr_t robot = getRobotOrThrow (problemSolver());
+	  vector_t config = floatSeqToVector (value);
+
+          LockedJointPtr_t lockedJoint
+            (LockedJoint::create (robot, index, config));
+          problemSolver()->add <LockedJointPtr_t> (lockedDofName, lockedJoint);
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
       }
 
       // ---------------------------------------------------------------
@@ -1456,9 +1498,14 @@ namespace hpp
       void  Problem::addConfigToRoadmap (const hpp::floatSeq& config)
 	throw (hpp::Error)
       {
-        DevicePtr_t robot = getRobotOrThrow(problemSolver());
-	ConfigurationPtr_t configuration (floatSeqToConfigPtr (robot, config, true));
-	problemSolver()->addConfigToRoadmap (configuration);
+        try {
+          DevicePtr_t robot = getRobotOrThrow(problemSolver());
+          ConfigurationPtr_t configuration
+            (floatSeqToConfigPtr (robot, config, true));
+          problemSolver()->addConfigToRoadmap (configuration);
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
       }
 
       // ---------------------------------------------------------------
