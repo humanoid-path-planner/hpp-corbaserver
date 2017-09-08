@@ -220,6 +220,24 @@ class ProblemSolver (object):
         return self.client.problem.createTransformationConstraint \
             (constraintName, joint1Name, joint2Name, ref, mask)
 
+    ## Create a LockedJoint constraint with given value
+    #  \param lockedJointName key of the constraint in the ProblemSolver map,
+    #  \param jointName name of the joint,
+    #  \param value value of the joint configuration,
+    def createLockedJoint (self, lockedDofName, jointName, value):
+        return self.client.problem.createLockedJoint \
+            (lockedDofName, jointName, value)
+
+    ## Create a locked extradof
+    #         hpp::manipulation::ProblemSolver map
+    #  \param lockedDofName key of the constraint in the Problem Solver map
+    #  \param index index of the extra dof (0 means the first extra dof)
+    #  \param value value of the extra dof configuration. The size
+    #               of this vector defines the size of the constraints.
+    def createLockedExtraDof (self, lockedDofName, index, value):
+        return self.client.problem.createLockedExtraDof \
+            (lockedDofName, index, value)
+
     ## Create RelativeCom constraint between two joints
     #
     #  \param constraintName name of the constraint created,

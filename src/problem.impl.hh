@@ -76,6 +76,16 @@ namespace hpp
 	 const char* joint2Name, const Transform_ p, const hpp::boolSeq& mask)
 	  throw (hpp::Error);
 
+        virtual void createLockedJoint (const char* lockedJointName,
+                                        const char* jointName,
+                                        const hpp::floatSeq& value)
+          throw (hpp::Error);
+
+        virtual void createLockedExtraDof (const char* lockedDofName,
+                                           ULong index,
+                                           const hpp::floatSeq& value)
+          throw (hpp::Error);
+
         void createRelativeComConstraint (const char* constraintName,
             const char* comn, const char* jointName, const floatSeq& point,
             const hpp::boolSeq& mask)
