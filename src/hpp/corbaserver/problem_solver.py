@@ -340,9 +340,8 @@ class ProblemSolver (object):
     #  \param name name of the config projector created if any,
     #  \param names list of names of the locked joints previously created by
     #         method createLockedJoint.
-    def setLockedJointConstraints (self, name, names, priorities = None):
-        return self.client.problem.setLockedJointConstraints \
-            (name, names, priorities)
+    def setLockedJointConstraints (self, name, names):
+        return self.client.problem.setLockedJointConstraints (name, names)
 
     ## Set right hand side of constraints in config projector
     #  \param rhs right hand side of constraints. Contains only right hand side
