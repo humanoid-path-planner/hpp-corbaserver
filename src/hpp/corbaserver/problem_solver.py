@@ -381,6 +381,14 @@ class ProblemSolver (object):
     def setMaxIterPathPlanning (self, iterations):
 	return self.client.problem.setMaxIterPathPlanning (iterations)
 
+    ## Get time out in path planning (in seconds)
+    def getTimeOutPathPlanning (self):
+        return self.client.problem.getTimeOutPathPlanning ()
+
+    ## Set time out in path planning (in seconds)
+    def setTimeOutPathPlanning (self, timeOut):
+        return self.client.problem.setTimeOutPathPlanning (timeOut)
+
     ## Get the maximal number of iterations in projection
     def getMaxIterProjection (self):
 	return self.client.problem.getMaxIterProjection ()
