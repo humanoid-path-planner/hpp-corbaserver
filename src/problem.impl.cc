@@ -1588,6 +1588,19 @@ namespace hpp
       }
 
       // ---------------------------------------------------------------
+      void Problem::setTimeOutPathPlanning (double timeOut) throw (Error)
+      {
+  problemSolver()->setTimeOutPathPlanning (timeOut);
+      }
+
+      // ---------------------------------------------------------------
+      double Problem::getTimeOutPathPlanning () throw (Error)
+      {
+  return problemSolver()->getTimeOutPathPlanning();
+      }
+
+      // ---------------------------------------------------------------
+
 
       void Problem::selectPathPlanner (const char* pathPlannerType)
 	throw (Error)

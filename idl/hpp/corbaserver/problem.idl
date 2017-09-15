@@ -411,7 +411,7 @@ module hpp
     /// Set maximal number of iterations in numerical constraint resolution
     void setMaxIterProjection (in unsigned long iterations) raises (Error);
 
-    /// Set maximal number of iterations in path planning
+    /// Get maximal number of iterations in path planning
     unsigned long getMaxIterPathPlanning () raises (Error);
 
     /// Set maximal number of iterations in path planning
@@ -422,6 +422,13 @@ module hpp
 
     /// See hpp::constraints::ScalarMultiply
     void scCreateScalarMultiply (in string outName, in double scalar, in string inName) raises (Error);
+
+    /// Get time out in path planning (in seconds)
+    double getTimeOutPathPlanning () raises (Error);
+
+    /// Set time out in path planning (in seconds)
+    void setTimeOutPathPlanning (in double timeOut) raises (Error);
+
 
     /// \}
     /// \}

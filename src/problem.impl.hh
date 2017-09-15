@@ -223,6 +223,9 @@ namespace hpp
 	virtual void setMaxIterProjection (ULong iterations) throw (Error);
 	virtual ULong getMaxIterPathPlanning () throw (Error);
 	virtual void setMaxIterPathPlanning (ULong iterations) throw (Error);
+    virtual void setTimeOutPathPlanning (double timeOut) throw (Error);
+    virtual double getTimeOutPathPlanning () throw (Error);
+
 
 	virtual void addPathOptimizer (const char* pathOptimizerType)
 	  throw (Error);
