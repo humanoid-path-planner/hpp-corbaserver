@@ -622,7 +622,8 @@ namespace hpp
           DevicePtr_t robot = getRobotOrThrow (problemSolver());
 	  JointPtr_t joint = robot->getJointByName (jointName);
 	  vector_t config = floatSeqToVector (value, joint->configSize());
-          LockedJointPtr_t lockedJoint (LockedJoint::create (joint, config));
+          LiegroupElement lge (config, joint->configurationSpace ());
+          LockedJointPtr_t lockedJoint (LockedJoint::create (joint, lge));
           problemSolver()->add <LockedJointPtr_t> (lockedJointName, lockedJoint);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -1279,8 +1280,9 @@ namespace hpp
 	  DevicePtr_t robot = problemSolver()->robot ();
 	  JointPtr_t joint = robot->getJointByName (jointName);
 	  vector_t jointConfig = floatSeqToVector (value);
+          LiegroupElement lge (jointConfig, joint->configurationSpace ());
 
-	  LockedJointPtr_t lockedJoint (LockedJoint::create (joint, jointConfig));
+	  LockedJointPtr_t lockedJoint (LockedJoint::create (joint, lge));
 	  problemSolver()->addLockedJoint (lockedJoint);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());

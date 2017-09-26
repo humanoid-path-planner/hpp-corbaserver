@@ -82,6 +82,10 @@ namespace hpp
     typedef pinocchio::vector3_t vector3_t;
     typedef pinocchio::ComJacobian_t ComJacobian_t;
     typedef pinocchio::size_type size_type;
+    typedef pinocchio::LiegroupElement LiegroupElement;
+    typedef pinocchio::LiegroupSpace LiegroupSpace;
+    typedef pinocchio::LiegroupSpacePtr_t LiegroupSpacePtr_t;
+
     namespace impl
     {
       using CORBA::Boolean;
