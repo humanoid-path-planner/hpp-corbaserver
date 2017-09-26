@@ -337,7 +337,7 @@ namespace hpp
             ("SteeringMethod") ("PathValidation") ("NumericalConstraint")
             ("LockedJoint") ("Problem") ("Parameter");
         } else {
-          throw Error ("Type not known");
+          throw Error (("Type \"" + std::string(what) + "\" not known").c_str());
         }
 
         return toNames_t (ret.begin(), ret.end());
@@ -376,7 +376,7 @@ namespace hpp
             ("PathPlanner") ("ConfigurationShooter") ("Distance") ("SteeringMethod")
             ("PathValidation") ("Problem");
         } else {
-          throw Error ("Type not understood");
+          throw Error (("Type \"" + std::string(what) + "\" not known").c_str());
         }
 
         return toNames_t (ret.begin(), ret.end());
