@@ -54,6 +54,30 @@ module hpp
 			    in string urdfSuffix, in string srdfSuffix)
       raises (Error);
 
+    ///  Load robot model
+    ///
+    /// \param robotName Name of the robot that is constructed,
+    /// \param rootJointType type of root joint among "anchor", "freeflyer",
+    /// "planar",
+    /// \param urdfString urdf string,
+    /// \param srdfString srdf string.
+    ///
+    void loadRobotModelFromString (in string robotName, in string rootJointType,
+                                   in string urdfString, in string srdfString)
+      raises (Error);
+
+    ///  Load humanoid robot model
+    ///
+    /// \param robotName Name of the robot that is constructed,
+    /// \param rootJointType type of root joint among "anchor", "freeflyer",
+    /// "planar",
+    /// \param urdfString urdf string,
+    /// \param srdfString srdf string.
+    ///
+    void loadHumanoidModelFromString (in string robotName, in string rootJointType,
+			              in string urdfString, in string srdfString)
+      raises (Error);
+
     /// \}
 
     /// \name Degrees of freedom

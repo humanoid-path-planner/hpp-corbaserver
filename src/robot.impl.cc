@@ -233,6 +233,58 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
+      void Robot::loadRobotModelFromString(
+          const char* robotName,
+          const char* rootJointType,
+          const char* urdfString,
+          const char* srdfString) throw (hpp::Error)
+      {
+	try {
+	  pinocchio::DevicePtr_t device (pinocchio::Device::create (robotName));
+	  hpp::pinocchio::urdf::loadModelFromString (
+              device, 0, "",
+              std::string (rootJointType),
+              std::string (urdfString),
+              std::string (srdfString));
+	  // Add device to the planner
+	  problemSolver()->robot (device);
+	  problemSolver()->robot ()->controlComputation
+	    (pinocchio::Device::JOINT_POSITION);
+	} catch (const std::exception& exc) {
+	  hppDout (error, exc.what ());
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
+
+      void Robot::loadHumanoidModelFromString(
+          const char* robotName,
+          const char* rootJointType,
+          const char* urdfString,
+          const char* srdfString) throw (hpp::Error)
+      {
+	try {
+	  pinocchio::HumanoidRobotPtr_t robot
+	    (pinocchio::HumanoidRobot::create (robotName));
+          hpp::pinocchio::urdf::loadModelFromString (
+              robot, 0, "",
+              std::string (rootJointType),
+              std::string (urdfString),
+              std::string (srdfString));
+          hpp::pinocchio::urdf::setupHumanoidRobot (robot);
+          // Add robot to the planner
+	  problemSolver()->robot (robot);
+	  problemSolver()->robot ()->controlComputation
+	    (pinocchio::Device::JOINT_POSITION);
+	} catch (const std::exception& exc) {
+	  hppDout (error, exc.what ());
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
+
       Short Robot::getConfigSize () throw (hpp::Error)
       {
 	try {

@@ -77,6 +77,18 @@ namespace hpp
 					 const char* srdfSuffix)
 	  throw (hpp::Error);
 
+	virtual void loadRobotModelFromString (
+            const char* robotName,
+            const char* rootJointType,
+            const char* urdfString,
+            const char* srdfString) throw (hpp::Error);
+
+	virtual void loadHumanoidModelFromString (
+            const char* robotName,
+            const char* rootJointType,
+            const char* urdfString,
+            const char* srdfString) throw (hpp::Error);
+
 	virtual char* getRobotName () throw (hpp::Error);
 
 	virtual Short getConfigSize () throw (hpp::Error);
