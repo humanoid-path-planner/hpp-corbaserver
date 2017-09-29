@@ -431,6 +431,15 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+      void Problem::resetProblem () throw (hpp::Error)
+      {
+        ProblemSolverMapPtr_t psMap (server_->problemSolverMap());
+        psMap->map_ [ psMap->selected_ ]
+          = core::ProblemSolver::create ();
+      }
+
+      // ---------------------------------------------------------------
+
       void Problem::movePathToProblem (UShort pathId, const char* name,
           const Names_t& jointNames) throw (hpp::Error)
       {
