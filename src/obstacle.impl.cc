@@ -47,16 +47,19 @@ namespace hpp
       }
 
       void Obstacle::loadObstacleModel (const char* package,
-					const char* filename,
+					const char* file,
 					const char* prefix)
 	throw (hpp::Error)
       {
 	try {
-          DevicePtr_t device (Device::create (std::string (filename)));
-	  hpp::pinocchio::urdf::loadUrdfModel (device,
-					   "anchor",
-					   std::string (package),
-					   std::string (filename));
+          std::string pkg (package);
+          DevicePtr_t device (Device::create (prefix));
+          if (pkg.empty())
+            hpp::pinocchio::urdf::loadModelFromString (
+                device, 0, "", "anchor", file, "");
+          else
+            hpp::pinocchio::urdf::loadUrdfModel (
+                device, "anchor", pkg, file);
           device->controlComputation(Device::JOINT_POSITION);
           device->computeForwardKinematics();
           device->updateGeometryPlacements();
