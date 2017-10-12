@@ -663,15 +663,14 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      floatSeq* Robot::getJointVelocity(const char* jointName,
-          const floatSeq& _qDot)
+      floatSeq* Robot::getJointVelocity(const char* jointName)
 	throw (hpp::Error)
       {
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
-          vector_t qDot = floatSeqToVector(_qDot, robot->numberDof());
           Frame frame = robot->getFrameByName(jointName);
-          return vectorToFloatSeq(frame.jacobian(false) * qDot);
+          return vectorToFloatSeq(
+              frame.jacobian(false) * robot->currentVelocity());
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
@@ -920,6 +919,34 @@ namespace hpp
 	  vector_t config = robot->currentConfiguration ();
           assert(robot->configSize () == config.size());
           return vectorToFloatSeq (config);
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
+
+      hpp::floatSeq* Robot::getCurrentVelocity() throw (hpp::Error)
+      {
+	try {
+	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
+	  vector_t qDot = robot->currentVelocity ();
+          assert(robot->numberDof () == qDot.size());
+          return vectorToFloatSeq (qDot);
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
+
+      void Robot::setCurrentVelocity(const hpp::floatSeq& qDot)
+	throw (hpp::Error)
+      {
+	try {
+          DevicePtr_t robot = getRobotOrThrow(problemSolver());
+	  robot->currentVelocity(floatSeqToVector (qDot, robot->numberDof()));
+	  robot->computeForwardKinematics ();
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -1268,12 +1295,22 @@ namespace hpp
 
       hpp::floatSeq* Robot::getCenterOfMass () throw (hpp::Error)
       {
-	hpp::floatSeq* res = new hpp::floatSeq;
 	try {
-	  vector3_t com = getRobotOrThrow(problemSolver())->positionCenterOfMass ();
-	  res->length (3);
-	  (*res) [0] = com [0]; (*res) [1] = com [1]; (*res) [2] = com [2];
-	  return res;
+	  return vectorToFloatSeq (
+              getRobotOrThrow(problemSolver())->positionCenterOfMass ());
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
+
+      hpp::floatSeq* Robot::getCenterOfMassVelocity () throw (hpp::Error)
+      {
+	try {
+          DevicePtr_t robot = getRobotOrThrow(problemSolver());
+          return vectorToFloatSeq (
+              robot->jacobianCenterOfMass() * robot->currentVelocity());
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -1456,6 +1493,24 @@ namespace hpp
 	  throw hpp::Error (exc.what ());
 	}
       }
+
+      hpp::floatSeq* Robot::getVelocityPartialCom (const char* comName)
+        throw (hpp::Error)
+      {
+	try {
+          DevicePtr_t robot = getRobotOrThrow(problemSolver());
+          pinocchio::CenterOfMassComputationPtr_t comc =
+            problemSolver()->centerOfMassComputation(comName);
+          if (!comc) {
+            HPP_THROW(std::invalid_argument, "Partial COM " << comName << " not found.");
+          }
+          comc->compute (pinocchio::Device::JACOBIAN);
+          return vectorToFloatSeq (comc->jacobian() * robot->currentVelocity());
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+          
 
       hpp::floatSeqSeq* Robot::getJacobianPartialCom (const char* comName) throw (hpp::Error)
       {

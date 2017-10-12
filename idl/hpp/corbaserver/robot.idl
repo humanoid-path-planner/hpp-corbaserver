@@ -159,9 +159,8 @@ module hpp
     /// Get joint velocity
     /// expressed in the world frame, at the center of the world
     /// \param jointName name of the joint
-    /// \param qDot robot velocity
     /// \throw Error if robot is not set or if joint does not exist.
-    floatSeq getJointVelocity (in string jointName, in floatSeq qDot) raises (Error);
+    floatSeq getJointVelocity (in string jointName) raises (Error);
 
     /// Get the initial joint position (when config parameter corresponds to the identity)
     /// \param jointName name of the joint
@@ -270,6 +269,14 @@ module hpp
     /// \param dofArray Array of degrees of freedom /
     void setCurrentConfig(in floatSeq dofArray) raises (Error);
 
+    /// Get current velocity
+    /// \param qDot Array of degrees of freedom
+    floatSeq getCurrentVelocity() raises (Error);
+
+    /// Set current velocity
+    /// \param qDot Array of degrees of freedom
+    void setCurrentVelocity(in floatSeq qDot) raises (Error);
+
     /// \}
 
     /// \name Bodies
@@ -352,6 +359,9 @@ module hpp
 
     /// Get position of center of mass
     floatSeq getCenterOfMass () raises (Error);
+
+    /// Get velocity of center of mass
+    floatSeq getCenterOfMassVelocity () raises (Error);
 
     /// Get Jacobian of the center of mass
     floatSeqSeq getJacobianCenterOfMass () raises (Error);
@@ -449,6 +459,10 @@ module hpp
 
     /// Get Jacobian of the partial center of mass
     floatSeqSeq getJacobianPartialCom (in string comName) raises (Error);
+
+    /// Get the velocity of the partial center of mass
+    floatSeq getVelocityPartialCom (in string comName)
+      raises (Error);
 
     /// Get the name of the current robot.
     string getRobotName () raises (Error);
