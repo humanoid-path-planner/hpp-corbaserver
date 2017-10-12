@@ -156,6 +156,13 @@ module hpp
     /// \throw Error if robot is not set or if joint does not exist.
     Transform_ getJointPosition (in string jointName) raises (Error);
 
+    /// Get joint velocity
+    /// expressed in the world frame, at the center of the world
+    /// \param jointName name of the joint
+    /// \param qDot robot velocity
+    /// \throw Error if robot is not set or if joint does not exist.
+    floatSeq getJointVelocity (in string jointName, in floatSeq qDot) raises (Error);
+
     /// Get the initial joint position (when config parameter corresponds to the identity)
     /// \param jointName name of the joint
     /// \throw Error if robot is not set or if joint does not exist.
