@@ -434,8 +434,8 @@ namespace hpp
       void Problem::resetProblem () throw (hpp::Error)
       {
         ProblemSolverMapPtr_t psMap (server_->problemSolverMap());
-        psMap->map_ [ psMap->selected_ ]
-          = core::ProblemSolver::create ();
+        delete psMap->map_ [ psMap->selected_ ];
+        psMap->map_ [ psMap->selected_ ] = core::ProblemSolver::create ();
       }
 
       // ---------------------------------------------------------------
