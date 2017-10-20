@@ -71,9 +71,26 @@ class Client:
       self.makeClient (client, postContextId)
 
 def _getIIOPurl ():
+  """
+  Returns "corbaloc:iiop:<host>:<port>/NameService"
+  where host and port are, in this order of priority:
+  - HPP_HOST, HPP_PORT environment variables
+  - /hpp/host, /hpp/port ROS parameters
+  - use default values ("localhost", 2809)
+  """
+  host = "localhost"
+  port = "2809"
   import os
-  host = os.getenv ("HPP_HOST")
-  port = os.getenv ("HPP_PORT")
+  try:
+    import rospy
+    # Check is ROS master is reachable.
+    if rospy.client.get_master().target is not None:
+      host = rospy.get_param("/hpp/host", host)
+      port = rospy.get_param("/hpp/port", port)
+  except:
+    pass
+  host = os.getenv ("HPP_HOST", host)
+  port = os.getenv ("HPP_PORT", port)
   if host is None and port is None:
       url = "corbaloc:iiop:/NameService"
   else:
