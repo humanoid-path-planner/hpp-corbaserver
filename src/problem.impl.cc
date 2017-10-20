@@ -1845,15 +1845,7 @@ namespace hpp
 	  PathPtr_t path = problemSolver()->paths () [pathId];
 	  vector_t velocity (problemSolver ()->robot ()->numberDof ());
 	  path->derivative (velocity, atDistance, 1);
-	  // Allocate result now that the size is known.
-	  std::size_t size =  velocity.size ();
-	  double* dofArray = hpp::floatSeq::allocbuf((ULong)size);
-	  hpp::floatSeq* floatSeq = new hpp::floatSeq
-	    ((CORBA::ULong)size, (CORBA::ULong)size, dofArray, true);
-	  for (std::size_t i=0; i < size; ++i) {
-	    dofArray[(CORBA::ULong)i] =  velocity [i];
-	  }
-	  return floatSeq;
+          return vectorToFloatSeq (velocity);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
