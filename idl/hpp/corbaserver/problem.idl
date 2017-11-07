@@ -294,6 +294,12 @@ module hpp
     void addPassiveDofs (in string constraintName, in Names_t jointNames)
       raises (Error);
 
+    /// Get constraint dimensions
+    void getConstraintDimensions (in string constraintName,
+        out unsigned long inputSize , out unsigned long inputDerivativeSize,
+        out unsigned long outputSize, out unsigned long outputDerivativeSize)
+      raises (Error);
+
     /// (Dis-)Allow to modify right hand side of a numerical constraint
     /// \param constraintName Name of the numerical constraint,
     /// \param constant whether right hand side is constant

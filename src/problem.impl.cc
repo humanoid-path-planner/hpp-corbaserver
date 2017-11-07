@@ -91,6 +91,7 @@ using hpp::constraints::StaticStabilityPtr_t;
 using hpp::constraints::DifferentiableFunctionPtr_t;
 
 using hpp::core::NumericalConstraint;
+using hpp::core::NumericalConstraintPtr_t;
 
 namespace boost {
   namespace icl {
@@ -322,7 +323,7 @@ namespace hpp
         } else if (w == "distance") {
           ret = problemSolver()->getKeys <core::DistanceBuilder_t, Ret_t> ();
         } else if (w == "numericalconstraint") {
-          ret = problemSolver()->getKeys <core::NumericalConstraintPtr_t, Ret_t> ();
+          ret = problemSolver()->getKeys <NumericalConstraintPtr_t, Ret_t> ();
         } else if (w == "lockedjoint") {
           ret = problemSolver()->getKeys <core::LockedJointPtr_t, Ret_t> ();
         } else if (w == "problem") {
@@ -1143,6 +1144,28 @@ namespace hpp
           }
         }
         problemSolver()->addPassiveDofs (passiveDofsName, passiveDofs);
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::getConstraintDimensions (const char* constraintName,
+            ULong& inputSize , ULong& inputDerivativeSize,
+            ULong& outputSize, ULong& outputDerivativeSize)
+        throw (hpp::Error)
+      {
+        try {
+          std::string n (constraintName);
+          if (!problemSolver()->has<NumericalConstraintPtr_t>(n))
+            throw Error (("Constraint " + n + " not found").c_str());
+          NumericalConstraintPtr_t c =
+            problemSolver()->get<NumericalConstraintPtr_t>(n);
+          inputSize            = c->function().inputSize();
+          inputDerivativeSize  = c->function().inputDerivativeSize();
+          outputSize           = c->function().outputSize();
+          outputDerivativeSize = c->function().outputDerivativeSize();
+        } catch (const std::exception& e) {
+          throw hpp::Error (e.what ());
+        }
       }
 
       // ---------------------------------------------------------------

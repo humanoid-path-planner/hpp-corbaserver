@@ -157,6 +157,11 @@ namespace hpp
                                     const hpp::Names_t& dofName)
           throw (hpp::Error);
 
+        virtual void getConstraintDimensions (const char* constraintName,
+            ULong& inputSize , ULong& inputDerivativeSize,
+            ULong& outputSize, ULong& outputDerivativeSize)
+          throw (hpp::Error);
+
         virtual void setConstantRightHandSide (const char* constraintName,
 					       CORBA::Boolean constant)
           throw (hpp::Error);
