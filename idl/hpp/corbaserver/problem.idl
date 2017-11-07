@@ -47,6 +47,9 @@ module hpp
     /// \return true if a new problem was created.
     boolean selectProblem (in string name) raises (Error);
 
+    /// Reset the current problem.
+    void resetProblem () raises (Error);
+
     /// Move a path from the current problem to another problem.
     /// \param problemName the destination problem
     /// \param jointNames a list of joint names representing the subchain to

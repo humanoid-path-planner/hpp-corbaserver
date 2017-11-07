@@ -77,6 +77,18 @@ namespace hpp
 					 const char* srdfSuffix)
 	  throw (hpp::Error);
 
+	virtual void loadRobotModelFromString (
+            const char* robotName,
+            const char* rootJointType,
+            const char* urdfString,
+            const char* srdfString) throw (hpp::Error);
+
+	virtual void loadHumanoidModelFromString (
+            const char* robotName,
+            const char* rootJointType,
+            const char* urdfString,
+            const char* srdfString) throw (hpp::Error);
+
 	virtual char* getRobotName () throw (hpp::Error);
 
 	virtual Short getConfigSize () throw (hpp::Error);
@@ -111,6 +123,8 @@ namespace hpp
         virtual Transform__slice* getJointPositionInParentFrame(const char* jointName)
           throw (hpp::Error);
 	virtual Transform__slice* getJointPosition(const char* jointName)
+	  throw (hpp::Error);
+	virtual floatSeq* getJointVelocity(const char* jointName)
 	  throw (hpp::Error);
 	virtual floatSeq* getComPosition() throw (hpp::Error);
 
@@ -151,6 +165,10 @@ namespace hpp
 
 	virtual hpp::floatSeq* shootRandomConfig () throw (hpp::Error);
 	virtual hpp::floatSeq* getCurrentConfig() throw (hpp::Error);
+
+	virtual void setCurrentVelocity
+	(const hpp::floatSeq& qDot) throw (hpp::Error);
+	virtual hpp::floatSeq* getCurrentVelocity() throw (hpp::Error);
 
 	virtual Names_t* getJointInnerObjects
 	(const char* bodyName)
@@ -195,6 +213,8 @@ namespace hpp
 
 	virtual hpp::floatSeq* getCenterOfMass () throw (hpp::Error);
 
+	virtual hpp::floatSeq* getCenterOfMassVelocity () throw (hpp::Error);
+
 	virtual hpp::floatSeqSeq* getJacobianCenterOfMass () throw (hpp::Error);
 
 //DEPREC	virtual void
@@ -231,6 +251,9 @@ namespace hpp
           throw (hpp::Error);
 
         virtual hpp::floatSeqSeq* getJacobianPartialCom (const char* comName)
+          throw (hpp::Error);
+
+        virtual hpp::floatSeq* getVelocityPartialCom (const char* comName)
           throw (hpp::Error);
 
         virtual floatSeq* getRobotAABB() throw (hpp::Error);

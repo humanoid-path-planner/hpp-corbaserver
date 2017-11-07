@@ -44,6 +44,8 @@ namespace hpp
 
         virtual bool selectProblem (const char* problemName) throw (hpp::Error);
 
+        virtual void resetProblem () throw (hpp::Error);
+
         virtual void movePathToProblem (UShort pathId, const char* problemName,
             const Names_t& jointNames) throw (hpp::Error);
 

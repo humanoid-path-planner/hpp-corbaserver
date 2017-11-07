@@ -16,6 +16,11 @@
 # hpp-corbaserver.  If not, see
 # <http://www.gnu.org/licenses/>.
 
+def newProblem ():
+    from hpp.corbaserver import Client
+    cl = Client()
+    cl.problem.resetProblem()
+
 ## Definition of a path planning problem
 #
 #  This class wraps the Corba client to the server implemented by

@@ -19,9 +19,7 @@ using hpp::corbaServer::Server;
 int
 main (int argc, const char* argv[])
 {
-  hpp::core::ProblemSolverPtr_t problemSolver =
-    hpp::core::ProblemSolver::create ();
-  Server server (problemSolver, argc, argv, true);
+  Server server (hpp::core::ProblemSolver::create (), argc, argv, true);
 
   server.startCorbaServer ();
   server.processRequest(true);

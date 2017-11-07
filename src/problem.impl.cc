@@ -337,7 +337,7 @@ namespace hpp
             ("SteeringMethod") ("PathValidation") ("NumericalConstraint")
             ("LockedJoint") ("Problem") ("Parameter");
         } else {
-          throw Error ("Type not known");
+          throw Error (("Type \"" + std::string(what) + "\" not known").c_str());
         }
 
         return toNames_t (ret.begin(), ret.end());
@@ -376,7 +376,7 @@ namespace hpp
             ("PathPlanner") ("ConfigurationShooter") ("Distance") ("SteeringMethod")
             ("PathValidation") ("Problem");
         } else {
-          throw Error ("Type not understood");
+          throw Error (("Type \"" + std::string(what) + "\" not known").c_str());
         }
 
         return toNames_t (ret.begin(), ret.end());
@@ -427,6 +427,15 @@ namespace hpp
         if (!has) psMap->map_[psName] = core::ProblemSolver::create ();
         psMap->selected_ = psName;
         return !has;
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::resetProblem () throw (hpp::Error)
+      {
+        ProblemSolverMapPtr_t psMap (server_->problemSolverMap());
+        delete psMap->map_ [ psMap->selected_ ];
+        psMap->map_ [ psMap->selected_ ] = core::ProblemSolver::create ();
       }
 
       // ---------------------------------------------------------------
