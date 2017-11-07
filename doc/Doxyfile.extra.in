@@ -9,6 +9,4 @@ INPUT                  = @CMAKE_SOURCE_DIR@/include \
  		  	 @CMAKE_SOURCE_DIR@/src/hpp/corbaserver/robot.py \
  		  	 @CMAKE_SOURCE_DIR@/src/hpp/corbaserver/benchmark.py
 
-TAGFILES		 = @HPP_CORE_DOXYGENDOCDIR@/hpp-core.doxytag=@HPP_CORE_DOXYGENDOCDIR@ \
-			 @HPP_PINOCCHIO_DOXYGENDOCDIR@/hpp-pinocchio.doxytag=@HPP_PINOCCHIO_DOXYGENDOCDIR@
 GENERATE_TREEVIEW	 = @DOXYGEN_TREEVIEW@
