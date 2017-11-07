@@ -69,7 +69,6 @@ namespace hpp
                 std::string (prefix) + (*itObj)->name (),
                 *(*itObj)->fcl (),
                 true, true);
-	    hppDout (info, "Adding obstacle " << obj->name ());
 	  }
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
