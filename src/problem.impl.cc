@@ -95,9 +95,9 @@ using hpp::core::NumericalConstraint;
 namespace boost {
   namespace icl {
     template<>
-      struct interval_traits< hpp::core::SizeInterval_t >
+      struct interval_traits< hpp::core::segment_t >
       {
-        typedef hpp::core::SizeInterval_t interval_type;
+        typedef hpp::core::segment_t interval_type;
         typedef hpp::core::size_type      domain_type;
         typedef std::less<domain_type>    domain_compare;
 
@@ -109,7 +109,7 @@ namespace boost {
       };
 
     template<>
-      struct interval_bound_type<hpp::core::SizeInterval_t>
+      struct interval_bound_type<hpp::core::segment_t>
       {
         typedef interval_bound_type type;
         BOOST_STATIC_CONSTANT(bound_type, value = interval_bounds::static_right_open);//[lo..up)
@@ -204,14 +204,14 @@ namespace hpp
           const char* BoostCorbaAny::as<std::string, const char*> (std::string f)
           { return f.c_str(); }
 
-        typedef hpp::core::SizeInterval_t SizeInterval_t;
-        typedef hpp::core::SizeIntervals_t SizeIntervals_t;
-        typedef boost::icl::interval_set<size_type, std::less, SizeInterval_t>
+        typedef hpp::core::segment_t segment_t;
+        typedef hpp::core::segments_t segments_t;
+        typedef boost::icl::interval_set<size_type, std::less, segment_t>
           BoostIntervalSet_t;
 
-        SizeIntervals_t convertInterval (const BoostIntervalSet_t& intSet)
+        segments_t convertInterval (const BoostIntervalSet_t& intSet)
         {
-          SizeIntervals_t ret;
+          segments_t ret;
           for (BoostIntervalSet_t::const_iterator _int = intSet.begin (); _int != intSet.end (); ++_int)
             ret.push_back(*_int);
           return ret;
@@ -448,9 +448,9 @@ namespace hpp
 	    oss << "Joint " << jointNames[i] << "not found.";
 	    throw hpp::Error (oss.str ().c_str ());
 	  }
-          ints.insert(SizeInterval_t(joint->rankInConfiguration(), joint->configSize()));
+          ints.insert(segment_t(joint->rankInConfiguration(), joint->configSize()));
         }
-        SizeIntervals_t intervals = convertInterval(ints);
+        segments_t intervals = convertInterval(ints);
 
         if (pathId >= current->paths().size()) {
           std::ostringstream oss ("wrong path id: ");
@@ -622,6 +622,10 @@ namespace hpp
           DevicePtr_t robot = getRobotOrThrow (problemSolver());
 	  JointPtr_t joint = robot->getJointByName (jointName);
 	  vector_t config = floatSeqToVector (value, joint->configSize());
+          hppDout (info, "joint->configurationSpace ()->name () = "
+                   << joint->configurationSpace ()->name ());
+          hppDout (info, "joint->configurationSpace ()->nq () = "
+                   << joint->configurationSpace ()->nq ());
           LiegroupElement lge (config, joint->configurationSpace ());
           LockedJointPtr_t lockedJoint (LockedJoint::create (joint, lge));
           problemSolver()->add <LockedJointPtr_t> (lockedJointName, lockedJoint);
@@ -1116,7 +1120,7 @@ namespace hpp
           std::unique (dofs.begin (), dofs.end ());
         dofs.erase (last, dofs.end ());
         /// Then, create the intervals.
-        core::SizeIntervals_t passiveDofs;
+        core::segments_t passiveDofs;
         dofs.push_back (robot->numberDof () + 1);
         size_type intStart = dofs[0], intEnd = dofs[0];
         for (size_t i = 1; i < dofs.size (); i++) {
@@ -1125,7 +1129,7 @@ namespace hpp
             continue;
           } else {
             passiveDofs.push_back (
-                core::SizeInterval_t (intStart, intEnd - intStart));
+                core::segment_t (intStart, intEnd - intStart));
             intStart = intEnd = dofs[i];
           }
         }
