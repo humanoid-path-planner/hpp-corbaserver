@@ -907,25 +907,6 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      hpp::floatSeq* Robot::getComPosition () throw (hpp::Error)
-      {
-	hpp::floatSeq *dofArray;
-	try {
-	  // Get robot in hppPlanner object.
-	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
-	  const vector3_t& com = robot->positionCenterOfMass ();
-	  dofArray = new hpp::floatSeq();
-	  dofArray->length(3);
-	  for(size_type i=0; i<3; i++)
-	    (*dofArray)[(CORBA::ULong) i] = com [i];
-	  return dofArray;
-	} catch (const std::exception& exc) {
-	  throw hpp::Error (exc.what ());
-	}
-      }
-
-      // --------------------------------------------------------------------
-
       hpp::floatSeq* Robot::getCurrentConfig() throw (hpp::Error)
       {
 	try {

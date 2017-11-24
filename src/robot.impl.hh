@@ -128,7 +128,6 @@ namespace hpp
 	  throw (hpp::Error);
 	virtual floatSeq* getJointVelocityInLocalFrame(const char* jointName)
 	  throw (hpp::Error);
-	virtual floatSeq* getComPosition() throw (hpp::Error);
 
 	virtual Transform__slice* getRootJointPosition () throw (hpp::Error);
 

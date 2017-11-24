@@ -142,10 +142,6 @@ module hpp
     /// correponding to the joint and recompute forward kinematics
     void jointIntegrate(in string jointName, in floatSeq speed) raises (Error);
 
-    /// Get COM position
-    /// \throw Error if robot is not set
-    floatSeq getComPosition () raises (Error);
-
     /// Get joint Transformation
     /// \param jointName name of the joint
     /// \throw Error if robot is not set or it joint does not exist.
