@@ -326,6 +326,8 @@ namespace hpp
           ret = problemSolver()->getKeys <NumericalConstraintPtr_t, Ret_t> ();
         } else if (w == "lockedjoint") {
           ret = problemSolver()->getKeys <core::LockedJointPtr_t, Ret_t> ();
+        } else if (w == "centorofmass") {
+          ret = problemSolver()->getKeys <core::CenterOfMassComputationPtr_t, Ret_t> ();
         } else if (w == "problem") {
           ret = server_->problemSolverMap()->keys <Ret_t> ();
         } else if (w == "parameter") {
@@ -336,7 +338,7 @@ namespace hpp
           ret = boost::assign::list_of ("PathOptimizer") ("PathProjector")
             ("PathPlanner") ("ConfigurationShooter") ("Distance")
             ("SteeringMethod") ("PathValidation") ("NumericalConstraint")
-            ("LockedJoint") ("Problem") ("Parameter");
+            ("LockedJoint") ("Problem") ("Parameter") ("CenterOfMass");
         } else {
           throw Error (("Type \"" + std::string(what) + "\" not known").c_str());
         }
