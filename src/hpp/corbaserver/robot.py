@@ -157,6 +157,18 @@ class Robot (object):
     def getCurrentConfig (self):
         return self.client.robot.getCurrentConfig ()
 
+    ## Set current velocity of composite robot
+    #
+    #  \param q velocity of the composite robot
+    def setCurrentVelocity (self, v):
+        self.client.robot.setCurrentVelocity (v)
+
+    ## Get current velocity of composite robot
+    #
+    #  \return velocity of the composite robot
+    def getCurrentVelocity (self):
+        return self.client.robot.getCurrentVelocity ()
+
     ## Shoot random configuration
     #  \return dofArray Array of degrees of freedom.
     def shootRandomConfig(self):
