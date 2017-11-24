@@ -678,6 +678,21 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
+      floatSeq* Robot::getJointVelocityInLocalFrame(const char* jointName)
+	throw (hpp::Error)
+      {
+	try {
+	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
+          Frame frame = robot->getFrameByName(jointName);
+          return vectorToFloatSeq(
+              frame.jacobian(true) * robot->currentVelocity());
+	} catch (const std::exception& exc) {
+	  throw Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
+
       Transform__slice* Robot::getJointPositionInParentFrame(const char* jointName)
 	throw (hpp::Error)
       {

@@ -162,6 +162,12 @@ module hpp
     /// \throw Error if robot is not set or if joint does not exist.
     floatSeq getJointVelocity (in string jointName) raises (Error);
 
+    /// Get joint velocity
+    /// expressed in the joint frame, at the center of the joint
+    /// \param jointName name of the joint
+    /// \throw Error if robot is not set or if joint does not exist.
+    floatSeq getJointVelocityInLocalFrame (in string jointName) raises (Error);
+
     /// Get the initial joint position (when config parameter corresponds to the identity)
     /// \param jointName name of the joint
     /// \throw Error if robot is not set or if joint does not exist.
