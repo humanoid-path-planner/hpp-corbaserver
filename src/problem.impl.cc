@@ -43,7 +43,6 @@
 #include <hpp/core/roadmap.hh>
 #include <hpp/core/problem-solver.hh>
 #include <hpp/core/steering-method.hh>
-#include <hpp/core/comparison-type.hh>
 #include <hpp/core/parser/roadmap-factory.hh>
 
 #include <hpp/constraints/differentiable-function.hh>
@@ -1177,18 +1176,16 @@ namespace hpp
 	throw (hpp::Error)
       {
 	try {
-	  core::ComparisonTypePtr_t comparison =
-	    problemSolver()->comparisonType (constraintName);
-	  if (!comparison)
+          if (!problemSolver()->has<NumericalConstraintPtr_t>(constraintName))
 	    throw std::runtime_error
 	      (std::string ("Numerical constraint ") + constraintName +
 	       std::string ("can not be found."));
 	  if (constant) {
 	    problemSolver()->comparisonType (constraintName,
-					   core::ComparisonType::EqualToZero);
+					     constraints::EqualToZero);
 	  } else {
 	    problemSolver()->comparisonType (constraintName,
-					   core::ComparisonType::Equality);
+					     constraints::Equality);
 	  }
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -1201,14 +1198,16 @@ namespace hpp
 	throw (hpp::Error)
       {
 	try {
-	  core::ComparisonTypePtr_t comparison =
-	    problemSolver()->comparisonType (constraintName);
-	  if (!comparison) {
+          if (!problemSolver ()->has <core::NumericalConstraintPtr_t>
+              (constraintName)) {
 	    throw std::runtime_error
 	      (std::string ("Numerical constraint ") + constraintName +
 	       std::string ("can not be found."));
-	  }
-	  return comparison->constantRightHandSide ();
+          }
+          core::NumericalConstraintPtr_t nc
+            (problemSolver ()->get <core::NumericalConstraintPtr_t>
+             (constraintName));
+	  return nc->constantRightHandSide ();
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
