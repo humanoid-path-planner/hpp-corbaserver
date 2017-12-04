@@ -55,9 +55,6 @@ namespace hpp
 	virtual void
 	createRobot (const char* robotName) throw (hpp::Error);
 
-	virtual void
-	setRobot(const char* robotName) throw (hpp::Error);
-
 	virtual void loadRobotModel (const char* robotName,
 				     const char* rootJointType,
 				     const char* packageName,
@@ -92,8 +89,7 @@ namespace hpp
 	virtual Short getNumberDof () throw (hpp::Error);
 
 	virtual void appendJoint
-	(const char* robotName, const char* parentName,
-	 const char* jointName, const char* jointType,
+	(const char* parentName, const char* jointName, const char* jointType,
 	 const Transform_ pos)
 	  throw (hpp::Error);
 
@@ -231,7 +227,7 @@ namespace hpp
 	  throw (hpp::Error);
 
 	virtual void
-	addObjectToJoint (const char* robotName, const char* jointName,
+	addObjectToJoint (const char* jointName,
             const char* objectName, const Transform_ config)
 	  throw (hpp::Error);
 
@@ -251,37 +247,7 @@ namespace hpp
         virtual floatSeq* getRobotAABB() throw (hpp::Error);
 
       private:
-        enum ThrowExceptionCase {
-          NoThrow,
-          ThrowIfDoesNotExist,
-          ThrowIfExists
-        };
-        DevicePtr_t getRobotFromMap (const std::string& name,
-                                     ThrowExceptionCase tec)
-          throw (hpp::Error)
-        {
-          std::map <std::string, DevicePtr_t>::const_iterator _dev
-            = robotMap_.find (name);
-          bool exists = (_dev != robotMap_.end());
-          switch (tec) {
-            case ThrowIfDoesNotExist:
-              if (!exists) throw Error (("There is no robot with name " + name).c_str());
-              break;
-            case ThrowIfExists:
-              if (exists) throw Error (("There is already a robot with name " + name).c_str());
-              break;
-            default:
-            case NoThrow:
-              break;
-          }
-          if (exists) return _dev->second;
-          return DevicePtr_t();
-        }
-
 	CollisionObjectConstPtr_t getObjectByName (const char* name);
-	// Store devices, joints and bodies in construction.
-	/// Map of devices in construction.
-	std::map <std::string, DevicePtr_t> robotMap_;
 
 	typedef std::map <std::string, std::vector <fcl::Vec3f> > VertexMap_t;
 	typedef std::map <std::string, std::vector <fcl::Triangle> >

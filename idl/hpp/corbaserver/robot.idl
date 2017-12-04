@@ -397,13 +397,11 @@ module hpp
     /// \name Create and register robot
     /// \{
 
-    /// Create an empty device and store it temporarily
+    /// Create an empty device
     /// \param robotName name of the robot.
-    ///  Fails if another robot is already in construction.
     void createRobot(in string robotName) raises (Error);
 
     // Create a new joint
-    // \param robotName name of the joint,
     // \param parentJoint name of the parent joint,
     // \param jointName name of the joint,
     // \param jointType among ["SE3", "planar",
@@ -414,14 +412,10 @@ module hpp
     //                         "translation3"]
     // \param pos initial position of the joint
     // \param joinBounds bounds of the joint. See setJointBounds for details.
-    void appendJoint(in string robotName, in string parentJoint,
+    void appendJoint(in string parentJoint,
                      in string jointName, in string jointType,
 		     in Transform_ pos)
       raises (Error);
-
-    /// Add a robot to the ProblemSolver
-    /// \throw Error.
-    void setRobot (in string inRobotName) raises (Error);
 
     ///  create an empty polyhedron.
     /// \param inPolyName name of the polyhedron.
@@ -462,8 +456,7 @@ module hpp
     /// \param jointName name of the body
     /// \param objectName name of the object
     /// \param pos relative position of the polyhedron in the body
-    void addObjectToJoint(in string robotName,
-                          in string jointName,
+    void addObjectToJoint(in string jointName,
                           in string objectName,
 			  in Transform_ pos)
         raises (Error);

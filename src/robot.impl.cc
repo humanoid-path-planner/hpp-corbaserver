@@ -113,20 +113,7 @@ namespace hpp
 	throw (hpp::Error)
       {
 	std::string robotName (inRobotName);
-        getRobotFromMap (robotName, ThrowIfExists);
-	// Try to create a robot.
-	DevicePtr_t robot = Device::create (robotName);
-	// Store robot in map.
-	robotMap_ [robotName] = robot;
-      }
-
-      // --------------------------------------------------------------------
-
-      void Robot::setRobot(const char* robotName) throw (hpp::Error)
-      {
-        DevicePtr_t robot = getRobotFromMap (robotName, ThrowIfDoesNotExist);
-	// Create a new problem with this robot.
-	problemSolver()->robot (robot);
+        problemSolver()->robot (Device::create (robotName));
       }
 
       // --------------------------------------------------------------------
@@ -284,7 +271,6 @@ namespace hpp
       }
 
       void Robot::appendJoint (
-          const char* robotName,
           const char* parentName,
           const char* jointName,
           const char* jointType,
@@ -292,7 +278,7 @@ namespace hpp
 	throw (hpp::Error)
       {
         using namespace se3;
-        DevicePtr_t robot = getRobotFromMap (robotName, ThrowIfDoesNotExist);
+        DevicePtr_t robot = getRobotOrThrow(problemSolver());
         Model& model = robot->model();
 
 	std::string pn(parentName);
@@ -1354,14 +1340,13 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      void Robot::addObjectToJoint (const char* robotName,
-          const char* jointName,
+      void Robot::addObjectToJoint (const char* jointName,
           const char* objectName,
           const Transform_ pos)
         throw (hpp::Error)
       {
         using namespace se3;
-        DevicePtr_t robot = getRobotFromMap (robotName, ThrowIfDoesNotExist);
+        DevicePtr_t robot = getRobotOrThrow(problemSolver());
         Model& model = robot->model();
         GeometryModel& geomModel = robot->geomModel();
 
