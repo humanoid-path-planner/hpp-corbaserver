@@ -300,9 +300,12 @@ namespace hpp
 	std::string jt(jointType);
 
         // Find parent joint
-        if (!model.existJointName(pn))
-          throw Error (("Joint " + pn + " not found.").c_str());
-        JointIndex pid = model.getJointId (pn);
+        JointIndex pid = 0;
+        if (!pn.empty()) {
+          if (!model.existJointName(pn))
+            throw Error (("Joint " + pn + " not found.").c_str());
+          pid = model.getJointId (pn);
+        }
 
 	// Check that joint of this name does not already exist.
         if (model.existJointName(jn))
@@ -1396,11 +1399,11 @@ namespace hpp
             HPP_THROW (Error, "object " << objectName << " does not exist.");
           }
 
+          FrameIndex bid = model.addBodyFrame (on, jid, placement);
           GeometryObject geom (on,
-              model.getFrameId(jn, JOINT), jid,
+              bid, jid,
               geometry, placement);
           geomModel.addGeometryObject (geom, model);
-          // model.addBodyFrame (on, jid, placement);
 
           robot->createData();
           robot->createGeomData();
