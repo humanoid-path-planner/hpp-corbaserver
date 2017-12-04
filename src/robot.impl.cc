@@ -179,13 +179,14 @@ namespace hpp
 	try {
 	  pinocchio::HumanoidRobotPtr_t robot
 	    (pinocchio::HumanoidRobot::create (robotName));
-	  hpp::pinocchio::urdf::loadHumanoidModel (robot,
-					       std::string (rootJointType),
-					       std::string (packageName),
-					       std::string (modelName),
-					       std::string (urdfSuffix),
-					       std::string (srdfSuffix));
-	  // Add robot to the planner
+	  hpp::pinocchio::urdf::loadRobotModel (robot,
+					        std::string (rootJointType),
+					        std::string (packageName),
+					        std::string (modelName),
+					        std::string (urdfSuffix),
+					        std::string (srdfSuffix));
+          hpp::pinocchio::urdf::setupHumanoidRobot (robot);
+          // Add robot to the planner
 	  problemSolver()->robot (robot);
 	  problemSolver()->robot ()->controlComputation
 	    (pinocchio::Device::JOINT_POSITION);
