@@ -878,6 +878,7 @@ namespace hpp
 	  Configuration_t config = floatSeqToConfig (robot, dofArray, true);
 	  robot->currentConfiguration (config);
 	  robot->computeForwardKinematics ();
+	  robot->computeFramesForwardKinematics ();
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
