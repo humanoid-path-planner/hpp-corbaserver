@@ -18,6 +18,9 @@ module hpp
   module corbaserver {
   /// Creation of a device, joints and bodies.
   interface Robot {
+    /// \name Loading URDF files
+    /// \{
+
     ///  Load robot model
     ///
     /// \param robotName Name of the robot that is constructed,
@@ -368,6 +371,27 @@ module hpp
     /// Get Jacobian of the center of mass
     floatSeqSeq getJacobianCenterOfMass () raises (Error);
 
+    /// Add an object to compute a partial COM of the robot.
+    /// \param name of the partial com
+    /// \param jointNames names of each ROOT of the joint trees to consider.
+    /// \note Joints are added recursively, it is not possible so far to add a
+    /// joint without addind all its children.
+    void addPartialCom (in string comName, in Names_t jointNames)
+        raises (Error);
+
+    /// Get position of partial center of mass
+    floatSeq getPartialCom (in string comName) raises (Error);
+
+    /// Get Jacobian of the partial center of mass
+    floatSeqSeq getJacobianPartialCom (in string comName) raises (Error);
+
+    /// Get the velocity of the partial center of mass
+    floatSeq getVelocityPartialCom (in string comName)
+      raises (Error);
+
+    /// Get the name of the current robot.
+    string getRobotName () raises (Error);
+
     /// \}
 
     /// \name Create and register robot
@@ -444,26 +468,6 @@ module hpp
 			  in Transform_ pos)
         raises (Error);
 
-    /// Add an object to compute a partial COM of the robot.
-    /// \param name of the partial com
-    /// \param jointNames names of each ROOT of the joint trees to consider.
-    /// \note Joints are added recursively, it is not possible so far to add a
-    /// joint without addind all its children.
-    void addPartialCom (in string comName, in Names_t jointNames)
-        raises (Error);
-
-    /// Get position of partial center of mass
-    floatSeq getPartialCom (in string comName) raises (Error);
-
-    /// Get Jacobian of the partial center of mass
-    floatSeqSeq getJacobianPartialCom (in string comName) raises (Error);
-
-    /// Get the velocity of the partial center of mass
-    floatSeq getVelocityPartialCom (in string comName)
-      raises (Error);
-
-    /// Get the name of the current robot.
-    string getRobotName () raises (Error);
     /// \}
   };
   };
