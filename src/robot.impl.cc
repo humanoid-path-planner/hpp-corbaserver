@@ -505,6 +505,24 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
+      char* Robot::getJointType(const char* jointName) throw (hpp::Error)
+      {
+	try {
+	  // Get robot in hppPlanner object.
+          DevicePtr_t robot = getRobotOrThrow(problemSolver());
+          Frame frame = robot->getFrameByName(jointName);
+          std::string name;
+          if (frame.isFixed())
+            return CORBA::string_dup("anchor");
+	  Joint joint = frame.joint();
+          return CORBA::string_dup(joint.jointModel().shortname().c_str());
+        } catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
+
       void Robot::setJointConfig(const char* jointName, const hpp::floatSeq& q)
 	throw (hpp::Error)
       {

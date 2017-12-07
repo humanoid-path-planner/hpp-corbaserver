@@ -103,6 +103,8 @@ namespace hpp
           throw (hpp::Error);
         virtual void setJointConfig(const char* jointName, const floatSeq& cfg)
           throw (hpp::Error);
+        virtual char* getJointType(const char* jointName)
+          throw (hpp::Error);
         virtual void jointIntegrate(const char* jointName, const floatSeq& dq)
           throw (hpp::Error);
 	virtual hpp::floatSeqSeq* getCurrentTransformation(const char* jointName)

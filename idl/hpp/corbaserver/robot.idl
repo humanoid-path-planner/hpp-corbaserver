@@ -134,6 +134,11 @@ module hpp
     /// correponding to the joint and recompute forward kinematics
     void setJointConfig(in string jointName, in floatSeq config) raises (Error);
 
+    /// Get joint type.
+    ///
+    /// \param jointName name of the joint,
+    string getJointType(in string jointName) raises (Error);
+
     /// Integrate velocity of a joint starting from robot configuration
     ///
     /// \param jointName name of the joint,
