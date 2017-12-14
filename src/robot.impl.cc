@@ -1406,10 +1406,17 @@ namespace hpp
           GeometryObject geom (on,
               bid, jid,
               geometry, placement);
+          GeomIndex idx = geomModel.ngeoms;
           geomModel.addGeometryObject (geom, model);
+          for (GeomIndex i = 0; i < idx; ++i)
+          {
+            if (geomModel.geometryObjects[i].parentJoint != jid)
+                geomModel.addCollisionPair(CollisionPair(i,idx));
+          }
 
           robot->createData();
           robot->createGeomData();
+          problemSolver()->resetProblem();
         } catch (const std::exception& exc) {
           throw hpp::Error (exc.what ());
         }
