@@ -24,6 +24,7 @@ INCLUDE(cmake/base.cmake)
 INCLUDE(cmake/cpack.cmake)
 INCLUDE(cmake/idl.cmake)
 INCLUDE(cmake/python.cmake)
+INCLUDE(cmake/test.cmake)
 
 SET(PROJECT_NAME hpp-corbaserver)
 SET(PROJECT_DESCRIPTION "Corba server for Humanoid Path Planner applications")
@@ -58,6 +59,7 @@ ENDIF()
 # Dependencies
 ADD_REQUIRED_DEPENDENCY("omniORB4 >= 4.1.4")
 ADD_REQUIRED_DEPENDENCY("omniDynamic4 >= 4.1.4")
+FINDPYTHON(2.7 EXACT)
 IF (NOT CLIENT_ONLY)
   ADD_REQUIRED_DEPENDENCY("hpp-core >= 4")
   ADD_REQUIRED_DEPENDENCY("hpp-constraints >= 4")
@@ -65,6 +67,7 @@ IF (NOT CLIENT_ONLY)
 ENDIF (NOT CLIENT_ONLY)
 
 ADD_SUBDIRECTORY(src)
+ADD_SUBDIRECTORY(tests)
 
 PKG_CONFIG_APPEND_LIBS(${PROJECT_NAME})
 

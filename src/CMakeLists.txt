@@ -109,13 +109,29 @@ ENDIF (NOT CLIENT_ONLY)
 ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_cpp)
 ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_python)
 
+IF(WIN32)
+  SET(LINK copy_if_different)
+ELSE(WIN32)
+  SET(LINK create_symlink)
+ENDIF(WIN32)
+
 FOREACH (FILE __init__.py quaternion.py transform.py)
+  # Create a symbolic link of FILE into the build directory
+  # This is for testing purpose
+  EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E ${LINK}
+    ${${PROJECT_NAME}_SOURCE_DIR}/src/hpp/${FILE}
+    ${${PROJECT_NAME}_BINARY_DIR}/src/hpp/${FILE})
   PYTHON_INSTALL_ON_SITE(
     hpp ${FILE} ${PYTHON_SITELIB}
     )
 ENDFOREACH ()
 
 FOREACH (FILE __init__.py client.py robot.py  problem_solver.py benchmark.py ompl_benchmark_statistics.py)
+  # Create a symbolic link of FILE into the build directory
+  # This is for testing purpose
+  EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E ${LINK}
+    ${${PROJECT_NAME}_SOURCE_DIR}/src/hpp/corbaserver/${FILE}
+    ${${PROJECT_NAME}_BINARY_DIR}/src/hpp/corbaserver/${FILE})
   PYTHON_INSTALL_ON_SITE(
     hpp/corbaserver ${FILE} ${PYTHON_SITELIB}
     )
