@@ -301,33 +301,33 @@ namespace hpp
 	Transform3f posMatrix = toTransform3f(pos);
 
 	// Determine type of joint.
-	if (jt == "SE3")
+	if (jt == "FreeFlyer")
           addJoint <JointModelFreeFlyer> (model, pid, posMatrix, jn);
-	if (jt == "planar")
+        else if (jt == "Planar")
           addJoint <JointModelPlanar> (model, pid, posMatrix, jn);
-	else if (jt == "rotationX")
+	else if (jt == "RX")
           addJoint <JointModelRX> (model, pid, posMatrix, jn);
-	else if (jt == "unbounded-rotationX")
+	else if (jt == "RUBX")
           addJoint <JointModelRUBX> (model, pid, posMatrix, jn);
-	else if (jt == "rotationY")
+	else if (jt == "RY")
           addJoint <JointModelRY> (model, pid, posMatrix, jn);
-	else if (jt == "unbounded-rotationY")
+	else if (jt == "RUBY")
           addJoint <JointModelRUBY> (model, pid, posMatrix, jn);
-	else if (jt == "rotationZ")
+	else if (jt == "RZ")
           addJoint <JointModelRZ> (model, pid, posMatrix, jn);
-	else if (jt == "unbounded-rotationZ")
+	else if (jt == "RUBZ")
           addJoint <JointModelRUBZ> (model, pid, posMatrix, jn);
-	else if (jt == "translationX")
+	else if (jt == "PX")
           addJoint <JointModelPX> (model, pid, posMatrix, jn);
-	else if (jt == "translationY")
+	else if (jt == "PY")
           addJoint <JointModelPY> (model, pid, posMatrix, jn);
-	else if (jt == "translationZ")
+	else if (jt == "PZ")
           addJoint <JointModelPZ> (model, pid, posMatrix, jn);
-	else if (jt == "translation3")
+	else if (jt == "Translation")
           addJoint <JointModelTranslation> (model, pid, posMatrix, jn);
 	else {
-	  std::ostringstream oss ("joint type");
-	  oss << jt << " does not exist.";
+	  std::ostringstream oss;
+	  oss << "Joint type \"" << jt << "\" does not exist.";
 	  hppDout (error, oss.str ());
 	  throw hpp::Error (oss.str ().c_str ());
 	}

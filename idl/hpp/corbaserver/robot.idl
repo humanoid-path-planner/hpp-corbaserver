@@ -409,14 +409,16 @@ module hpp
     // Create a new joint
     // \param parentJoint name of the parent joint,
     // \param jointName name of the joint,
-    // \param jointType among ["SE3", "planar",
-    //                         "rotationX", "rotationY", "rotationZ",
-    //                         "unbounded-rotationX", "unbounded-rotationY",
-    //                         "unbounded-rotationZ",
-    //                         "translationX", "translationY", "translationZ",
-    //                         "translation3"]
+    // \param jointType among ["FreeFlyer", "Planar",
+    //                         "RX", "RY", "RZ",
+    //                         "RUBX", "RUBY",
+    //                         "RUBZ",
+    //                         "PX", "PY", "PZ",
+    //                         "Translation"]
     // \param pos initial position of the joint
     // \param joinBounds bounds of the joint. See setJointBounds for details.
+    // \note In the joint types, R stands for Rotation, RUB stands for 
+    //       Rotation UnBounded, P stands for Prismatic. Translation is 3D.
     void appendJoint(in string parentJoint,
                      in string jointName, in string jointType,
 		     in Transform_ pos)
