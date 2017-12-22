@@ -113,7 +113,8 @@ namespace hpp
 	throw (hpp::Error)
       {
 	std::string robotName (inRobotName);
-        problemSolver()->robot (Device::create (robotName));
+        DevicePtr_t robot (problemSolver()->createRobot (robotName));
+        problemSolver ()->robot (robot);
       }
 
       // --------------------------------------------------------------------
@@ -137,7 +138,8 @@ namespace hpp
 				 const char* srdfSuffix) throw (hpp::Error)
       {
 	try {
-	  pinocchio::DevicePtr_t device (pinocchio::Device::create (robotName));
+	  pinocchio::DevicePtr_t device
+            (problemSolver ()->createRobot (robotName));
 	  hpp::pinocchio::urdf::loadRobotModel (device,
 					    std::string (rootJointType),
 					    std::string (packageName),
@@ -192,7 +194,8 @@ namespace hpp
           const char* srdfString) throw (hpp::Error)
       {
 	try {
-	  pinocchio::DevicePtr_t device (pinocchio::Device::create (robotName));
+	  pinocchio::DevicePtr_t device (problemSolver ()->createRobot
+                                         (robotName));
 	  hpp::pinocchio::urdf::loadModelFromString (
               device, 0, "",
               std::string (rootJointType),
