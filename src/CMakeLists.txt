@@ -119,8 +119,8 @@ FOREACH (FILE __init__.py quaternion.py transform.py)
   # Create a symbolic link of FILE into the build directory
   # This is for testing purpose
   EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E ${LINK}
-    ${${PROJECT_NAME}_SOURCE_DIR}/src/hpp/${FILE}
-    ${${PROJECT_NAME}_BINARY_DIR}/src/hpp/${FILE})
+    ${CMAKE_CURRENT_SOURCE_DIR}/hpp/${FILE}
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/${FILE})
   PYTHON_INSTALL_ON_SITE(
     hpp ${FILE} ${PYTHON_SITELIB}
     )
@@ -130,8 +130,8 @@ FOREACH (FILE __init__.py client.py robot.py  problem_solver.py benchmark.py omp
   # Create a symbolic link of FILE into the build directory
   # This is for testing purpose
   EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E ${LINK}
-    ${${PROJECT_NAME}_SOURCE_DIR}/src/hpp/corbaserver/${FILE}
-    ${${PROJECT_NAME}_BINARY_DIR}/src/hpp/corbaserver/${FILE})
+    ${CMAKE_CURRENT_SOURCE_DIR}/hpp/corbaserver/${FILE}
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/${FILE})
   PYTHON_INSTALL_ON_SITE(
     hpp/corbaserver ${FILE} ${PYTHON_SITELIB}
     )
