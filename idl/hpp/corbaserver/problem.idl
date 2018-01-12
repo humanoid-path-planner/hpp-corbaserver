@@ -349,6 +349,9 @@ module hpp
     void setLockedJointConstraints (in string configProjName,
                                     in Names_t lockedJointNames) raises (Error);
 
+    /// Display the constraint in the ConfigProjector
+    string displayConstraints () raises (Error);
+
     /// Lock joint with given joint configuration
     /// \param jointName name of the joint
     /// \param value value of the joint configuration

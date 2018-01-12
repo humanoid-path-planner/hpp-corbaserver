@@ -1307,6 +1307,20 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+      char* Problem::displayConstraints () throw (Error)
+      {
+        try {
+          std::ostringstream oss;
+          if (problemSolver()->constraints())
+            oss << *problemSolver()->constraints();
+          return c_str(oss.str());
+        } catch (const std::exception& exc) {
+          throw hpp::Error (exc.what ());
+        }
+      }
+
+      // ---------------------------------------------------------------
+
       void Problem::lockJoint (const char* jointName,
 			       const hpp::floatSeq& value)
 	throw (hpp::Error)
