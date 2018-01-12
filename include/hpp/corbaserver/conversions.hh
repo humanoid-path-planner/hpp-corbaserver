@@ -50,6 +50,13 @@ namespace hpp {
 
     ConfigurationPtr_t floatSeqToConfigPtr (const DevicePtr_t& robot, const floatSeq& dofArray, bool throwIfNotNormalized);
 
+    inline char* c_str (const std::string& in)
+    {
+      char* out = new char[in.length()+1];
+      strcpy (out, in.c_str());
+      return out;
+    }
+
     template <typename InputIt> inline Names_t* toNames_t (InputIt begin, InputIt end)
     {
       std::size_t len = std::distance (begin, end);
@@ -58,8 +65,7 @@ namespace hpp {
 
       std::size_t i = 0;
       while (begin != end) {
-        nameList[i] = new char[begin->length ()+1];
-        strcpy (nameList[i], begin->c_str ());
+        nameList[i] = c_str (*begin);
         ++begin;
         ++i;
       }
