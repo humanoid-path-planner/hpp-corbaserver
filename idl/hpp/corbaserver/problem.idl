@@ -55,7 +55,7 @@ module hpp
     /// \param jointNames a list of joint names representing the subchain to
     ///        extract from the original path.
     /// \todo the configuration parameter can be selected but not reorganized.
-    void movePathToProblem (in unsigned short pathId, in string problemName,
+    void movePathToProblem (in unsigned long pathId, in string problemName,
         in Names_t jointNames) raises (Error);
 
     /// \name Initial and goal configurations
@@ -137,7 +137,7 @@ module hpp
     /// \param maxIter maximum number of tries,
     /// \retval output output configuration,
     /// \retval error norm of the residual error.
-    boolean generateValidConfig (in unsigned short maxIter, out floatSeq output,
+    boolean generateValidConfig (in unsigned long maxIter, out floatSeq output,
 			      out double residualError)
       raises (Error);
 
@@ -362,16 +362,16 @@ module hpp
     void setErrorThreshold (in double threshold) raises (Error);
 
     /// Set maximal number of iterations in numerical constraint resolution
-    unsigned short getMaxIterProjection () raises (Error);
+    unsigned long getMaxIterProjection () raises (Error);
 
     /// Set maximal number of iterations in numerical constraint resolution
-    void setMaxIterProjection (in unsigned short iterations) raises (Error);
+    void setMaxIterProjection (in unsigned long iterations) raises (Error);
 
     /// Set maximal number of iterations in path planning
-    unsigned short getMaxIterPathPlanning () raises (Error);
+    unsigned long getMaxIterPathPlanning () raises (Error);
 
     /// Set maximal number of iterations in path planning
-    void setMaxIterPathPlanning (in unsigned short iterations) raises (Error);
+    void setMaxIterPathPlanning (in unsigned long iterations) raises (Error);
 
     /// \}
 
@@ -468,7 +468,7 @@ module hpp
     /// \return TRUE if created path is fully valid.
     boolean directPath (in floatSeq startConfig, in floatSeq endConfig,
 			in boolean validate,
-			out unsigned short pathId, out string report)
+			out unsigned long pathId, out string report)
       raises (Error);
 
     /// add a configuration to a roadmap
@@ -487,7 +487,7 @@ module hpp
     ///        start node.
     /// \sa hpp::core::ProblemSolver::addEdgeToRoadmap.
     void addEdgeToRoadmap (in floatSeq config1, in floatSeq config2,
-			   in unsigned short pathId, in boolean bothEdges)
+			   in unsigned long pathId, in boolean bothEdges)
       raises (Error);
 
     /// Append a path to an existing path
@@ -497,54 +497,54 @@ module hpp
     /// direct path is not valid
     /// Call steering method between end of path and input config and append
     /// direct path in case of success.
-    void appendDirectPath (in unsigned short pathId, in floatSeq config)
+    void appendDirectPath (in unsigned long pathId, in floatSeq config)
       raises (Error);
 
     /// Concatenate path endId at the end of startId.
     /// \note No path are created. The resulting path is at rank startId.
-    void concatenatePath (in unsigned short startId, in unsigned short endId)
+    void concatenatePath (in unsigned long startId, in unsigned long endId)
       raises (Error);
 
     /// Erase path pathId from stored.
-    void erasePath (in unsigned short pathId)
+    void erasePath (in unsigned long pathId)
       raises (Error);
 
     /// Apply the path projector method to the path
     /// \return true in case of success.
-    boolean projectPath (in unsigned short patId) raises (Error);
+    boolean projectPath (in unsigned long patId) raises (Error);
 
     /// Get Number of paths
-    short numberPaths () raises (Error);
+    long numberPaths () raises (Error);
 
     /// Optimize a given path
     /// \param inPathId Id of the path in this problem.
     /// \return the running time as 4 integers repectively representing
     ///         the number of hours, minutes, seconds, microseconds.
     /// \throw Error.
-    intSeq optimizePath(in unsigned short inPathId) raises (Error);
+    intSeq optimizePath(in unsigned long inPathId) raises (Error);
 
     /// Get length of path
     /// \param inPathId rank of the path in the problem
     /// \return length of path if path exists.
-    double pathLength(in unsigned short inPathId) raises (Error);
+    double pathLength(in unsigned long inPathId) raises (Error);
 
     /// Get the robot config at param on a path
     /// \param inPathId rank of the path in the problem
     /// \param atDistance : the user parameter choice
     /// \return dofseq : the config at param
-    floatSeq configAtParam(in unsigned short inPathId, in double atDistance)
+    floatSeq configAtParam(in unsigned long inPathId, in double atDistance)
       raises (Error);
 
     /// Get the robot velocity at param on a path
     /// \param inPathId rank of the path in the problem
     /// \param atDistance : the user parameter choice
     /// \return dofseq : the velocity at param
-    floatSeq velocityAtParam(in unsigned short inPathId, in double atDistance)
+    floatSeq velocityAtParam(in unsigned long inPathId, in double atDistance)
       raises (Error);
 
     /// Get way points of a path
     /// \param pathId rank of the path in the problem
-    floatSeqSeq getWaypoints (in unsigned short pathId, out floatSeq times) raises (Error);
+    floatSeqSeq getWaypoints (in unsigned long pathId, out floatSeq times) raises (Error);
 
     /// \}
 

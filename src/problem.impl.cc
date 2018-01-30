@@ -170,8 +170,8 @@ namespace hpp
             typedef boost::mpl::vector<
               // There is no operator<<= (CORBA::Any, CORBA::Boolean)
               std::pair<bool                , CORBA::Boolean>,
-              std::pair<int                 , CORBA::Short>,
-              std::pair<unsigned int        , CORBA::UShort>,
+              std::pair<int                 , CORBA::Long>,
+              std::pair<unsigned int        , CORBA::ULong>,
               std::pair<long                , CORBA::Long>,
               std::pair<unsigned long       , CORBA::ULong>,
               std::pair<double              , CORBA::Double>,
@@ -442,7 +442,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::movePathToProblem (UShort pathId, const char* name,
+      void Problem::movePathToProblem (ULong pathId, const char* name,
           const Names_t& jointNames) throw (hpp::Error)
       {
         ProblemSolverMapPtr_t psMap (server_->problemSolverMap());
@@ -1039,7 +1039,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      bool Problem::generateValidConfig (UShort maxIter,
+      bool Problem::generateValidConfig (ULong maxIter,
 				      hpp::floatSeq_out output,
 				      double& residualError)
 	throw (hpp::Error)
@@ -1397,27 +1397,27 @@ namespace hpp
       }
 
       // ---------------------------------------------------------------
-      void Problem::setMaxIterProjection (UShort iterations) throw (Error)
+      void Problem::setMaxIterProjection (ULong iterations) throw (Error)
       {
 	problemSolver()->maxIterProjection ((size_type)iterations);
       }
 
       // ---------------------------------------------------------------
-      UShort Problem::getMaxIterProjection () throw (Error)
+      ULong Problem::getMaxIterProjection () throw (Error)
       {
-	return (UShort) problemSolver()->maxIterProjection ();
+	return (ULong) problemSolver()->maxIterProjection ();
       }
 
       // ---------------------------------------------------------------
-      void Problem::setMaxIterPathPlanning (UShort iterations) throw (Error)
+      void Problem::setMaxIterPathPlanning (ULong iterations) throw (Error)
       {
 	problemSolver()->maxIterPathPlanning ((size_type)iterations);
       }
 
       // ---------------------------------------------------------------
-      UShort Problem::getMaxIterPathPlanning () throw (Error)
+      ULong Problem::getMaxIterPathPlanning () throw (Error)
       {
-	return (UShort) problemSolver()->maxIterPathPlanning ();
+	return (ULong) problemSolver()->maxIterPathPlanning ();
       }
 
       // ---------------------------------------------------------------
@@ -1577,7 +1577,7 @@ namespace hpp
 
       bool Problem::directPath (const hpp::floatSeq& startConfig,
 				const hpp::floatSeq& endConfig,
-				CORBA::Boolean validate, UShort& pathId,
+				CORBA::Boolean validate, ULong& pathId,
 				CORBA::String_out report)
 	throw (hpp::Error)
       {
@@ -1596,7 +1596,7 @@ namespace hpp
 	  pathValid = problemSolver()->directPath (*start, *end, validate,
 						   pid, r);
 	  report = CORBA::string_dup(r.c_str ());
-          pathId = (UShort) pid;
+          pathId = (ULong) pid;
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -1622,7 +1622,7 @@ namespace hpp
 
       void Problem::addEdgeToRoadmap (const hpp::floatSeq& config1,
 				      const hpp::floatSeq& config2,
-				      UShort pathId, bool bothEdges)
+				      ULong pathId, bool bothEdges)
 	throw (hpp::Error)
       {
         try {
@@ -1649,7 +1649,7 @@ namespace hpp
        }
       // ---------------------------------------------------------------
 
-      void Problem::appendDirectPath (UShort pathId,
+      void Problem::appendDirectPath (ULong pathId,
 				      const hpp::floatSeq& config)
 	throw (hpp::Error)
       {
@@ -1685,7 +1685,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::concatenatePath (UShort startId, UShort endId)
+      void Problem::concatenatePath (ULong startId, ULong endId)
 	throw (hpp::Error)
       {
 	try {
@@ -1705,7 +1705,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::erasePath (UShort pathId)
+      void Problem::erasePath (ULong pathId)
 	throw (hpp::Error)
       {
 	try {
@@ -1722,7 +1722,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      bool Problem::projectPath (UShort pathId)
+      bool Problem::projectPath (ULong pathId)
 	throw (hpp::Error)
       {
 	try {
@@ -1759,10 +1759,10 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      Short Problem::numberPaths () throw (hpp::Error)
+      Long Problem::numberPaths () throw (hpp::Error)
       {
 	try {
-	  return (Short) problemSolver()->paths ().size ();
+	  return (Long) problemSolver()->paths ().size ();
 	} catch (std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -1770,7 +1770,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      hpp::intSeq* Problem::optimizePath(UShort pathId) throw (hpp::Error)
+      hpp::intSeq* Problem::optimizePath(ULong pathId) throw (hpp::Error)
       {
 	try {
 	  if (pathId >= problemSolver()->paths ().size ()) {
@@ -1804,7 +1804,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      Double Problem::pathLength (UShort pathId) throw (hpp::Error)
+      Double Problem::pathLength (ULong pathId) throw (hpp::Error)
       {
 	try {
 	  if (pathId >= problemSolver()->paths ().size ()) {
@@ -1821,7 +1821,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      hpp::floatSeq* Problem::configAtParam (UShort pathId,
+      hpp::floatSeq* Problem::configAtParam (ULong pathId,
 					     Double atDistance)
 	throw (hpp::Error)
       {
@@ -1855,7 +1855,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      hpp::floatSeq* Problem::velocityAtParam (UShort pathId,
+      hpp::floatSeq* Problem::velocityAtParam (ULong pathId,
 					       Double atDistance)
 	throw (hpp::Error)
       {
@@ -1877,7 +1877,8 @@ namespace hpp
 
       // --------------------------------------------------------------
 
-      hpp::floatSeqSeq* Problem::getWaypoints (UShort pathId, hpp::floatSeq_out times)
+      hpp::floatSeqSeq* Problem::getWaypoints (ULong pathId,
+                                               hpp::floatSeq_out times)
 	throw (hpp::Error)
       {
 	try {

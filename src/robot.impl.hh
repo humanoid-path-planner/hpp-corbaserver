@@ -24,7 +24,7 @@ namespace hpp
   {
     namespace impl
     {
-
+      using CORBA::Long;
       /**
 	 Robots and obstacles are stored in object core::Planner.
 
@@ -84,9 +84,9 @@ namespace hpp
 
 	virtual char* getRobotName () throw (hpp::Error);
 
-	virtual Short getConfigSize () throw (hpp::Error);
+	virtual Long getConfigSize () throw (hpp::Error);
 
-	virtual Short getNumberDof () throw (hpp::Error);
+	virtual Long getNumberDof () throw (hpp::Error);
 
 	virtual void appendJoint
 	(const char* parentName, const char* jointName, const char* jointType,
@@ -127,9 +127,9 @@ namespace hpp
             const Transform_ position)
 	  throw (hpp::Error);
 
-	virtual Short getJointNumberDof (const char* jointName)
+	virtual Long getJointNumberDof (const char* jointName)
 	  throw (hpp::Error);
-	virtual Short getJointConfigSize (const char* jointName)
+	virtual Long getJointConfigSize (const char* jointName)
 	  throw (hpp::Error);
 
         virtual hpp::floatSeq* getJointBounds (const char* jointName)
@@ -219,11 +219,11 @@ namespace hpp
 	createSphere (const char* name, Double radius)
 	  throw (hpp::Error);
 
-	virtual Short
+	virtual Long
 	addPoint (const char* polyhedronName, Double x, Double y, Double z)
 	  throw (hpp::Error);
 
-	virtual Short
+	virtual Long
 	addTriangle
 	(const char* polyhedronName, ULong pt1, ULong pt2, ULong pt3)
 	  throw (hpp::Error);

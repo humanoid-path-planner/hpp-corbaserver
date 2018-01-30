@@ -88,11 +88,11 @@ module hpp
 
     /// Get size of configuration
     /// \return size of configuration
-    short getConfigSize () raises (Error);
+    long getConfigSize () raises (Error);
 
     /// Get size of velocity
     /// \return size of velocity
-    short getNumberDof () raises (Error);
+    long getNumberDof () raises (Error);
 
     /// \}
 
@@ -195,12 +195,12 @@ module hpp
     /// Get joint number degrees of freedom
     /// \param jointName name of the joint
     /// \throw Error if robot is not set or if joint does not exist.
-    short getJointNumberDof (in string jointName) raises (Error);
+    long getJointNumberDof (in string jointName) raises (Error);
 
     /// Get joint number config size
     /// \param jointName name of the joint
     /// \throw Error if robot is not set or if joint does not exist.
-    short getJointConfigSize (in string jointName) raises (Error);
+    long getJointConfigSize (in string jointName) raises (Error);
 
     ///  set bounds for a joint
 
@@ -446,7 +446,7 @@ module hpp
     /// \param y coordinate of the point.
     /// \param z coordinate of the point.
     /// \return rank of point in polyhedron
-    short addPoint(in string inPolyName, in double x, in double y, in double z)
+    long addPoint(in string inPolyName, in double x, in double y, in double z)
       raises (Error);
 
     ///  Add a point to a polyhedron
@@ -455,7 +455,7 @@ module hpp
     /// \param pt2 rank of second point in polyhedron.
     /// \param pt3 rank of third point in polyhedron.
     /// \return rank of triangle in polyhedron
-    short addTriangle(in string inPolyName, in unsigned long pt1,
+    long addTriangle(in string inPolyName, in unsigned long pt1,
 		      in unsigned long pt2, in unsigned long pt3)
       raises (Error);
 
