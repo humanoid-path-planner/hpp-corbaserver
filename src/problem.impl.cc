@@ -1405,6 +1405,36 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+      typedef std::map<std::string, core::ConfigProjector::LineSearchType> LineSearchTypeMap_t;
+
+      LineSearchTypeMap_t makeLineSearchTypeMap ()
+      {
+        LineSearchTypeMap_t map;
+        map["Backtracking"] = core::ConfigProjector::Backtracking;
+        map["FixedSequence"] = core::ConfigProjector::FixedSequence;
+        map["Constant"] = core::ConfigProjector::Constant;
+        map["ErrorNormBased"] = core::ConfigProjector::ErrorNormBased;
+        return map;
+      }
+      void Problem::setDefaultLineSearchType (const char* type) throw (Error)
+      {
+        static const LineSearchTypeMap_t map = makeLineSearchTypeMap();
+        std::string t (type);
+
+        LineSearchTypeMap_t::const_iterator _t = map.find(t);
+        if (_t != map.end())
+          core::ConfigProjector::defaultLineSearch (_t->second);
+        else {
+          std::ostringstream oss;
+          oss << "Available types are:";
+          for (_t = map.begin(); _t != map.end(); ++_t)
+            oss << " \"" << _t->first << '"';
+          throw Error (oss.str().c_str());
+        }
+      }
+
+      // ---------------------------------------------------------------
+
       void Problem::setErrorThreshold (Double threshold) throw (Error)
       {
 	problemSolver()->errorThreshold (threshold);

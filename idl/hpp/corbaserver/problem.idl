@@ -364,6 +364,8 @@ module hpp
     /// Set error threshold in numerical constraint resolution
     void setErrorThreshold (in double threshold) raises (Error);
 
+    void setDefaultLineSearchType (in string type) raises (Error);
+
     /// Set maximal number of iterations in numerical constraint resolution
     unsigned long getMaxIterProjection () raises (Error);
 

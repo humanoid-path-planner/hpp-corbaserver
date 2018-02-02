@@ -431,6 +431,11 @@ class ProblemSolver (object):
     def setErrorThreshold (self, threshold):
         return self.client.problem.setErrorThreshold (threshold)
 
+    ## set the default line search type used in the projection.
+    # \param See hpp::core::ConfigProjector::LineSearchType for possible values.
+    def setDefaultLineSearchType (self, type):
+        return self.client.problem.setDefaultLineSearchType (type)
+
     ## Set the maximal number of iterations in projection
     def getMaxIterations (self):
         from warnings import warn

@@ -205,6 +205,7 @@ namespace hpp
           */
 	virtual Double getErrorThreshold () throw (Error);
 	virtual void setErrorThreshold (Double threshold) throw (Error);
+        virtual void setDefaultLineSearchType (const char* type) throw (Error);
 	virtual ULong getMaxIterProjection () throw (Error);
 	virtual void setMaxIterProjection (ULong iterations) throw (Error);
 	virtual ULong getMaxIterPathPlanning () throw (Error);
