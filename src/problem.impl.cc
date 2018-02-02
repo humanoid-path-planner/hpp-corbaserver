@@ -623,6 +623,27 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+      void Problem::createTransformationConstraint2
+      (const char* constraintName, const char* joint1Name,
+       const char* joint2Name, const Transform_ frame1, const Transform_ frame2,
+       const hpp::boolSeq& mask)
+	throw (hpp::Error)
+      {
+	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
+        std::string name (constraintName);
+        DifferentiableFunctionPtr_t func = buildGenericFunc
+          <constraints::PositionBit | constraints::OrientationBit> (
+              problemSolver()->robot(), name,
+              joint1Name           , joint2Name,
+              toTransform3f(frame1), toTransform3f(frame2),
+              boolSeqToBoolVector(mask, 6));
+
+        problemSolver()->addNumericalConstraint
+          (name, NumericalConstraint::create (func));
+      }
+
+      // ---------------------------------------------------------------
+
       void Problem::createLockedJoint
       (const char* lockedJointName, const char* jointName,
        const hpp::floatSeq& value)
