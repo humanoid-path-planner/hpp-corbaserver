@@ -46,7 +46,7 @@ namespace hpp
 
         virtual void resetProblem () throw (hpp::Error);
 
-        virtual void movePathToProblem (UShort pathId, const char* problemName,
+        virtual void movePathToProblem (ULong pathId, const char* problemName,
             const Names_t& jointNames) throw (hpp::Error);
 
 	virtual void
@@ -148,7 +148,7 @@ namespace hpp
 	(const hpp::floatSeq& config, hpp::floatSeq_out value,
 	 hpp::floatSeqSeq_out jacobian) throw (hpp::Error);
 
-	virtual bool generateValidConfig (UShort maxIter,
+	virtual bool generateValidConfig (ULong maxIter,
 				       hpp::floatSeq_out output,
 				       Double& residualError)
 	  throw (hpp::Error);
@@ -202,10 +202,10 @@ namespace hpp
           */
 	virtual Double getErrorThreshold () throw (Error);
 	virtual void setErrorThreshold (Double threshold) throw (Error);
-	virtual UShort getMaxIterProjection () throw (Error);
-	virtual void setMaxIterProjection (UShort iterations) throw (Error);
-	virtual UShort getMaxIterPathPlanning () throw (Error);
-	virtual void setMaxIterPathPlanning (UShort iterations) throw (Error);
+	virtual ULong getMaxIterProjection () throw (Error);
+	virtual void setMaxIterProjection (ULong iterations) throw (Error);
+	virtual ULong getMaxIterPathPlanning () throw (Error);
+	virtual void setMaxIterPathPlanning (ULong iterations) throw (Error);
 
 	virtual void addPathOptimizer (const char* pathOptimizerType)
 	  throw (Error);
@@ -239,7 +239,7 @@ namespace hpp
 	virtual bool directPath (const hpp::floatSeq& startConfig,
 				 const hpp::floatSeq& endConfig,
 				 CORBA::Boolean validate,
-				 UShort& pathId,
+				 ULong& pathId,
 				 CORBA::String_out report)
 	  throw (hpp::Error);
 
@@ -247,39 +247,39 @@ namespace hpp
 
 	virtual void addEdgeToRoadmap (const hpp::floatSeq& config1,
 				       const hpp::floatSeq& config2,
-				       UShort pathId, bool bothEdges)
+				       ULong pathId, bool bothEdges)
 	  throw (hpp::Error);
 
-	virtual void appendDirectPath (UShort pathId,
+	virtual void appendDirectPath (ULong pathId,
 				       const hpp::floatSeq& config)
 	  throw (hpp::Error);
 
-        virtual void concatenatePath (UShort startId, UShort endId)
+        virtual void concatenatePath (ULong startId, ULong endId)
           throw (hpp::Error);
 
-        virtual void erasePath (UShort pathId)
+        virtual void erasePath (ULong pathId)
           throw (hpp::Error);
 
-	virtual bool projectPath (UShort pathId)
+	virtual bool projectPath (ULong pathId)
 	  throw (hpp::Error);
 
 	virtual void interruptPathPlanning () throw (hpp::Error);
 
-	virtual Short numberPaths () throw (hpp::Error);
+	virtual Long numberPaths () throw (hpp::Error);
 
-	virtual hpp::intSeq* optimizePath (UShort pathId) throw (hpp::Error);
+	virtual hpp::intSeq* optimizePath (ULong pathId) throw (hpp::Error);
 
-	virtual Double pathLength (UShort pathId) throw (hpp::Error);
+	virtual Double pathLength (ULong pathId) throw (hpp::Error);
 
-	virtual hpp::floatSeq* configAtParam (UShort pathId,
+	virtual hpp::floatSeq* configAtParam (ULong pathId,
 					      Double atDistance)
 	  throw (hpp::Error);
 
-	virtual hpp::floatSeq* velocityAtParam (UShort pathId,
+	virtual hpp::floatSeq* velocityAtParam (ULong pathId,
 						Double atDistance)
 	  throw (hpp::Error);
 
-	virtual hpp::floatSeqSeq* getWaypoints (UShort inPathId, floatSeq_out times)
+	virtual hpp::floatSeqSeq* getWaypoints (ULong inPathId, floatSeq_out times)
 	  throw (hpp::Error);
 	virtual hpp::floatSeqSeq* nodes () throw (hpp::Error);
 	virtual Long numberEdges () throw (hpp::Error);

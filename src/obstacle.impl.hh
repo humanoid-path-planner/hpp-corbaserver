@@ -67,12 +67,12 @@ namespace hpp
 	(const char* boxName, Double x, Double y, Double z)
 	  throw(hpp::Error);
 
-	virtual Short
+	virtual CORBA::Long
 	addPoint
 	(const char* polyhedronName, Double x, Double y, Double z)
 	  throw(hpp::Error);
 
-	virtual Short
+	virtual CORBA::Long
 	addTriangle
 	(const char* polyhedronName, ULong pt1, ULong pt2, ULong pt3)
 	  throw(hpp::Error);

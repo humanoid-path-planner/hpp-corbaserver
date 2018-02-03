@@ -49,6 +49,8 @@ namespace hpp
     {
       namespace
       {
+        using CORBA::Long;
+        using CORBA::ULong;
         typedef se3::FrameIndex FrameIndex;
         const se3::FrameType JOINT_FRAME = (se3::FrameType)(se3::JOINT | se3::FIXED_JOINT);
 
@@ -79,14 +81,14 @@ namespace hpp
 	{
 	  std::size_t jointNbDofs = joint->configSize ();
           floatSeq* ret = new floatSeq;
-          ret->length ((CORBA::ULong) (2*jointNbDofs));
+          ret->length ((ULong) (2*jointNbDofs));
           for (std::size_t iDof=0; iDof<jointNbDofs; iDof++) {
             if (joint->isBounded (iDof)) {
-	      (*ret) [(CORBA::ULong) (2*iDof)] = joint->lowerBound (iDof);
-	      (*ret) [(CORBA::ULong) (2*iDof + 1)] = joint->upperBound (iDof);
+	      (*ret) [(ULong) (2*iDof)] = joint->lowerBound (iDof);
+	      (*ret) [(ULong) (2*iDof + 1)] = joint->upperBound (iDof);
             } else {
-	      (*ret) [(CORBA::ULong) (2*iDof)] = 1;
-	      (*ret) [(CORBA::ULong) (2*iDof + 1)] = 0;
+	      (*ret) [(ULong) (2*iDof)] = 1;
+	      (*ret) [(ULong) (2*iDof + 1)] = 0;
             }
           }
           return ret;
@@ -240,10 +242,10 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      Short Robot::getConfigSize () throw (hpp::Error)
+      Long Robot::getConfigSize () throw (hpp::Error)
       {
 	try {
-	  return (Short) getRobotOrThrow(problemSolver())->configSize ();
+	  return (Long) getRobotOrThrow(problemSolver())->configSize ();
 	} catch (const std::exception& exc) {
 	  hppDout (error, exc.what ());
 	  throw hpp::Error (exc.what ());
@@ -252,10 +254,10 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      Short Robot::getNumberDof () throw (hpp::Error)
+      Long Robot::getNumberDof () throw (hpp::Error)
       {
 	try {
-          return (Short) getRobotOrThrow(problemSolver())->numberDof ();
+          return (Long) getRobotOrThrow(problemSolver())->numberDof ();
 	} catch (const std::exception& exc) {
 	  hppDout (error, exc.what ());
 	  throw hpp::Error (exc.what ());
@@ -404,7 +406,7 @@ namespace hpp
 	  // Compute number of real urdf joints
           JointPtr_t j = robot->getJointByName (std::string (jointName));
 	  JointVector_t jointVector = robot->getJointVector ();
-	  ULong size = (CORBA::ULong) j->numberChildJoints ();
+	  ULong size = (ULong) j->numberChildJoints ();
 	  char** nameList = Names_t::allocbuf(size);
 	  Names_t *jointNames = new Names_t (size, size, nameList);
 	  for (std::size_t i = 0; i < size; ++i) {
@@ -546,7 +548,7 @@ namespace hpp
 	    throw Error ("Wrong configuration dimension");
 	  }
 	  for(size_type i=0; i<dim; i++)
-            config [ric + i] = q[(CORBA::ULong) i];
+            config [ric + i] = q[(ULong) i];
           robot->currentConfiguration (config);
           robot->computeForwardKinematics ();
 	} catch (const std::exception& exc) {
@@ -674,13 +676,13 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      Short Robot::getJointNumberDof (const char* jointName) throw (hpp::Error)
+      Long Robot::getJointNumberDof (const char* jointName) throw (hpp::Error)
       {
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
           Frame frame = robot->getFrameByName(jointName);
           if (frame.isFixed()) return 0;
-          else                 return (Short) frame.joint().numberDof();
+          else                 return (Long) frame.joint().numberDof();
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
@@ -688,13 +690,13 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      Short Robot::getJointConfigSize (const char* jointName) throw (hpp::Error)
+      Long Robot::getJointConfigSize (const char* jointName) throw (hpp::Error)
       {
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
           Frame frame = robot->getFrameByName(jointName);
           if (frame.isFixed()) return 0;
-          else                 return (Short) frame.joint().configSize();
+          else                 return (Long) frame.joint().configSize();
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
@@ -811,8 +813,8 @@ namespace hpp
 	  size_type dimension = extraCS.dimension ();
 	  if (nbBounds == 2*dimension) {
 	    for (size_type iDof=0; iDof < dimension; ++iDof) {
-	      double vMin = bounds [(CORBA::ULong) (2*iDof)];
-	      double vMax = bounds [(CORBA::ULong) (2*iDof+1)];
+	      double vMin = bounds [(ULong) (2*iDof)];
+	      double vMax = bounds [(ULong) (2*iDof+1)];
 	      if (vMin <= vMax) {
 		/* Dof is actually bounded */
 		extraCS.lower (iDof) = vMin;
@@ -864,9 +866,9 @@ namespace hpp
 
 	  size_type deviceDim = robot->configSize ();
 	  dofArray = new hpp::floatSeq();
-	  dofArray->length ((CORBA::ULong) deviceDim);
+	  dofArray->length ((ULong) deviceDim);
 	  for(size_type i=0; i<deviceDim; i++)
-	    (*dofArray)[(CORBA::ULong) i] = (*configuration) [i];
+	    (*dofArray)[(ULong) i] = (*configuration) [i];
 	  return dofArray;
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -1327,7 +1329,7 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      Short Robot::addPoint(const char* polyhedronName, Double x, Double y,
+      Long Robot::addPoint(const char* polyhedronName, Double x, Double y,
 			    Double z)
 	throw (hpp::Error)
       {
@@ -1339,12 +1341,12 @@ namespace hpp
 	  throw hpp::Error (oss.str ().c_str ());
 	}
 	itVertex->second.push_back (fcl::Vec3f (x, y, z));
-	return static_cast<Short> (vertexMap_.size ());
+	return static_cast<Long> (vertexMap_.size ());
       }
 
       // --------------------------------------------------------------------
 
-      Short Robot::addTriangle(const char* polyhedronName,
+      Long Robot::addTriangle(const char* polyhedronName,
 			       ULong pt1, ULong pt2, ULong pt3)
 	throw (hpp::Error)
       {
@@ -1356,7 +1358,7 @@ namespace hpp
 	  throw hpp::Error (oss.str ().c_str ());
 	}
 	itTriangle->second.push_back (fcl::Triangle (pt1, pt2, pt3));
-	return static_cast<Short> (triangleMap_.size ());
+	return static_cast<Long> (triangleMap_.size ());
       }
 
       // --------------------------------------------------------------------
@@ -1433,7 +1435,7 @@ namespace hpp
           pinocchio::CenterOfMassComputationPtr_t comc =
             pinocchio::CenterOfMassComputation::create (robot);
 
-          for (CORBA::ULong i=0; i<jointNames.length (); ++i) {
+          for (ULong i=0; i<jointNames.length (); ++i) {
             std::string name (jointNames[i]);
             JointPtr_t j = robot->getJointByName (name);
             if (!j) throw hpp::Error ("One joint not found.");

@@ -121,7 +121,7 @@ module hpp
     /// \param y coordinate of the point.
     /// \param z coordinate of the point.
     /// \return rank of point in polyhedron.
-    short addPoint (in string polyName, in double x, in double y, in double z)
+    long addPoint (in string polyName, in double x, in double y, in double z)
       raises (Error);
 
     /// \brief Add a point to a polyhedron
@@ -130,7 +130,7 @@ module hpp
     /// \param pt2 rank of second point in polyhedron.
     /// \param pt3 rank of third point in polyhedron.
     /// \return rank of triangle in polyhedron.
-    short addTriangle
+    long addTriangle
     (in string polyName, in unsigned long pt1,
      in unsigned long pt2, in unsigned long pt3) raises (Error);
 

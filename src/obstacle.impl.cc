@@ -252,7 +252,7 @@ namespace hpp
 	shapeMap_[shapeName] = box;
       }
 
-      Short Obstacle::addPoint
+      CORBA::Long Obstacle::addPoint
       (const char* polyhedronName, Double x, Double y, Double z)
 	throw (hpp::Error)
       {
@@ -264,10 +264,10 @@ namespace hpp
 	  throw hpp::Error (oss.str ().c_str ());
 	}
 	itVertex->second.push_back (fcl::Vec3f (x, y, z));
-	return static_cast<Short> (vertexMap_.size ());
+	return static_cast<CORBA::Long> (vertexMap_.size ());
       }
 
-      Short
+      CORBA::Long
       Obstacle::addTriangle
       (const char* polyhedronName, ULong pt1, ULong pt2, ULong pt3)
 	throw (hpp::Error)
@@ -281,7 +281,7 @@ namespace hpp
 	}
 
 	itTriangle->second.push_back (fcl::Triangle (pt1, pt2, pt3));
-	return static_cast<Short> (triangleMap_.size ());
+	return static_cast<CORBA::Long> (triangleMap_.size ());
       }
     } // end of namespace implementation.
   } // end of namespace corbaServer.
