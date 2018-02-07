@@ -638,8 +638,10 @@ namespace hpp
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
           Frame frame = robot->getFrameByName(jointName);
-          return vectorToFloatSeq(
-              frame.jacobian(false) * robot->currentVelocity());
+          vector_t w = frame.jacobian() * robot->currentVelocity();
+          w.head<3>() = frame.currentTransformation().rotation() * w.head<3>();
+          w.tail<3>() = frame.currentTransformation().rotation() * w.tail<3>();
+          return vectorToFloatSeq(w);
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
@@ -654,7 +656,7 @@ namespace hpp
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
           Frame frame = robot->getFrameByName(jointName);
           return vectorToFloatSeq(
-              frame.jacobian(true) * robot->currentVelocity());
+              frame.jacobian() * robot->currentVelocity());
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
