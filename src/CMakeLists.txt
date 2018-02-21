@@ -41,6 +41,8 @@ FOREACH(IDL ${IDL_SOURCES})
     FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/${IDL}_idl.py
     DESTINATION ${PYTHON_SITELIB}/hpp/corbaserver
     )
+  INSTALL(FILES ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/${IDL}.idl
+    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/idl/hpp/corbaserver)
 ENDFOREACH()
 
 ADD_CUSTOM_TARGET(generate_idl_cpp DEPENDS ${ALL_IDL_CPP_STUBS})
