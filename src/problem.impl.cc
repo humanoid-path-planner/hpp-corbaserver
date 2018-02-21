@@ -1197,10 +1197,6 @@ namespace hpp
 	throw (hpp::Error)
       {
 	try {
-          if (!problemSolver()->has<NumericalConstraintPtr_t>(constraintName))
-	    throw std::runtime_error
-	      (std::string ("Numerical constraint ") + constraintName +
-	       std::string ("can not be found."));
 	  if (constant) {
 	    problemSolver()->comparisonType (constraintName,
 					     constraints::EqualToZero);
@@ -1219,12 +1215,6 @@ namespace hpp
 	throw (hpp::Error)
       {
 	try {
-          if (!problemSolver ()->has <core::NumericalConstraintPtr_t>
-              (constraintName)) {
-	    throw std::runtime_error
-	      (std::string ("Numerical constraint ") + constraintName +
-	       std::string ("can not be found."));
-          }
           core::NumericalConstraintPtr_t nc
             (problemSolver ()->get <core::NumericalConstraintPtr_t>
              (constraintName));
