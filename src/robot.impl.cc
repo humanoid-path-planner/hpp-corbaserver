@@ -1443,7 +1443,7 @@ namespace hpp
             if (!j) throw hpp::Error ("One joint not found.");
             comc->add (j);
           }
-          problemSolver()->addCenterOfMassComputation (std::string (comName), comc);
+          problemSolver()->centerOfMassComputations.add (std::string (comName), comc);
         } catch (const std::exception& exc) {
           throw hpp::Error (exc.what ());
         }
@@ -1452,11 +1452,11 @@ namespace hpp
       hpp::floatSeq* Robot::getPartialCom (const char* comName) throw (hpp::Error)
       {
 	try {
-          pinocchio::CenterOfMassComputationPtr_t comc =
-            problemSolver()->centerOfMassComputation(comName);
-          if (!comc) {
+          if (!problemSolver()->centerOfMassComputations.has(comName)) {
             HPP_THROW(std::invalid_argument, "Partial COM " << comName << " not found.");
           }
+          pinocchio::CenterOfMassComputationPtr_t comc =
+            problemSolver()->centerOfMassComputations.get(comName);
           comc->compute (pinocchio::Device::COM);
 	  return vectorToFloatSeq (comc->com());
 	} catch (const std::exception& exc) {
@@ -1469,11 +1469,11 @@ namespace hpp
       {
 	try {
           DevicePtr_t robot = getRobotOrThrow(problemSolver());
-          pinocchio::CenterOfMassComputationPtr_t comc =
-            problemSolver()->centerOfMassComputation(comName);
-          if (!comc) {
+          if (!problemSolver()->centerOfMassComputations.has(comName)) {
             HPP_THROW(std::invalid_argument, "Partial COM " << comName << " not found.");
           }
+          pinocchio::CenterOfMassComputationPtr_t comc =
+            problemSolver()->centerOfMassComputations.get(comName);
           comc->compute (pinocchio::Device::JACOBIAN);
           return vectorToFloatSeq (comc->jacobian() * robot->currentVelocity());
 	} catch (const std::exception& exc) {
@@ -1485,11 +1485,11 @@ namespace hpp
       hpp::floatSeqSeq* Robot::getJacobianPartialCom (const char* comName) throw (hpp::Error)
       {
 	try {
-          pinocchio::CenterOfMassComputationPtr_t comc =
-            problemSolver()->centerOfMassComputation(comName);
-          if (!comc) {
+          if (!problemSolver()->centerOfMassComputations.has(comName)) {
             HPP_THROW(std::invalid_argument, "Partial COM " << comName << " not found.");
           }
+          pinocchio::CenterOfMassComputationPtr_t comc =
+            problemSolver()->centerOfMassComputations.get(comName);
           comc->compute (pinocchio::Device::JACOBIAN);
 	  return matrixToFloatSeqSeq (comc->jacobian());
 	} catch (const std::exception& exc) {

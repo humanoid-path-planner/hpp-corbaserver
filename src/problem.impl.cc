@@ -283,6 +283,15 @@ namespace hpp
                 ::create (name, robot, joint2, ref2, ref1, mask);
             }
           }
+
+        core::ProblemPtr_t problem (const core::ProblemSolverPtr_t& ps,
+            bool throwIfNull = true)
+        {
+          core::ProblemPtr_t p = ps->problem();
+          if (throwIfNull && p==NULL)
+            throw Error ("No problem in the ProblemSolver");
+          return p;
+        }
       }
 
       // ---------------------------------------------------------------
@@ -300,45 +309,39 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+#define _NOOP ((void)0)
+#define _CASE(test, op_true, op_false)                                         \
+      if (!ok) { if (boost::iequals(w,test)) {                                 \
+        op_true;                                                               \
+        ok = true;                                                             \
+      } else { op_false; } }
+#define _CASE_SET_RET(name, val_true)                                          \
+      _CASE (name, ret = val_true, types.push_back(name))
+#define _CASE_PS_MAP(name, map)                                                \
+      _CASE_SET_RET (name, problemSolver()->map.getKeys <Ret_t> ())
+
       Names_t* Problem::getAvailable (const char* what) throw (hpp::Error)
       {
         std::string w (what);
-        boost::algorithm::to_lower(w);
         typedef std::list <std::string> Ret_t;
-        Ret_t ret;
+        Ret_t ret, types;
+        bool ok = false;
 
-        if (w == "pathoptimizer") {
-          ret = problemSolver()->getKeys <core::PathOptimizerBuilder_t, Ret_t> ();
-        } else if (w == "pathprojector") {
-          ret = problemSolver()->getKeys <core::PathProjectorBuilder_t, Ret_t> ();
-        } else if (w == "pathplanner") {
-          ret = problemSolver()->getKeys <core::PathPlannerBuilder_t, Ret_t> ();
-        } else if (w == "configurationshooter") {
-          ret = problemSolver()->getKeys <core::ConfigurationShooterBuilder_t, Ret_t> ();
-        } else if (w == "pathvalidation") {
-          ret = problemSolver()->getKeys <core::PathValidationBuilder_t, Ret_t> ();
-        } else if (w == "steeringmethod") {
-          ret = problemSolver()->getKeys <core::SteeringMethodBuilder_t, Ret_t> ();
-        } else if (w == "distance") {
-          ret = problemSolver()->getKeys <core::DistanceBuilder_t, Ret_t> ();
-        } else if (w == "numericalconstraint") {
-          ret = problemSolver()->getKeys <NumericalConstraintPtr_t, Ret_t> ();
-        } else if (w == "lockedjoint") {
-          ret = problemSolver()->getKeys <core::LockedJointPtr_t, Ret_t> ();
-        } else if (w == "centorofmass") {
-          ret = problemSolver()->getKeys <core::CenterOfMassComputationPtr_t, Ret_t> ();
-        } else if (w == "problem") {
-          ret = server_->problemSolverMap()->keys <Ret_t> ();
-        } else if (w == "parameter") {
-          if (problemSolver()->problem() == NULL)
-            throw Error ("No problem in the ProblemSolver");
-          ret = problemSolver()->problem()->getKeys <boost::any, Ret_t> ();
-        } else if (w == "type") {
-          ret = boost::assign::list_of ("PathOptimizer") ("PathProjector")
-            ("PathPlanner") ("ConfigurationShooter") ("Distance")
-            ("SteeringMethod") ("PathValidation") ("NumericalConstraint")
-            ("LockedJoint") ("Problem") ("Parameter") ("CenterOfMass");
-        } else {
+        _CASE_PS_MAP ("PathOptimizer"       , pathOptimizers)
+        _CASE_PS_MAP ("PathProjector"       , pathProjectors)
+        _CASE_PS_MAP ("PathPlanner"         , pathPlanners)
+        _CASE_PS_MAP ("ConfigurationShooter", configurationShooters)
+        _CASE_PS_MAP ("PathValidation"      , pathValidations)
+        _CASE_PS_MAP ("SteeringMethod"      , steeringMethods)
+        _CASE_PS_MAP ("Distance"            , distances)
+        _CASE_PS_MAP ("NumericalConstraint" , numericalConstraints)
+        _CASE_PS_MAP ("LockedJoint"         , lockedJoints)
+        _CASE_PS_MAP ("CenterOfMass"        , centerOfMassComputations)
+        _CASE_SET_RET ("Problem", server_->problemSolverMap()->keys <Ret_t> ())
+        _CASE_SET_RET ("Parameter", problem(problemSolver())->parameters.getKeys <Ret_t> ())
+        _CASE_SET_RET ("Type", types)
+
+        if (!ok) {
           throw Error (("Type \"" + std::string(what) + "\" not known").c_str());
         }
 
@@ -347,42 +350,40 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+#define _CASE_PUSH_TO(name, val)                                               \
+      _CASE(name, ret.push_back(val), types.push_back(name))
+
       Names_t* Problem::getSelected (const char* what) throw (hpp::Error)
       {
         std::string w (what);
-        boost::algorithm::to_lower(w);
         typedef std::list <std::string> Ret_t;
-        Ret_t ret;
+        Ret_t ret, types;
+        bool ok = false;
         core::value_type tol;
 
-        if (w == "pathoptimizer") {
-          const core::ProblemSolver::PathOptimizerTypes_t& types =
-            problemSolver()->pathOptimizerTypes();
-          ret = Ret_t (types.begin(), types.end());
-        } else if (w == "pathprojector") {
-          ret.push_back (problemSolver()->pathProjectorType (tol));
-        } else if (w == "pathplanner") {
-          ret.push_back (problemSolver()->pathPlannerType ());
-        } else if (w == "configurationshooter") {
-          ret.push_back (problemSolver()->configurationShooterType ());
-        } else if (w == "pathvalidation") {
-          ret.push_back (problemSolver()->pathValidationType (tol));
-        } else if (w == "distance") {
-          ret.push_back (problemSolver()->distanceType());
-        } else if (w == "steeringmethod") {
-          ret.push_back (problemSolver()->steeringMethodType ());
-        } else if (w == "problem") {
-          ret.push_back(server_->problemSolverMap()->selected_);
-        } else if (w == "type") {
-          ret = boost::assign::list_of ("PathOptimizer") ("PathProjector")
-            ("PathPlanner") ("ConfigurationShooter") ("Distance") ("SteeringMethod")
-            ("PathValidation") ("Problem");
-        } else {
+        _CASE_SET_RET ("PathOptimizer",
+            Ret_t(problemSolver()->pathOptimizerTypes().begin(),
+              problemSolver()->pathOptimizerTypes().end()))
+        _CASE_PUSH_TO ("PathProjector"       , problemSolver()->pathProjectorType (tol))
+        _CASE_PUSH_TO ("PathPlanner"         , problemSolver()->pathPlannerType ())
+        _CASE_PUSH_TO ("ConfigurationShooter", problemSolver()->configurationShooterType ())
+        _CASE_PUSH_TO ("PathValidation"      , problemSolver()->pathValidationType (tol))
+        _CASE_PUSH_TO ("SteeringMethod"      , problemSolver()->steeringMethodType ())
+        _CASE_PUSH_TO ("Distance"            , problemSolver()->distanceType ())
+        _CASE_PUSH_TO ("Problem"             , server_->problemSolverMap()->selected_)
+        _CASE_SET_RET ("Type", types)
+        if (!ok) {
           throw Error (("Type \"" + std::string(what) + "\" not known").c_str());
         }
 
         return toNames_t (ret.begin(), ret.end());
       }
+
+#undef _CASE
+#undef _CASE_SET_RET
+#undef _CASE_PUSH_TO
+#undef _CASE_PS_MAP
+#undef _NOOP
 
       // ---------------------------------------------------------------
 
@@ -408,7 +409,7 @@ namespace hpp
         if (problemSolver()->problem() != NULL) {
           boost::any val;
           try {
-            val = problemSolver()->problem()->get<boost::any> (std::string(name));
+            val = problemSolver()->problem()->parameters.get (std::string(name));
           } catch (const std::exception& e) {
             throw hpp::Error (e.what ());
           }
@@ -660,7 +661,7 @@ namespace hpp
                    << joint->configurationSpace ()->nq ());
           LiegroupElement lge (config, joint->configurationSpace ());
           LockedJointPtr_t lockedJoint (LockedJoint::create (joint, lge));
-          problemSolver()->add <LockedJointPtr_t> (lockedJointName, lockedJoint);
+          problemSolver()->lockedJoints.add (lockedJointName, lockedJoint);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -680,7 +681,7 @@ namespace hpp
 
           LockedJointPtr_t lockedJoint
             (LockedJoint::create (robot, index, config));
-          problemSolver()->add <LockedJointPtr_t> (lockedDofName, lockedJoint);
+          problemSolver()->lockedJoints.add (lockedDofName, lockedJoint);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -709,9 +710,9 @@ namespace hpp
 	       (RelativeCom::create (name, problemSolver()->robot(),
 				     joint, point, m)));
           } else {
-            comc = problemSolver()->centerOfMassComputation (comN);
-            if (!comc)
+            if (!problemSolver()->centerOfMassComputations.has(comN))
               throw hpp::Error ("Partial COM not found.");
+            comc = problemSolver()->centerOfMassComputations.get (comN);
             problemSolver()->addNumericalConstraint
               (name, NumericalConstraint::create
 	       (RelativeCom::create (name, problemSolver()->robot(), comc,
@@ -754,9 +755,9 @@ namespace hpp
 					jointL, jointR, pointL, pointR,
 					jointRef, pointRef, m)));
           } else {
-            comc = problemSolver()->centerOfMassComputation (comN);
-            if (!comc)
+            if (!problemSolver()->centerOfMassComputations.has(comN))
               throw hpp::Error ("Partial COM not found.");
+            comc = problemSolver()->centerOfMassComputations.get (comN);
             problemSolver()->addNumericalConstraint
               (name, NumericalConstraint::create
 	       (ComBetweenFeet::create (name, problemSolver()->robot(), comc,
@@ -962,7 +963,7 @@ namespace hpp
         DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	ConfigurationPtr_t config = floatSeqToConfigPtr (robot, goal, true);
 	std::string name (constraintName);
-        problemSolver()->add
+        problemSolver()->numericalConstraints.add
           (name, NumericalConstraint::create
            (constraints::ConfigurationConstraint::create
             (name, problemSolver()->robot(), *config)
@@ -1165,7 +1166,7 @@ namespace hpp
             intStart = intEnd = dofs[i];
           }
         }
-        problemSolver()->addPassiveDofs (passiveDofsName, passiveDofs);
+        problemSolver()->passiveDofs.add (passiveDofsName, passiveDofs);
       }
 
       // ---------------------------------------------------------------
@@ -1177,14 +1178,14 @@ namespace hpp
       {
         try {
           std::string n (constraintName);
-          if (!problemSolver()->has<NumericalConstraintPtr_t>(n))
+          if (!problemSolver()->numericalConstraints.has(n))
             throw Error (("Constraint " + n + " not found").c_str());
           NumericalConstraintPtr_t c =
-            problemSolver()->get<NumericalConstraintPtr_t>(n);
-          inputSize            = c->function().inputSize();
-          inputDerivativeSize  = c->function().inputDerivativeSize();
-          outputSize           = c->function().outputSize();
-          outputDerivativeSize = c->function().outputDerivativeSize();
+            problemSolver()->numericalConstraints.get(n);
+          inputSize            = (ULong)c->function().inputSize();
+          inputDerivativeSize  = (ULong)c->function().inputDerivativeSize();
+          outputSize           = (ULong)c->function().outputSize();
+          outputDerivativeSize = (ULong)c->function().outputDerivativeSize();
         } catch (const std::exception& e) {
           throw hpp::Error (e.what ());
         }
@@ -1216,8 +1217,7 @@ namespace hpp
       {
 	try {
           core::NumericalConstraintPtr_t nc
-            (problemSolver ()->get <core::NumericalConstraintPtr_t>
-             (constraintName));
+            (problemSolver ()->numericalConstraints.get (constraintName));
 	  return nc->constantRightHandSide ();
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -1274,17 +1274,15 @@ namespace hpp
           }
           Configuration_t q (floatSeqToConfig (problemSolver()->robot(), config, true));
           // look for constraint with this key
-          if (problemSolver ()->has <core::NumericalConstraintPtr_t>
-              (constraintName)) {
+          if (problemSolver ()->numericalConstraints.has (constraintName)) {
             core::NumericalConstraintPtr_t nc
-              (problemSolver ()->get <core::NumericalConstraintPtr_t>
-               (constraintName));
+              (problemSolver ()->numericalConstraints.get (constraintName));
             configProjector->rightHandSideFromConfig (nc, q);
             return;
           }
-          if (problemSolver ()->has <LockedJointPtr_t> (constraintName)) {
+          if (problemSolver ()->lockedJoints.has (constraintName)) {
             LockedJointPtr_t lj
-              (problemSolver ()->get <LockedJointPtr_t> (constraintName));
+              (problemSolver ()->lockedJoints.get (constraintName));
             configProjector->rightHandSideFromConfig (lj, q);
             return;
           }
@@ -1310,17 +1308,15 @@ namespace hpp
           }
           vector_t rightHandSide (floatSeqToVector (rhs));
           // look for constraint with this key
-          if (problemSolver ()->has <core::NumericalConstraintPtr_t>
-              (constraintName)) {
+          if (problemSolver ()->numericalConstraints.has (constraintName)) {
             core::NumericalConstraintPtr_t nc
-              (problemSolver ()->get <core::NumericalConstraintPtr_t>
-               (constraintName));
+              (problemSolver ()->numericalConstraints.get (constraintName));
             configProjector->rightHandSide (nc, rightHandSide);
             return;
           }
-          if (problemSolver ()->has <LockedJointPtr_t> (constraintName)) {
+          if (problemSolver ()->lockedJoints.has (constraintName)) {
             LockedJointPtr_t lj
-              (problemSolver ()->get <LockedJointPtr_t> (constraintName));
+              (problemSolver ()->lockedJoints.get (constraintName));
             configProjector->rightHandSide (lj, rightHandSide);
             return;
           }
