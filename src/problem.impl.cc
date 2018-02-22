@@ -170,10 +170,12 @@ namespace hpp
             typedef boost::mpl::vector<
               // There is no operator<<= (CORBA::Any, CORBA::Boolean)
               std::pair<bool                , CORBA::Boolean>,
-              std::pair<int                 , CORBA::Long>,
-              std::pair<unsigned int        , CORBA::ULong>,
+              std::pair<int                 , CORBA::Short>,
+              std::pair<unsigned int        , CORBA::UShort>,
               std::pair<long                , CORBA::Long>,
               std::pair<unsigned long       , CORBA::ULong>,
+              std::pair<long long           , CORBA::LongLong>,
+              std::pair<unsigned long long  , CORBA::ULongLong>,
               std::pair<double              , CORBA::Double>,
               std::pair<float               , CORBA::Float>,
               std::pair<std::string         , const char*>

@@ -21,6 +21,22 @@ def newProblem ():
     cl = Client()
     cl.problem.resetProblem()
 
+def _convertToCorbaAny (value):
+    import CORBA
+    t = type(value)
+    if t is float:
+        return CORBA.Any(CORBA.TC_double, value)
+    elif t is int:
+        from warnings import warn
+        warn ("int value converted to CORBA.TC_long. This might not be the desired type.")
+        return CORBA.Any(CORBA.TC_longlong, value)
+    elif t is bool:
+        return CORBA.Any(CORBA.TC_boolean, value)
+    elif t is str:
+        return CORBA.Any(CORBA.TC_string, value)
+    else: # Assume value is already a CORBA.Any
+        return value
+
 ## Definition of a path planning problem
 #
 #  This class wraps the Corba client to the server implemented by
@@ -60,6 +76,7 @@ class ProblemSolver (object):
     #  ps.setParameter ("name", CORBA.Any(CORBA.TC_double, 3.2233))
     #  \endcode
     def setParameter (self, name, value):
+        value = _convertToCorbaAny (value)
         return self.client.problem.setParameter (name, value)
 
     ## Get parameter with given name
