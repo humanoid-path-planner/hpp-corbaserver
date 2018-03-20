@@ -334,6 +334,7 @@ namespace hpp
         _CASE_PS_MAP ("PathPlanner"         , pathPlanners)
         _CASE_PS_MAP ("ConfigurationShooter", configurationShooters)
         _CASE_PS_MAP ("PathValidation"      , pathValidations)
+        _CASE_PS_MAP ("ConfigValidation"    , configValidations)
         _CASE_PS_MAP ("SteeringMethod"      , steeringMethods)
         _CASE_PS_MAP ("Distance"            , distances)
         _CASE_PS_MAP ("NumericalConstraint" , numericalConstraints)
@@ -366,6 +367,9 @@ namespace hpp
         _CASE_SET_RET ("PathOptimizer",
             Ret_t(problemSolver()->pathOptimizerTypes().begin(),
               problemSolver()->pathOptimizerTypes().end()))
+        _CASE_SET_RET ("ConfigValidation",
+            Ret_t(problemSolver()->configValidationTypes().begin(),
+              problemSolver()->configValidationTypes().end()))
         _CASE_PUSH_TO ("PathProjector"       , problemSolver()->pathProjectorType (tol))
         _CASE_PUSH_TO ("PathPlanner"         , problemSolver()->pathPlannerType ())
         _CASE_PUSH_TO ("ConfigurationShooter", problemSolver()->configurationShooterType ())
@@ -1613,6 +1617,28 @@ namespace hpp
       {
 	try {
 	  problemSolver()->clearPathOptimizers ();
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // ---------------------------------------------------------------
+      void Problem::addConfigValidation (const char* configValidationType)
+	throw (Error)
+      {
+	try {
+	  problemSolver()->addConfigValidation (std::string (configValidationType));
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::clearConfigValidations () throw (Error)
+      {
+	try {
+	  problemSolver()->clearConfigValidations ();
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}

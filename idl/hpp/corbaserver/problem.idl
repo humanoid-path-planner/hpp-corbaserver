@@ -459,6 +459,15 @@ module hpp
     /// Clear the vector of path optimizers
     void clearPathOptimizers () raises (Error);
 
+    /// Add a config validation
+    /// \param Name of the config validation type, either "CollisionValidation"
+    /// or "JointBoundValidation" or any type added by
+    /// core::ProblemSolver::addConfigValidationType
+    void addConfigValidation (in string configValidationType) raises (Error);
+
+    /// Clear the vector of config validations
+    void clearConfigValidations () raises (Error);
+
     /// Select path validation method
     /// \param Name of the path validation method, either "Discretized"
     /// "Progressive", "Dichotomy", or any type added by
