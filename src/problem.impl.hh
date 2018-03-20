@@ -232,6 +232,11 @@ namespace hpp
 
 	virtual void clearPathOptimizers () throw (Error);
 
+	virtual void addConfigValidation (const char* configValidationType)
+	  throw (Error);
+
+	virtual void clearConfigValidations () throw (Error);
+
 	virtual void selectPathValidation (const char* pathValidationType,
 					   Double tolerance) throw (Error);
 
