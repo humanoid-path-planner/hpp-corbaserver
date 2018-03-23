@@ -346,28 +346,8 @@ namespace hpp
       {
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
-	  // Compute number of real urdf joints
-	  ULong size = 0;
-	  JointVector_t jointVector = robot->getJointVector ();
-	  for (JointVector_t::const_iterator it = jointVector.begin ();
-	       it != jointVector.end (); it++) {
-	    if ((*it)->numberDof () != 0) size ++;
-	  }
-	  char** nameList = Names_t::allocbuf(size);
-	  Names_t *jointNames = new Names_t (size, size, nameList);
-	  std::size_t rankInConfig = 0;
-	  for (size_type i = 0; i < jointVector.size (); ++i) {
-	    const JointPtr_t joint = jointVector [i];
-	    std::string name = joint->name ();
-	    std::size_t dimension = joint->numberDof ();
-	    if (dimension != 0) {
-	      nameList [rankInConfig] =
-		(char*) malloc (sizeof(char)*(name.length ()+1));
-	      strcpy (nameList [rankInConfig], name.c_str ());
-	      ++rankInConfig;
-	    }
-	  }
-	  return jointNames;
+          const se3::Model& model = robot->model();
+          return toNames_t ((++model.names.begin()), model.names.end());
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
