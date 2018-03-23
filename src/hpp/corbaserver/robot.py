@@ -75,6 +75,10 @@ class Robot (object):
     def getJointNames (self):
         return self.client.robot.getJointNames ()
 
+    ## Get joint types in the same order as in the configuration.
+    def getJointTypes (self):
+        return self.client.robot.getJointTypes ()
+
     ## Get joint names in the same order as in the configuration.
     def getAllJointNames (self):
         return self.client.robot.getAllJointNames ()

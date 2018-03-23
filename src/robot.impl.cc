@@ -375,6 +375,22 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
+      Names_t* Robot::getJointTypes () throw (hpp::Error)
+      {
+	try {
+	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
+          const se3::Model& model = robot->model();
+          std::vector<std::string> types (model.names.size()-1);
+          for (std::size_t i = 0; i < types.size(); ++i)
+            types[i] = model.joints[i+1].shortname();
+          return toNames_t (types.begin(), types.end());
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // --------------------------------------------------------------------
+
       Names_t* Robot::getAllJointNames () throw (hpp::Error)
       {
 	try {

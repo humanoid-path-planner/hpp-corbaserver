@@ -103,6 +103,9 @@ module hpp
     /// \note anchor joints are not exported.
     Names_t getJointNames () raises (Error);
 
+    /// Get joint types in the same order as in the configuration
+    Names_t getJointTypes () raises (Error);
+
     /// Get all joint names including anchor joints
     Names_t getAllJointNames () raises (Error);
 
