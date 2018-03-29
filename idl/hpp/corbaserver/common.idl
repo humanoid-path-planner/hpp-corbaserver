@@ -30,6 +30,7 @@ module hpp
 
   /// Element of SE(3) represented by a vector and a unit quaternion
   typedef double Transform_ [7];
+  typedef sequence<Transform_> TransformSeq;
   /// Quaternion used to define orientation constraint
   /// Add underscore to avoid name conflicts.
   typedef double Quaternion_ [4];

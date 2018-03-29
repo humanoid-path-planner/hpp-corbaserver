@@ -764,6 +764,41 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
+      TransformSeq* Robot::getLinksPosition (const Names_t& linkNames)
+	throw (hpp::Error)
+      {
+	try {
+	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
+          const se3::Model& model (robot->model());
+          const se3::Data & data  (robot->data ());
+          TransformSeq* transforms = new TransformSeq ();
+          transforms->length (linkNames.length());
+          Transform3f T;
+          std::string n;
+          for (CORBA::ULong i = 0; i < linkNames.length (); ++i) {
+            n = linkNames[i];
+            if (!model.existBodyName (n)) {
+              HPP_THROW(Error, "Robot has no link with name " << n);
+            }
+            se3::FrameIndex body = model.getBodyId(n);
+            const se3::Frame& frame = model.frames[body];
+            se3::JointIndex joint = frame.parent;
+            if (frame.type != se3::BODY)
+              HPP_THROW(Error, n << " is not a link");
+            if (model.joints.size() <= (std::size_t)joint)
+              HPP_THROW(Error, "Joint index of link " << n << " out of bounds: " << joint);
+
+            T = data.oMi[joint] * frame.placement;
+            toHppTransform (T, (*transforms)[i]);
+          }
+          return transforms;
+	} catch (const std::exception& exc) {
+	  throw Error (exc.what ());
+        }
+      }
+
+      // --------------------------------------------------------------------
+
       Names_t* Robot::getLinkNames (const char* jointName) throw (hpp::Error)
       {
 	try {
