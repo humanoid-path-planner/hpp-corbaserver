@@ -209,18 +209,7 @@ namespace hpp
       {
 	std::list <std::string> obstacles =
 	  problemSolver()->obstacleNames (collision, distance);
-	ULong size = (ULong) obstacles.size ();
-	char** nameList = Names_t::allocbuf(size);
-	Names_t *result = new Names_t (size, size, nameList);
-	std::size_t i = 0;
-	for (std::list <std::string>::const_iterator it = obstacles.begin ();
-	     it != obstacles.end (); ++it) {
-	  std::string name = *it;
-	  nameList [i] = (char*) malloc (sizeof (char) * (name.length () + 1));
-	  strcpy (nameList [i], name.c_str ());
-	  ++i;
-	}
-	return result;
+        return toNames_t (obstacles.begin(), obstacles.end());
       }
 
       void Obstacle::createPolyhedron
