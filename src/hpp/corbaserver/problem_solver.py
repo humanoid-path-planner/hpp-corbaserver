@@ -27,8 +27,6 @@ def _convertToCorbaAny (value):
     if t is float:
         return CORBA.Any(CORBA.TC_double, value)
     elif t is int:
-        from warnings import warn
-        warn ("int value converted to CORBA.TC_long. This might not be the desired type.")
         return CORBA.Any(CORBA.TC_longlong, value)
     elif t is bool:
         return CORBA.Any(CORBA.TC_boolean, value)
