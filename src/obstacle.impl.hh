@@ -18,6 +18,7 @@
 # include <hpp/core/problem-solver.hh>
 # include <hpp/corbaserver/fwd.hh>
 # include <hpp/corbaserver/obstacle.hh>
+# include <hpp/corbaserver/object-map.hh>
 
 /// \brief Implement CORBA interface ``Obstacle''.
 namespace hpp
@@ -67,29 +68,22 @@ namespace hpp
 	(const char* boxName, Double x, Double y, Double z)
 	  throw(hpp::Error);
 
-	virtual CORBA::Long
+	virtual ULong
 	addPoint
 	(const char* polyhedronName, Double x, Double y, Double z)
 	  throw(hpp::Error);
 
-	virtual CORBA::Long
+	virtual ULong
 	addTriangle
 	(const char* polyhedronName, ULong pt1, ULong pt2, ULong pt3)
 	  throw(hpp::Error);
 
 
       private:
-	typedef std::map <std::string, std::vector <fcl::Vec3f> > VertexMap_t;
-	typedef std::map <std::string, std::vector <fcl::Triangle> >
-	TriangleMap_t;
+        CollisionObjectPtr_t getObstacleByName (const char* name);
 
-	typedef std::map <std::string, BasicShapePtr_t> ShapeMap_t;
-	/// Map of polyhedra in construction.
-	VertexMap_t vertexMap_;
-	TriangleMap_t triangleMap_;
-	/// Map of basic shapes
-	ShapeMap_t shapeMap_;
-    CollisionObjectPtr_t getObstacleByName (const char* name);
+        /// Map of object in construction.
+        ObjectMap objectMap_;
 
 	/// \brief Pointer to the hpp::corbaServer::Server owning this object.
 	corbaServer::Server* server_;

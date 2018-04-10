@@ -51,6 +51,7 @@ ADD_CUSTOM_TARGET(generate_idl_python DEPENDS ${ALL_IDL_PYTHON_STUBS})
 IF (NOT CLIENT_ONLY)
   ADD_LIBRARY(${LIBRARY_NAME}
     SHARED
+    object-map.cc
     obstacle.impl.cc
     obstacle.impl.hh
     problem.impl.cc

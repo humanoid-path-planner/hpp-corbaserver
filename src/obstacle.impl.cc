@@ -121,32 +121,7 @@ namespace hpp
         DevicePtr_t robot = getRobotOrThrow(problemSolver());
 
         std::string objName (objectName);
-	CollisionGeometryPtr_t geometry;
-	// Check that polyhedron exists.
-	VertexMap_t::const_iterator itVertex = vertexMap_.find(objName);
-	if (itVertex != vertexMap_.end ()) {
-	  PolyhedronPtr_t polyhedron = PolyhedronPtr_t (new Polyhedron_t);
-	  int res = polyhedron->beginModel ();
-	  if (res != fcl::BVH_OK) {
-	    std::ostringstream oss ("fcl BVHReturnCode = ");
-	    oss << res;
-	    throw hpp::Error (oss.str ().c_str ());
-	  }
-
-	  polyhedron->addSubModel (itVertex->second, triangleMap_ [objName]);
-	  polyhedron->endModel ();
-	  geometry = polyhedron;
-	} else {
-	  ShapeMap_t::iterator itShape = shapeMap_.find (objName);
-	  if (itShape != shapeMap_.end ()) {
-	    geometry = itShape->second;
-	  }
-	}
-	if (!geometry) {
-	  std::ostringstream oss ("Object ");
-	  oss << objName << " does not exist.";
-	  throw hpp::Error (oss.str ().c_str ());
-	}
+	CollisionGeometryPtr_t geometry = objectMap_.geometry (objectName);
 
         fcl::Transform3f pos; pos.setIdentity ();
         core::FclCollisionObject object (geometry, pos);
@@ -215,62 +190,30 @@ namespace hpp
       void Obstacle::createPolyhedron
       (const char* polyhedronName) throw (hpp::Error)
       {
-	// Check that polyhedron does not already exist.
-	if (vertexMap_.find(polyhedronName) != vertexMap_.end ()) {
-	  std::ostringstream oss ("polyhedron ");
-	  oss << polyhedronName << " already exists.";
-	  throw hpp::Error (oss.str ().c_str ());
-	}
-	vertexMap_ [polyhedronName] = std::vector <fcl::Vec3f> ();
-	triangleMap_ [polyhedronName] = std::vector <fcl::Triangle> ();
+        objectMap_.createPolyhedron (polyhedronName);
       }
 
       void Obstacle::createBox
       (const char* boxName, Double x, Double y, Double z)
 	throw (hpp::Error)
       {
-	std::string shapeName(boxName);
-	// Check that object does not already exist.
-	if (vertexMap_.find(shapeName) != vertexMap_.end () ||
-	    shapeMap_.find (shapeName) != shapeMap_.end ()) {
-	  std::ostringstream oss ("object ");
-	  oss << shapeName << " already exists.";
-	  throw hpp::Error (oss.str ().c_str ());
-	}
-	BasicShapePtr_t box (new fcl::Box ( x, y, z));
-	shapeMap_[shapeName] = box;
+        objectMap_.createBox (boxName, x, y, z);
       }
 
-      CORBA::Long Obstacle::addPoint
+      ULong Obstacle::addPoint
       (const char* polyhedronName, Double x, Double y, Double z)
 	throw (hpp::Error)
       {
-	// Check that polyhedron exists.
-	VertexMap_t::iterator itVertex = vertexMap_.find (polyhedronName);
-	if (itVertex == vertexMap_.end ()) {
-	  std::ostringstream oss ("polyhedron ");
-	  oss << polyhedronName << " does not exist.";
-	  throw hpp::Error (oss.str ().c_str ());
-	}
-	itVertex->second.push_back (fcl::Vec3f (x, y, z));
-	return static_cast<CORBA::Long> (vertexMap_.size ());
+	return static_cast<ULong> (
+            objectMap_.addPoint (polyhedronName, x, y, z));
       }
 
-      CORBA::Long
-      Obstacle::addTriangle
+      ULong Obstacle::addTriangle
       (const char* polyhedronName, ULong pt1, ULong pt2, ULong pt3)
 	throw (hpp::Error)
       {
-	// Check that polyhedron exists.
-	TriangleMap_t::iterator itTriangle = triangleMap_.find (polyhedronName);
-	if (itTriangle == triangleMap_.end ()) {
-	  std::ostringstream oss ("polyhedron ");
-	  oss << polyhedronName << " does not exist.";
-	  throw hpp::Error (oss.str ().c_str ());
-	}
-
-	itTriangle->second.push_back (fcl::Triangle (pt1, pt2, pt3));
-	return static_cast<CORBA::Long> (triangleMap_.size ());
+	return static_cast<ULong> (
+            objectMap_.addTriangle (polyhedronName, pt1, pt2, pt3));
       }
     } // end of namespace implementation.
   } // end of namespace corbaServer.
