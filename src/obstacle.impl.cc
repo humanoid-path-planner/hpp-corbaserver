@@ -200,6 +200,18 @@ namespace hpp
         objectMap_.createBox (boxName, x, y, z);
       }
 
+      void Obstacle::createSphere (const char* name, Double radius)
+	throw (hpp::Error)
+      {
+        objectMap_.createSphere (name, radius);
+      }
+
+      void Obstacle::createCylinder (const char* name, Double radius, Double length)
+	throw (hpp::Error)
+      {
+        objectMap_.createCylinder (name, radius, length);
+      }
+
       ULong Obstacle::addPoint
       (const char* polyhedronName, Double x, Double y, Double z)
 	throw (hpp::Error)

@@ -115,6 +115,17 @@ module hpp
     void createBox (in string inBoxName, in double x, in double y, in double z)
       raises (Error);
 
+    ///  Create a sphere
+    /// \param name name of the sphere
+    /// \param radius radius of the sphere
+    void createSphere (in string name, in double radius) raises (Error);
+
+    ///  Create a cylinder
+    /// \param name name of the cylinder
+    /// \param radius radius of the cylinder
+    /// \param length length of the cylinder
+    void createCylinder (in string name, in double radius, in double length) raises (Error);
+
     /// \brief Add a point to a polyhedron
     /// \param polyName the name of the polyhedron.
     /// \param x coordinate of the point.

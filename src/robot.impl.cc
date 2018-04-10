@@ -1337,6 +1337,14 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
+      void Robot::createCylinder (const char* name, Double radius, Double length)
+	throw (hpp::Error)
+      {
+        objectMap_.createCylinder (name, radius, length);
+      }
+
+      // --------------------------------------------------------------------
+
       ULong Robot::addPoint(const char* polyhedronName, Double x, Double y,
 			    Double z)
 	throw (hpp::Error)

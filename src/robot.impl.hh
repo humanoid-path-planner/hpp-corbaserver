@@ -224,6 +224,10 @@ namespace hpp
 	createSphere (const char* name, Double radius)
 	  throw (hpp::Error);
 
+	virtual void
+	createCylinder (const char* name, Double radius, Double length)
+	  throw (hpp::Error);
+
 	virtual ULong
 	addPoint (const char* polyhedronName, Double x, Double y, Double z)
 	  throw (hpp::Error);

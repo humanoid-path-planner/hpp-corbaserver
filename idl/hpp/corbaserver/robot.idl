@@ -446,6 +446,12 @@ module hpp
     /// \param radius radius of the sphere
     void createSphere (in string name, in double radius) raises (Error);
 
+    ///  Create a cylinder
+    /// \param name name of the cylinder
+    /// \param radius radius of the cylinder
+    /// \param length length of the cylinder
+    void createCylinder (in string name, in double radius, in double length) raises (Error);
+
     ///  Add a point to a polyhedron
     /// \param inPolyName the name of the polyhedron.
     /// \param x coordinate of the point.
