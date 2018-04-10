@@ -17,6 +17,7 @@
 # include "hpp/core/problem-solver.hh"
 # include "hpp/corbaserver/fwd.hh"
 # include "hpp/corbaserver/robot.hh" 
+# include "hpp/corbaserver/object-map.hh" 
 
 namespace hpp
 {
@@ -223,11 +224,11 @@ namespace hpp
 	createSphere (const char* name, Double radius)
 	  throw (hpp::Error);
 
-	virtual Long
+	virtual ULong
 	addPoint (const char* polyhedronName, Double x, Double y, Double z)
 	  throw (hpp::Error);
 
-	virtual Long
+	virtual ULong
 	addTriangle
 	(const char* polyhedronName, ULong pt1, ULong pt2, ULong pt3)
 	  throw (hpp::Error);
@@ -255,15 +256,7 @@ namespace hpp
       private:
 	CollisionObjectConstPtr_t getObjectByName (const char* name);
 
-	typedef std::map <std::string, std::vector <fcl::Vec3f> > VertexMap_t;
-	typedef std::map <std::string, std::vector <fcl::Triangle> >
-	TriangleMap_t;
-	typedef std::map <std::string, BasicShapePtr_t> ShapeMap_t;
-	/// Map of polyhedra in construction.
-	VertexMap_t vertexMap_;
-	TriangleMap_t triangleMap_;
-	/// Map of basic shapes
-	ShapeMap_t shapeMap_;
+        ObjectMap objectMap_;
 
 	/// Pointer to the hpp::corbaServer::Server owning this object
 	corbaServer::Server* server_;

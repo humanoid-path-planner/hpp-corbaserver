@@ -1313,19 +1313,10 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      void Robot::createPolyhedron(const char* inPolyhedronName)
+      void Robot::createPolyhedron(const char* polyhedronName)
 	throw (hpp::Error)
       {
-	std::string polyhedronName(inPolyhedronName);
-
-	// Check that polyhedron does not already exist.
-	if (vertexMap_.find(polyhedronName) != vertexMap_.end ()) {
-	  std::ostringstream oss ("polyhedron ");
-	  oss << polyhedronName << " already exists.";
-	  throw hpp::Error (oss.str ().c_str ());
-	}
-	vertexMap_ [polyhedronName] = std::vector <fcl::Vec3f> ();
-	triangleMap_ [polyhedronName] = std::vector <fcl::Triangle> ();
+        objectMap_.createPolyhedron (polyhedronName);
       }
 
       // --------------------------------------------------------------------
@@ -1333,16 +1324,7 @@ namespace hpp
       void Robot::createBox(const char* name, Double x, Double y, Double z)
 	throw (hpp::Error)
       {
-	std::string shapeName(name);
-	// Check that object does not already exist.
-	if (vertexMap_.find(shapeName) != vertexMap_.end () ||
-	    shapeMap_.find (shapeName) != shapeMap_.end ()) {
-	  std::ostringstream oss ("object ");
-	  oss << shapeName << " already exists.";
-	  throw hpp::Error (oss.str ().c_str ());
-	}
-	BasicShapePtr_t box (new fcl::Box (x, y, z));
-	shapeMap_ [shapeName] = box;
+        objectMap_.createBox (name, x, y, z);
       }
 
       // --------------------------------------------------------------------
@@ -1350,48 +1332,27 @@ namespace hpp
       void Robot::createSphere (const char* name, Double radius)
 	throw (hpp::Error)
       {
-	if (vertexMap_.find(name) != vertexMap_.end () ||
-	    shapeMap_.find (name) != shapeMap_.end ()) {
-	  std::ostringstream oss ("object ");
-	  oss << name << " already exists.";
-	  throw hpp::Error (oss.str ().c_str ());
-	}
-	BasicShapePtr_t sphere (new fcl::Sphere (radius));
-	shapeMap_ [name] = sphere;
+        objectMap_.createSphere (name, radius);
       }
 
       // --------------------------------------------------------------------
 
-      Long Robot::addPoint(const char* polyhedronName, Double x, Double y,
+      ULong Robot::addPoint(const char* polyhedronName, Double x, Double y,
 			    Double z)
 	throw (hpp::Error)
       {
-	// Check that polyhedron exists.
-	VertexMap_t::iterator itVertex = vertexMap_.find (polyhedronName);
-	if (itVertex == vertexMap_.end ()) {
-	  std::ostringstream oss ("polyhedron ");
-	  oss << polyhedronName << " does not exist.";
-	  throw hpp::Error (oss.str ().c_str ());
-	}
-	itVertex->second.push_back (fcl::Vec3f (x, y, z));
-	return static_cast<Long> (vertexMap_.size ());
+	return static_cast<Long> (
+            objectMap_.addPoint (polyhedronName, x, y, z));
       }
 
       // --------------------------------------------------------------------
 
-      Long Robot::addTriangle(const char* polyhedronName,
+      ULong Robot::addTriangle(const char* polyhedronName,
 			       ULong pt1, ULong pt2, ULong pt3)
 	throw (hpp::Error)
       {
-	// Check that polyhedron exists.
-	TriangleMap_t::iterator itTriangle = triangleMap_.find (polyhedronName);
-	if (itTriangle == triangleMap_.end ()) {
-	  std::ostringstream oss ("polyhedron ");
-	  oss << polyhedronName << " does not exist.";
-	  throw hpp::Error (oss.str ().c_str ());
-	}
-	itTriangle->second.push_back (fcl::Triangle (pt1, pt2, pt3));
-	return static_cast<Long> (triangleMap_.size ());
+	return static_cast<ULong> (
+            objectMap_.addTriangle (polyhedronName, pt1, pt2, pt3));
       }
 
       // --------------------------------------------------------------------
@@ -1417,28 +1378,7 @@ namespace hpp
         Transform3f placement = toTransform3f (pos);
 
         try {
-          CollisionGeometryPtr_t geometry;
-          // Check that polyhedron exists.
-          VertexMap_t::const_iterator itVertex = vertexMap_.find(objectName);
-          if (itVertex != vertexMap_.end ()) {
-            PolyhedronPtr_t polyhedron = PolyhedronPtr_t (new Polyhedron_t);
-            int res = polyhedron->beginModel ();
-            if (res != fcl::BVH_OK) {
-              HPP_THROW(Error,"fcl BVHReturnCode = " << res);
-            }
-            polyhedron->addSubModel (itVertex->second,
-                triangleMap_ [objectName]);
-            polyhedron->endModel ();
-            geometry = polyhedron;
-          } else {
-            ShapeMap_t::const_iterator itShape = shapeMap_.find (objectName);
-            if (itShape != shapeMap_.end ()) {
-              geometry = itShape->second;
-            }
-          }
-          if (!geometry) {
-            HPP_THROW (Error, "object " << objectName << " does not exist.");
-          }
+          CollisionGeometryPtr_t geometry = objectMap_.geometry (objectName);
 
           FrameIndex bid = model.addBodyFrame (on, jid, placement);
           GeometryObject geom (on,
