@@ -61,18 +61,8 @@ namespace hpp
             hpp::pinocchio::urdf::loadUrdfModel (
                 device, "anchor", pkg, file);
           device->controlComputation(Device::JOINT_POSITION);
-          device->computeForwardKinematics();
-          device->updateGeometryPlacements();
 
-	  // Detach objects from joints
-          DeviceObjectVector& objects = device->objectVector();
-          for (DeviceObjectVector::iterator itObj = objects.begin();
-              itObj != objects.end(); ++itObj) {
-            problemSolver()->addObstacle (
-                std::string (prefix) + (*itObj)->name (),
-                *(*itObj)->fcl (),
-                true, true);
-	  }
+          problemSolver()->addObstacle (device, true, true);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
