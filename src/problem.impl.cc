@@ -299,6 +299,13 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+      void Problem::shutdown ()
+      {
+        server_->requestShutdown(false);
+      }
+
+      // ---------------------------------------------------------------
+
       core::ProblemSolverPtr_t Problem::problemSolver ()
       {
         return server_->problemSolver();

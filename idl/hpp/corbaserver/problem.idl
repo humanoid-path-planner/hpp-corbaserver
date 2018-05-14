@@ -19,6 +19,9 @@ module hpp
   /// \brief To define and solve a path planning problem.
   interface Problem
   {
+    /// Shutdown the server.
+    void shutdown ();
+
     /// Set random seed of random number generator
     void setRandomSeed (in long seed) raises (Error);
 

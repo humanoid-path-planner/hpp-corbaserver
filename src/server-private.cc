@@ -33,9 +33,6 @@ namespace hpp
 
       Server::~Server ()
       {
-	delete robotServantid_;
-	delete problemServantid_;
-	delete obstacleServantid_;
       }
 
       void
@@ -51,18 +48,7 @@ namespace hpp
 
       void Server::deactivateAndDestroyServers()
       {
-	if (robotServant_) {
-	  poa_->deactivate_object(*robotServantid_);
-	  delete robotServant_;
-	}
-	if (obstacleServant_) {
-	  poa_->deactivate_object(*obstacleServantid_);
-	  delete obstacleServant_;
-	}
-	if (problemServant_) {
-	  poa_->deactivate_object(*problemServantid_);
-	  delete problemServant_;
-	}
+        orb_->destroy();
       }
 
 

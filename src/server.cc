@@ -218,5 +218,10 @@ namespace hpp
       return 0;
     }
 
+    void Server::requestShutdown (bool wait)
+    {
+      private_->orb_->shutdown (wait);
+    }
+
   } // end of namespace corbaServer.
 } // end of namespace hpp.

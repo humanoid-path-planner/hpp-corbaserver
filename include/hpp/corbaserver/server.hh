@@ -97,6 +97,12 @@ namespace hpp
       ///             returns.
       int processRequest (bool loop);
 
+      /// Request a shutdown
+      /// \param wait if true, the method waits for the server to be shut down.
+      /// \warning From a servant method, set wait to false. Otherwise the
+      ///          application will be deadlocked.
+      void requestShutdown (bool wait);
+
       ProblemSolverMapPtr_t problemSolverMap ();
 
       core::ProblemSolverPtr_t problemSolver ();
