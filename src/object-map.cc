@@ -113,11 +113,14 @@ namespace hpp {
         switch (geomType) {
           case Shape:
             exists  = (shapeMap_.find (name) != shapeMap_ .end ());
+            break;
           case Polyhedron:
             exists  = (polyhedronMap_.find(name) != polyhedronMap_.end ());
+            break;
           case BothGeomType:
             exists  = (shapeMap_.find (name) != shapeMap_ .end ())
                    || (polyhedronMap_.find(name) != polyhedronMap_.end ());
+            break;
         }
 
         switch (throwType) {
