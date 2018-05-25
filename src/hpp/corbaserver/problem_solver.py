@@ -603,10 +603,11 @@ class ProblemSolver (object):
 
     ## Get the robot velocity at param on a path
     # \param inPathId rank of the path in the problem
+    # \param orderId order of the derivative
     # \param param : the user parameter choice
     # \return dofseq : the velocity at param
-    def velocityAtParam (self, inPathId, param):
-        return self.client.problem.velocityAtParam (inPathId, param)
+    def derivativeAtParam (self, inPathId, order, param):
+        return self.client.problem.derivativeAtParam (inPathId, order, param)
 
     ## Get way points of a path
     #  \param pathId rank of the path in the problem

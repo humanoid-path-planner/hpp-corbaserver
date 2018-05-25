@@ -2011,8 +2011,9 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      hpp::floatSeq* Problem::velocityAtParam (ULong pathId,
-					       Double atDistance)
+      hpp::floatSeq* Problem::derivativeAtParam (ULong pathId,
+						 ULong order,
+					         Double atDistance)
 	throw (hpp::Error)
       {
 	try {
@@ -2024,7 +2025,7 @@ namespace hpp
 	  }
 	  PathPtr_t path = problemSolver()->paths () [pathId];
 	  vector_t velocity (problemSolver ()->robot ()->numberDof ());
-	  path->derivative (velocity, atDistance, 1);
+	  path->derivative (velocity, atDistance, order);
           return vectorToFloatSeq (velocity);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());

@@ -302,8 +302,9 @@ namespace hpp
 					      Double atDistance)
 	  throw (hpp::Error);
 
-	virtual hpp::floatSeq* velocityAtParam (ULong pathId,
-						Double atDistance)
+	virtual hpp::floatSeq* derivativeAtParam (ULong pathId,
+						  ULong order,
+						  Double atDistance)
 	  throw (hpp::Error);
 
 	virtual hpp::floatSeqSeq* getWaypoints (ULong inPathId, floatSeq_out times)

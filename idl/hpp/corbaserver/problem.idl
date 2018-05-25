@@ -587,9 +587,10 @@ module hpp
 
     /// Get the robot velocity at param on a path
     /// \param inPathId rank of the path in the problem
+    /// \param orderId order of the derivative
     /// \param atDistance : the user parameter choice
     /// \return dofseq : the velocity at param
-    floatSeq velocityAtParam(in unsigned long inPathId, in double atDistance)
+    floatSeq derivativeAtParam(in unsigned long inPathId, in unsigned long orderId, in double atDistance)
       raises (Error);
 
     /// Get way points of a path
