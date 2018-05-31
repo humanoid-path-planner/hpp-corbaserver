@@ -44,6 +44,10 @@ module hpp
     /// raise an exception when the parameter is not found.
     any getParameter (in string name) raises (Error);
 
+    /// Get parameter documentation
+    /// raise an exception when the parameter is not found.
+    string getParameterDoc (in string name) raises (Error);
+
     /// Select a problem by its name.
     /// If no problem with this name exists, a new problem is created and selected.
     /// \param name the problem name.

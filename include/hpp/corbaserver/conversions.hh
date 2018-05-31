@@ -50,6 +50,8 @@ namespace hpp {
 
     ConfigurationPtr_t floatSeqToConfigPtr (const DevicePtr_t& robot, const floatSeq& dofArray, bool throwIfNotNormalized);
 
+    core::matrix_t floatSeqSeqToMatrix (const floatSeqSeq& input, const size_type expectedRows = -1, const size_type expectedCols = -1);
+
     inline char* c_str (const std::string& in)
     {
       char* out = new char[in.length()+1];

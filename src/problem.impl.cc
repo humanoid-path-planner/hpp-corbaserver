@@ -126,80 +126,98 @@ namespace hpp
     namespace impl
     {
       namespace {
+        using hpp::core::Parameter;
+
         static const matrix3_t   I3   (matrix3_t  ::Identity());
         static const vector3_t   zero (vector3_t  ::Zero());
         static const Transform3f Id   (Transform3f::Identity());
 
-        struct BoostCorbaAny {
+        struct Parameter_CorbaAny {
           private:
             template <typename first, typename second>
-              static inline second as (first f) { return second (f); }
+              static inline second as (const first& f) { return second (f); }
 
-            struct toBoost {
+            struct convertToParam {
               const CORBA::Any& corbaAny;
-              boost::any* boostAny;
+              Parameter& param;
               bool& done;
               template <typename T> void operator()(T) {
                 if (done) return;
                 typename T::second_type d;
                 if (corbaAny >>= d) {
-                  *boostAny = as<typename T::second_type, typename T::first_type>(d);
+                  param = Parameter (as<typename T::second_type, typename T::first_type>(d));
                   done = true;
                 }
               }
-              toBoost (const CORBA::Any& a, boost::any* b, bool& d) : corbaAny(a), boostAny(b), done(d) {}
-            };
-            struct toCorba {
-              CORBA::Any* corbaAny;
-              const boost::any& boostAny;
-              bool& done;
-              template <typename T> void operator()(T) {
-                if (done) return;
-                // std::cerr << "trying is " << typeid(typename T::first_type).name() << std::endl;
-                try {
-                  typename T::first_type val = boost::any_cast<typename T::first_type>(boostAny);
-                  *corbaAny <<= as <typename T::first_type, typename T::second_type>(val);
-                  done = true;
-                } catch (const boost::bad_any_cast & e) {
-                  // std::cout << e.what() << std::endl;
-                }
-              }
-              toCorba (const boost::any& a, CORBA::Any* b, bool& d) : corbaAny(b), boostAny(a), done(d) {}
+              convertToParam (const CORBA::Any& a, Parameter& p, bool& d) : corbaAny(a), param(p), done(d) {}
             };
             /// TODO: This list of CORBA types is not complete.
             typedef boost::mpl::vector<
               // There is no operator<<= (CORBA::Any, CORBA::Boolean)
-              std::pair<bool                , CORBA::Boolean>,
-              std::pair<size_type           , CORBA::LongLong>,
-              std::pair<value_type          , CORBA::Double>,
-              std::pair<value_type          , CORBA::Float>,
-              std::pair<std::string         , const char*>
-                > BoostCorbaPairs_t;
+              std::pair<bool       , CORBA::Boolean>,
+
+              std::pair<size_type  , CORBA::LongLong>,
+              std::pair<size_type  , CORBA::Long>,
+              std::pair<size_type  , CORBA::Short>,
+              std::pair<size_type  , CORBA::ULongLong>,
+              std::pair<size_type  , CORBA::ULong>,
+              std::pair<size_type  , CORBA::UShort>,
+
+              std::pair<value_type , CORBA::Float>,
+              std::pair<value_type , CORBA::Double>,
+
+              std::pair<std::string, const char*>
+
+              // This two do not work because omniidl must be given the option -Wba in order to generate 
+              // a DynSK.cc file containing the conversion to/from Any type.
+              // std::pair<vector_t   , floatSeq>,
+              // std::pair<matrix_t   , floatSeqSeq>
+                > Parameter_AnyPairs_t;
 
           public:
-            static boost::any boostize (const CORBA::Any& an) {
-              boost::any out;
+            static Parameter toParameter (const CORBA::Any& an) {
+              Parameter out;
               bool done = false;
-              toBoost ret(an, &out, done);
-              boost::mpl::for_each<BoostCorbaPairs_t> (ret);
-              if (!done) throw hpp::Error ("Could not convert to boost::any");
+              convertToParam ret(an, out, done);
+              boost::mpl::for_each<Parameter_AnyPairs_t> (ret);
+              if (!done) throw hpp::Error ("Could not convert to Parameter");
               return out;
             }
-            static CORBA::Any corbaize (const boost::any& an) {
+            static CORBA::Any toCorbaAny (const Parameter& p) {
               CORBA::Any out;
-              bool done = false;
-              toCorba ret(an, &out, done);
-              boost::mpl::for_each<BoostCorbaPairs_t> (ret);
-              if (!done) {
-                throw hpp::Error ("Could not convert to CORBA::Any");
+              switch (p.type()) {
+                case Parameter::BOOL:
+                  out <<= p.boolValue();
+                  break;
+                case Parameter::INT:
+                  out <<= p.intValue();
+                  break;
+                case Parameter::FLOAT:
+                  out <<= p.floatValue();
+                  break;
+                case Parameter::STRING:
+                  out <<= p.stringValue().c_str();
+                  break;
+                case Parameter::VECTOR:
+                  out <<= vectorToFloatSeq(p.vectorValue());
+                  break;
+                case Parameter::MATRIX:
+                  out <<= matrixToFloatSeqSeq(p.matrixValue());
+                  break;
+                default:
+                  throw hpp::Error ("Could not convert to CORBA::Any");
+                  break;
               }
               return out;
             }
         };
 
         template <> inline
-          const char* BoostCorbaAny::as<std::string, const char*> (std::string f)
-          { return f.c_str(); }
+          vector_t Parameter_CorbaAny::as<floatSeq, vector_t> (const floatSeq& in)
+          { return floatSeqToVector(in); }
+        template <> inline
+          matrix_t Parameter_CorbaAny::as<floatSeqSeq, matrix_t> (const floatSeqSeq& in)
+          { return floatSeqSeqToMatrix(in); }
 
         typedef hpp::core::segment_t segment_t;
         typedef hpp::core::segments_t segments_t;
@@ -401,7 +419,7 @@ namespace hpp
         if (problemSolver()->problem() != NULL) {
           try {
             problemSolver()->problem()->setParameter (std::string(name),
-                BoostCorbaAny::boostize (value));
+                Parameter_CorbaAny::toParameter (value));
           } catch (const std::exception& e) {
             throw hpp::Error (e.what ());
           }
@@ -415,15 +433,38 @@ namespace hpp
       CORBA::Any* Problem::getParameter (const char* name) throw (Error)
       {
         if (problemSolver()->problem() != NULL) {
-          boost::any val;
           try {
-            val = problemSolver()->problem()->parameters.get (std::string(name));
+            const Parameter& param = problemSolver()->problem()->getParameter (name);
+            CORBA::Any* ap = new CORBA::Any;
+            *ap = Parameter_CorbaAny::toCorbaAny(param);
+            return ap;
           } catch (const std::exception& e) {
             throw hpp::Error (e.what ());
           }
-          CORBA::Any* ap = new CORBA::Any;
-          *ap = BoostCorbaAny::corbaize(val);
-          return ap;
+        }
+        throw Error ("No problem in the ProblemSolver");
+      }
+
+      // ---------------------------------------------------------------
+
+      char* Problem::getParameterDoc (const char* name) throw (Error)
+      {
+        if (problemSolver()->problem() != NULL) {
+          try {
+            const core::ParameterDescription& desc =
+              core::Problem::parameterDescription (name);
+            std::stringstream ss;
+            ss << desc.doc() << " [Default: ";
+            try {
+              ss << desc.defaultValue();
+            } catch (const std::logic_error&) {
+            ss << "None";
+            }
+            ss << ']';
+            return c_str(ss.str());
+          } catch (const std::exception& e) {
+            throw hpp::Error (e.what ());
+          }
         }
         throw Error ("No problem in the ProblemSolver");
       }

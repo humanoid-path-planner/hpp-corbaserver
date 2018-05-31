@@ -82,6 +82,11 @@ class ProblemSolver (object):
     def getParameter (self, name):
         return self.client.problem.getParameter (name)
 
+    ## Get parameter documentation
+    #  raise an exception when the parameter is not found.
+    def getParameterDoc (self, name):
+        return self.client.problem.getParameterDoc (name)
+
     #  Select a problem by its name.
     #  If no problem with this name exists, a new problem is created and
     #  selected.

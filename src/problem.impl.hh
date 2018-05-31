@@ -44,6 +44,8 @@ namespace hpp
 
         virtual CORBA::Any* getParameter (const char* name) throw (Error);
 
+        virtual char* getParameterDoc (const char* name) throw (Error);
+
         virtual bool selectProblem (const char* problemName) throw (hpp::Error);
 
         virtual void resetProblem () throw (hpp::Error);
