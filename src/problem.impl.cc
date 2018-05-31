@@ -362,6 +362,7 @@ namespace hpp
         _CASE_PS_MAP ("CenterOfMass"        , centerOfMassComputations)
         _CASE_SET_RET ("Problem", server_->problemSolverMap()->keys <Ret_t> ())
         _CASE_SET_RET ("Parameter", problem(problemSolver())->parameters.getKeys <Ret_t> ())
+        _CASE_SET_RET ("DefaultParameter", problem(problemSolver())->parameterDescriptions().getKeys <Ret_t> ())
         _CASE_SET_RET ("Type", types)
 
         if (!ok) {
