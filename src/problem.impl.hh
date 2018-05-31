@@ -254,7 +254,7 @@ namespace hpp
     virtual void selectSteeringMethod (const char* steeringMethodType)
       throw (Error);
 
-    virtual void selectConFigurationShooter (const char* configurationShooterType)
+    virtual void selectConfigurationShooter (const char* configurationShooterType)
       throw (Error);
 
 	virtual bool prepareSolveStepByStep () throw (hpp::Error);

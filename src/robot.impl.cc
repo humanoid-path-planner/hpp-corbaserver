@@ -33,7 +33,7 @@
 #include <hpp/pinocchio/liegroup.hh>
 
 #include <hpp/core/problem.hh>
-#include <hpp/core/basic-configuration-shooter.hh>
+#include <hpp/core/configuration-shooter.hh>
 #include <hpp/core/config-validations.hh>
 #include <hpp/core/distance-between-objects.hh>
 #include <hpp/core/weighed-distance.hh>
@@ -891,18 +891,13 @@ namespace hpp
       hpp::floatSeq* Robot::shootRandomConfig () throw (hpp::Error)
       {
 	try {
-	  hpp::floatSeq *dofArray = 0x0;
-	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
-	  hpp::core::BasicConfigurationShooterPtr_t shooter
-			= core::BasicConfigurationShooter::create (robot);
-	  ConfigurationPtr_t configuration = shooter->shoot();
-
-	  size_type deviceDim = robot->configSize ();
-	  dofArray = new hpp::floatSeq();
-	  dofArray->length ((ULong) deviceDim);
-	  for(size_type i=0; i<deviceDim; i++)
-	    (*dofArray)[(ULong) i] = (*configuration) [i];
-	  return dofArray;
+          core::ProblemPtr_t p = problemSolver()->problem();
+          if (p) {
+            ConfigurationPtr_t q = p->configurationShooter()->shoot();
+            return vectorToFloatSeq(*q);
+          } else {
+            throw Error ("No problem in the ProblemSolver");
+          }
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}

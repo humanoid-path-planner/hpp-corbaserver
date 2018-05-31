@@ -522,6 +522,11 @@ class ProblemSolver (object):
         return self.client.problem.selectPathValidation (pathValidationType,
                                                          tolerance)
 
+    ## Select configuration shooter type
+    #  \param Name of the configuration shooter type
+    def selectConfigurationShooter (self, type):
+        return self.client.problem.selectConfigurationShooter (type)
+
     ## Select path projector method
     #  \param Name of the path projector method, either "Discretized"
     #  "Progressive", "Dichotomy", or any type added by

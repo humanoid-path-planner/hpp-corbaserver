@@ -437,9 +437,9 @@ module hpp
 
     /// Select configuration shooter type
     /// \param Name of the configuration planner type, either
-    ///        "BasicConfigurationShooter" or any type added by method
+    ///        "Uniform" or any type added by method
     ///        core::ProblemSolver::addConfigurationShooterType
-    void selectConFigurationShooter (in string configurationShooterType) raises (Error);
+    void selectConfigurationShooter (in string configurationShooterType) raises (Error);
 
     /// Select distance type
     /// \param Name of the distance type, either

@@ -23,7 +23,7 @@
 
 #include <hpp/pinocchio/configuration.hh>
 #include <hpp/core/config-projector.hh>
-#include <hpp/core/basic-configuration-shooter.hh>
+#include <hpp/core/configuration-shooter.hh>
 #include <hpp/core/connected-component.hh>
 #include <hpp/core/edge.hh>
 #include <hpp/core/locked-joint.hh>
@@ -1076,8 +1076,8 @@ namespace hpp
       {
         DevicePtr_t robot = problemSolver()->robot ();
 	if (!robot) throw hpp::Error ("No robot loaded");
-        core::BasicConfigurationShooterPtr_t shooter
-          = core::BasicConfigurationShooter::create (robot);
+        if (!problemSolver()->problem ()) problemSolver()->resetProblem ();
+        core::ConfigurationShooterPtr_t shooter = problemSolver()->problem()->configurationShooter();
 	bool success = false, configIsValid = false;
         ConfigurationPtr_t config;
         while (!configIsValid && maxIter > 0)
@@ -1568,7 +1568,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::selectConFigurationShooter (const char* configurationShooterType)
+      void Problem::selectConfigurationShooter (const char* configurationShooterType)
     throw (Error)
       {
     try {
