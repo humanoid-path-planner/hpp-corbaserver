@@ -356,9 +356,19 @@ class Quaternion (object):
             followed by a rotation of R about the new x-axis.
         """
         q=self.normalized().array
-        r=np.arctan2(2*(q[3]*q[0]+q[1]*q[2]),1-2*(q[0]**2+q[1]**2))
-        p=np.arctan2(2*(q[3]*q[1]-q[2]*q[0]),np.sqrt((2*(q[3]*q[0]+q[1]*q[2]))**2+(1-2*(q[0]**2+q[1]**2))**2)) # We cas use arcsin but arctan2 is more robust
-        y=np.arctan2(2*(q[3]*q[2]+q[0]*q[1]),1-2*(q[1]**2+q[2]**2))
+        d = -q[0]*q[1] + q[2]*q[3]
+        if np.fabs(d-0.5) < 1e-6: # d == 0.5
+            r=-2*np.arctan2(q[1],q[3])
+            p=np.arctan2(2*(q[3]*q[1]-q[2]*q[0]),np.sqrt((2*(q[3]*q[0]+q[1]*q[2]))**2+(1-2*(q[0]**2+q[1]**2))**2)) # We cas use arcsin but arctan2 is more robust
+            y=0
+        elif np.fabs(d+0.5) < 1e-6: # d == -0.5
+            r= 2*np.arctan2(q[1],q[3])
+            p=np.arctan2(2*(q[3]*q[1]-q[2]*q[0]),np.sqrt((2*(q[3]*q[0]+q[1]*q[2]))**2+(1-2*(q[0]**2+q[1]**2))**2)) # We cas use arcsin but arctan2 is more robust
+            y=0
+        else:
+            r=np.arctan2(2*(q[3]*q[0]+q[1]*q[2]),1-2*(q[0]**2+q[1]**2))
+            p=np.arctan2(2*(q[3]*q[1]-q[2]*q[0]),np.sqrt((2*(q[3]*q[0]+q[1]*q[2]))**2+(1-2*(q[0]**2+q[1]**2))**2)) # We cas use arcsin but arctan2 is more robust
+            y=np.arctan2(2*(q[3]*q[2]+q[0]*q[1]),1-2*(q[1]**2+q[2]**2))
         return np.array([r,p,y])
 
     def fromRPY(self,R,P,Y):
