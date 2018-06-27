@@ -166,6 +166,15 @@ namespace hpp
           toHppTransform (transform, cfg);
 	  return;
 	}
+        try {
+          Transform3f transform = problemSolver()->obstacleFramePosition (objectName);
+          toHppTransform (transform, cfg);
+	  return;
+        } catch (const std::invalid_argument&) {
+          // Ignore this exception.
+        } catch (const std::exception& e) {
+          throw Error (e.what());
+        }
         HPP_THROW(Error, "Object " << objectName << " not found");
       }
 
