@@ -1,3 +1,5 @@
+. getObstaclePosition accepts frame name
+
 Release 2.2.1, 10/08/2013
 
         1. Fix warnings.
