@@ -109,13 +109,6 @@ namespace hpp
             const char* jointRefName, const hpp::boolSeq& mask)
           throw (hpp::Error);
 
-	virtual void createStaticStabilityGravityConstraint
-	(const char* constraintName, const Names_t& floorJoints,
-	 const Names_t& objectJoints,
-         const hpp::floatSeqSeq& points, const hpp::intSeqSeq& objTriangles,
-         const hpp::intSeqSeq& floorTriangles)
-	  throw (hpp::Error) HPP_CORBASERVER_DEPRECATED;
-
 	virtual void createConvexShapeContactConstraint
         (const char* constraintName, const Names_t& floorJoints,
          const Names_t& objectJoints,
@@ -209,20 +202,7 @@ namespace hpp
         virtual char* displayConstraints ()
           throw (Error);
 
-	virtual void lockJoint (const char* jointName,
-				const hpp::floatSeq& value)
-	  throw (hpp::Error);
         virtual void filterCollisionPairs () throw (hpp::Error);
-        /*
-	virtual void resetGoalConstraints () throw (hpp::Error);
-	virtual void setGoalNumericalConstraints
-	(const char* constraintName, const hpp::Names_t& constraintNames,
-         const hpp::intSeq& priorities)
-	  throw (Error);
-	virtual void addGoalLockJoint (const char* jointName,
-				const hpp::floatSeq& value)
-	  throw (hpp::Error);
-          */
 	virtual Double getErrorThreshold () throw (Error);
 	virtual void setErrorThreshold (Double threshold) throw (Error);
         virtual void setDefaultLineSearchType (const char* type) throw (Error);

@@ -821,19 +821,6 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::createStaticStabilityGravityConstraint
-      (const char* constraintName, const Names_t& floorJoints,
-       const Names_t& objectJoints,
-       const hpp::floatSeqSeq& points, const hpp::intSeqSeq& objTriangles,
-       const hpp::intSeqSeq& floorTriangles)
-        throw (hpp::Error)
-      {
-        createConvexShapeContactConstraint (constraintName, floorJoints,
-            objectJoints, points, objTriangles, floorTriangles);
-      }
-
-      // ---------------------------------------------------------------
-
       void Problem::createConvexShapeContactConstraint
         (const char* constraintName, const Names_t& floorJoints,
          const Names_t& objectJoints,
@@ -1450,83 +1437,6 @@ namespace hpp
           throw hpp::Error (exc.what ());
         }
       }
-
-      // ---------------------------------------------------------------
-
-      void Problem::lockJoint (const char* jointName,
-			       const hpp::floatSeq& value)
-	throw (hpp::Error)
-      {
-	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
-	try {
-	  // Get robot in hppPlanner object.
-	  DevicePtr_t robot = problemSolver()->robot ();
-	  JointPtr_t joint = robot->getJointByName (jointName);
-	  vector_t jointConfig = floatSeqToVector (value);
-          LiegroupElement lge (jointConfig, joint->configurationSpace ());
-
-	  LockedJointPtr_t lockedJoint (LockedJoint::create (joint, lge));
-	  problemSolver()->addLockedJoint (lockedJoint);
-	} catch (const std::exception& exc) {
-	  throw hpp::Error (exc.what ());
-	}
-      }
-
-      // ---------------------------------------------------------------
-
-      /*
-      void Problem::setGoalNumericalConstraints
-      (const char* constraintName, const Names_t& constraintNames,
-       const hpp::intSeq& priorities)
-	throw (Error)
-      {
-	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
-	try {
-	  for (CORBA::ULong i=0; i<constraintNames.length (); ++i) {
-	    std::string name (constraintNames [i]);
-            problemSolver()->addGoalConstraint (constraintName, name,
-                (std::size_t)priorities[i]);
-	    problemSolver()->robot ()->controlComputation
-	      (pinocchio::Device::ALL);
-	  }
-	} catch (const std::exception& exc) {
-	  throw Error (exc.what ());
-	}
-      }
-
-      // ---------------------------------------------------------------
-
-      void Problem::addGoalLockJoint (const char* jointName,
-          const hpp::floatSeq& value)
-	throw (hpp::Error)
-      {
-	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
-	try {
-	  // Get robot in hppPlanner object.
-	  DevicePtr_t robot = problemSolver()->robot ();
-	  JointPtr_t joint = robot->getJointByName (jointName);
-	  vector_t jointConfig = floatSeqToVector (value);
-
-	  LockedJointPtr_t lockedJoint (LockedJoint::create (joint, jointConfig));
-	  problemSolver()->addGoalConstraint (lockedJoint);
-	} catch (const std::exception& exc) {
-	  throw hpp::Error (exc.what ());
-	}
-      }
-
-      // --------------------------------------------------------------
-
-      void Problem::resetGoalConstraints ()
-        throw (hpp::Error)
-      {
-	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
-	try {
-	  problemSolver()->resetGoalConstraint ();
-	} catch (const std::exception& exc) {
-	  throw hpp::Error (exc.what ());
-	}
-      }
-      */
 
       // ---------------------------------------------------------------
 

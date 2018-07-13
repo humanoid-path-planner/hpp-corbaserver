@@ -434,15 +434,6 @@ class ProblemSolver (object):
     def generateValidConfig (self, maxIter):
         return self.client.problem.generateValidConfig (maxIter)
 
-    ## Lock joint with given joint configuration
-    # \param jointName name of the joint
-    # \param value value of the joint configuration
-    def lockJoint (self, jointName, value):
-        from warnings import warn
-        warn ("method lockJoint is deprecated: use createLockedJoint and "
-              + "setConstraints instead")
-        return self.client.problem.lockJoint (jointName, value)
-
     ## error threshold in numerical constraint resolution
     def getErrorThreshold (self):
         return self.client.problem.getErrorThreshold ()
