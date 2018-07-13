@@ -576,7 +576,8 @@ namespace hpp
           dqAll .segment(riv, nv) = floatSeqToVector (dq, nv);
 
           vector_t config (robot->currentConfiguration ());
-          pinocchio::integrate<true, pinocchio::LieGroupTpl> (robot, config, dqAll, config);
+          pinocchio::integrate<true, pinocchio::RnxSOnLieGroupMap>
+            (robot, config, dqAll, config);
 
           robot->currentConfiguration (config);
           robot->computeForwardKinematics ();
