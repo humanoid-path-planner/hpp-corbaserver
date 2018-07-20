@@ -22,13 +22,12 @@
 #include <hpp/fcl/shape/geometric_shapes.h>
 
 #include <hpp/pinocchio/configuration.hh>
+
 #include <hpp/core/config-projector.hh>
 #include <hpp/core/configuration-shooter.hh>
 #include <hpp/core/connected-component.hh>
 #include <hpp/core/edge.hh>
-#include <hpp/core/locked-joint.hh>
 #include <hpp/core/node.hh>
-#include <hpp/core/numerical-constraint.hh>
 #include <hpp/core/path-planner.hh>
 #include <hpp/core/path-optimizer.hh>
 #include <hpp/core/path-vector.hh>
@@ -51,6 +50,8 @@
 #include <hpp/constraints/com-between-feet.hh>
 #include <hpp/constraints/generic-transformation.hh>
 #include <hpp/constraints/convex-shape-contact.hh>
+#include <hpp/constraints/implicit.hh>
+#include <hpp/constraints/locked-joint.hh>
 #ifdef HPP_CONSTRAINTS_USE_QPOASES
 # include <hpp/constraints/static-stability.hh>
 #endif
@@ -88,9 +89,11 @@ using hpp::constraints::StaticStability;
 using hpp::constraints::StaticStabilityPtr_t;
 #endif
 using hpp::constraints::DifferentiableFunctionPtr_t;
+using hpp::constraints::LockedJoint;
+using hpp::constraints::LockedJointPtr_t;
 
-using hpp::core::NumericalConstraint;
-using hpp::core::NumericalConstraintPtr_t;
+using hpp::constraints::Implicit;
+using hpp::constraints::ImplicitPtr_t;
 
 namespace boost {
   namespace icl {
@@ -648,7 +651,7 @@ namespace hpp
               boolSeqToBoolVector(mask));
 
         problemSolver()->addNumericalConstraint
-          (name, NumericalConstraint::create (func));
+          (name, Implicit::create (func));
       }
 
       // ---------------------------------------------------------------
@@ -669,7 +672,7 @@ namespace hpp
               boolSeqToBoolVector(mask, 6));
 
         problemSolver()->addNumericalConstraint
-          (name, NumericalConstraint::create (func));
+          (name, Implicit::create (func));
       }
 
       // ---------------------------------------------------------------
@@ -690,7 +693,7 @@ namespace hpp
               boolSeqToBoolVector(mask, 6));
 
         problemSolver()->addNumericalConstraint
-          (name, NumericalConstraint::create (func));
+          (name, Implicit::create (func));
       }
 
       // ---------------------------------------------------------------
@@ -756,7 +759,7 @@ namespace hpp
           std::string name (constraintName), comN (comName);
           if (comN.compare ("") == 0) {
             problemSolver()->addNumericalConstraint
-              (name, NumericalConstraint::create
+              (name, Implicit::create
 	       (RelativeCom::create (name, problemSolver()->robot(),
 				     joint, point, m)));
           } else {
@@ -764,7 +767,7 @@ namespace hpp
               throw hpp::Error ("Partial COM not found.");
             comc = problemSolver()->centerOfMassComputations.get (comN);
             problemSolver()->addNumericalConstraint
-              (name, NumericalConstraint::create
+              (name, Implicit::create
 	       (RelativeCom::create (name, problemSolver()->robot(), comc,
 				     joint, point, m)));
           }
@@ -800,7 +803,7 @@ namespace hpp
           std::string name (constraintName), comN (comName);
           if (comN.compare ("") == 0) {
             problemSolver()->addNumericalConstraint
-              (name, NumericalConstraint::create
+              (name, Implicit::create
 	       (ComBetweenFeet::create (name, problemSolver()->robot(),
 					jointL, jointR, pointL, pointR,
 					jointRef, pointRef, m)));
@@ -809,7 +812,7 @@ namespace hpp
               throw hpp::Error ("Partial COM not found.");
             comc = problemSolver()->centerOfMassComputations.get (comN);
             problemSolver()->addNumericalConstraint
-              (name, NumericalConstraint::create
+              (name, Implicit::create
 	       (ComBetweenFeet::create (name, problemSolver()->robot(), comc,
 					jointL, jointR, pointL, pointR,
 					jointRef, pointRef, m)));
@@ -834,7 +837,7 @@ namespace hpp
           ConvexShapeContactPtr_t f = ConvexShapeContact::create
             (name, problemSolver()->robot());
           problemSolver()->addNumericalConstraint
-	    (name, NumericalConstraint::create (f));
+	    (name, Implicit::create (f));
           std::vector <fcl::Vec3f> pts (points.length ());
           for (CORBA::ULong i = 0; i < points.length (); ++i) {
             if (points[i].length () != 3)
@@ -953,7 +956,7 @@ namespace hpp
           StaticStabilityPtr_t f = StaticStability::create
             (name, robot, contacts, com);
           problemSolver()->addNumericalConstraint (name,
-              NumericalConstraint::create (f, core::EqualToZero::create())
+              Implicit::create (f, core::EqualToZero::create())
               );
         } catch (const std::exception& exc) {
           throw hpp::Error (exc.what ());
@@ -989,7 +992,7 @@ namespace hpp
               boolSeqToBoolVector(mask));
 
         problemSolver()->addNumericalConstraint
-          (name, NumericalConstraint::create (func));
+          (name, Implicit::create (func));
       }
 
       // ---------------------------------------------------------------
@@ -1001,7 +1004,7 @@ namespace hpp
 	ConfigurationPtr_t config = floatSeqToConfigPtr (robot, goal, true);
 	std::string name (constraintName);
         problemSolver()->numericalConstraints.add
-          (name, NumericalConstraint::create
+          (name, Implicit::create
            (constraints::ConfigurationConstraint::create
             (name, problemSolver()->robot(), *config)
             ));
@@ -1021,7 +1024,7 @@ namespace hpp
 	    (joint2Name);
 	  std::string name (constraintName);
 	  problemSolver()->addNumericalConstraint
-	    (name, NumericalConstraint::create
+	    (name, Implicit::create
 	     (DistanceBetweenBodies::create (name, problemSolver()->robot(),
 					     joint1, joint2)));
 	} catch (const std::exception& exc) {
@@ -1046,7 +1049,7 @@ namespace hpp
 	  }
 	  std::string name (constraintName);
 	  problemSolver()->addNumericalConstraint
-	    (name, NumericalConstraint::create
+	    (name, Implicit::create
 	     (DistanceBetweenBodies::create (name, problemSolver()->robot(),
 					     joint1, objectList)));
 	} catch (const std::exception& exc) {
@@ -1217,7 +1220,7 @@ namespace hpp
           std::string n (constraintName);
           if (!problemSolver()->numericalConstraints.has(n))
             throw Error (("Constraint " + n + " not found").c_str());
-          NumericalConstraintPtr_t c =
+          ImplicitPtr_t c =
             problemSolver()->numericalConstraints.get(n);
           inputSize            = (ULong)c->function().inputSize();
           inputDerivativeSize  = (ULong)c->function().inputDerivativeSize();
@@ -1253,7 +1256,7 @@ namespace hpp
 	throw (hpp::Error)
       {
 	try {
-          core::NumericalConstraintPtr_t nc
+          ImplicitPtr_t nc
             (problemSolver ()->numericalConstraints.get (constraintName));
 	  return nc->constantRightHandSide ();
 	} catch (const std::exception& exc) {
@@ -1312,7 +1315,7 @@ namespace hpp
           Configuration_t q (floatSeqToConfig (problemSolver()->robot(), config, true));
           // look for constraint with this key
           if (problemSolver ()->numericalConstraints.has (constraintName)) {
-            core::NumericalConstraintPtr_t nc
+            ImplicitPtr_t nc
               (problemSolver ()->numericalConstraints.get (constraintName));
             configProjector->rightHandSideFromConfig (nc, q);
             return;
@@ -1346,7 +1349,7 @@ namespace hpp
           vector_t rightHandSide (floatSeqToVector (rhs));
           // look for constraint with this key
           if (problemSolver ()->numericalConstraints.has (constraintName)) {
-            core::NumericalConstraintPtr_t nc
+            ImplicitPtr_t nc
               (problemSolver ()->numericalConstraints.get (constraintName));
             configProjector->rightHandSide (nc, rightHandSide);
             return;
