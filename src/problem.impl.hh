@@ -199,6 +199,9 @@ namespace hpp
 	(const char* constraintName, const hpp::Names_t& constraintNames,
          const hpp::intSeq& priorities)
 	  throw (Error);
+	virtual void setNumericalConstraintsLastPriorityOptional
+          (const bool optional)
+	  throw (Error);
 
         virtual void addLockedJointConstraints
         (const char* configProjName,const hpp::Names_t& lockedJointNames)

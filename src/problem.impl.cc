@@ -1439,6 +1439,23 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+      void Problem::setNumericalConstraintsLastPriorityOptional (const bool optional)
+	throw (Error)
+      {
+	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
+        if (!problemSolver()->constraints())
+          throw hpp::Error ("The problem has no constraints");
+        if (!problemSolver()->constraints()->configProjector())
+          throw hpp::Error ("The problem has no config projector");
+	try {
+          problemSolver()->constraints()->configProjector()->lastIsOptional(optional);
+	} catch (const std::exception& exc) {
+	  throw Error (exc.what ());
+	}
+      }
+
+      // ---------------------------------------------------------------
+
       void Problem::addLockedJointConstraints
       (const char* configProjName,const hpp::Names_t& lockedJointNames)
         throw (Error)

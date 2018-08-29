@@ -365,6 +365,12 @@ module hpp
                                   in intSeq priorities)
       raises (Error);
 
+    /// Declare last priority order as optional in the numerical constraints
+    ///
+    ///
+    void setNumericalConstraintsLastPriorityOptional (in boolean optional)
+      raises (Error);
+
     /// Add locked joints by names in ConfigProjector
     /// \param configProjName Name of the config projector if created by this
     ///        method,
