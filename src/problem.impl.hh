@@ -195,12 +195,12 @@ namespace hpp
           throw (hpp::Error);
 
 	virtual void resetConstraints () throw (hpp::Error);
-	virtual void setNumericalConstraints
+	virtual void addNumericalConstraints
 	(const char* constraintName, const hpp::Names_t& constraintNames,
          const hpp::intSeq& priorities)
 	  throw (Error);
 
-        virtual void setLockedJointConstraints
+        virtual void addLockedJointConstraints
         (const char* configProjName,const hpp::Names_t& lockedJointNames)
           throw (Error);
 

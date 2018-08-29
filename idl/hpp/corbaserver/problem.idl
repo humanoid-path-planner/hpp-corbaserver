@@ -354,24 +354,24 @@ module hpp
     void setRightHandSideFromConfigByName (in string constraintName, in floatSeq config)
       raises (Error);
 
-    /// Set numerical constraints by names in ConfigProjector
+    /// Add numerical constraints by names in ConfigProjector
     /// \param configProjName Name of the config projector if created by this
     ///        method,
     /// \param constraintNames names of the constraints to apply,
     ///
     /// Constraints should have been added in the ProblemSolver local map.
-    void setNumericalConstraints (in string configProjName,
+    void addNumericalConstraints (in string configProjName,
 				  in Names_t constraintNames,
                                   in intSeq priorities)
       raises (Error);
 
-    /// Set locked joints by names in ConfigProjector
+    /// Add locked joints by names in ConfigProjector
     /// \param configProjName Name of the config projector if created by this
     ///        method,
     /// \param lockedJointNames names of the locked joints,
     ///
     /// Locked joints should have been added in the ProblemSolver local map.
-    void setLockedJointConstraints (in string configProjName,
+    void addLockedJointConstraints (in string configProjName,
                                     in Names_t lockedJointNames) raises (Error);
 
     /// Display the constraint in the ConfigProjector

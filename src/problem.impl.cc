@@ -1417,7 +1417,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::setNumericalConstraints
+      void Problem::addNumericalConstraints
       (const char* configProjName, const Names_t& constraintNames,
        const hpp::intSeq& priorities)
 	throw (Error)
@@ -1439,7 +1439,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::setLockedJointConstraints
+      void Problem::addLockedJointConstraints
       (const char* configProjName,const hpp::Names_t& lockedJointNames)
         throw (Error)
       {
