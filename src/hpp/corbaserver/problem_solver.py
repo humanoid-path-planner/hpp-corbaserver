@@ -390,6 +390,15 @@ class ProblemSolver (object):
     def applyConstraints (self, q):
         return self.client.problem.applyConstraints (q)
 
+    ## Find a local minimum of the least priority constraints
+    #
+    # while respecting the other priorities.
+    # \param input input configuration,
+    # \return output output configuration,
+    # \return residualError.
+    def optimize (self, q):
+        return self.client.problem.optimize (q)
+
     ## Compute value and Jacobian of numerical constraints
     #
     #  \param q input configuration

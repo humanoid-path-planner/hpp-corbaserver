@@ -104,6 +104,16 @@ module hpp
 			      out double residualError)
       raises (Error);
 
+    /// Find a local minimum of the least priority constraints
+    ///
+    /// while respecting the other priorities.
+    /// \param input input configuration,
+    /// \retval output output configuration,
+    /// \retval residualError.
+    boolean optimize (in floatSeq input, out floatSeq output,
+                      out floatSeq residualError)
+      raises (Error);
+
     /// Compute value and Jacobian of numerical constraints
     ///
     /// \param config input configuration

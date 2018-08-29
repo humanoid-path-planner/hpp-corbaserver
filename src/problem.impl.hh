@@ -147,6 +147,11 @@ namespace hpp
 				       Double& residualError)
 	  throw (hpp::Error);
 
+	virtual bool optimize (const hpp::floatSeq& input,
+                               hpp::floatSeq_out output,
+                               hpp::floatSeq_out residualError)
+	  throw (hpp::Error);
+
 	virtual void computeValueAndJacobian
 	(const hpp::floatSeq& config, hpp::floatSeq_out value,
 	 hpp::floatSeqSeq_out jacobian) throw (hpp::Error);
