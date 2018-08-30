@@ -266,8 +266,11 @@ module hpp
 				   in boolSeq mask)
       raises (Error);
 
+    /// \param goal configuration
+    /// \param weights vector of weights on each DoF
     void createConfigurationConstraint (in string constraintName,
-				        in floatSeq goal)
+				        in floatSeq goal,
+                                        in floatSeq weights)
       raises (Error);
 
 

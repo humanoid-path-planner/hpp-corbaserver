@@ -131,7 +131,8 @@ namespace hpp
 	  throw (hpp::Error);
 
 	virtual void createConfigurationConstraint (const char* constraintName,
-					       const hpp::floatSeq& goal)
+                                               const hpp::floatSeq& goal,
+					       const hpp::floatSeq& weights)
 	  throw (hpp::Error);
 
 	virtual void createDistanceBetweenJointConstraint

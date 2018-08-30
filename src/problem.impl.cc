@@ -998,15 +998,17 @@ namespace hpp
       // ---------------------------------------------------------------
 
       void Problem::createConfigurationConstraint (const char* constraintName,
-          const hpp::floatSeq& goal) throw (hpp::Error)
+          const hpp::floatSeq& goal,
+          const hpp::floatSeq& weights) throw (hpp::Error)
       {
         DevicePtr_t robot = getRobotOrThrow(problemSolver());
-	ConfigurationPtr_t config = floatSeqToConfigPtr (robot, goal, true);
 	std::string name (constraintName);
         problemSolver()->numericalConstraints.add
           (name, Implicit::create
            (constraints::ConfigurationConstraint::create
-            (name, problemSolver()->robot(), *config)
+            (name, problemSolver()->robot(),
+             floatSeqToConfig (robot, goal, true),
+             floatSeqToVector (weights, robot->numberDof()))
             ));
       }
 
