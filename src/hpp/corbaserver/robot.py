@@ -25,7 +25,8 @@ from hpp.corbaserver.client import Client
 #  This class is also a wrapper of idl methods defined by
 #  hpp::corbaserver::Robot. Most methods call idl methods.
 class Robot (object):
-    def __init__ (self, robotName = None, rootJointType = None, load = True, client = Client ()):
+    def __init__ (self, robotName = None, rootJointType = None, load = True, client = None):
+        if client is None: client = Client ()
         self.client = client
         if robotName is None:
             # assert (rootJointType is None), "rootJointType is ignore when robotName is None"
@@ -287,7 +288,7 @@ class Robot (object):
 #  Method loadModel builds a humanoid robot.
 class HumanoidRobot (Robot):
 
-    def __init__ (self, robotName = None, rootJointType = None, load = True, client = Client ()):
+    def __init__ (self, robotName = None, rootJointType = None, load = True, client = None):
         Robot.__init__ (self, robotName, rootJointType, load, client)
     def loadModel (self, robotName, rootJointType):
         self.client.robot.loadHumanoidModel (robotName, rootJointType,

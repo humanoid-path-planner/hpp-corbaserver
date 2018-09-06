@@ -131,7 +131,8 @@ namespace hpp
 	  throw (hpp::Error);
 
 	virtual void createConfigurationConstraint (const char* constraintName,
-					       const hpp::floatSeq& goal)
+                                               const hpp::floatSeq& goal,
+					       const hpp::floatSeq& weights)
 	  throw (hpp::Error);
 
 	virtual void createDistanceBetweenJointConstraint
@@ -145,6 +146,11 @@ namespace hpp
 	virtual bool applyConstraints (const hpp::floatSeq& input,
 				       hpp::floatSeq_out output,
 				       Double& residualError)
+	  throw (hpp::Error);
+
+	virtual bool optimize (const hpp::floatSeq& input,
+                               hpp::floatSeq_out output,
+                               hpp::floatSeq_out residualError)
 	  throw (hpp::Error);
 
 	virtual void computeValueAndJacobian
@@ -190,12 +196,15 @@ namespace hpp
           throw (hpp::Error);
 
 	virtual void resetConstraints () throw (hpp::Error);
-	virtual void setNumericalConstraints
+	virtual void addNumericalConstraints
 	(const char* constraintName, const hpp::Names_t& constraintNames,
          const hpp::intSeq& priorities)
 	  throw (Error);
+	virtual void setNumericalConstraintsLastPriorityOptional
+          (const bool optional)
+	  throw (Error);
 
-        virtual void setLockedJointConstraints
+        virtual void addLockedJointConstraints
         (const char* configProjName,const hpp::Names_t& lockedJointNames)
           throw (Error);
 

@@ -348,25 +348,33 @@ class ProblemSolver (object):
     def resetConstraints (self):
         return self.client.problem.resetConstraints ()
 
-    ## Set numerical constraints in ConfigProjector
+    ## Add numerical constraints in ConfigProjector
     #
     #  \param name name of the config projector created if any,
     #  \param names list of names of the numerical constraints previously
     #         created by methods createTransformationConstraint,
     #         createRelativeComConstraint, ...
-    def setNumericalConstraints (self, name, names, priorities = None):
+    def addNumericalConstraints (self, name, names, priorities = None):
         if priorities is None:
             priorities = [ 0 for i in names ]
         return self.client.problem.setNumericalConstraints \
             (name, names, priorities)
 
-    ## Set locked joint in ConfigProjector
+    ## \deprecated Use addNumericalConstraints instead.
+    def setNumericalConstraints (self, name, names, priorities = None):
+        return self.addNumericalConstraints (name, names, priorities)
+
+    ## Add locked joint in ConfigProjector
     #
     #  \param name name of the config projector created if any,
     #  \param names list of names of the locked joints previously created by
     #         method createLockedJoint.
+    def addLockedJointConstraints (self, name, names):
+        return self.client.problem.addLockedJointConstraints (name, names)
+
+    ## \deprecated Use addLockedJointConstraints instead.
     def setLockedJointConstraints (self, name, names):
-        return self.client.problem.setLockedJointConstraints (name, names)
+        return self.addLockedJointConstraints (name, names)
 
     ## Set right hand side of constraints in config projector
     #  \param rhs right hand side of constraints. Contains only right hand side
@@ -389,6 +397,15 @@ class ProblemSolver (object):
     #  \throw Error if projection failed.
     def applyConstraints (self, q):
         return self.client.problem.applyConstraints (q)
+
+    ## Find a local minimum of the least priority constraints
+    #
+    # while respecting the other priorities.
+    # \param input input configuration,
+    # \return output output configuration,
+    # \return residualError.
+    def optimize (self, q):
+        return self.client.problem.optimize (q)
 
     ## Compute value and Jacobian of numerical constraints
     #

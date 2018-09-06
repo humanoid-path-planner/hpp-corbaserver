@@ -998,15 +998,17 @@ namespace hpp
       // ---------------------------------------------------------------
 
       void Problem::createConfigurationConstraint (const char* constraintName,
-          const hpp::floatSeq& goal) throw (hpp::Error)
+          const hpp::floatSeq& goal,
+          const hpp::floatSeq& weights) throw (hpp::Error)
       {
         DevicePtr_t robot = getRobotOrThrow(problemSolver());
-	ConfigurationPtr_t config = floatSeqToConfigPtr (robot, goal, true);
 	std::string name (constraintName);
         problemSolver()->numericalConstraints.add
           (name, Implicit::create
            (constraints::ConfigurationConstraint::create
-            (name, problemSolver()->robot(), *config)
+            (name, problemSolver()->robot(),
+             floatSeqToConfig (robot, goal, true),
+             floatSeqToVector (weights, robot->numberDof()))
             ));
       }
 
@@ -1079,6 +1081,36 @@ namespace hpp
 	output = vectorToFloatSeq (*config);
 	return success;
       }
+
+      // ---------------------------------------------------------------
+
+      bool Problem::optimize (const hpp::floatSeq& input,
+          hpp::floatSeq_out output,
+          hpp::floatSeq_out residualError)
+        throw (hpp::Error)
+      {
+        bool success = false;
+        DevicePtr_t robot = getRobotOrThrow(problemSolver());
+        Configuration_t config = floatSeqToConfig (robot, input, true);
+        vector_t err;
+        try {
+          if (!problemSolver()->constraints())
+            throw hpp::Error ("The problem has no constraints");
+          if (!problemSolver()->constraints()->configProjector())
+            throw hpp::Error ("The problem has no config projector");
+          core::ConfigProjectorPtr_t cp = problemSolver()->constraints()->configProjector();
+
+          success = cp->optimize (config, 0);
+          cp->isSatisfied (config, err);
+        
+        } catch (const std::exception& exc) {
+          throw hpp::Error (exc.what ());
+        }
+        output = vectorToFloatSeq (config);
+        residualError = vectorToFloatSeq (err);
+        return success;
+      }
+
 
       // ---------------------------------------------------------------
 
@@ -1387,7 +1419,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::setNumericalConstraints
+      void Problem::addNumericalConstraints
       (const char* configProjName, const Names_t& constraintNames,
        const hpp::intSeq& priorities)
 	throw (Error)
@@ -1409,7 +1441,24 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::setLockedJointConstraints
+      void Problem::setNumericalConstraintsLastPriorityOptional (const bool optional)
+	throw (Error)
+      {
+	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
+        if (!problemSolver()->constraints())
+          throw hpp::Error ("The problem has no constraints");
+        if (!problemSolver()->constraints()->configProjector())
+          throw hpp::Error ("The problem has no config projector");
+	try {
+          problemSolver()->constraints()->configProjector()->lastIsOptional(optional);
+	} catch (const std::exception& exc) {
+	  throw Error (exc.what ());
+	}
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::addLockedJointConstraints
       (const char* configProjName,const hpp::Names_t& lockedJointNames)
         throw (Error)
       {

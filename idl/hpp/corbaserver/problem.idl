@@ -104,6 +104,16 @@ module hpp
 			      out double residualError)
       raises (Error);
 
+    /// Find a local minimum of the least priority constraints
+    ///
+    /// while respecting the other priorities.
+    /// \param input input configuration,
+    /// \retval output output configuration,
+    /// \retval residualError.
+    boolean optimize (in floatSeq input, out floatSeq output,
+                      out floatSeq residualError)
+      raises (Error);
+
     /// Compute value and Jacobian of numerical constraints
     ///
     /// \param config input configuration
@@ -256,8 +266,11 @@ module hpp
 				   in boolSeq mask)
       raises (Error);
 
+    /// \param goal configuration
+    /// \param weights vector of weights on each DoF
     void createConfigurationConstraint (in string constraintName,
-				        in floatSeq goal)
+				        in floatSeq goal,
+                                        in floatSeq weights)
       raises (Error);
 
 
@@ -344,24 +357,30 @@ module hpp
     void setRightHandSideFromConfigByName (in string constraintName, in floatSeq config)
       raises (Error);
 
-    /// Set numerical constraints by names in ConfigProjector
+    /// Add numerical constraints by names in ConfigProjector
     /// \param configProjName Name of the config projector if created by this
     ///        method,
     /// \param constraintNames names of the constraints to apply,
     ///
     /// Constraints should have been added in the ProblemSolver local map.
-    void setNumericalConstraints (in string configProjName,
+    void addNumericalConstraints (in string configProjName,
 				  in Names_t constraintNames,
                                   in intSeq priorities)
       raises (Error);
 
-    /// Set locked joints by names in ConfigProjector
+    /// Declare last priority order as optional in the numerical constraints
+    ///
+    ///
+    void setNumericalConstraintsLastPriorityOptional (in boolean optional)
+      raises (Error);
+
+    /// Add locked joints by names in ConfigProjector
     /// \param configProjName Name of the config projector if created by this
     ///        method,
     /// \param lockedJointNames names of the locked joints,
     ///
     /// Locked joints should have been added in the ProblemSolver local map.
-    void setLockedJointConstraints (in string configProjName,
+    void addLockedJointConstraints (in string configProjName,
                                     in Names_t lockedJointNames) raises (Error);
 
     /// Display the constraint in the ConfigProjector
