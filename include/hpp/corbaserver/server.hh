@@ -91,6 +91,11 @@ namespace hpp
         return mainContextId_;
       }
 
+      const bool& multiThread () const
+      {
+        return multiThread_;
+      }
+
       /// \brief If ORB work is pending, process it
       /// \param loop if true, the function never returns,
       ///             if false, the function processes pending requests and
@@ -125,6 +130,8 @@ namespace hpp
       impl::Server* private_;
 
       std::string mainContextId_;
+
+      bool multiThread_;
 
       /// pointer to core::ProblemSolver Object.
       ///

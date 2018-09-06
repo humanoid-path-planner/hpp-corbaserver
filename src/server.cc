@@ -47,13 +47,18 @@ namespace hpp
 
       void usage (const char* app)
       {
-        std::cerr << "Usage: " << app << " [--name <name>] [--help]" << std::endl;
+        std::cerr << "Usage: " << app << " [options] ..." << '\n'
+                  << "  --name <name>" << '\n'
+                  << "  --help" << '\n'
+                  << "  --single-thread" << '\n'
+                  << "  --multi-thread"  << std::endl;
       }
     } // end of anonymous namespace.
 
 
     Server::Server(core::ProblemSolverPtr_t problemSolver, int argc,
 		   const char *argv[], bool inMultiThread) :
+      multiThread_ (inMultiThread),
       problemSolverMap_ (new ProblemSolverMap (problemSolver))
     {
       // Register log function.
@@ -63,11 +68,12 @@ namespace hpp
 
       parseArguments (argc, argv);
 
-      initORBandServers (argc, argv, inMultiThread);
+      initORBandServers (argc, argv, multiThread_);
     }
 
     Server::Server(ProblemSolverMapPtr_t problemSolverMap, int argc,
 		   const char *argv[], bool inMultiThread) :
+      multiThread_ (inMultiThread),
       problemSolverMap_ (problemSolverMap)
     {
       // Register log function.
@@ -77,7 +83,7 @@ namespace hpp
 
       parseArguments (argc, argv);
 
-      initORBandServers (argc, argv, inMultiThread);
+      initORBandServers (argc, argv, multiThread_);
     }
 
     /// \brief Shutdown CORBA server
@@ -146,10 +152,18 @@ namespace hpp
 
       for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--name") == 0) {
-          if (i < argc - 1) mainContextId_.append(argv[i+1]);
+          if (i < argc - 1) {
+            mainContextId_.append(argv[i+1]);
+            ++i;
+          }
           else              usage(argv[0]);
+          std::cout << "Server main context: " << mainContextId_;
         } else if (strcmp(argv[i], "--help") == 0) {
           usage(argv[0]);
+        } else if (strcmp(argv[i], "--single-thread") == 0) {
+          multiThread_ = false;
+        } else if (strcmp(argv[i], "--multi-thread") == 0) {
+          multiThread_ = true;
         }
       }
     }
