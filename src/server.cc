@@ -157,12 +157,14 @@ namespace hpp
             ++i;
           }
           else              usage(argv[0]);
-          std::cout << "Server main context: " << mainContextId_;
+          std::cout << "Server main context: " << mainContextId_ << std::endl;
         } else if (strcmp(argv[i], "--help") == 0) {
           usage(argv[0]);
         } else if (strcmp(argv[i], "--single-thread") == 0) {
           multiThread_ = false;
+          std::cout << "Switched to single thread mode." << std::endl;
         } else if (strcmp(argv[i], "--multi-thread") == 0) {
+          std::cout << "Switched to multi-thread mode." << std::endl;
           multiThread_ = true;
         }
       }
