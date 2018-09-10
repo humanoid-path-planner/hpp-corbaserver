@@ -260,17 +260,9 @@ namespace hpp
                 throw hpp::Error (oss.str ().c_str ());
 	      }
               const se3::Frame& f1 = model.frames[model.getFrameId(nameF1)];
-              switch (f1.type) {
-                case se3::FIXED_JOINT:
-                  ref1 = f1.placement * M1;
-                case se3::JOINT:
-                  joint1 = JointPtr_t (new Joint (robot, f1.parent));
-                  break;
-                default:
-		  std::ostringstream oss;
-		  oss << "Joint " << nameF1 << " not found.";
-		  throw hpp::Error (oss.str ().c_str ());
-              }
+              assert (f1.type == se3::JOINT && !f1.placement.isIdendity());
+              ref1 = f1.placement * M1;
+              joint1 = JointPtr_t (new Joint (robot, f1.parent));
             }
 
             if (!model.existFrame(nameF2)) {
@@ -279,17 +271,9 @@ namespace hpp
                 throw hpp::Error (oss.str ().c_str ());
 	    }
             const se3::Frame& f2 = model.frames[model.getFrameId(nameF2)];
-            switch (f2.type) {
-              case se3::FIXED_JOINT:
-                ref2 = f2.placement * M2;
-              case se3::JOINT:
-                joint2 = JointPtr_t (new Joint (robot, f2.parent));
-                break;
-              default:
-		std::ostringstream oss;
-		oss << "Joint " << nameF2 << " not found.";
-                throw hpp::Error (oss.str ().c_str ());
-            }
+            assert (f2.type == se3::JOINT && !f2.placement.isIdendity());
+            ref2 = f2.placement * M2;
+            joint2 = JointPtr_t (new Joint (robot, f2.parent));
 
             if (relative) {
               // Both joints are provided
