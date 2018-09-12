@@ -515,6 +515,15 @@ class ProblemSolver (object):
     def selectPathPlanner (self, pathPlannerType):
         return self.client.problem.selectPathPlanner (pathPlannerType)
 
+    ## Select configuration shooter type
+    #  \param Name of the configuration shooter type
+    #  \note the configuration shooter is created and initialized
+    #        when calling this method. This might be important if the
+    #        initialization depends on the current state of the robot.
+    def selectConfigurationShooter (self, configurationShooterType):
+        return self.client.problem.selectConfigurationShooter \
+            (configurationShooterType)
+
     ## Add a path optimizer
     #  \param Name of the path optimizer type, either "RandomShortcut" or
     #   any type added by core::ProblemSolver::addPathOptimizerType
