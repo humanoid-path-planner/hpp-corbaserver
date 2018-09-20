@@ -2278,7 +2278,7 @@ namespace hpp
 	  if (connectedComponentId < 0) {
 	    nearest = problemSolver()->roadmap ()->nearestNode (configuration, distance);
 	    	  } else {
-	    if (connectedComponentId >= connectedComponents.size ()) {
+	    if ((std::size_t)connectedComponentId >= connectedComponents.size ()) {
 	      std::ostringstream oss;
 	      oss << "connectedComponentId=" << connectedComponentId
 		  << " out of range [0," << connectedComponents.size () - 1
