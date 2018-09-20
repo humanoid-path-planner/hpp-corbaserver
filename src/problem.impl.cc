@@ -52,6 +52,8 @@
 #include <hpp/constraints/convex-shape-contact.hh>
 #include <hpp/constraints/implicit.hh>
 #include <hpp/constraints/locked-joint.hh>
+#include <hpp/constraints/symbolic-calculus.hh>
+#include <hpp/constraints/symbolic-function.hh>
 #ifdef HPP_CONSTRAINTS_USE_QPOASES
 # include <hpp/constraints/static-stability.hh>
 #endif
@@ -2351,6 +2353,35 @@ namespace hpp
           throw hpp::Error (exc.what ());
         }
       }
+
+      // ---------------------------------------------------------------
+
+      void Problem::scCreateScalarMultiply
+      (const char* outName, Double scalar, const char* inName)
+        throw (hpp::Error)
+      {
+        if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
+        try {
+          std::string inN (inName);
+          std::string outN (outName);
+          if (!problemSolver()->numericalConstraints.has (inN))
+            throw Error (("Constraint " + inN + " not found").c_str());
+          ImplicitPtr_t in = problemSolver()->numericalConstraints.get (inN);
+          typedef constraints::FunctionExp<constraints::DifferentiableFunction> FunctionExp_t;
+          typedef constraints::ScalarMultiply<FunctionExp_t> Expr_t;
+          constraints::DifferentiableFunctionPtr_t out =
+            constraints::SymbolicFunction<Expr_t>::create (outN, problemSolver()->robot(),
+                constraints::Traits<Expr_t>::Ptr_t (new Expr_t (scalar,
+                    FunctionExp_t::create (in->functionPtr())))
+                );
+
+          problemSolver()->addNumericalConstraint
+            (outN, Implicit::create (out, in->comparisonType()));
+        } catch (const std::exception& exc) {
+          throw hpp::Error (exc.what ());
+        }
+      }
+
     } // namespace impl
   } // namespace corbaServer
 } // namespace hpp
