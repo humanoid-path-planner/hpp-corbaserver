@@ -321,6 +321,8 @@ namespace hpp
         virtual void saveRoadmap (const char* filename) throw (hpp::Error);
         virtual void readRoadmap (const char* filename) throw (hpp::Error);
 
+        virtual void scCreateScalarMultiply (const char* outName, Double scalar, const char* inName) throw (hpp::Error);
+
       private:
         /// Return the selected problem solver
         core::ProblemSolverPtr_t problemSolver ();

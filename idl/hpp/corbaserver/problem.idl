@@ -406,6 +406,13 @@ module hpp
     /// Set maximal number of iterations in path planning
     void setMaxIterPathPlanning (in unsigned long iterations) raises (Error);
 
+    /// \name Symbolic calculus
+    /// \{
+
+    /// See hpp::constraints::ScalarMultiply
+    void scCreateScalarMultiply (in string outName, in double scalar, in string inName) raises (Error);
+
+    /// \}
     /// \}
 
     /// \name Collision checking
