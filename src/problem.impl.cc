@@ -260,7 +260,7 @@ namespace hpp
                 throw hpp::Error (oss.str ().c_str ());
 	      }
               const se3::Frame& f1 = model.frames[model.getFrameId(nameF1)];
-              assert (f1.type == se3::JOINT && !f1.placement.isIdendity());
+              assert (f1.type == se3::JOINT && !f1.placement.isIdentity());
               ref1 = f1.placement * M1;
               joint1 = JointPtr_t (new Joint (robot, f1.parent));
             }
@@ -271,7 +271,7 @@ namespace hpp
                 throw hpp::Error (oss.str ().c_str ());
 	    }
             const se3::Frame& f2 = model.frames[model.getFrameId(nameF2)];
-            assert (f2.type == se3::JOINT && !f2.placement.isIdendity());
+            assert (f2.type == se3::JOINT && !f2.placement.isIdentity());
             ref2 = f2.placement * M2;
             joint2 = JointPtr_t (new Joint (robot, f2.parent));
 
