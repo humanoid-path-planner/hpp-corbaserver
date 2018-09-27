@@ -357,7 +357,7 @@ class ProblemSolver (object):
     def addNumericalConstraints (self, name, names, priorities = None):
         if priorities is None:
             priorities = [ 0 for i in names ]
-        return self.client.problem.setNumericalConstraints \
+        return self.client.problem.addNumericalConstraints \
             (name, names, priorities)
 
     ## \deprecated Use addNumericalConstraints instead.
