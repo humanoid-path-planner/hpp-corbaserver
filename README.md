@@ -1,3 +1,9 @@
+# HPP-corbaserver
+
+[![Building Status](https://travis-ci.org/humanoid-path-planner/hpp-corbaserver.svg?branch=master)](https://travis-ci.org/humanoid-path-planner/hpp-corbaserver)
+[![Pipeline status](https://gepgitlab.laas.fr/humanoid-path-planner/hpp-corbaserver/badges/master/pipeline.svg)](https://gepgitlab.laas.fr/humanoid-path-planner/hpp-corbaserver/commits/master)
+[![Coverage report](https://gepgitlab.laas.fr/humanoid-path-planner/hpp-corbaserver/badges/master/coverage.svg?job=doc-coverage)](http://projects.laas.fr/gepetto/doc/humanoid-path-planner/hpp-corbaserver/master/coverage/)
+
 Corba server for Humanoid Path Planner applications.
 
 # Troubleshooting
@@ -20,5 +26,3 @@ then restart the server:
 ```bash
 sudo service omniorb4-nameserver restart
 ```
-
-
