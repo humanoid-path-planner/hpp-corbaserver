@@ -1,6 +1,5 @@
 from subprocess import Popen
 import unittest, sys
-sys.path.insert(0, "@CMAKE_BINARY_DIR@/src")
 
 from hpp.corbaserver import Client
 from hpp.corbaserver.robot import Robot
@@ -8,7 +7,7 @@ from hpp.corbaserver.robot import Robot
 class Test (unittest.TestCase):
     @classmethod
     def setUpClass (cls):
-        cls.server = Popen (["@CMAKE_BINARY_DIR@/src/hppcorbaserver"], stdout = sys.stdout)
+        cls.server = Popen (["../src/hppcorbaserver"], stdout = sys.stdout)
         # Give some time to the server to start
         from time import sleep
         sleep(0.01)
