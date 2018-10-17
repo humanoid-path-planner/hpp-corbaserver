@@ -22,10 +22,6 @@ cache:
     - make install
     - cd work.$(hostname)/$(make show-var VARNAME=DISTNAME)/build
 
-robotpkg-hpp-corbaserver-14.04-release:
-  <<: *robotpkg-hpp-corbaserver
-  image: eur0c.laas.fr:5000/humanoid-path-planner/hpp-corbaserver/hpp-corbaserver:14.04
-
 robotpkg-hpp-corbaserver-16.04-release:
   <<: *robotpkg-hpp-corbaserver
   image: eur0c.laas.fr:5000/humanoid-path-planner/hpp-corbaserver/hpp-corbaserver:16.04
