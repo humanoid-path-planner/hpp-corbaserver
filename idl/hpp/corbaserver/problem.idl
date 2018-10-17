@@ -296,6 +296,17 @@ module hpp
     (in string constraintName, in string joint1Name, in Names_t objects,
      in double distance) raises (Error);
 
+    /// Create identity constraint between several joints.
+    ///
+    /// \param constraintName name of the constraint created,
+    /// \param inJoints name of the input joints,
+    /// \param outJoints name of the output joints,
+    /// Constraints are stored in ProblemSolver object
+    /// \sa hpp::constraints::Identity
+    void createIdentityConstraint
+    (in string constraintName, in Names_t inJoints, in Names_t outJoints)
+      raises (Error);
+
     /// Reset constraints
     void resetConstraints () raises (Error);
 

@@ -143,6 +143,10 @@ namespace hpp
 	(const char* constraintName, const char* joint1Name,
 	 const hpp::Names_t& objects, Double distance) throw (Error);
 
+        virtual void createIdentityConstraint
+        (const char* constraintName, const Names_t& inJoints,
+         const hpp::Names_t& outJoints) throw (Error);
+
 	virtual bool applyConstraints (const hpp::floatSeq& input,
 				       hpp::floatSeq_out output,
 				       Double& residualError)

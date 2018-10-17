@@ -44,6 +44,7 @@
 #include <hpp/core/steering-method.hh>
 #include <hpp/core/parser/roadmap-factory.hh>
 
+#include <hpp/constraints/affine-function.hh>
 #include <hpp/constraints/differentiable-function.hh>
 #include <hpp/constraints/distance-between-bodies.hh>
 #include <hpp/constraints/relative-com.hh>
@@ -1045,6 +1046,46 @@ namespace hpp
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::createIdentityConstraint (const char* constraintName,
+          const Names_t& inJoints, const hpp::Names_t& outJoints) throw (Error)
+      {
+        try {
+          using namespace constraints;
+
+          DevicePtr_t robot = problemSolver()->robot ();
+
+          LiegroupSpacePtr_t ispace = LiegroupSpace::empty();
+          LiegroupSpacePtr_t ospace = LiegroupSpace::empty();
+          segments_t iq, oq, iv, ov;
+          for (CORBA::ULong i=0; i<inJoints.length (); ++i) {
+            JointPtr_t j = robot->getJointByName (std::string(inJoints[i]));
+            *ispace *= j->configurationSpace();
+            iq.push_back (segment_t(j->rankInConfiguration(), j->configSize()));
+            iv.push_back (segment_t(j->rankInVelocity     (), j->numberDof ()));
+          }
+          for (CORBA::ULong i=0; i<outJoints.length (); ++i) {
+            JointPtr_t j = robot->getJointByName (std::string(outJoints[i]));
+            *ospace *= j->configurationSpace();
+            oq.push_back (segment_t(j->rankInConfiguration(), j->configSize()));
+            ov.push_back (segment_t(j->rankInVelocity     (), j->numberDof ()));
+          }
+          if (*ispace != *ospace)
+            throw Error ("Input and output space are different");
+          assert (BlockIndex::cardinal(iq) == BlockIndex::cardinal(oq));
+          assert (BlockIndex::cardinal(iv) == BlockIndex::cardinal(ov));
+
+          problemSolver()->addNumericalConstraint (constraintName,
+              Explicit::create (ispace,
+                Identity::create (ispace, constraintName),
+                iq, oq, iv, ov)
+              );
+        } catch (std::exception& exc) {
+          throw Error (exc.what ());
+        }
       }
 
       // ---------------------------------------------------------------
