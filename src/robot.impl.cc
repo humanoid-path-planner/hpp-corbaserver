@@ -401,7 +401,6 @@ namespace hpp
           if (!robot) return new Names_t (0, 0, Names_t::allocbuf (0));
 	  // Compute number of real urdf joints
           JointPtr_t j = robot->getJointByName (std::string (jointName));
-	  JointVector_t jointVector = robot->getJointVector ();
 	  ULong size = (ULong) j->numberChildJoints ();
 	  char** nameList = Names_t::allocbuf(size);
 	  Names_t *jointNames = new Names_t (size, size, nameList);
@@ -1049,11 +1048,10 @@ namespace hpp
 	using pinocchio::DeviceObjectVector;
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
-          const DeviceObjectVector& objs = robot->objectVector();
-	  for (DeviceObjectVector::const_iterator it = objs.begin();
-	       it != objs.end(); ++it) {
-	    if ((*it)->name () == name) {
-	      return *it;
+	  for (size_type i = 0; i < robot->nbObjects(); ++i) {
+            CollisionObjectConstPtr_t object = robot->objectAt(i);
+	    if (object->name () == name) {
+	      return object;
 	    }
 	  }
 	  throw std::runtime_error ("robot has no object with name " +
