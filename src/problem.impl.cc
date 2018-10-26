@@ -1079,7 +1079,7 @@ namespace hpp
           assert (BlockIndex::cardinal(iv) == BlockIndex::cardinal(ov));
 
           problemSolver()->addNumericalConstraint (constraintName,
-              Explicit::create (ispace,
+              Explicit::create (robot->configSpace(),
                 Identity::create (ispace, constraintName),
                 iq, oq, iv, ov)
               );
