@@ -151,7 +151,7 @@ namespace hpp
 	  // Add device to the planner
 	  problemSolver()->robot (device);
 	  problemSolver()->robot ()->controlComputation
-	    (pinocchio::Device::JOINT_POSITION);
+	    (hpp::pinocchio::JOINT_POSITION);
 	} catch (const std::exception& exc) {
 	  hppDout (error, exc.what ());
 	  throw hpp::Error (exc.what ());
@@ -180,7 +180,7 @@ namespace hpp
           // Add robot to the planner
 	  problemSolver()->robot (robot);
 	  problemSolver()->robot ()->controlComputation
-	    (pinocchio::Device::JOINT_POSITION);
+	    (hpp::pinocchio::JOINT_POSITION);
 	} catch (const std::exception& exc) {
 	  hppDout (error, exc.what ());
 	  throw hpp::Error (exc.what ());
@@ -206,7 +206,7 @@ namespace hpp
 	  // Add device to the planner
 	  problemSolver()->robot (device);
 	  problemSolver()->robot ()->controlComputation
-	    (pinocchio::Device::JOINT_POSITION);
+	    (hpp::pinocchio::JOINT_POSITION);
 	} catch (const std::exception& exc) {
 	  hppDout (error, exc.what ());
 	  throw hpp::Error (exc.what ());
@@ -233,7 +233,7 @@ namespace hpp
           // Add robot to the planner
 	  problemSolver()->robot (robot);
 	  problemSolver()->robot ()->controlComputation
-	    (pinocchio::Device::JOINT_POSITION);
+	    (hpp::pinocchio::JOINT_POSITION);
 	} catch (const std::exception& exc) {
 	  hppDout (error, exc.what ());
 	  throw hpp::Error (exc.what ());
@@ -968,21 +968,16 @@ namespace hpp
 	    return innerObjectSeq;
 	  }
 
-	  ObjectVector_t objects = body->innerObjects ();
-	  if (objects.size() > 0) {
-	    std::size_t nbObjects = objects.size();
+	  if (body->nbInnerObjects() > 0) {
 	    // Allocate result now that the size is known.
-	    ULong size = (ULong)nbObjects;
+	    ULong size = (ULong)body->nbInnerObjects();
 	    char** nameList = Names_t::allocbuf(size);
 	    innerObjectSeq = new Names_t(size, size, nameList);
-	    ObjectVector_t::const_iterator itObj = objects.begin ();
-	    for (std::size_t iObject=0; iObject < nbObjects; iObject++) {
-	      CollisionObjectConstPtr_t object = *itObj;
-	      std::string geometryName = object->name();
-	      nameList[iObject] =
-		(char*)malloc(sizeof(char)*(geometryName.length()+1));
-	      strcpy(nameList[iObject], geometryName.c_str());
-	      ++itObj;
+	    for (size_type i=0; i < body->nbInnerObjects(); i++) {
+	      CollisionObjectConstPtr_t object = body->innerObjectAt(i);
+	      std::string geomName = object->name();
+	      nameList[i] = (char*)malloc(sizeof(char)*(geomName.length()+1));
+	      strcpy(nameList[i], geomName.c_str());
 	    }
 	  } else {
 	    innerObjectSeq = new Names_t (0);
@@ -1016,21 +1011,16 @@ namespace hpp
 	    return outerObjectSeq;
 	  }
 
-	  ObjectVector_t objects = body->outerObjects ();
-	  if (objects.size() > 0) {
-	    std::size_t nbObjects = objects.size();
+	  if (body->nbOuterObjects() > 0) {
 	    // Allocate result now that the size is known.
-	    ULong size = (ULong)nbObjects;
+	    ULong size = (ULong)body->nbOuterObjects();
 	    char** nameList = Names_t::allocbuf(size);
 	    outerObjectSeq = new Names_t(size, size, nameList);
-	    ObjectVector_t::const_iterator itObj = objects.begin ();
-	    for (std::size_t iObject=0; iObject < nbObjects; iObject++) {
-	      CollisionObjectConstPtr_t object = *itObj;
-	      std::string geometryName = object->name();
-	      nameList[iObject] =
-		(char*)malloc(sizeof(char)*(geometryName.length()+1));
-	      strcpy(nameList[iObject], geometryName.c_str());
-	      ++itObj;
+            for (size_type i=0; i < body->nbOuterObjects(); i++) {
+	      CollisionObjectConstPtr_t object = body->outerObjectAt(i);
+	      std::string geomName = object->name();
+	      nameList[i] = (char*)malloc(sizeof(char)*(geomName.length()+1));
+	      strcpy(nameList[i], geomName.c_str());
 	    }
 	  } else {
 	    outerObjectSeq = new Names_t (0);
@@ -1430,7 +1420,7 @@ namespace hpp
           }
           pinocchio::CenterOfMassComputationPtr_t comc =
             problemSolver()->centerOfMassComputations.get(comName);
-          comc->compute (pinocchio::Device::COM);
+          comc->compute (hpp::pinocchio::COM);
 	  return vectorToFloatSeq (comc->com());
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -1447,7 +1437,7 @@ namespace hpp
           }
           pinocchio::CenterOfMassComputationPtr_t comc =
             problemSolver()->centerOfMassComputations.get(comName);
-          comc->compute (pinocchio::Device::JACOBIAN);
+          comc->compute (hpp::pinocchio::JACOBIAN);
           return vectorToFloatSeq (comc->jacobian() * robot->currentVelocity());
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -1463,7 +1453,7 @@ namespace hpp
           }
           pinocchio::CenterOfMassComputationPtr_t comc =
             problemSolver()->centerOfMassComputations.get(comName);
-          comc->compute (pinocchio::Device::JACOBIAN);
+          comc->compute (hpp::pinocchio::JACOBIAN);
 	  return matrixToFloatSeqSeq (comc->jacobian());
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());

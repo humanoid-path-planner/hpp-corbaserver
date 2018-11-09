@@ -1210,7 +1210,7 @@ namespace hpp
 	try {
 	  problemSolver()->resetConstraints ();
 	  problemSolver()->robot ()->controlComputation
-	    (pinocchio::Device::JOINT_POSITION);
+	    (pinocchio::JOINT_POSITION);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -1461,7 +1461,7 @@ namespace hpp
               (configProjName, name,
                 (std::size_t)priorities[i]);
 	    problemSolver()->robot ()->controlComputation
-	      (pinocchio::Device::ALL);
+	      (pinocchio::COMPUTE_ALL);
 	  }
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
@@ -1498,7 +1498,7 @@ namespace hpp
             problemSolver()->addLockedJointToConfigProjector
               (configProjName, name);
 	    problemSolver()->robot ()->controlComputation
-	      (pinocchio::Device::ALL);
+	      (pinocchio::COMPUTE_ALL);
 	  }
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());

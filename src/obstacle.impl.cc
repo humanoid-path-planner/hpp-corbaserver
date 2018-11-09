@@ -35,8 +35,6 @@ namespace hpp
   {
     namespace impl
     {
-      using pinocchio::DeviceObjectVector;
-
       Obstacle::Obstacle (corbaServer::Server* server)
 	: server_ (server)
       {}
@@ -60,7 +58,7 @@ namespace hpp
           else
             hpp::pinocchio::urdf::loadUrdfModel (
                 device, "anchor", pkg, file);
-          device->controlComputation(Device::JOINT_POSITION);
+          device->controlComputation(hpp::pinocchio::JOINT_POSITION);
 
           problemSolver()->addObstacle (device, true, true);
 	} catch (const std::exception& exc) {
