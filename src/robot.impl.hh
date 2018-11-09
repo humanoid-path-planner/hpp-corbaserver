@@ -107,7 +107,8 @@ namespace hpp
           throw (hpp::Error);
         virtual char* getJointType(const char* jointName)
           throw (hpp::Error);
-        virtual void jointIntegrate(const char* jointName, const floatSeq& dq)
+        virtual floatSeq* jointIntegrate(const floatSeq& jointCfg,
+            const char* jointName, const floatSeq& dq, bool saturate)
           throw (hpp::Error);
 	virtual hpp::floatSeqSeq* getCurrentTransformation(const char* jointName)
 	  throw (hpp::Error);

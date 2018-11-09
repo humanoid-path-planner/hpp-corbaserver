@@ -31,6 +31,7 @@
 #include <hpp/pinocchio/center-of-mass-computation.hh>
 #include <hpp/pinocchio/configuration.hh>
 #include <hpp/pinocchio/liegroup.hh>
+#include <hpp/pinocchio/liegroup-element.hh>
 
 #include <hpp/core/problem.hh>
 #include <hpp/core/configuration-shooter.hh>
@@ -557,7 +558,8 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      void Robot::jointIntegrate(const char* jointName, const hpp::floatSeq& dq)
+      floatSeq* Robot::jointIntegrate(const floatSeq& jointCfg,
+            const char* jointName, const floatSeq& dq, bool saturate)
 	throw (hpp::Error)
       {
 	try {
@@ -570,20 +572,22 @@ namespace hpp
 	    hppDout (error, oss.str ());
 	    throw hpp::Error (oss.str ().c_str ());
 	  }
-	  const size_type nv  = joint->numberDof (),
-                          riv = joint->rankInVelocity ();
+	  const size_type nq  = joint->configSize (),
+	                  nv  = joint->numberDof ();
           if (nv != (size_type) dq.length ()) {
 	    throw Error ("Wrong speed dimension");
 	  }
-          vector_t dqAll (vector_t::Zero(robot->numberDof ()));
-          dqAll .segment(riv, nv) = floatSeqToVector (dq, nv);
-
-          vector_t config (robot->currentConfiguration ());
-          pinocchio::integrate<true, pinocchio::RnxSOnLieGroupMap>
-            (robot, config, dqAll, config);
-
-          robot->currentConfiguration (config);
-          robot->computeForwardKinematics ();
+          LiegroupElement q (floatSeqToVector (jointCfg, nq),
+                             joint->configurationSpace());
+          q += floatSeqToVector (dq, nv);
+          if (saturate) {
+            for (size_type i = 0; i < nq; ++i) {
+              value_type ub = joint->upperBound(i);
+              value_type lb = joint->lowerBound(i);
+              q.vector()[i] = std::min(ub, std::max(lb, q.vector()[i]));
+            }
+          }
+          return vectorToFloatSeq(q.vector());
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
