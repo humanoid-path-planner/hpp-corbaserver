@@ -143,7 +143,7 @@ namespace hpp
 	virtual Transform__slice* getLinkPosition (const char* linkName)
 	  throw (hpp::Error);
 
-	virtual TransformSeq* getLinksPosition (const Names_t& linkName)
+	virtual TransformSeq* getLinksPosition (const floatSeq& q, const Names_t& linkName)
 	  throw (hpp::Error);
 
 	virtual Names_t* getLinkNames(const char* jointName)

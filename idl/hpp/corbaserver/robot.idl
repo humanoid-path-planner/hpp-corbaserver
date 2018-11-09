@@ -240,7 +240,8 @@ module hpp
     Transform_ getLinkPosition (in string linkName) raises (Error);
 
     /// Get position of a list of links in world frame
-    TransformSeq getLinksPosition (in Names_t linkName) raises (Error);
+    /// \note This method is thread safe
+    TransformSeq getLinksPosition (in floatSeq q, in Names_t linkName) raises (Error);
 
     /// Get link names
     ///

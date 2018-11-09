@@ -770,13 +770,19 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      TransformSeq* Robot::getLinksPosition (const Names_t& linkNames)
+      TransformSeq* Robot::getLinksPosition (const floatSeq& dofArray, const Names_t& linkNames)
 	throw (hpp::Error)
       {
 	try {
-	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
-          const se3::Model& model (robot->model());
-          const se3::Data & data  (robot->data ());
+          using hpp::pinocchio::DeviceSync;
+	  DevicePtr_t _robot = getRobotOrThrow(problemSolver());
+          Configuration_t config = floatSeqToConfig (_robot, dofArray, true);
+          DeviceSync robot (_robot);
+          robot.currentConfiguration(config);
+          robot.computeForwardKinematics();
+
+          const se3::Model& model (robot.model());
+          const se3::Data & data  (robot.data ());
           TransformSeq* transforms = new TransformSeq ();
           transforms->length (linkNames.length());
           Transform3f T;
