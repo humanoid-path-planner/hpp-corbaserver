@@ -252,7 +252,7 @@ namespace hpp
                 (robot, name, nameF2, nameF1, M2, M1, mask);
             // From here, nameF2 is not empty.
 
-            const se3::Model& model (robot->model());
+            const pinocchio::Model& model (robot->model());
             bool relative = (!nameF1.empty());
             JointPtr_t joint1, joint2;
             Transform3f ref1 = M1, ref2 = M2;
@@ -262,9 +262,9 @@ namespace hpp
 		oss << "Joint " << nameF1 << " not found.";
                 throw hpp::Error (oss.str ().c_str ());
 	      }
-              const se3::Frame& f1 = model.frames[model.getFrameId(nameF1)];
+              const ::pinocchio::Frame& f1 = model.frames[model.getFrameId(nameF1)];
               // If f1 is a JOINT, then f1.placement should be identity
-              assert (f1.type != se3::JOINT || f1.placement.isIdentity());
+              assert (f1.type != ::pinocchio::JOINT || f1.placement.isIdentity());
               ref1 = f1.placement * M1;
               joint1 = JointPtr_t (new Joint (robot, f1.parent));
             }
@@ -274,9 +274,9 @@ namespace hpp
 		oss << "Joint " << nameF2 << " not found.";
                 throw hpp::Error (oss.str ().c_str ());
 	    }
-            const se3::Frame& f2 = model.frames[model.getFrameId(nameF2)];
+            const ::pinocchio::Frame& f2 = model.frames[model.getFrameId(nameF2)];
             // If f2 is a JOINT, then f2.placement should be identity
-            assert (f2.type != se3::JOINT || f2.placement.isIdentity());
+            assert (f2.type != ::pinocchio::JOINT || f2.placement.isIdentity());
             ref2 = f2.placement * M2;
             joint2 = JointPtr_t (new Joint (robot, f2.parent));
 
@@ -629,7 +629,7 @@ namespace hpp
 	throw (hpp::Error)
       {
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
-        Transform3f::Quaternion_t quat (p [3], p [0], p [1], p [2]);
+        Transform3f::Quaternion quat (p [3], p [0], p [1], p [2]);
 	Transform3f rotation (quat.matrix(), vector3_t::Zero());
         std::string name (constraintName);
 

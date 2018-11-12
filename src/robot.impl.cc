@@ -23,6 +23,7 @@
 #include <hpp/pinocchio/fwd.hh>
 #include <hpp/pinocchio/body.hh>
 #include <hpp/pinocchio/joint.hh>
+#include <hpp/pinocchio/joint-collection.hh>
 #include <hpp/pinocchio/frame.hh>
 #include <hpp/pinocchio/device.hh>
 #include <hpp/pinocchio/humanoid-robot.hh>
@@ -47,12 +48,16 @@ namespace hpp
   {
     namespace impl
     {
+      using pinocchio::Model;
+      using pinocchio::Data;
+      using pinocchio::JointIndex;
+      using pinocchio::FrameIndex;
+
       namespace
       {
         using CORBA::Long;
         using CORBA::ULong;
-        typedef se3::FrameIndex FrameIndex;
-        const se3::FrameType JOINT_FRAME = (se3::FrameType)(se3::JOINT | se3::FIXED_JOINT);
+        const ::pinocchio::FrameType JOINT_FRAME = (::pinocchio::FrameType)(::pinocchio::JOINT | ::pinocchio::FIXED_JOINT);
 
 	static void localSetJointBounds(const JointPtr_t& joint,
 					vector_t jointBounds)
@@ -266,12 +271,12 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      template <typename T> void addJoint (se3::Model& model,
-          const se3::JointIndex parent,
-          const se3::SE3& placement,
+      template <typename T> void addJoint (Model& model,
+          const JointIndex parent,
+          const Transform3f& placement,
           const std::string& name)
       {
-        se3::JointIndex jid = model.addJoint (parent, T(), placement, name);
+        JointIndex jid = model.addJoint (parent, T(), placement, name);
         model.addJointFrame (jid, -1);
       }
 
@@ -282,7 +287,7 @@ namespace hpp
           const Transform_ pos)
 	throw (hpp::Error)
       {
-        using namespace se3;
+        using namespace pinocchio;
         DevicePtr_t robot = getRobotOrThrow(problemSolver());
         Model& model = robot->model();
 
@@ -307,29 +312,29 @@ namespace hpp
 
 	// Determine type of joint.
 	if (jt == "FreeFlyer")
-          addJoint <JointModelFreeFlyer> (model, pid, posMatrix, jn);
+          addJoint <JointCollection::JointModelFreeFlyer> (model, pid, posMatrix, jn);
         else if (jt == "Planar")
-          addJoint <JointModelPlanar> (model, pid, posMatrix, jn);
+          addJoint <JointCollection::JointModelPlanar> (model, pid, posMatrix, jn);
 	else if (jt == "RX")
-          addJoint <JointModelRX> (model, pid, posMatrix, jn);
+          addJoint <JointCollection::JointModelRX> (model, pid, posMatrix, jn);
 	else if (jt == "RUBX")
-          addJoint <JointModelRUBX> (model, pid, posMatrix, jn);
+          addJoint <JointCollection::JointModelRUBX> (model, pid, posMatrix, jn);
 	else if (jt == "RY")
-          addJoint <JointModelRY> (model, pid, posMatrix, jn);
+          addJoint <JointCollection::JointModelRY> (model, pid, posMatrix, jn);
 	else if (jt == "RUBY")
-          addJoint <JointModelRUBY> (model, pid, posMatrix, jn);
+          addJoint <JointCollection::JointModelRUBY> (model, pid, posMatrix, jn);
 	else if (jt == "RZ")
-          addJoint <JointModelRZ> (model, pid, posMatrix, jn);
+          addJoint <JointCollection::JointModelRZ> (model, pid, posMatrix, jn);
 	else if (jt == "RUBZ")
-          addJoint <JointModelRUBZ> (model, pid, posMatrix, jn);
+          addJoint <JointCollection::JointModelRUBZ> (model, pid, posMatrix, jn);
 	else if (jt == "PX")
-          addJoint <JointModelPX> (model, pid, posMatrix, jn);
+          addJoint <JointCollection::JointModelPX> (model, pid, posMatrix, jn);
 	else if (jt == "PY")
-          addJoint <JointModelPY> (model, pid, posMatrix, jn);
+          addJoint <JointCollection::JointModelPY> (model, pid, posMatrix, jn);
 	else if (jt == "PZ")
-          addJoint <JointModelPZ> (model, pid, posMatrix, jn);
+          addJoint <JointCollection::JointModelPZ> (model, pid, posMatrix, jn);
 	else if (jt == "Translation")
-          addJoint <JointModelTranslation> (model, pid, posMatrix, jn);
+          addJoint <JointCollection::JointModelTranslation> (model, pid, posMatrix, jn);
 	else {
 	  std::ostringstream oss;
 	  oss << "Joint type \"" << jt << "\" does not exist.";
@@ -346,7 +351,7 @@ namespace hpp
       {
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
-          const se3::Model& model = robot->model();
+          const Model& model = robot->model();
           return toNames_t ((++model.names.begin()), model.names.end());
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -359,7 +364,7 @@ namespace hpp
       {
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
-          const se3::Model& model = robot->model();
+          const Model& model = robot->model();
           std::vector<std::string> types (model.names.size()-1);
           for (std::size_t i = 0; i < types.size(); ++i)
             types[i] = model.joints[i+1].shortname();
@@ -378,11 +383,11 @@ namespace hpp
           if (!robot)
             return new Names_t (0, 0, Names_t::allocbuf (0));
 	  // Compute number of real urdf joints
-          const se3::Model& model = robot->model();
+          const Model& model = robot->model();
           std::vector<std::string> jns;
           for(std::size_t i = 0; i < model.frames.size(); ++i) {
-            if(    model.frames[i].type == se3::JOINT
-                || model.frames[i].type == se3::FIXED_JOINT)
+            if(    model.frames[i].type == ::pinocchio::JOINT
+                || model.frames[i].type == ::pinocchio::FIXED_JOINT)
               jns.push_back(model.frames[i].name);
           }
 	  return toNames_t (jns.begin(), jns.end());
@@ -747,10 +752,10 @@ namespace hpp
           if (!robot->model().existBodyName (std::string(linkName))) {
             HPP_THROW(Error, "Robot has no link with name " << linkName);
           }
-          se3::FrameIndex body = robot->model().getBodyId(std::string(linkName));
-          const se3::Frame& frame = robot->model().frames[body];
-          se3::JointIndex joint = frame.parent;
-          if (frame.type != se3::BODY)
+          FrameIndex body = robot->model().getBodyId(std::string(linkName));
+          const ::pinocchio::Frame& frame = robot->model().frames[body];
+          JointIndex joint = frame.parent;
+          if (frame.type != ::pinocchio::BODY)
             HPP_THROW(Error, linkName << " is not a link");
           if (robot->model().joints.size() <= (std::size_t)joint)
             HPP_THROW(Error, "Joint index of link " << linkName << " out of bounds: " << joint);
@@ -769,8 +774,8 @@ namespace hpp
       {
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
-          const se3::Model& model (robot->model());
-          const se3::Data & data  (robot->data ());
+          const Model& model (robot->model());
+          const Data & data  (robot->data ());
           TransformSeq* transforms = new TransformSeq ();
           transforms->length (linkNames.length());
           Transform3f T;
@@ -780,10 +785,10 @@ namespace hpp
             if (!model.existBodyName (n)) {
               HPP_THROW(Error, "Robot has no link with name " << n);
             }
-            se3::FrameIndex body = model.getBodyId(n);
-            const se3::Frame& frame = model.frames[body];
-            se3::JointIndex joint = frame.parent;
-            if (frame.type != se3::BODY)
+            FrameIndex body = model.getBodyId(n);
+            const ::pinocchio::Frame& frame = model.frames[body];
+            JointIndex joint = frame.parent;
+            if (frame.type != ::pinocchio::BODY)
               HPP_THROW(Error, n << " is not a link");
             if (model.joints.size() <= (std::size_t)joint)
               HPP_THROW(Error, "Joint index of link " << n << " out of bounds: " << joint);
@@ -803,13 +808,13 @@ namespace hpp
       {
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
-          const se3::Model& model = robot->model();
+          const Model& model = robot->model();
           Frame frame = robot->getFrameByName(jointName);
 
           std::vector<std::string> names;
           for (size_type i = 0; i < (size_type)model.frames.size(); ++i) {
-            const se3::Frame& f = model.frames[i];
-            if (f.type == se3::BODY && f.previousFrame == frame.index())
+            const ::pinocchio::Frame& f = model.frames[i];
+            if (f.type == ::pinocchio::BODY && f.previousFrame == frame.index())
               names.push_back(f.name);
           }
           return toNames_t(names.begin(), names.end());
@@ -1035,7 +1040,6 @@ namespace hpp
 
       CollisionObjectConstPtr_t Robot::getObjectByName (const char* name)
       {
-	using pinocchio::DeviceObjectVector;
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	  for (size_type i = 0; i < robot->nbObjects(); ++i) {
@@ -1123,7 +1127,7 @@ namespace hpp
 
           for (std::size_t i = 0; i < nbAutoCol; ++i)
           {
-            const se3::CollisionPair& cp (geomModel.collisionPairs[i]);
+            const ::pinocchio::CollisionPair& cp (geomModel.collisionPairs[i]);
 	    dists    [i] = geomData.distanceResults[i].min_distance;
 	    innerObj [i] = geomModel.geometryObjects[cp.first ].name;
 	    outerObj [i] = geomModel.geometryObjects[cp.second].name;
@@ -1199,7 +1203,7 @@ namespace hpp
 
           for (std::size_t i = 0; i < nbAutoCol; ++i)
           {
-            const se3::CollisionPair& cp (geomModel.collisionPairs[i]);
+            const ::pinocchio::CollisionPair& cp (geomModel.collisionPairs[i]);
 	    innerObj [i] = geomModel.geometryObjects[cp.first ].name;
 	    outerObj [i] = geomModel.geometryObjects[cp.second].name;
 	    (*active_ptr) [(ULong)i] = geomData.activeCollisionPairs[i];
@@ -1229,9 +1233,9 @@ namespace hpp
             HPP_THROW(Error, "Object " << innerObject << " not found");
           if (!geomModel.existGeometryName(outerObject))
             HPP_THROW(Error, "Object " << outerObject << " not found");
-          se3::GeomIndex idxI = geomModel.getGeometryId(innerObject);
-          se3::GeomIndex idxO = geomModel.getGeometryId(outerObject);
-          se3::PairIndex pid = geomModel.findCollisionPair(se3::CollisionPair(idxI, idxO));
+          pinocchio::GeomIndex idxI = geomModel.getGeometryId(innerObject);
+          pinocchio::GeomIndex idxO = geomModel.getGeometryId(outerObject);
+          ::pinocchio::PairIndex pid = geomModel.findCollisionPair(::pinocchio::CollisionPair(idxI, idxO));
 
           if (pid >= geomModel.collisionPairs.size()) {
             HPP_THROW(Error, "Collision pair (" << innerObject << ", " << outerObject << ") not found");
@@ -1354,10 +1358,10 @@ namespace hpp
           const Transform_ pos)
         throw (hpp::Error)
       {
-        using namespace se3;
+        using namespace pinocchio;
         DevicePtr_t robot = getRobotOrThrow(problemSolver());
         Model& model = robot->model();
-        GeometryModel& geomModel = robot->geomModel();
+        GeomModel& geomModel = robot->geomModel();
 
         std::string jn(jointName);
         std::string on(objectName);
@@ -1381,7 +1385,7 @@ namespace hpp
           for (GeomIndex i = 0; i < idx; ++i)
           {
             if (geomModel.geometryObjects[i].parentJoint != jid)
-                geomModel.addCollisionPair(CollisionPair(i,idx));
+                geomModel.addCollisionPair(::pinocchio::CollisionPair(i,idx));
           }
 
           robot->createData();
