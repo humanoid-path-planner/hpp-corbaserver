@@ -1859,6 +1859,13 @@ namespace hpp
 	  SteeringMethodPtr_t sm
 	    (problemSolver()->problem ()->steeringMethod ());
 	  PathPtr_t dp = (*sm) (start, *end);
+          if (!dp) {
+            std::ostringstream oss;
+            oss << "steering method failed to build a path between q1="
+                << pinocchio::displayConfig (start) << "; q2="
+                << pinocchio::displayConfig (*end) << ".";
+            throw std::runtime_error (oss.str ().c_str ());
+          }
 	  PathPtr_t unused;
 	  PathValidationReportPtr_t report;
 	  if (!problemSolver()->problem()->pathValidation ()->validate
