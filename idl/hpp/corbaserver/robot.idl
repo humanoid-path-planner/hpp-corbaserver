@@ -263,7 +263,7 @@ module hpp
     /// Get the dimension of the extra configuration space
     ///
     /// \sa hpp::model::ExtraConfigSpace
-    short getDimensionExtraConfigSpace ()
+    unsigned long getDimensionExtraConfigSpace ()
       raises (Error);
 
     /// Set bounds of extra configuration variables
