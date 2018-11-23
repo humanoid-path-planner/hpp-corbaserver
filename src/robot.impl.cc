@@ -832,6 +832,20 @@ namespace hpp
         }
       }
 
+      Short Robot::getDimensionExtraConfigSpace()
+  throw (hpp::Error)
+      {
+  // Get robot in ProblemSolver object.
+        Short dim;
+        try {
+          DevicePtr_t robot = getRobotOrThrow(problemSolver());
+          dim = robot->extraConfigSpace().dimension();
+        } catch (const std::exception& exc) {
+          throw hpp::Error (exc.what ());
+        }
+        return dim;
+      }
+
       // --------------------------------------------------------------------
 
       void Robot::setExtraConfigSpaceBounds
