@@ -636,6 +636,42 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
+      TransformSeq* Robot::getJointsPosition (const floatSeq& dofArray, const Names_t& jointNames)
+	throw (hpp::Error)
+      {
+	try {
+          using hpp::pinocchio::DeviceSync;
+	  DevicePtr_t _robot = getRobotOrThrow(problemSolver());
+          Configuration_t config = floatSeqToConfig (_robot, dofArray, true);
+          DeviceSync robot (_robot);
+          robot.currentConfiguration(config);
+          robot.computeForwardKinematics();
+	  robot.computeFramesForwardKinematics ();
+
+          const se3::Model& model (robot.model());
+          const se3::Data & data  (robot.data ());
+          TransformSeq* transforms = new TransformSeq ();
+          transforms->length (jointNames.length());
+          std::string n;
+          for (CORBA::ULong i = 0; i < jointNames.length (); ++i) {
+            n = jointNames[i];
+            if (!model.existFrame (n, JOINT_FRAME)) {
+              HPP_THROW(Error, "Robot has no joint with name " << n);
+            }
+            se3::FrameIndex joint = model.getFrameId(n, JOINT_FRAME);
+            if (model.frames.size() <= (std::size_t)joint)
+              HPP_THROW(Error, "Frame index of joint " << n << " out of bounds: " << joint);
+
+            toHppTransform (data.oMf[joint], (*transforms)[i]);
+          }
+          return transforms;
+	} catch (const std::exception& exc) {
+	  throw Error (exc.what ());
+        }
+      }
+
+      // --------------------------------------------------------------------
+
       floatSeq* Robot::getJointVelocity(const char* jointName)
 	throw (hpp::Error)
       {
@@ -784,12 +820,12 @@ namespace hpp
           DeviceSync robot (_robot);
           robot.currentConfiguration(config);
           robot.computeForwardKinematics();
+	  robot.computeFramesForwardKinematics ();
 
           const se3::Model& model (robot.model());
           const se3::Data & data  (robot.data ());
           TransformSeq* transforms = new TransformSeq ();
           transforms->length (linkNames.length());
-          Transform3f T;
           std::string n;
           for (CORBA::ULong i = 0; i < linkNames.length (); ++i) {
             n = linkNames[i];
@@ -798,14 +834,10 @@ namespace hpp
             }
             se3::FrameIndex body = model.getBodyId(n);
             const se3::Frame& frame = model.frames[body];
-            se3::JointIndex joint = frame.parent;
             if (frame.type != se3::BODY)
               HPP_THROW(Error, n << " is not a link");
-            if (model.joints.size() <= (std::size_t)joint)
-              HPP_THROW(Error, "Joint index of link " << n << " out of bounds: " << joint);
 
-            T = data.oMi[joint] * frame.placement;
-            toHppTransform (T, (*transforms)[i]);
+            toHppTransform (data.oMf[body], (*transforms)[i]);
           }
           return transforms;
 	} catch (const std::exception& exc) {

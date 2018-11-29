@@ -116,6 +116,8 @@ namespace hpp
           throw (hpp::Error);
 	virtual Transform__slice* getJointPosition(const char* jointName)
 	  throw (hpp::Error);
+	virtual TransformSeq* getJointsPosition (const floatSeq& q, const Names_t& jointNames)
+	  throw (hpp::Error);
 	virtual floatSeq* getJointVelocity(const char* jointName)
 	  throw (hpp::Error);
 	virtual floatSeq* getJointVelocityInLocalFrame(const char* jointName)
