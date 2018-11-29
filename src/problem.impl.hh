@@ -27,6 +27,8 @@ namespace hpp
     {
       using CORBA::Long;
       using CORBA::ULong;
+      using CORBA::UShort;
+
       /// \brief Implement CORBA interface ``Problem''.
       class Problem : public virtual POA_hpp::corbaserver::Problem
       {
@@ -52,6 +54,10 @@ namespace hpp
 
         virtual void movePathToProblem (ULong pathId, const char* problemName,
             const Names_t& jointNames) throw (hpp::Error);
+
+        virtual void setMaxNumThreads (UShort n) throw (Error);
+
+        virtual UShort getMaxNumThreads () throw (Error);
 
 	virtual void
 	setRandomSeed (const Long seed) throw (hpp::Error) {

@@ -301,6 +301,30 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+      void Problem::setMaxNumThreads (UShort n) throw (hpp::Error)
+      {
+        try {
+          DevicePtr_t robot = getRobotOrThrow (problemSolver());
+          robot->numberDeviceData ((size_type)n);
+        } catch (const std::exception& e) {
+          throw Error (e.what ());
+        }
+      }
+
+      // ---------------------------------------------------------------
+
+      UShort Problem::getMaxNumThreads () throw (hpp::Error)
+      {
+        try {
+          DevicePtr_t robot = getRobotOrThrow (problemSolver());
+          return (UShort)robot->numberDeviceData ();
+        } catch (const std::exception& e) {
+          throw Error (e.what ());
+        }
+      }
+
+      // ---------------------------------------------------------------
+
       core::ProblemSolverPtr_t Problem::problemSolver ()
       {
         return server_->problemSolver();

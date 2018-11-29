@@ -53,6 +53,17 @@ class ProblemSolver (object):
     def setRandomSeed (self, seed):
         return self.hppcorba.problem.setRandomSeed (seed)
 
+    ## Set the maximum number of threads.
+    #  This parameter defines the number of possible concurrent
+    #  access to the device.
+    def setMaxNumThreads (self, n):
+        return self.hppcorba.problem.setMaxNumThreads (n)
+
+    ## Get the maximum number of concurrent
+    #  access to the device (in thread safe areas).
+    def getMaxNumThreads (self):
+        return self.hppcorba.problem.getMaxNumThreads ()
+
     ## Return a list of available elements of type type
     #  \param type enter "type" to know what types I know of.
     #              This is case insensitive.
