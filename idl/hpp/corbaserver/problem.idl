@@ -557,27 +557,19 @@ module hpp
 			   in unsigned long pathId, in boolean bothEdges)
       raises (Error);
 
-    /// Append a path to an existing path
-    /// \param pathId Id of the path in this problem,
-    /// \param config end configuration of the new path.
-    /// \throw Error if steering method fails to create a direct path of if
-    /// direct path is not valid
-    /// Call steering method between end of path and input config and append
-    /// direct path in case of success.
+    /// \copydoc hpp::corbaserver::problem_solver::ProblemSolver::appendDirectPath
     void appendDirectPath (in unsigned long pathId, in floatSeq config)
       raises (Error);
 
-    /// Concatenate path endId at the end of startId.
-    /// \note No path are created. The resulting path is at rank startId.
+    /// \copydoc hpp::corbaserver::problem_solver::ProblemSolver::concatenatePath
     void concatenatePath (in unsigned long startId, in unsigned long endId)
       raises (Error);
 
-    /// extract path pathId from param start to end
-    /// \note a New path is added to problem-solver
+    /// \copydoc hpp::corbaserver::problem_solver::ProblemSolver::extractPath
     void extractPath (in unsigned long pathId, in double start, in double end)
 	    raises (Error);
 
-    /// Erase path pathId from stored.
+    /// \copydoc hpp::corbaserver::problem_solver::ProblemSolver::erasePath
     void erasePath (in unsigned long pathId)
       raises (Error);
 

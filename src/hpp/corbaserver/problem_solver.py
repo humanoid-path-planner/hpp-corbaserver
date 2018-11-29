@@ -609,6 +609,30 @@ class ProblemSolver (object):
     def directPath (self, startConfig, endConfig, validate):
         return self.hppcorba.problem.directPath (startConfig, endConfig, validate)
 
+    ## Append a path to an existing path
+    #  \param pathId Id of the path in this problem,
+    #  \param config end configuration of the new path.
+    #  \throw Error if steering method fails to create a direct path of if
+    #  direct path is not valid
+    #  Call steering method between end of path and input config and append
+    #  direct path in case of success.
+    def appendDirectPath (self, pathId, config):
+        return self.hppcorba.problem.appendDirectPath (pathId, config)
+
+    ## Concatenate path endId at the end of startId.
+    #  \note No path are created. The resulting path is at rank startId.
+    def concatenatePath (self, startId, endId):
+        return self.hppcorba.problem.concatenatePath (startId, endId)
+
+    ## extract path pathId from param start to end
+    #  \note a New path is added to problem-solver
+    def extractPath (self, pathId, start, end):
+        return self.hppcorba.problem.extractPath (pathId, start, end)
+
+    ## Erase path pathId from stored.
+    def erasePath (self, pathId):
+        return self.hppcorba.problem.erasePath (pathId)
+
     ## Project path using the path projector.
     # \return True in case of success, False otherwise.
     def projectPath (self, pathId):
