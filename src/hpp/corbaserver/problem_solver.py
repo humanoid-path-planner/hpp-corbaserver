@@ -349,6 +349,12 @@ class ProblemSolver (object):
     def resetConstraints (self):
         return self.hppcorba.problem.resetConstraints ()
 
+    ## Delete all the constraint in the ProblemSolver map.
+    #  It erases both the numerical and locked joint constraints
+    #  This does not resetConstraints of the problem to be solved.
+    def resetConstraintMap (self):
+        return self.hppcorba.problem.resetConstraintMap ()
+
     ## Add numerical constraints in ConfigProjector
     #
     #  \param name name of the config projector created if any,

@@ -310,6 +310,9 @@ module hpp
     /// Reset constraints
     void resetConstraints () raises (Error);
 
+    /// \copydoc hpp::corbaserver::problem_solver::ProblemSolver::resetConstraintMap
+    void resetConstraintMap () raises (Error);
+
     /// Add vector of passive dofs into the ProblemSolver local map
     /// \param constraintName Name of the vector of passive dofs,
     /// \param jointNames a sequence of joint names.

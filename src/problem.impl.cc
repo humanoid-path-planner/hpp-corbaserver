@@ -1204,6 +1204,18 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+      void Problem::resetConstraintMap () throw (hpp::Error)
+      {
+        try {
+          problemSolver()->numericalConstraints.clear();
+          problemSolver()->lockedJoints.clear();
+        } catch (const std::exception& exc) {
+          throw hpp::Error (exc.what ());
+        }
+      }
+
+      // ---------------------------------------------------------------
+
       void Problem::resetConstraints ()	throw (hpp::Error)
       {
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
