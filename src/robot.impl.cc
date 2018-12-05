@@ -493,10 +493,12 @@ namespace hpp
           Frame frame = robot->getFrameByName(jointName);
           if (frame.isFixed())
             return new hpp::floatSeq();
-	  Joint joint = frame.joint();
+	  JointPtr_t joint = frame.joint();
+          if (!joint)
+            return new hpp::floatSeq();
           vector_t config = robot->currentConfiguration ();
-          size_type ric = joint.rankInConfiguration ();
-	  size_type dim = joint.configSize ();
+          size_type ric = joint->rankInConfiguration ();
+	  size_type dim = joint->configSize ();
           return vectorToFloatSeq(config.segment(ric, dim));
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -514,8 +516,10 @@ namespace hpp
           std::string name;
           if (frame.isFixed())
             return CORBA::string_dup("anchor");
-	  Joint joint = frame.joint();
-          return CORBA::string_dup(joint.jointModel().shortname().c_str());
+	  JointPtr_t joint = frame.joint();
+          if (!joint)
+            return CORBA::string_dup("anchor");
+          return CORBA::string_dup(joint->jointModel().shortname().c_str());
         } catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -680,7 +684,8 @@ namespace hpp
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
           Frame frame = robot->getFrameByName(jointName);
           if (frame.isFixed()) return 0;
-          else                 return (Long) frame.joint().numberDof();
+          JointPtr_t joint = frame.joint();
+          return (joint ? (Long) joint->numberDof() : 0 );
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
@@ -694,7 +699,8 @@ namespace hpp
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
           Frame frame = robot->getFrameByName(jointName);
           if (frame.isFixed()) return 0;
-          else                 return (Long) frame.joint().configSize();
+          JointPtr_t joint = frame.joint();
+          return (joint ? (Long) joint->configSize() : 0 );
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
