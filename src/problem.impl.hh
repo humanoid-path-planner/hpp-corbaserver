@@ -200,6 +200,7 @@ namespace hpp
           throw (hpp::Error);
 
 	virtual void resetConstraints () throw (hpp::Error);
+	virtual void resetConstraintMap () throw (hpp::Error);
 	virtual void addNumericalConstraints
 	(const char* constraintName, const hpp::Names_t& constraintNames,
          const hpp::intSeq& priorities)

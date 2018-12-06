@@ -252,33 +252,18 @@ namespace hpp
                 (robot, name, nameF2, nameF1, M2, M1, mask);
             // From here, nameF2 is not empty.
 
-            const se3::Model& model (robot->model());
             bool relative = (!nameF1.empty());
             JointPtr_t joint1, joint2;
             Transform3f ref1 = M1, ref2 = M2;
             if (relative) {
-              if (!model.existFrame(nameF1)) {
-		std::ostringstream oss;
-		oss << "Joint " << nameF1 << " not found.";
-                throw hpp::Error (oss.str ().c_str ());
-	      }
-              const se3::Frame& f1 = model.frames[model.getFrameId(nameF1)];
-              // If f1 is a JOINT, then f1.placement should be identity
-              assert (f1.type != se3::JOINT || f1.placement.isIdentity());
-              ref1 = f1.placement * M1;
-              joint1 = JointPtr_t (new Joint (robot, f1.parent));
+              Frame frame = robot->getFrameByName(nameF1);
+              ref1 = frame.positionInParentJoint() * M1;
+              joint1 = frame.joint();
             }
 
-            if (!model.existFrame(nameF2)) {
-		std::ostringstream oss;
-		oss << "Joint " << nameF2 << " not found.";
-                throw hpp::Error (oss.str ().c_str ());
-	    }
-            const se3::Frame& f2 = model.frames[model.getFrameId(nameF2)];
-            // If f2 is a JOINT, then f2.placement should be identity
-            assert (f2.type != se3::JOINT || f2.placement.isIdentity());
-            ref2 = f2.placement * M2;
-            joint2 = JointPtr_t (new Joint (robot, f2.parent));
+            Frame frame = robot->getFrameByName(nameF2);
+            ref2 = frame.positionInParentJoint() * M2;
+            joint2 = frame.joint();
 
             if (relative) {
               // Both joints are provided
@@ -1200,6 +1185,18 @@ namespace hpp
 	}
 	output = q_ptr;
 	return configIsValid;
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::resetConstraintMap () throw (hpp::Error)
+      {
+        try {
+          problemSolver()->numericalConstraints.clear();
+          problemSolver()->lockedJoints.clear();
+        } catch (const std::exception& exc) {
+          throw hpp::Error (exc.what ());
+        }
       }
 
       // ---------------------------------------------------------------
