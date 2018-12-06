@@ -1097,7 +1097,6 @@ namespace hpp
 
       CollisionObjectConstPtr_t Robot::getObjectByName (const char* name)
       {
-	using pinocchio::DeviceObjectVector;
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	  for (size_type i = 0; i < robot->nbObjects(); ++i) {
