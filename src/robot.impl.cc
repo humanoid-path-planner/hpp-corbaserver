@@ -1281,7 +1281,8 @@ namespace hpp
 	throw (hpp::Error)
       {
 	try {
-	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
+          core::ProblemSolverPtr_t ps = problemSolver();
+	  DevicePtr_t robot = getRobotOrThrow(ps);
 
           const pinocchio::GeomModel& geomModel (robot->geomModel());
           pinocchio::GeomData & geomData  (robot->geomData ());
@@ -1300,8 +1301,9 @@ namespace hpp
 
           geomData.activateCollisionPair(pid, active);
 
-          problemSolver()->initPathValidation();
-          problemSolver()->problem()->resetConfigValidations();
+          ps->initConfigValidation();
+          ps->initPathValidation();
+          ps->problem()->collisionObstacles(ps->collisionObstacles());
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}

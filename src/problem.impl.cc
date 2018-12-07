@@ -381,7 +381,7 @@ namespace hpp
       Names_t* Problem::getSelected (const char* what) throw (hpp::Error)
       {
         std::string w (what);
-        typedef std::list <std::string> Ret_t;
+        typedef std::vector <std::string> Ret_t;
         Ret_t ret, types;
         bool ok = false;
         core::value_type tol;
@@ -390,8 +390,7 @@ namespace hpp
             Ret_t(problemSolver()->pathOptimizerTypes().begin(),
               problemSolver()->pathOptimizerTypes().end()))
         _CASE_SET_RET ("ConfigValidation",
-            Ret_t(problemSolver()->configValidationTypes().begin(),
-              problemSolver()->configValidationTypes().end()))
+            Ret_t(problemSolver()->configValidationTypes()))
         _CASE_PUSH_TO ("PathProjector"       , problemSolver()->pathProjectorType (tol))
         _CASE_PUSH_TO ("PathPlanner"         , problemSolver()->pathPlannerType ())
         _CASE_PUSH_TO ("ConfigurationShooter", problemSolver()->configurationShooterType ())
