@@ -9,4 +9,5 @@ INPUT                  = @CMAKE_SOURCE_DIR@/include \
  		  	 @CMAKE_SOURCE_DIR@/src/hpp/corbaserver/robot.py \
  		  	 @CMAKE_SOURCE_DIR@/src/hpp/corbaserver/benchmark.py
 
-GENERATE_TREEVIEW	 = @DOXYGEN_TREEVIEW@
+GENERATE_TREEVIEW	 = YES
+LAYOUT_FILE              = @CMAKE_SOURCE_DIR@/doc/layout.xml
