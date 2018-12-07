@@ -24,6 +24,7 @@
 #include <hpp/pinocchio/configuration.hh>
 
 #include <hpp/core/config-projector.hh>
+#include <hpp/core/config-validations.hh>
 #include <hpp/core/configuration-shooter.hh>
 #include <hpp/core/connected-component.hh>
 #include <hpp/core/edge.hh>
@@ -1175,38 +1176,32 @@ namespace hpp
 				      double& residualError)
 	throw (hpp::Error)
       {
-        DevicePtr_t robot = problemSolver()->robot ();
-	if (!robot) throw hpp::Error ("No robot loaded");
-        if (!problemSolver()->problem ()) problemSolver()->resetProblem ();
-        core::ConfigurationShooterPtr_t shooter = problemSolver()->problem()->configurationShooter();
+        core::ProblemSolverPtr_t ps = problemSolver();
+        DevicePtr_t robot = getRobotOrThrow(ps);
+        if (!ps->problem ()) ps->resetProblem ();
+        core::ConfigurationShooterPtr_t shooter = ps->problem()->configurationShooter();
 	bool success = false, configIsValid = false;
         ConfigurationPtr_t config;
         while (!configIsValid && maxIter > 0)
         {
           try {
             config = shooter->shoot ();
-            success = problemSolver()->constraints ()->apply (*config);
+            success = ps->constraints ()->apply (*config);
             if (hpp::core::ConfigProjectorPtr_t configProjector =
-                problemSolver()->constraints ()->configProjector ()) {
+                ps->constraints ()->configProjector ()) {
               residualError = configProjector->residualError ();
             }
             if (success) {
-              robot->currentConfiguration (*config);
-              configIsValid = !robot->collisionTest ();
+              core::ValidationReportPtr_t validationReport;
+              configIsValid = ps->problem ()->configValidations ()->validate
+                (*config, validationReport);
             }
           } catch (const std::exception& exc) {
             throw hpp::Error (exc.what ());
           }
           maxIter--;
         }
-	ULong size = (ULong) config->size ();
-	hpp::floatSeq* q_ptr = new hpp::floatSeq ();
-	q_ptr->length (size);
-
-	for (std::size_t i=0; i<size; ++i) {
-	  (*q_ptr) [(CORBA::ULong)i] = (*config) [i];
-	}
-	output = q_ptr;
+	output = vectorToFloatSeq (*config);
 	return configIsValid;
       }
 
