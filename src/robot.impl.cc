@@ -1301,9 +1301,7 @@ namespace hpp
 
           geomData.activateCollisionPair(pid, active);
 
-          ps->initConfigValidation();
-          ps->initPathValidation();
-          ps->problem()->collisionObstacles(ps->collisionObstacles());
+          ps->initValidations();
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
