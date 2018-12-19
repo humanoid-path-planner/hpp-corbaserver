@@ -745,7 +745,6 @@ namespace hpp
           const char* _function) throw (hpp::Error)
       {
 	try {
-	  // Get robot in hppPlanner object.
           core::ProblemSolverPtr_t ps = problemSolver();
           DevicePtr_t robot = getRobotOrThrow (ps);
 
