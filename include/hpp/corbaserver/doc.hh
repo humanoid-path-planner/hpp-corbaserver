@@ -1,4 +1,5 @@
 /** \mainpage 
+\anchor hpp_corbaserver_documentation
 
 \section hppCorbaServer_sec_intro Introduction
 
