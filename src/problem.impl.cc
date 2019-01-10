@@ -638,6 +638,7 @@ namespace hpp
        const char* joint2Name, const Double* p, const hpp::boolSeq& mask)
 	throw (hpp::Error)
       {
+        try {
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
         Transform3f::Quaternion quat (p [3], p [0], p [1], p [2]);
 	Transform3f rotation (quat.matrix(), vector3_t::Zero());
@@ -651,6 +652,9 @@ namespace hpp
 
         problemSolver()->addNumericalConstraint
           (name, Implicit::create (func));
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
       }
 
       // ---------------------------------------------------------------
@@ -660,6 +664,7 @@ namespace hpp
        const char* joint2Name, const Transform_ p, const hpp::boolSeq& mask)
 	throw (hpp::Error)
       {
+        try {
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
         Transform3f ref (toTransform3f(p));
         std::string name (constraintName);
@@ -672,6 +677,9 @@ namespace hpp
 
         problemSolver()->addNumericalConstraint
           (name, Implicit::create (func));
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
       }
 
       // ---------------------------------------------------------------
@@ -682,6 +690,7 @@ namespace hpp
        const hpp::boolSeq& mask)
 	throw (hpp::Error)
       {
+        try {
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
         std::string name (constraintName);
         DifferentiableFunctionPtr_t func = buildGenericFunc
@@ -693,6 +702,9 @@ namespace hpp
 
         problemSolver()->addNumericalConstraint
           (name, Implicit::create (func));
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
       }
 
       // ---------------------------------------------------------------
@@ -1002,6 +1014,7 @@ namespace hpp
        const hpp::floatSeq& point2, const hpp::boolSeq& mask)
 	throw (hpp::Error)
       {
+        try {
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
 	vector3_t p1 = floatSeqToVector3 (point1);
 	vector3_t p2 = floatSeqToVector3 (point2);
@@ -1015,6 +1028,9 @@ namespace hpp
 
         problemSolver()->addNumericalConstraint
           (name, Implicit::create (func));
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
       }
 
       // ---------------------------------------------------------------
@@ -1023,6 +1039,7 @@ namespace hpp
           const hpp::floatSeq& goal,
           const hpp::floatSeq& weights) throw (hpp::Error)
       {
+        try {
         DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	std::string name (constraintName);
         problemSolver()->numericalConstraints.add
@@ -1032,6 +1049,9 @@ namespace hpp
              floatSeqToConfig (robot, goal, true),
              floatSeqToVector (weights, robot->numberDof()))
             ));
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
       }
 
       // ---------------------------------------------------------------
