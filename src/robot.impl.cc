@@ -653,8 +653,8 @@ namespace hpp
           robot.computeForwardKinematics();
 	  robot.computeFramesForwardKinematics ();
 
-          const se3::Model& model (robot.model());
-          const se3::Data & data  (robot.data ());
+          const Model& model (robot.model());
+          const Data & data  (robot.data ());
           TransformSeq* transforms = new TransformSeq ();
           transforms->length (jointNames.length());
           std::string n;
@@ -663,7 +663,7 @@ namespace hpp
             if (!model.existFrame (n, JOINT_FRAME)) {
               HPP_THROW(Error, "Robot has no joint with name " << n);
             }
-            se3::FrameIndex joint = model.getFrameId(n, JOINT_FRAME);
+            FrameIndex joint = model.getFrameId(n, JOINT_FRAME);
             if (model.frames.size() <= (std::size_t)joint)
               HPP_THROW(Error, "Frame index of joint " << n << " out of bounds: " << joint);
 

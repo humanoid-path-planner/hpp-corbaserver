@@ -746,7 +746,7 @@ namespace hpp
       {
 	try {
 	  // Get robot in hppPlanner object.
-          ProblemSolverPtr_t ps = problemSolver();
+          core::ProblemSolverPtr_t ps = problemSolver();
           DevicePtr_t robot = getRobotOrThrow (ps);
 
           std::string function (_function), name (_name);
@@ -755,7 +755,7 @@ namespace hpp
           DifferentiableFunctionPtr_t f (ps->numericalConstraints.get(function)->functionPtr());
 
           ps->addNumericalConstraint (name, Implicit::create (
-                constraints::Manipulability::create (f, robot, name);
+                constraints::Manipulability::create (f, robot, name)
                 ));
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
