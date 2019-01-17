@@ -205,6 +205,11 @@ module hpp
                                in unsigned long index,
                                in floatSeq value) raises (Error);
 
+    /// Create a manipulatibility constraint
+    /// \param name key of the constraint in the Problem Solver map
+    /// \param function name of the function used to get the Jacobian matrix.
+    void createManipulability (in string name,
+                               in string function) raises (Error);
 
     /// Create ComBeetweenFeet constraint between two joints
     ///

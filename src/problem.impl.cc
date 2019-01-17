@@ -55,6 +55,7 @@
 #include <hpp/constraints/locked-joint.hh>
 #include <hpp/constraints/symbolic-calculus.hh>
 #include <hpp/constraints/symbolic-function.hh>
+#include <hpp/constraints/manipulability.hh>
 #ifdef HPP_CONSTRAINTS_USE_QPOASES
 # include <hpp/constraints/static-stability.hh>
 #endif
@@ -730,6 +731,30 @@ namespace hpp
       }
 
       // ---------------------------------------------------------------
+
+      void Problem::createManipulability (const char* _name,
+          const char* _function) throw (hpp::Error)
+      {
+	try {
+	  // Get robot in hppPlanner object.
+          ProblemSolverPtr_t ps = problemSolver();
+          DevicePtr_t robot = getRobotOrThrow (ps);
+
+          std::string function (_function), name (_name);
+          if (!ps->numericalConstraints.has(function))
+            throw Error (("Constraint " + function + " not found").c_str());
+          DifferentiableFunctionPtr_t f (ps->numericalConstraints.get(function)->functionPtr());
+
+          ps->addNumericalConstraint (name, Implicit::create (
+                constraints::Manipulability::create (f, robot, name);
+                ));
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // ---------------------------------------------------------------
+
 
       void Problem::createRelativeComConstraint (const char* constraintName,
           const char* comName, const char* jointName, const floatSeq& p,

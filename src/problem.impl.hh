@@ -98,6 +98,9 @@ namespace hpp
                                            const hpp::floatSeq& value)
           throw (hpp::Error);
 
+        virtual void createManipulability (const char* name, const char* function)
+          throw (hpp::Error);
+
         void createRelativeComConstraint (const char* constraintName,
             const char* comn, const char* jointName, const floatSeq& point,
             const hpp::boolSeq& mask)
