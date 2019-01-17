@@ -25,35 +25,41 @@ from hpp.corbaserver.client import Client
 #  This class is also a wrapper of idl methods defined by
 #  hpp::corbaserver::Robot. Most methods call idl methods.
 class Robot (object):
-    def __init__ (self, robotName = None, rootJointType = None, load = True, client = None):
+    def __init__ (self, robotName = None, rootJointType = None, load = True, client = None, hppcorbaClient = None):
         if client is None: client = Client ()
         self.client = client
+        self.hppcorba = client if hppcorbaClient is None else hppcorbaClient
         if robotName is None:
             # assert (rootJointType is None), "rootJointType is ignore when robotName is None"
-            self.name = self.client.robot.getRobotName()
+            self.name = self.hppcorba.robot.getRobotName()
             self.rootJointType = rootJointType
             self.displayName = self.name
+            self.rebuildRanks()
         else:
             self.name = robotName
             self.displayName = robotName
             self.rootJointType = rootJointType
             if load:
                 self.loadModel (robotName, rootJointType)
-        self.jointNames = self.client.robot.getJointNames ()
-        self.allJointNames = self.client.robot.getAllJointNames ()
+
+    ## Rebuild inner variables rankInConfiguration and rankInVelocity
+    def rebuildRanks (self):
+        self.jointNames = self.hppcorba.robot.getJointNames ()
+        self.allJointNames = self.hppcorba.robot.getAllJointNames ()
         self.rankInConfiguration = dict ()
         self.rankInVelocity = dict ()
         rankInConfiguration = rankInVelocity = 0
         for j in self.jointNames:
             self.rankInConfiguration [j] = rankInConfiguration
-            rankInConfiguration += self.client.robot.getJointConfigSize (j)
+            rankInConfiguration += self.hppcorba.robot.getJointConfigSize (j)
             self.rankInVelocity [j] = rankInVelocity
-            rankInVelocity += self.client.robot.getJointNumberDof (j)
+            rankInVelocity += self.hppcorba.robot.getJointNumberDof (j)
 
     def loadModel (self, robotName, rootJointType):
-        self.client.robot.loadRobotModel (robotName, rootJointType,
+        self.hppcorba.robot.loadRobotModel (robotName, rootJointType,
                                           self.packageName, self.urdfName,
                                           self.urdfSuffix, self.srdfSuffix)
+        self.rebuildRanks()
 
     ## \name Degrees of freedom
     #  \{
@@ -61,12 +67,12 @@ class Robot (object):
     ## Get size of configuration
     # \return size of configuration
     def getConfigSize (self):
-        return self.client.robot.getConfigSize ()
+        return self.hppcorba.robot.getConfigSize ()
 
     # Get size of velocity
     # \return size of velocity
     def getNumberDof (self):
-        return self.client.robot.getNumberDof ()
+        return self.hppcorba.robot.getNumberDof ()
     ## \}
 
     ## \name Joints
@@ -74,47 +80,47 @@ class Robot (object):
 
     ## Get joint names in the same order as in the configuration.
     def getJointNames (self):
-        return self.client.robot.getJointNames ()
+        return self.hppcorba.robot.getJointNames ()
 
     ## Get joint types in the same order as in the configuration.
     def getJointTypes (self):
-        return self.client.robot.getJointTypes ()
+        return self.hppcorba.robot.getJointTypes ()
 
     ## Get joint names in the same order as in the configuration.
     def getAllJointNames (self):
-        return self.client.robot.getAllJointNames ()
+        return self.hppcorba.robot.getAllJointNames ()
 
     ## Get joint position.
     def getJointPosition (self, jointName):
-        return self.client.robot.getJointPosition (jointName)
+        return self.hppcorba.robot.getJointPosition (jointName)
 
     ## Get constant position of root joint in world frame in initial position
     def getRootJointPosition (self):
-        return self.client.robot.getRootJointPosition ()
+        return self.hppcorba.robot.getRootJointPosition ()
 
     ## Set position of root joint in world frame in initial configuration
     def setRootJointPosition (self, position):
-        return self.client.robot.setRootJointPosition (position)
+        return self.hppcorba.robot.setRootJointPosition (position)
 
     ## Set the static position of joint WRT its parent
     def setJointPosition (self, jointName, position):
-        return self.client.robot.setJointPositionInParentFrame (jointName, position)
+        return self.hppcorba.robot.setJointPositionInParentFrame (jointName, position)
 
     ## Get joint transformation in world frame for current configuration.
     def getCurrentTransformation(self, jointName):
-	return self.client.robot.getCurrentTransformation (jointName)
+        return self.hppcorba.robot.getCurrentTransformation (jointName)
 
     ## Get joint number degrees of freedom.
     def getJointNumberDof (self, jointName):
-        return self.client.robot.getJointNumberDof (jointName)
+        return self.hppcorba.robot.getJointNumberDof (jointName)
 
     ## Get joint number config size.
     def getJointConfigSize (self, jointName):
-        return self.client.robot.getJointConfigSize (jointName)
+        return self.hppcorba.robot.getJointConfigSize (jointName)
 
     ## set bounds for the joint
     def setJointBounds (self, jointName, inJointBound):
-        return self.client.robot.setJointBounds (jointName, inJointBound)
+        return self.hppcorba.robot.setJointBounds (jointName, inJointBound)
 
     ## Get bounds for a joint
     #
@@ -124,7 +130,7 @@ class Robot (object):
     #          freedom of the joint if the degree of freedom is bounded, 1, 0
     #          otherwise.
     def getJointBounds(self, jointName):
-        return self.client.robot.getJointBounds(jointName)
+        return self.hppcorba.robot.getJointBounds(jointName)
 
     ## Get joints that are saturated for a given configuration
     #
@@ -150,14 +156,14 @@ class Robot (object):
     # \param jointName name of the joint
     # \return position of the link in world frame.
     def getLinkPosition (self, linkName):
-        return self.client.robot.getLinkPosition (linkName)
+        return self.hppcorba.robot.getLinkPosition (linkName)
 
     ## Get link name
     #
     # \param jointName name of the joint,
     # \return name of the link.
     def getLinkNames (self, jointName):
-        return self.client.robot.getLinkNames (jointName)
+        return self.hppcorba.robot.getLinkNames (jointName)
 
     ## \}
 
@@ -168,30 +174,30 @@ class Robot (object):
     #
     #  \param q configuration of the composite robot
     def setCurrentConfig (self, q):
-        self.client.robot.setCurrentConfig (q)
+        self.hppcorba.robot.setCurrentConfig (q)
 
     ## Get current configuration of composite robot
     #
     #  \return configuration of the composite robot
     def getCurrentConfig (self):
-        return self.client.robot.getCurrentConfig ()
+        return self.hppcorba.robot.getCurrentConfig ()
 
     ## Set current velocity of composite robot
     #
     #  \param q velocity of the composite robot
     def setCurrentVelocity (self, v):
-        self.client.robot.setCurrentVelocity (v)
+        self.hppcorba.robot.setCurrentVelocity (v)
 
     ## Get current velocity of composite robot
     #
     #  \return velocity of the composite robot
     def getCurrentVelocity (self):
-        return self.client.robot.getCurrentVelocity ()
+        return self.hppcorba.robot.getCurrentVelocity ()
 
     ## Shoot random configuration
     #  \return dofArray Array of degrees of freedom.
     def shootRandomConfig(self):
-        return self.client.robot.shootRandomConfig ()
+        return self.hppcorba.robot.shootRandomConfig ()
 
     ## \}
 
@@ -202,27 +208,27 @@ class Robot (object):
     #  \param inJointName name of the joint.
     #  \return list of names of CollisionObject attached to the body.
     def getJointInnerObjects (self, jointName):
-        return self.client.robot.getJointInnerObjects (jointName)
+        return self.hppcorba.robot.getJointInnerObjects (jointName)
 
 
     ##  Get list of collision objects tested with the body attached to a joint
     #  \param inJointName name of the joint.
     #  \return list of names of CollisionObject
     def getJointOuterObjects (self, jointName):
-        return self.client.robot.getJointOuterObjects (jointName)
+        return self.hppcorba.robot.getJointOuterObjects (jointName)
 
     ## Get position of robot object
     #  \param objectName name of the object.
     #  \return transformation as a hpp.Transform object
     def getObjectPosition (self, objectName):
-        return Transform (self.client.robot.getObjectPosition (objectName))
+        return Transform (self.hppcorba.robot.getObjectPosition (objectName))
 
     ## \brief Remove an obstacle from outer objects of a joint body
     #
     #  \param objectName name of the object to remove,
     #  \param jointName name of the joint owning the body,
     def removeObstacleFromJoint (self, objectName, jointName):
-        return self.client.obstacle.removeObstacleFromJoint \
+        return self.hppcorba.obstacle.removeObstacleFromJoint \
             (objectName, jointName, True, False)
 
 
@@ -239,7 +245,7 @@ class Robot (object):
     # \note Deprecated. Use isConfigValid instead.
     def collisionTest (self):
         print "Deprecated. Use isConfigValid instead"
-        return self.client.robot.collisionTest ()
+        return self.hppcorba.robot.collisionTest ()
 
     ## Check the validity of a configuration.
     #
@@ -248,7 +254,7 @@ class Robot (object):
     # \return whether configuration is valid
     # \throw if config is not valid, raise an exception.
     def isConfigValid (self, cfg):
-        return self.client.robot.isConfigValid (cfg)
+        return self.hppcorba.robot.isConfigValid (cfg)
 
     ## Compute distances between bodies and obstacles
     #
@@ -260,27 +266,27 @@ class Robot (object):
     # \note outer objects for a body can also be inner objects of another
     # body.
     def distancesToCollision (self):
-        return self.client.robot.distancesToCollision ()
+        return self.hppcorba.robot.distancesToCollision ()
 
     ## Get the aligned axes bounding box around the robot.
     # \return a vector a 6 floats. The 3 first are one corner of the box (lowest in all dimensions),
     #         the 3 last are the opposite corner.
     def getRobotAABB(self):
-        return self.client.robot.getRobotAABB ()
+        return self.hppcorba.robot.getRobotAABB ()
     ## \}
     ## \name Mass and inertia
     # \{
 
     ## Get mass of robot
     def getMass (self):
-        return self.client.robot.getMass ()
+        return self.hppcorba.robot.getMass ()
 
     ## Get position of center of mass
     def getCenterOfMass (self):
-        return self.client.robot.getCenterOfMass ()
+        return self.hppcorba.robot.getCenterOfMass ()
     ## Get Jacobian of the center of mass
     def getJacobianCenterOfMass (self):
-        return self.client.robot.getJacobianCenterOfMass ()
+        return self.hppcorba.robot.getJacobianCenterOfMass ()
     ##\}
 
 ## Humanoid robot
@@ -288,9 +294,10 @@ class Robot (object):
 #  Method loadModel builds a humanoid robot.
 class HumanoidRobot (Robot):
 
-    def __init__ (self, robotName = None, rootJointType = None, load = True, client = None):
+    def __init__ (self, robotName = None, rootJointType = None, load = True, client = None, hppcorbaClient = None):
         Robot.__init__ (self, robotName, rootJointType, load, client)
     def loadModel (self, robotName, rootJointType):
-        self.client.robot.loadHumanoidModel (robotName, rootJointType,
+        self.hppcorba.robot.loadHumanoidModel (robotName, rootJointType,
                                           self.packageName, self.urdfName,
                                           self.urdfSuffix, self.srdfSuffix)
+        self.rebuildRanks()

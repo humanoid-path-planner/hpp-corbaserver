@@ -142,16 +142,16 @@ module hpp
     /// \param jointName name of the joint,
     string getJointType(in string jointName) raises (Error);
 
-    /// Integrate velocity of a joint starting from robot configuration
+    /// Integrate velocity of a joint starting from joint configuration
     ///
+    /// \param jointCfg a joint configuration
     /// \param jointName name of the joint,
     /// \param speed velocity vector of the joint
+    /// \param saturate the joint configuration within joint bounds.
+    /// \return the resulting configuration
     ///
-    /// Size of speed should fit hpp::model::Joint::numberDof.
-    ///
-    /// Modify the part of the robot current configuration
-    /// correponding to the joint and recompute forward kinematics
-    void jointIntegrate(in string jointName, in floatSeq speed) raises (Error);
+    /// Size of speed should fit hpp::pinocchio::Joint::numberDof.
+    floatSeq jointIntegrate(in floatSeq jointCfg, in string jointName, in floatSeq speed, in boolean saturate) raises (Error);
 
     /// Get joint Transformation
     /// \param jointName name of the joint
@@ -162,6 +162,10 @@ module hpp
     /// \param jointName name of the joint
     /// \throw Error if robot is not set or if joint does not exist.
     Transform_ getJointPosition (in string jointName) raises (Error);
+
+    /// Get position of a list of joints in world frame
+    /// \note This method is thread safe
+    TransformSeq getJointsPosition (in floatSeq q, in Names_t jointNames) raises (Error);
 
     /// Get joint velocity
     /// expressed in the world frame, at the center of the world
@@ -240,7 +244,8 @@ module hpp
     Transform_ getLinkPosition (in string linkName) raises (Error);
 
     /// Get position of a list of links in world frame
-    TransformSeq getLinksPosition (in Names_t linkName) raises (Error);
+    /// \note This method is thread safe
+    TransformSeq getLinksPosition (in floatSeq q, in Names_t linkName) raises (Error);
 
     /// Get link names
     ///
@@ -258,6 +263,12 @@ module hpp
     /// \param dimension dimension
     /// \sa hpp::model::ExtraConfigSpace
     void setDimensionExtraConfigSpace (in unsigned long dimension)
+      raises (Error);
+
+    /// Get the dimension of the extra configuration space
+    ///
+    /// \sa hpp::model::ExtraConfigSpace
+    unsigned long getDimensionExtraConfigSpace ()
       raises (Error);
 
     /// Set bounds of extra configuration variables

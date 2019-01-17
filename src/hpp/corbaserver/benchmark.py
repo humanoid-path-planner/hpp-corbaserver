@@ -392,7 +392,7 @@ class Benchmark (object):
             if c == 'None' :
                 log.write('Default\n')
             else :
-                log.write(str(c)+'\n') # need a better way to display this 
+                log.write(str(c)+'\n') # need a better way to display this
            
             log.write('0 common properties\n')
             log.write('6 properties for each run\n')

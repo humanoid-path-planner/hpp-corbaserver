@@ -21,6 +21,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 SET(CXX_DISABLE_WERROR true)
 
 INCLUDE(cmake/base.cmake)
+INCLUDE(cmake/hpp.cmake)
 INCLUDE(cmake/cpack.cmake)
 INCLUDE(cmake/idl.cmake)
 INCLUDE(cmake/python.cmake)
@@ -31,8 +32,6 @@ SET(PROJECT_DESCRIPTION "Corba server for Humanoid Path Planner applications")
 SET(PROJECT_URL "ssh://trac.laas.fr/git/jrl/corba/hpp-corbaserver")
 
 SET(CLIENT_ONLY FALSE CACHE BOOL "Set to true to install the client only")
-# Ask Doxygen to create a tree view in html documentation
-SET(DOXYGEN_TREEVIEW "NO" CACHE STRING "Set to YES to generate a tree view in the html documentation")
 
 SET(${PROJECT_NAME}_HEADERS
   include/hpp/corbaserver/client.hh
@@ -49,13 +48,7 @@ IF (NOT CLIENT_ONLY)
     )
 ENDIF (NOT CLIENT_ONLY)
 
-SETUP_PROJECT ()
-
-# Activate hpp-util logging if requested
-SET (HPP_DEBUG FALSE CACHE BOOL "trigger hpp-util debug output")
-IF (HPP_DEBUG)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHPP_DEBUG")
-ENDIF()
+SETUP_HPP_PROJECT ()
 
 # Dependencies
 ADD_REQUIRED_DEPENDENCY("omniORB4 >= 4.1.4")
@@ -71,5 +64,5 @@ ADD_SUBDIRECTORY(src)
 
 PKG_CONFIG_APPEND_LIBS(${PROJECT_NAME})
 
-SETUP_PROJECT_FINALIZE()
+SETUP_HPP_PROJECT_FINALIZE()
 SETUP_PROJECT_CPACK()

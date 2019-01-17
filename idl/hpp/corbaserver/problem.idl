@@ -25,6 +25,12 @@ module hpp
     /// Set random seed of random number generator
     void setRandomSeed (in long seed) raises (Error);
 
+    /// \copydoc hpp::corbaserver::problem_solver::ProblemSolver::setMaxNumThreads
+    void setMaxNumThreads (in unsigned short n) raises (Error);
+
+    /// \copydoc hpp::corbaserver::problem_solver::ProblemSolver::getMaxNumThreads
+    unsigned short getMaxNumThreads () raises (Error);
+
     /// Return a list of available elements of type type
     /// \param type enter "type" to know what types I know of.
     ///             This is case insensitive.
@@ -315,6 +321,9 @@ module hpp
     /// Reset constraints
     void resetConstraints () raises (Error);
 
+    /// \copydoc hpp::corbaserver::problem_solver::ProblemSolver::resetConstraintMap
+    void resetConstraintMap () raises (Error);
+
     /// Add vector of passive dofs into the ProblemSolver local map
     /// \param constraintName Name of the vector of passive dofs,
     /// \param jointNames a sequence of joint names.
@@ -416,7 +425,7 @@ module hpp
     /// Set maximal number of iterations in numerical constraint resolution
     void setMaxIterProjection (in unsigned long iterations) raises (Error);
 
-    /// Set maximal number of iterations in path planning
+    /// Get maximal number of iterations in path planning
     unsigned long getMaxIterPathPlanning () raises (Error);
 
     /// Set maximal number of iterations in path planning
@@ -427,6 +436,13 @@ module hpp
 
     /// See hpp::constraints::ScalarMultiply
     void scCreateScalarMultiply (in string outName, in double scalar, in string inName) raises (Error);
+
+    /// Get time out in path planning (in seconds)
+    double getTimeOutPathPlanning () raises (Error);
+
+    /// Set time out in path planning (in seconds)
+    void setTimeOutPathPlanning (in double timeOut) raises (Error);
+
 
     /// \}
     /// \}
@@ -555,22 +571,19 @@ module hpp
 			   in unsigned long pathId, in boolean bothEdges)
       raises (Error);
 
-    /// Append a path to an existing path
-    /// \param pathId Id of the path in this problem,
-    /// \param config end configuration of the new path.
-    /// \throw Error if steering method fails to create a direct path of if
-    /// direct path is not valid
-    /// Call steering method between end of path and input config and append
-    /// direct path in case of success.
+    /// \copydoc hpp::corbaserver::problem_solver::ProblemSolver::appendDirectPath
     void appendDirectPath (in unsigned long pathId, in floatSeq config)
       raises (Error);
 
-    /// Concatenate path endId at the end of startId.
-    /// \note No path are created. The resulting path is at rank startId.
+    /// \copydoc hpp::corbaserver::problem_solver::ProblemSolver::concatenatePath
     void concatenatePath (in unsigned long startId, in unsigned long endId)
       raises (Error);
 
-    /// Erase path pathId from stored.
+    /// \copydoc hpp::corbaserver::problem_solver::ProblemSolver::extractPath
+    void extractPath (in unsigned long pathId, in double start, in double end)
+	    raises (Error);
+
+    /// \copydoc hpp::corbaserver::problem_solver::ProblemSolver::erasePath
     void erasePath (in unsigned long pathId)
       raises (Error);
 

@@ -32,6 +32,7 @@
 #include <hpp/pinocchio/center-of-mass-computation.hh>
 #include <hpp/pinocchio/configuration.hh>
 #include <hpp/pinocchio/liegroup.hh>
+#include <hpp/pinocchio/liegroup-element.hh>
 
 #include <hpp/core/problem.hh>
 #include <hpp/core/configuration-shooter.hh>
@@ -498,10 +499,12 @@ namespace hpp
           Frame frame = robot->getFrameByName(jointName);
           if (frame.isFixed())
             return new hpp::floatSeq();
-	  Joint joint = frame.joint();
+	  JointPtr_t joint = frame.joint();
+          if (!joint)
+            return new hpp::floatSeq();
           vector_t config = robot->currentConfiguration ();
-          size_type ric = joint.rankInConfiguration ();
-	  size_type dim = joint.configSize ();
+          size_type ric = joint->rankInConfiguration ();
+	  size_type dim = joint->configSize ();
           return vectorToFloatSeq(config.segment(ric, dim));
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -519,8 +522,10 @@ namespace hpp
           std::string name;
           if (frame.isFixed())
             return CORBA::string_dup("anchor");
-	  Joint joint = frame.joint();
-          return CORBA::string_dup(joint.jointModel().shortname().c_str());
+	  JointPtr_t joint = frame.joint();
+          if (!joint)
+            return CORBA::string_dup("anchor");
+          return CORBA::string_dup(joint->jointModel().shortname().c_str());
         } catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -558,7 +563,8 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      void Robot::jointIntegrate(const char* jointName, const hpp::floatSeq& dq)
+      floatSeq* Robot::jointIntegrate(const floatSeq& jointCfg,
+            const char* jointName, const floatSeq& dq, bool saturate)
 	throw (hpp::Error)
       {
 	try {
@@ -571,20 +577,22 @@ namespace hpp
 	    hppDout (error, oss.str ());
 	    throw hpp::Error (oss.str ().c_str ());
 	  }
-	  const size_type nv  = joint->numberDof (),
-                          riv = joint->rankInVelocity ();
+	  const size_type nq  = joint->configSize (),
+	                  nv  = joint->numberDof ();
           if (nv != (size_type) dq.length ()) {
 	    throw Error ("Wrong speed dimension");
 	  }
-          vector_t dqAll (vector_t::Zero(robot->numberDof ()));
-          dqAll .segment(riv, nv) = floatSeqToVector (dq, nv);
-
-          vector_t config (robot->currentConfiguration ());
-          pinocchio::integrate<true, pinocchio::RnxSOnLieGroupMap>
-            (robot, config, dqAll, config);
-
-          robot->currentConfiguration (config);
-          robot->computeForwardKinematics ();
+          LiegroupElement q (floatSeqToVector (jointCfg, nq),
+                             joint->configurationSpace());
+          q += floatSeqToVector (dq, nv);
+          if (saturate) {
+            for (size_type i = 0; i < nq; ++i) {
+              value_type ub = joint->upperBound(i);
+              value_type lb = joint->lowerBound(i);
+              q.vector()[i] = std::min(ub, std::max(lb, q.vector()[i]));
+            }
+          }
+          return vectorToFloatSeq(q.vector());
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -629,6 +637,42 @@ namespace hpp
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
+      }
+
+      // --------------------------------------------------------------------
+
+      TransformSeq* Robot::getJointsPosition (const floatSeq& dofArray, const Names_t& jointNames)
+	throw (hpp::Error)
+      {
+	try {
+          using hpp::pinocchio::DeviceSync;
+	  DevicePtr_t _robot = getRobotOrThrow(problemSolver());
+          Configuration_t config = floatSeqToConfig (_robot, dofArray, true);
+          DeviceSync robot (_robot);
+          robot.currentConfiguration(config);
+          robot.computeForwardKinematics();
+	  robot.computeFramesForwardKinematics ();
+
+          const se3::Model& model (robot.model());
+          const se3::Data & data  (robot.data ());
+          TransformSeq* transforms = new TransformSeq ();
+          transforms->length (jointNames.length());
+          std::string n;
+          for (CORBA::ULong i = 0; i < jointNames.length (); ++i) {
+            n = jointNames[i];
+            if (!model.existFrame (n, JOINT_FRAME)) {
+              HPP_THROW(Error, "Robot has no joint with name " << n);
+            }
+            se3::FrameIndex joint = model.getFrameId(n, JOINT_FRAME);
+            if (model.frames.size() <= (std::size_t)joint)
+              HPP_THROW(Error, "Frame index of joint " << n << " out of bounds: " << joint);
+
+            toHppTransform (data.oMf[joint], (*transforms)[i]);
+          }
+          return transforms;
+	} catch (const std::exception& exc) {
+	  throw Error (exc.what ());
+        }
       }
 
       // --------------------------------------------------------------------
@@ -685,7 +729,8 @@ namespace hpp
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
           Frame frame = robot->getFrameByName(jointName);
           if (frame.isFixed()) return 0;
-          else                 return (Long) frame.joint().numberDof();
+          JointPtr_t joint = frame.joint();
+          return (joint ? (Long) joint->numberDof() : 0 );
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
@@ -699,7 +744,8 @@ namespace hpp
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
           Frame frame = robot->getFrameByName(jointName);
           if (frame.isFixed()) return 0;
-          else                 return (Long) frame.joint().configSize();
+          JointPtr_t joint = frame.joint();
+          return (joint ? (Long) joint->configSize() : 0 );
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
@@ -769,16 +815,22 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      TransformSeq* Robot::getLinksPosition (const Names_t& linkNames)
+      TransformSeq* Robot::getLinksPosition (const floatSeq& dofArray, const Names_t& linkNames)
 	throw (hpp::Error)
       {
 	try {
-	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
-          const Model& model (robot->model());
-          const Data & data  (robot->data ());
+          using hpp::pinocchio::DeviceSync;
+	  DevicePtr_t _robot = getRobotOrThrow(problemSolver());
+          Configuration_t config = floatSeqToConfig (_robot, dofArray, true);
+          DeviceSync robot (_robot);
+          robot.currentConfiguration(config);
+          robot.computeForwardKinematics();
+	  robot.computeFramesForwardKinematics ();
+
+          const Model& model (robot.model());
+          const Data & data  (robot.data ());
           TransformSeq* transforms = new TransformSeq ();
           transforms->length (linkNames.length());
-          Transform3f T;
           std::string n;
           for (CORBA::ULong i = 0; i < linkNames.length (); ++i) {
             n = linkNames[i];
@@ -787,14 +839,10 @@ namespace hpp
             }
             FrameIndex body = model.getBodyId(n);
             const ::pinocchio::Frame& frame = model.frames[body];
-            JointIndex joint = frame.parent;
             if (frame.type != ::pinocchio::BODY)
               HPP_THROW(Error, n << " is not a link");
-            if (model.joints.size() <= (std::size_t)joint)
-              HPP_THROW(Error, "Joint index of link " << n << " out of bounds: " << joint);
 
-            T = data.oMi[joint] * frame.placement;
-            toHppTransform (T, (*transforms)[i]);
+            toHppTransform (data.oMf[body], (*transforms)[i]);
           }
           return transforms;
 	} catch (const std::exception& exc) {
@@ -835,6 +883,20 @@ namespace hpp
         } catch (const std::exception& exc) {
           throw hpp::Error (exc.what ());
         }
+      }
+
+      ULong Robot::getDimensionExtraConfigSpace()
+  throw (hpp::Error)
+      {
+  // Get robot in ProblemSolver object.
+        ULong dim;
+        try {
+          DevicePtr_t robot = getRobotOrThrow(problemSolver());
+          dim = (ULong)robot->extraConfigSpace().dimension();
+        } catch (const std::exception& exc) {
+          throw hpp::Error (exc.what ());
+        }
+        return dim;
       }
 
       // --------------------------------------------------------------------
@@ -1224,7 +1286,8 @@ namespace hpp
 	throw (hpp::Error)
       {
 	try {
-	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
+          core::ProblemSolverPtr_t ps = problemSolver();
+	  DevicePtr_t robot = getRobotOrThrow(ps);
 
           const pinocchio::GeomModel& geomModel (robot->geomModel());
           pinocchio::GeomData & geomData  (robot->geomData ());
@@ -1243,8 +1306,7 @@ namespace hpp
 
           geomData.activateCollisionPair(pid, active);
 
-          problemSolver()->initPathValidation();
-          problemSolver()->problem()->resetConfigValidations();
+          ps->initValidations();
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}

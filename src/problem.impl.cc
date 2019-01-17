@@ -24,6 +24,7 @@
 #include <hpp/pinocchio/configuration.hh>
 
 #include <hpp/core/config-projector.hh>
+#include <hpp/core/config-validations.hh>
 #include <hpp/core/configuration-shooter.hh>
 #include <hpp/core/connected-component.hh>
 #include <hpp/core/edge.hh>
@@ -253,33 +254,18 @@ namespace hpp
                 (robot, name, nameF2, nameF1, M2, M1, mask);
             // From here, nameF2 is not empty.
 
-            const pinocchio::Model& model (robot->model());
             bool relative = (!nameF1.empty());
             JointPtr_t joint1, joint2;
             Transform3f ref1 = M1, ref2 = M2;
             if (relative) {
-              if (!model.existFrame(nameF1)) {
-		std::ostringstream oss;
-		oss << "Joint " << nameF1 << " not found.";
-                throw hpp::Error (oss.str ().c_str ());
-	      }
-              const ::pinocchio::Frame& f1 = model.frames[model.getFrameId(nameF1)];
-              // If f1 is a JOINT, then f1.placement should be identity
-              assert (f1.type != ::pinocchio::JOINT || f1.placement.isIdentity());
-              ref1 = f1.placement * M1;
-              joint1 = JointPtr_t (new Joint (robot, f1.parent));
+              Frame frame = robot->getFrameByName(nameF1);
+              ref1 = frame.positionInParentJoint() * M1;
+              joint1 = frame.joint();
             }
 
-            if (!model.existFrame(nameF2)) {
-		std::ostringstream oss;
-		oss << "Joint " << nameF2 << " not found.";
-                throw hpp::Error (oss.str ().c_str ());
-	    }
-            const ::pinocchio::Frame& f2 = model.frames[model.getFrameId(nameF2)];
-            // If f2 is a JOINT, then f2.placement should be identity
-            assert (f2.type != ::pinocchio::JOINT || f2.placement.isIdentity());
-            ref2 = f2.placement * M2;
-            joint2 = JointPtr_t (new Joint (robot, f2.parent));
+            Frame frame = robot->getFrameByName(nameF2);
+            ref2 = frame.positionInParentJoint() * M2;
+            joint2 = frame.joint();
 
             if (relative) {
               // Both joints are provided
@@ -313,6 +299,30 @@ namespace hpp
       void Problem::shutdown ()
       {
         server_->requestShutdown(false);
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::setMaxNumThreads (UShort n) throw (hpp::Error)
+      {
+        try {
+          DevicePtr_t robot = getRobotOrThrow (problemSolver());
+          robot->numberDeviceData ((size_type)n);
+        } catch (const std::exception& e) {
+          throw Error (e.what ());
+        }
+      }
+
+      // ---------------------------------------------------------------
+
+      UShort Problem::getMaxNumThreads () throw (hpp::Error)
+      {
+        try {
+          DevicePtr_t robot = getRobotOrThrow (problemSolver());
+          return (UShort)robot->numberDeviceData ();
+        } catch (const std::exception& e) {
+          throw Error (e.what ());
+        }
       }
 
       // ---------------------------------------------------------------
@@ -373,7 +383,7 @@ namespace hpp
       Names_t* Problem::getSelected (const char* what) throw (hpp::Error)
       {
         std::string w (what);
-        typedef std::list <std::string> Ret_t;
+        typedef std::vector <std::string> Ret_t;
         Ret_t ret, types;
         bool ok = false;
         core::value_type tol;
@@ -382,8 +392,7 @@ namespace hpp
             Ret_t(problemSolver()->pathOptimizerTypes().begin(),
               problemSolver()->pathOptimizerTypes().end()))
         _CASE_SET_RET ("ConfigValidation",
-            Ret_t(problemSolver()->configValidationTypes().begin(),
-              problemSolver()->configValidationTypes().end()))
+            Ret_t(problemSolver()->configValidationTypes()))
         _CASE_PUSH_TO ("PathProjector"       , problemSolver()->pathProjectorType (tol))
         _CASE_PUSH_TO ("PathPlanner"         , problemSolver()->pathPlannerType ())
         _CASE_PUSH_TO ("ConfigurationShooter", problemSolver()->configurationShooterType ())
@@ -1192,39 +1201,45 @@ namespace hpp
 				      double& residualError)
 	throw (hpp::Error)
       {
-        DevicePtr_t robot = problemSolver()->robot ();
-	if (!robot) throw hpp::Error ("No robot loaded");
-        if (!problemSolver()->problem ()) problemSolver()->resetProblem ();
-        core::ConfigurationShooterPtr_t shooter = problemSolver()->problem()->configurationShooter();
+        core::ProblemSolverPtr_t ps = problemSolver();
+        DevicePtr_t robot = getRobotOrThrow(ps);
+        if (!ps->problem ()) ps->resetProblem ();
+        core::ConfigurationShooterPtr_t shooter = ps->problem()->configurationShooter();
 	bool success = false, configIsValid = false;
         ConfigurationPtr_t config;
         while (!configIsValid && maxIter > 0)
         {
           try {
             config = shooter->shoot ();
-            success = problemSolver()->constraints ()->apply (*config);
+            success = ps->constraints ()->apply (*config);
             if (hpp::core::ConfigProjectorPtr_t configProjector =
-                problemSolver()->constraints ()->configProjector ()) {
+                ps->constraints ()->configProjector ()) {
               residualError = configProjector->residualError ();
             }
             if (success) {
-              robot->currentConfiguration (*config);
-              configIsValid = !robot->collisionTest ();
+              core::ValidationReportPtr_t validationReport;
+              configIsValid = ps->problem ()->configValidations ()->validate
+                (*config, validationReport);
             }
           } catch (const std::exception& exc) {
             throw hpp::Error (exc.what ());
           }
           maxIter--;
         }
-	ULong size = (ULong) config->size ();
-	hpp::floatSeq* q_ptr = new hpp::floatSeq ();
-	q_ptr->length (size);
-
-	for (std::size_t i=0; i<size; ++i) {
-	  (*q_ptr) [(CORBA::ULong)i] = (*config) [i];
-	}
-	output = q_ptr;
+	output = vectorToFloatSeq (*config);
 	return configIsValid;
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::resetConstraintMap () throw (hpp::Error)
+      {
+        try {
+          problemSolver()->numericalConstraints.clear();
+          problemSolver()->lockedJoints.clear();
+        } catch (const std::exception& exc) {
+          throw hpp::Error (exc.what ());
+        }
       }
 
       // ---------------------------------------------------------------
@@ -1613,6 +1628,19 @@ namespace hpp
       }
 
       // ---------------------------------------------------------------
+      void Problem::setTimeOutPathPlanning (double timeOut) throw (Error)
+      {
+  problemSolver()->setTimeOutPathPlanning (timeOut);
+      }
+
+      // ---------------------------------------------------------------
+      double Problem::getTimeOutPathPlanning () throw (Error)
+      {
+  return problemSolver()->getTimeOutPathPlanning();
+      }
+
+      // ---------------------------------------------------------------
+
 
       void Problem::selectPathPlanner (const char* pathPlannerType)
 	throw (Error)
@@ -1884,6 +1912,13 @@ namespace hpp
 	  SteeringMethodPtr_t sm
 	    (problemSolver()->problem ()->steeringMethod ());
 	  PathPtr_t dp = (*sm) (start, *end);
+          if (!dp) {
+            std::ostringstream oss;
+            oss << "steering method failed to build a path between q1="
+                << pinocchio::displayConfig (start) << "; q2="
+                << pinocchio::displayConfig (*end) << ".";
+            throw std::runtime_error (oss.str ().c_str ());
+          }
 	  PathPtr_t unused;
 	  PathValidationReportPtr_t report;
 	  if (!problemSolver()->problem()->pathValidation ()->validate
@@ -1915,6 +1950,36 @@ namespace hpp
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::extractPath (ULong pathId, Double start, Double end)
+      throw (hpp::Error)
+      {
+        try {
+          if ( pathId >= problemSolver()->paths ().size ()) {
+            std::ostringstream oss ("wrong path id. ");
+            oss << "Number path: " << problemSolver()->paths ().size () << ".";
+            throw std::runtime_error (oss.str ());
+          }
+          PathVectorPtr_t initPath = problemSolver()->paths () [pathId];
+          if((start < initPath->timeRange().first) || end > initPath->timeRange().second){
+            std::ostringstream oss ("Parameters out of bounds. ");
+            oss << "For pathId =  "<<pathId<<", lenght  = ["<<initPath->timeRange().first<<" ; "<<initPath->timeRange().second<<"].";
+            throw std::runtime_error (oss.str ());
+          }
+          core::PathPtr_t path = initPath->extract(core::interval_t (start,end));
+          PathVectorPtr_t pathVector = boost::dynamic_pointer_cast<core::PathVector>(path);
+          if(pathVector)
+            problemSolver()->addPath(pathVector);
+          else{
+            std::ostringstream oss ("Error during dynamic-cast in extractPath ");
+            throw std::runtime_error (oss.str ());
+          }
+        } catch (const std::exception& exc) {
+          throw hpp::Error (exc.what ());
+        }
       }
 
       // ---------------------------------------------------------------

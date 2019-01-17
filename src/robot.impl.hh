@@ -107,13 +107,16 @@ namespace hpp
           throw (hpp::Error);
         virtual char* getJointType(const char* jointName)
           throw (hpp::Error);
-        virtual void jointIntegrate(const char* jointName, const floatSeq& dq)
+        virtual floatSeq* jointIntegrate(const floatSeq& jointCfg,
+            const char* jointName, const floatSeq& dq, bool saturate)
           throw (hpp::Error);
 	virtual hpp::floatSeqSeq* getCurrentTransformation(const char* jointName)
 	  throw (hpp::Error);
         virtual Transform__slice* getJointPositionInParentFrame(const char* jointName)
           throw (hpp::Error);
 	virtual Transform__slice* getJointPosition(const char* jointName)
+	  throw (hpp::Error);
+	virtual TransformSeq* getJointsPosition (const floatSeq& q, const Names_t& jointNames)
 	  throw (hpp::Error);
 	virtual floatSeq* getJointVelocity(const char* jointName)
 	  throw (hpp::Error);
@@ -143,7 +146,7 @@ namespace hpp
 	virtual Transform__slice* getLinkPosition (const char* linkName)
 	  throw (hpp::Error);
 
-	virtual TransformSeq* getLinksPosition (const Names_t& linkName)
+	virtual TransformSeq* getLinksPosition (const floatSeq& q, const Names_t& linkName)
 	  throw (hpp::Error);
 
 	virtual Names_t* getLinkNames(const char* jointName)
@@ -151,6 +154,9 @@ namespace hpp
 
 	virtual void setDimensionExtraConfigSpace (ULong dimension)
 	  throw (hpp::Error);
+
+  virtual ULong getDimensionExtraConfigSpace ()
+    throw (hpp::Error);
 
 	virtual void setExtraConfigSpaceBounds
 	(const hpp::floatSeq& bounds) throw (hpp::Error);

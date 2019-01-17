@@ -8,5 +8,3 @@ INPUT                  = @CMAKE_SOURCE_DIR@/include \
 		  	 @CMAKE_SOURCE_DIR@/src/hpp/corbaserver/problem_solver.py \
  		  	 @CMAKE_SOURCE_DIR@/src/hpp/corbaserver/robot.py \
  		  	 @CMAKE_SOURCE_DIR@/src/hpp/corbaserver/benchmark.py
-
-GENERATE_TREEVIEW	 = @DOXYGEN_TREEVIEW@
