@@ -230,12 +230,14 @@ module hpp
     /// \param pointL point in local frame of jointL.
     /// \param pointR point in local frame of jointR.
     /// \param jointRefName name of second joint
+    /// \param pointRef point in local frame of jointRef
     /// \param mask Select axis to be constrained.
     /// If jointRef is "", the global frame is used.
     /// Constraints are stored in ProblemSolver object
     void createComBeetweenFeet (in string constraintName, in string comName,
             in string jointLName, in string jointRName, in floatSeq pointL,
-            in floatSeq pointR, in string jointRefName, in boolSeq mask)
+            in floatSeq pointR, in string jointRefName, in floatSeq pointRef,
+            in boolSeq mask)
         raises (Error);
 
     /// Create RelativeCom constraint between two joints

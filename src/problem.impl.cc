@@ -829,7 +829,7 @@ namespace hpp
       void Problem::createComBeetweenFeet
       (const char* constraintName, const char* comName, const char* jointLName,
        const char* jointRName, const floatSeq& pL, const floatSeq& pR,
-       const char* jointRefName, const hpp::boolSeq& mask)
+       const char* jointRefName, const floatSeq& pRef, const hpp::boolSeq& mask)
 	throw (hpp::Error)
       {
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
@@ -837,7 +837,7 @@ namespace hpp
         CenterOfMassComputationPtr_t comc;
 	vector3_t pointL = floatSeqToVector3 (pL);
 	vector3_t pointR = floatSeqToVector3 (pR);
-	vector3_t pointRef (0,0,0);
+	vector3_t pointRef = floatSeqToVector3 (pRef);
 
 	std::vector<bool> m = boolSeqToBoolVector (mask);
 	try {

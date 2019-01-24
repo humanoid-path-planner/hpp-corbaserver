@@ -117,7 +117,8 @@ namespace hpp
         void createComBeetweenFeet (const char* constraintName, const char* comn,
             const char* jointLName, const char* jointRName,
             const floatSeq& pointL, const floatSeq& pointR,
-            const char* jointRefName, const hpp::boolSeq& mask)
+            const char* jointRefName, const floatSeq& pRef,
+            const hpp::boolSeq& mask)
           throw (hpp::Error);
 
 	virtual void createConvexShapeContactConstraint
