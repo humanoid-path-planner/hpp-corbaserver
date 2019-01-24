@@ -51,10 +51,10 @@ class ProblemSolver (object):
 
     ## Load a plugin into the current ProblemSolver.
     #  \param pluginName either an absolute filename or a filename relative
-    #                    to *<a_path_in_LD_LIBRARY_PATH>/hppPlugins*
+    #                    to `<a_path_in_LD_LIBRARY_PATH>/hppPlugins`.
     #  \note This is reset each time resetProblem is called.
-    def loadPlugin (self, name):
-        return self.hppcorba.problem.loadPlugin (name)
+    def loadPlugin (self, pluginName):
+        return self.hppcorba.problem.loadPlugin (pluginName)
 
     ## Set random seed of random number generator
     def setRandomSeed (self, seed):

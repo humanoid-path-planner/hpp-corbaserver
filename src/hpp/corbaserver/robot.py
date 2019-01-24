@@ -41,6 +41,8 @@ class Robot (object):
             self.rootJointType = rootJointType
             if load:
                 self.loadModel (robotName, rootJointType)
+            else:
+                self.rebuildRanks()
 
     ## Rebuild inner variables rankInConfiguration and rankInVelocity
     def rebuildRanks (self):
