@@ -41,6 +41,7 @@
 #include <hpp/core/path-vector.hh>
 #include <hpp/core/subchain-path.hh>
 #include <hpp/core/roadmap.hh>
+#include <hpp/core/plugin.hh>
 #include <hpp/core/problem-solver.hh>
 #include <hpp/core/steering-method.hh>
 #include <hpp/core/parser/roadmap-factory.hh>
@@ -491,6 +492,19 @@ namespace hpp
         ProblemSolverMapPtr_t psMap (server_->problemSolverMap());
         delete psMap->map_ [ psMap->selected_ ];
         psMap->map_ [ psMap->selected_ ] = core::ProblemSolver::create ();
+      }
+
+      // ---------------------------------------------------------------
+
+      bool Problem::loadPlugin (const char* pluginName) throw (hpp::Error)
+      {
+        try {
+          core::ProblemSolverPtr_t ps = problemSolver();
+          std::string libname = core::plugin::findPluginLibrary (pluginName);
+          return core::plugin::loadPlugin (libname, ps);
+        } catch (std::exception& exc) {
+          throw Error (exc.what ());
+        }
       }
 
       // ---------------------------------------------------------------

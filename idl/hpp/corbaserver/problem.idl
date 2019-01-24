@@ -63,6 +63,9 @@ module hpp
     /// Reset the current problem.
     void resetProblem () raises (Error);
 
+    /// \copydoc hpp::corbaserver::problem_solver::ProblemSolver::loadPlugin
+    boolean loadPlugin (in string pluginName) raises (Error);
+
     /// Move a path from the current problem to another problem.
     /// \param problemName the destination problem
     /// \param jointNames a list of joint names representing the subchain to

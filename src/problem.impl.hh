@@ -52,6 +52,8 @@ namespace hpp
 
         virtual void resetProblem () throw (hpp::Error);
 
+        virtual bool loadPlugin (const char* pluginName) throw (hpp::Error);
+
         virtual void movePathToProblem (ULong pathId, const char* problemName,
             const Names_t& jointNames) throw (hpp::Error);
 

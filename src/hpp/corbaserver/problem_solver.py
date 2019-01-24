@@ -49,6 +49,13 @@ class ProblemSolver (object):
         self.hppcorba = robot.client if hppcorbaClient is None else hppcorbaClient
         self.robot = robot
 
+    ## Load a plugin into the current ProblemSolver.
+    #  \param pluginName either an absolute filename or a filename relative
+    #                    to *<a_path_in_LD_LIBRARY_PATH>/hppPlugins*
+    #  \note This is reset each time resetProblem is called.
+    def loadPlugin (self, name):
+        return self.hppcorba.problem.loadPlugin (name)
+
     ## Set random seed of random number generator
     def setRandomSeed (self, seed):
         return self.hppcorba.problem.setRandomSeed (seed)
