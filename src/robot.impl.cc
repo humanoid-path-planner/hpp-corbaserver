@@ -1328,8 +1328,14 @@ namespace hpp
       hpp::floatSeq* Robot::getCenterOfMass () throw (hpp::Error)
       {
 	try {
-	  return vectorToFloatSeq (
-              getRobotOrThrow(problemSolver())->positionCenterOfMass ());
+          DevicePtr_t robot = getRobotOrThrow(problemSolver());
+          pinocchio::Computation_t flags = robot->computationFlag();
+          if (!(flags&pinocchio::COM)) {
+            robot->controlComputation (pinocchio::COMPUTE_ALL);
+            robot->computeForwardKinematics ();
+            robot->controlComputation (flags);
+          }
+	  return vectorToFloatSeq (robot->positionCenterOfMass());
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -1341,6 +1347,12 @@ namespace hpp
       {
 	try {
           DevicePtr_t robot = getRobotOrThrow(problemSolver());
+          pinocchio::Computation_t flags = robot->computationFlag();
+          if (!(flags&pinocchio::COM) || (flags&pinocchio::JACOBIAN)) {
+            robot->controlComputation (pinocchio::COMPUTE_ALL);
+            robot->computeForwardKinematics ();
+            robot->controlComputation (flags);
+          }
           return vectorToFloatSeq (
               robot->jacobianCenterOfMass() * robot->currentVelocity());
 	} catch (const std::exception& exc) {
@@ -1353,8 +1365,14 @@ namespace hpp
       hpp::floatSeqSeq* Robot::getJacobianCenterOfMass () throw (hpp::Error)
       {
 	try {
-	  const ComJacobian_t& jacobian =
-	    getRobotOrThrow(problemSolver())->jacobianCenterOfMass ();
+          DevicePtr_t robot = getRobotOrThrow (problemSolver());
+          pinocchio::Computation_t flags = robot->computationFlag();
+          if (!(flags&pinocchio::COM) || (flags&pinocchio::JACOBIAN)) {
+            robot->controlComputation (pinocchio::COMPUTE_ALL);
+            robot->computeForwardKinematics ();
+            robot->controlComputation (flags);
+          }
+	  const ComJacobian_t& jacobian = robot->jacobianCenterOfMass ();
 	  return matrixToFloatSeqSeq (jacobian);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
