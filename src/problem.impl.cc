@@ -849,12 +849,17 @@ namespace hpp
 	  else
 	    jointRef = problemSolver()->robot()->getJointByName(jointRefName);
           std::string name (constraintName), comN (comName);
+
+          constraints::ComparisonTypes_t comps = boost::assign::list_of
+            (constraints::EqualToZero) (constraints::EqualToZero)
+            (constraints::Superior)    (constraints::Inferior);
+
           if (comN.compare ("") == 0) {
             problemSolver()->addNumericalConstraint
               (name, Implicit::create
 	       (ComBetweenFeet::create (name, problemSolver()->robot(),
 					jointL, jointR, pointL, pointR,
-					jointRef, pointRef, m)));
+					jointRef, pointRef, m), comps));
           } else {
             if (!problemSolver()->centerOfMassComputations.has(comN))
               throw hpp::Error ("Partial COM not found.");
@@ -863,7 +868,7 @@ namespace hpp
               (name, Implicit::create
 	       (ComBetweenFeet::create (name, problemSolver()->robot(), comc,
 					jointL, jointR, pointL, pointR,
-					jointRef, pointRef, m)));
+					jointRef, pointRef, m), comps));
           }
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
