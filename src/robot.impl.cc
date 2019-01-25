@@ -1460,8 +1460,7 @@ namespace hpp
           GeometryObject geom (on,
               bid, jid,
               geometry, placement);
-          GeomIndex idx = geomModel.ngeoms;
-          geomModel.addGeometryObject (geom, model);
+          GeomIndex idx = geomModel.addGeometryObject (geom, model);
           for (GeomIndex i = 0; i < idx; ++i)
           {
             if (geomModel.geometryObjects[i].parentJoint != jid)
