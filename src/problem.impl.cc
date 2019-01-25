@@ -150,6 +150,24 @@ namespace hpp
               const CORBA::Any& corbaAny;
               Parameter& param;
               bool& done;
+              void operator()(std::pair<vector_t, floatSeq>) {
+                if (done) return;
+                floatSeq* d = new floatSeq();
+                if (corbaAny >>= d) {
+                  param = Parameter (floatSeqToVector (*d));
+                  done = true;
+                } else
+                  delete d;
+              }
+              void operator()(std::pair<matrix_t, floatSeqSeq>) {
+                if (done) return;
+                floatSeqSeq* d = new floatSeqSeq();
+                if (corbaAny >>= d) {
+                  param = Parameter (floatSeqSeqToMatrix (*d));
+                  done = true;
+                } else
+                  delete d;
+              }
               template <typename T> void operator()(T) {
                 if (done) return;
                 typename T::second_type d;
@@ -179,8 +197,8 @@ namespace hpp
 
               // This two do not work because omniidl must be given the option -Wba in order to generate 
               // a DynSK.cc file containing the conversion to/from Any type.
-              // std::pair<vector_t   , floatSeq>,
-              // std::pair<matrix_t   , floatSeqSeq>
+              , std::pair<matrix_t   , floatSeqSeq>
+              , std::pair<vector_t   , floatSeq>
                 > Parameter_AnyPairs_t;
 
           public:

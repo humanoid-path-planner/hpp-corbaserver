@@ -27,6 +27,8 @@ SET(IDL_SOURCES
 FINDPYTHON(2.7 EXACT REQUIRED)
 
 OMNIIDL_INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/idl)
+# Enable generation of dynamic type codes (in file DynSK.cc)
+SET (_OMNIIDL_INCLUDE_FLAG ${_OMNIIDL_INCLUDE_FLAG} -Wba)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src)
 FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver)
 
@@ -73,6 +75,10 @@ IF (NOT CLIENT_ONLY)
     ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/obstacleSK.cc
     ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/robotSK.cc
     ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/problemSK.cc
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/commonDynSK.cc
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/obstacleDynSK.cc
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/robotDynSK.cc
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/problemDynSK.cc
     )
 
   PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-core)

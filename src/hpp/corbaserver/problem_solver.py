@@ -32,6 +32,11 @@ def _convertToCorbaAny (value):
         return CORBA.Any(CORBA.TC_boolean, value)
     elif t is str:
         return CORBA.Any(CORBA.TC_string, value)
+    elif isinstance (value, (list, tuple)):
+        if isinstance (value[0], (list, tuple)):
+            return CORBA.Any(CORBA.TypeCode("IDL:hpp/floatSeqSeq:1.0"), value)
+        else:
+            return CORBA.Any(CORBA.TypeCode("IDL:hpp/floatSeq:1.0"), value)
     else: # Assume value is already a CORBA.Any
         return value
 
@@ -98,8 +103,9 @@ class ProblemSolver (object):
 
     ## Get parameter with given name
     #  raise an exception when the parameter is not found.
-    def getParameter (self, name):
-        return self.hppcorba.problem.getParameter (name)
+    def getParameter (self, name, keep_any=False):
+        any = self.hppcorba.problem.getParameter (name)
+        return any if keep_any else any.value()
 
     ## Get parameter documentation
     #  raise an exception when the parameter is not found.
