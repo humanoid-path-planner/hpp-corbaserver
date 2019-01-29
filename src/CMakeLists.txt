@@ -27,15 +27,18 @@ SET(IDL_SOURCES
 FINDPYTHON(2.7 EXACT REQUIRED)
 
 OMNIIDL_INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/idl)
-# Enable generation of dynamic type codes (in file DynSK.cc)
-SET (_OMNIIDL_INCLUDE_FLAG ${_OMNIIDL_INCLUDE_FLAG} -Wba)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src)
 FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver)
 
-FOREACH(IDL ${IDL_SOURCES})
+FOREACH(IDL obstacle problem robot)
   GENERATE_IDL_CPP (hpp/corbaserver/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver)
   GENERATE_IDL_PYTHON (hpp/corbaserver/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver)
+ENDFOREACH()
+# Enable generation of dynamic type codes (in file commonDynSK.cc)
+GENERATE_IDL_CPP (hpp/corbaserver/common ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver ENABLE_Wba)
+GENERATE_IDL_PYTHON (hpp/corbaserver/common ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver)
 
+FOREACH(IDL ${IDL_SOURCES})
   INSTALL(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/${IDL}.hh
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp/corbaserver)
