@@ -63,6 +63,9 @@ class Robot (object):
                                           self.urdfSuffix, self.srdfSuffix)
         self.rebuildRanks()
 
+    def urdfPath (self):
+        return "package://" + self.packageName + '/urdf/' + self.urdfName + self.urdfSuffix + '.urdf'
+
     ## \name Degrees of freedom
     #  \{
 
@@ -303,3 +306,16 @@ class HumanoidRobot (Robot):
                                           self.packageName, self.urdfName,
                                           self.urdfSuffix, self.srdfSuffix)
         self.rebuildRanks()
+
+class RobotXML (Robot):
+    def __init__ (self, robotName, rootJointType, urdfString, srdfString = "",
+            load = True, client = None, hppcorbaClient = None,):
+        self.urdfString = urdfString
+        self.srdfString = srdfString
+        Robot.__init__ (self, robotName, rootJointType, load, client)
+    def loadModel (self, robotName, rootJointType):
+        self.hppcorba.robot.loadRobotModelFromString (robotName, rootJointType,
+                                          self.urdfString, self.srdfString)
+        self.rebuildRanks()
+    def urdfPath (self):
+        return self.urdfString
