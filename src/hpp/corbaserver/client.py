@@ -21,9 +21,13 @@ class Client:
   Connect and create clients for all HPP services.
   """
 
-  defaultClients = ['problem', 'obstacle', 'robot']
+  defaultClients = {
+          'problem' : hpp.corbaserver.Problem,
+          'obstacle': hpp.corbaserver.Obstacle,
+          'robot'   : hpp.corbaserver.RobotIDL,
+          }
 
-  def makeClient(self, serviceName, postContextId):
+  def makeClient(self, serviceName, class_, postContextId):
     """
     Create a client to a new CORBA service and add it to this class.
     """
@@ -38,7 +42,7 @@ class Client:
         'failed to find the service ``{0}\'\''.format (serviceName))
 
     try:
-      client = obj._narrow (hpp.corbaserver.__dict__[serviceName.capitalize ()])
+      client = obj._narrow (class_)
     except KeyError:
       raise CorbaError ('invalid service name ``{0}\'\''.format (serviceName))
 
@@ -67,8 +71,8 @@ class Client:
     if self.rootContext is None:
       raise CorbaError ('failed to narrow the root context')
 
-    for client in clients:
-      self.makeClient (client, postContextId)
+    for client, class_ in clients.iteritems():
+      self.makeClient (client, class_, postContextId)
 
 def _getIIOPurl ():
   """
