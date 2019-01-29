@@ -14,7 +14,6 @@
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <boost/assign/list_of.hpp>
 #include <boost/algorithm/string.hpp>
-#include <boost/icl/interval_set.hpp>
 
 #include <hpp/util/debug.hh>
 #include <hpp/util/portability.hh>
@@ -100,33 +99,6 @@ using hpp::constraints::LockedJointPtr_t;
 
 using hpp::constraints::Implicit;
 using hpp::constraints::ImplicitPtr_t;
-
-namespace boost {
-  namespace icl {
-    template<>
-      struct interval_traits< hpp::core::segment_t >
-      {
-        typedef hpp::core::segment_t interval_type;
-        typedef hpp::core::size_type      domain_type;
-        typedef std::less<domain_type>    domain_compare;
-
-        static interval_type construct(const domain_type& lo, const domain_type& up)
-        { return interval_type(lo, up - lo); }
-
-        static domain_type lower(const interval_type& inter){ return inter.first; };
-        static domain_type upper(const interval_type& inter){ return inter.first + inter.second; };
-      };
-
-    template<>
-      struct interval_bound_type<hpp::core::segment_t>
-      {
-        typedef interval_bound_type type;
-        BOOST_STATIC_CONSTANT(bound_type, value = interval_bounds::static_right_open);//[lo..up)
-      };
-
-  } // namespace icl
-} // namespace boost
-
 
 namespace hpp
 {
@@ -248,16 +220,6 @@ namespace hpp
 
         typedef hpp::core::segment_t segment_t;
         typedef hpp::core::segments_t segments_t;
-        typedef boost::icl::interval_set<size_type, std::less, segment_t>
-          BoostIntervalSet_t;
-
-        segments_t convertInterval (const BoostIntervalSet_t& intSet)
-        {
-          segments_t ret;
-          for (BoostIntervalSet_t::const_iterator _int = intSet.begin (); _int != intSet.end (); ++_int)
-            ret.push_back(*_int);
-          return ret;
-        }
 
         template <int PositionOrientationFlag> DifferentiableFunctionPtr_t
           buildGenericFunc(const DevicePtr_t& robot,
@@ -535,30 +497,41 @@ namespace hpp
         core::ProblemSolverPtr_t current = problemSolver(),
                                  other = psMap->map_[std::string(name)];
 
-        BoostIntervalSet_t ints;
-        for (CORBA::ULong i = 0; i < jointNames.length (); ++i) {
-          JointPtr_t joint = problemSolver()->robot ()->getJointByName
-	    (std::string(jointNames[i]));
-          if (joint == NULL) {
-	    std::ostringstream oss;
-	    oss << "Joint " << jointNames[i] << "not found.";
-	    throw hpp::Error (oss.str ().c_str ());
-	  }
-          ints.insert(segment_t(joint->rankInConfiguration(), joint->configSize()));
-        }
-        segments_t intervals = convertInterval(ints);
-
         if (pathId >= current->paths().size()) {
           std::ostringstream oss ("wrong path id: ");
           oss << pathId << ", number path: "
             << current->paths ().size () << ".";
           throw Error (oss.str().c_str());
         }
-        core::SubchainPathPtr_t nPath =
-          core::SubchainPath::create (current->paths()[pathId], intervals);
-        core::PathVectorPtr_t pv =
+
+        core::PathVectorPtr_t pv;
+        if (jointNames.length() == 0) {
+          pv = current->paths()[pathId];
+        } else {
+          segments_t cInts, vInts;
+          for (CORBA::ULong i = 0; i < jointNames.length (); ++i) {
+            JointPtr_t joint = problemSolver()->robot ()->getJointByName
+              (std::string(jointNames[i]));
+            if (joint == NULL) {
+              std::ostringstream oss;
+              oss << "Joint " << jointNames[i] << "not found.";
+              throw hpp::Error (oss.str ().c_str ());
+            }
+            cInts.push_back(segment_t(joint->rankInConfiguration(), joint->configSize()));
+            vInts.push_back(segment_t(joint->rankInVelocity     (), joint->numberDof ()));
+          }
+
+          Eigen::BlockIndex::sort (cInts);
+          Eigen::BlockIndex::sort (vInts);
+          Eigen::BlockIndex::shrink (cInts);
+          Eigen::BlockIndex::shrink (vInts);
+
+          core::SubchainPathPtr_t nPath =
+            core::SubchainPath::create (current->paths()[pathId], cInts, vInts);
+          pv = 
             core::PathVector::create(nPath->outputSize(), nPath->outputDerivativeSize());
-        pv->appendPath(nPath);
+          pv->appendPath(nPath);
+        }
         other->addPath(pv);
       }
 
