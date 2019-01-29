@@ -67,18 +67,7 @@ IF (NOT CLIENT_ONLY)
     tools.cc
     tools.hh
     conversions.cc
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/common.hh
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/problem.hh
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/obstacle.hh
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/robot.hh
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/commonSK.cc
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/obstacleSK.cc
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/robotSK.cc
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/problemSK.cc
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/commonDynSK.cc
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/obstacleDynSK.cc
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/robotDynSK.cc
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/problemDynSK.cc
+    ${ALL_IDL_CPP_STUBS}
     )
 
   PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-core)

@@ -25,6 +25,7 @@ namespace hpp
   {
     namespace impl
     {
+      using CORBA::Any;
       using CORBA::Long;
       using CORBA::ULong;
       using CORBA::UShort;
@@ -41,10 +42,10 @@ namespace hpp
 
         virtual Names_t* getSelected (const char* what) throw (hpp::Error);
 
-        virtual void setParameter (const char* name, const CORBA::Any& value)
+        virtual void setParameter (const char* name, const Any& value)
           throw (Error);
 
-        virtual CORBA::Any* getParameter (const char* name) throw (Error);
+        virtual Any* getParameter (const char* name) throw (Error);
 
         virtual char* getParameterDoc (const char* name) throw (Error);
 
