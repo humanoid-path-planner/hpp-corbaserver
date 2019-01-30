@@ -28,6 +28,7 @@
 #include <hpp/core/connected-component.hh>
 #include <hpp/core/edge.hh>
 #include <hpp/core/node.hh>
+#include <hpp/core/path.hh>
 #include <hpp/core/path-planner.hh>
 #include <hpp/core/path-optimizer.hh>
 #include <hpp/core/path-vector.hh>
@@ -35,9 +36,6 @@
 #include <hpp/core/path-validation.hh>
 #include <hpp/core/path-validation-report.hh>
 #include <hpp/core/problem.hh>
-#include <hpp/core/straight-path.hh>
-#include <hpp/core/path.hh>
-#include <hpp/core/path-vector.hh>
 #include <hpp/core/subchain-path.hh>
 #include <hpp/core/roadmap.hh>
 #include <hpp/core/plugin.hh>
