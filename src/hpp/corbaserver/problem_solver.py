@@ -26,11 +26,11 @@ def _convertToCorbaAny (value):
     t = type(value)
     if t is float:
         return CORBA.Any(CORBA.TC_double, value)
-    elif t is int:
-        return CORBA.Any(CORBA.TC_longlong, value)
-    elif t is bool:
+    elif isinstance(value, bool):
         return CORBA.Any(CORBA.TC_boolean, value)
-    elif t is str:
+    elif isinstance(value, (long, int)):
+        return CORBA.Any(CORBA.TC_longlong, value)
+    elif isinstance(value, str):
         return CORBA.Any(CORBA.TC_string, value)
     elif isinstance (value, (list, tuple)):
         if isinstance (value[0], (list, tuple)):
