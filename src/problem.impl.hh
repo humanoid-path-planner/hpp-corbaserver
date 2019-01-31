@@ -97,6 +97,12 @@ namespace hpp
          const Transform_ frame2, const hpp::boolSeq& mask)
 	  throw (hpp::Error);
 
+	virtual void createTransformationSE3Constraint
+	(const char* constraintName, const char* joint1Name,
+	 const char* joint2Name, const Transform_ frame1,
+         const Transform_ frame2, const hpp::boolSeq& mask)
+	  throw (hpp::Error);
+
         virtual void createLockedJoint (const char* lockedJointName,
                                         const char* jointName,
                                         const hpp::floatSeq& value)

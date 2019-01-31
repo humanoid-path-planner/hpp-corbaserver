@@ -179,6 +179,12 @@ module hpp
      in string joint2Name, in Transform_ ref,
      in boolSeq mask) raises (Error);
 
+    /// \copydoc hpp::corbaserver::Problem::createTransformationConstraint2
+    /// \note the function outputs an element of SE3
+    void createTransformationSE3Constraint
+    (in string constraintName, in string joint1Name, in string joint2Name,
+     in Transform_ frame1, in Transform_ frame2, in boolSeq mask) raises (Error);
+
     /// Create transformation constraint between two joints
     ///
     /// \param constraintName name of the constraint created,
