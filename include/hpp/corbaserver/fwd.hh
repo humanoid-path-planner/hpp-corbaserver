@@ -15,16 +15,16 @@
 # include <omniORB4/CORBA.h>
 # include <hpp/core/fwd.hh>
 
-namespace fcl {
-  template <typename T> class BVHModel;
-  class CollisionGeometry;
-  class RSS;
-  class ShapeBase;
-  class Triangle;
-}
-
 namespace hpp
 {
+  namespace fcl {
+    template <typename T> class BVHModel;
+    class CollisionGeometry;
+    class RSS;
+    class ShapeBase;
+    class Triangle;
+  }
+
   namespace corbaServer
   {
     class Server;
