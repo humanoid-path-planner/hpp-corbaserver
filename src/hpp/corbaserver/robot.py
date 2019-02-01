@@ -301,11 +301,154 @@ class HumanoidRobot (Robot):
 
     def __init__ (self, robotName = None, rootJointType = None, load = True, client = None, hppcorbaClient = None):
         Robot.__init__ (self, robotName, rootJointType, load, client)
+
     def loadModel (self, robotName, rootJointType):
         self.hppcorba.robot.loadHumanoidModel (robotName, rootJointType,
                                           self.packageName, self.urdfName,
                                           self.urdfSuffix, self.srdfSuffix)
         self.rebuildRanks()
+
+    def _getCOM (self, com):
+        if com == "":
+            return self.getCenterOfMass ()
+        else:
+            return self.hpp.corba.robot.getPartialCom (com)
+
+    ## Create static stability constraints where the robot slides on the ground,
+    ## and store them into ProblemSolver
+    ## \param prefix prefix of the names of the constraint as stored in
+    ##        core::ProblemSolver,
+    ## \param comName name of the PartialCOM in the problem solver map. Put "" for
+    ##        a full COM computations.
+    ## \param leftAnkle, rightAnkle: names of the ankle joints.
+    ## \param q0 input configuration for computing constraint reference,
+    ## \return a list of the names of the created constraints
+    ##
+    ## The constraints are stored in the core::ProblemSolver constraints map
+    ## and are accessible through the method
+    ## hpp::core::ProblemSolver::addNumericalConstraint:
+    def createSlidingStabilityConstraint (self, prefix, comName, leftAnkle, rightAnkle, q0):
+        robot = self.hppcorba.robot
+        problem = self.hppcorba.problem
+
+        _tfs = robot.getJointsPosition (q0, (leftAnkle, rightAnkle))
+        Ml = Transform(_tfs[0])
+        Mr = Transform(_tfs[1])
+        self.setCurrentConfig (q0)
+        x = self._getCOM (comName)
+        result = []
+
+        # COM wrt left ankle frame
+        xloc = Ml.inverse().transform(x)
+        result.append (prefix + "relative-com")
+        problem.createRelativeComConstraint (result[-1], comName, leftAnkle, xloc.tolist(), (True,)*3)
+
+        # Relative pose of the feet
+        result.append (prefix + "relative-pose")
+        problem.createTransformationConstraint2 (result[-1],
+            leftAnkle, rightAnkle, (0,0,0,0,0,0,1), (Mr.inverse()*Ml).toTuple(), (True,)*6)
+
+        # Pose of the left foot
+        result.append (prefix + "pose-left-foot")
+        problem.createTransformationConstraint2 (result[-1],
+            "", leftAnkle, (0,0,0,0,0,0,1), Ml.toTuple(), (False,False,True,True,True,False))
+
+        # Complement left foot
+        result.append (prefix + "pose-left-foot-complement")
+        problem.createTransformationConstraint2 (result[-1],
+            "", leftAnkle, (0,0,0,0,0,0,1), Ml.toTuple(), (True,True,False,False,False,True))
+        problem.setConstantRightHandSide (result[-1], False)
+
+        return result
+
+    ## Create static stability constraints where the feet are fixed on the ground,
+    ## and store them into ProblemSolver
+    ## \param prefix prefix of the names of the constraint as stored in
+    ##        core::ProblemSolver,
+    ## \param comName name of the PartialCOM in the problem solver map. Put "" for
+    ##        a full COM computations.
+    ## \param leftAnkle, rightAnkle: names of the ankle joints.
+    ## \param q0 input configuration for computing constraint reference,
+    ## \return a list of the names of the created constraints
+    ##
+    ## The constraints are stored in the core::ProblemSolver constraints map
+    ## and are accessible through the method
+    ## hpp::core::ProblemSolver::addNumericalConstraint:
+    def createStaticStabilityConstraint (self, prefix, comName, leftAnkle, rightAnkle, q0):
+        robot = self.hppcorba.robot
+        problem = self.hppcorba.problem
+
+        _tfs = robot.getJointsPosition (q0, (leftAnkle, rightAnkle))
+        Ml = Transform(_tfs[0])
+        Mr = Transform(_tfs[1])
+        self.setCurrentConfig (q0)
+        x = self._getCOM (comName)
+        result = []
+
+        # COM wrt left ankle frame
+        xloc = Ml.inverse().transform(x)
+        result.append (prefix + "relative-com")
+        problem.createRelativeComConstraint (result[-1], comName, leftAnkle, xloc, (True,)*3)
+
+        # Pose of the left foot
+        result.append (prefix + "pose-left-foot")
+        problem.createTransformationConstraint2 (result[-1],
+            "", leftAnkle, (0,0,0,0,0,0,1), Ml.toTuple(), (True,True,True,True,True,True))
+
+        # Pose of the right foot
+        result.append (prefix + "pose-right-foot")
+        problem.createTransformationConstraint2 (result[-1],
+            "", rightAnkle, (0,0,0,0,0,0,1), Mr.toTuple(), (True,True,True,True,True,True))
+
+        return result
+
+    ## Create static stability constraints where the COM is vertically projected
+    ## on the line between the two ankles,  and the feet slide (or are fixed) on the ground.
+    ## The constraints are stored into ProblemSolver
+    ## \param prefix prefix of the names of the constraint as stored in
+    ##        core::ProblemSolver,
+    ## \param comName name of the PartialCOM in the problem solver map. Put "" for
+    ##        a full COM computations.
+    ## \param leftAnkle, rightAnkle: names of the ankle joints.
+    ## \param q0 input configuration for computing constraint reference,
+    ## \param sliding whether the feet slide or are fixed.
+    ## \return a list of the names of the created constraints
+    ##
+    ## The constraints are stored in the core::ProblemSolver constraints map
+    ## and are accessible through the method
+    ## hpp::core::ProblemSolver::addNumericalConstraint:
+    def createAlignedCOMStabilityConstraint (self, prefix, comName, leftAnkle, rightAnkle, q0, sliding):
+        robot = self.hppcorba.robot
+        problem = self.hppcorba.problem
+
+        _tfs = robot.getJointsPosition (q0, (leftAnkle, rightAnkle))
+        Ml = Transform(_tfs[0])
+        Mr = Transform(_tfs[1])
+        robot.setCurrentConfig (q0)
+        x = _getCOM (robot, comName)
+        result = []
+
+        # COM between feet
+        result.append (prefix + "com-between-feet")
+        problem.createComBetweenFeet (result[-1], comName, leftAnkle, rightAnkle,
+            (0,0,0), (0,0,0), "", x, (True,)*4)
+
+        if sliding:
+          mask = ( False, False, True, True, True, False )
+        else:
+          mask = ( True, ) * 6
+
+        # Pose of the right foot
+        result.append (prefix + "pose-right-foot")
+        problem.createTransformationConstraint2 (result[-1],
+            "", rightAnkle, (0,0,0,0,0,0,1), Mr.toTuple(), mask)
+
+        # Pose of the left foot
+        result.append (prefix + "pose-left-foot")
+        problem.createTransformationConstraint2 (result[-1],
+            "", leftAnkle, (0,0,0,0,0,0,1), Ml.toTuple(), mask)
+
+        return result;
 
 class RobotXML (Robot):
     def __init__ (self, robotName, rootJointType, urdfString, srdfString = "",
