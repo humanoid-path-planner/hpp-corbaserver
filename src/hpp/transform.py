@@ -65,5 +65,11 @@ class Transform (object):
     def __len__ (self):
         return 7
 
+    def toHomogeneousMatrix (self):
+        H = np.eye(4)
+        H[:3,:3] = self.quaternion.toRotationMatrix()
+        H[:3,3] = self.translation
+        return H
+
     def toTuple (self):
         return tuple (self.translation) + self.quaternion.toTuple ()
