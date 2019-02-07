@@ -187,7 +187,7 @@ namespace hpp
                   out <<= p.boolValue();
                   break;
                 case Parameter::INT:
-                  out <<= p.intValue();
+                  out <<= (CORBA::Long)p.intValue();
                   break;
                 case Parameter::FLOAT:
                   out <<= p.floatValue();
