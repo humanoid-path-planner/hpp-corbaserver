@@ -119,22 +119,12 @@ ELSE(WIN32)
 ENDIF(WIN32)
 
 FOREACH (FILE __init__.py quaternion.py transform.py)
-  # Create a symbolic link of FILE into the build directory
-  # This is for testing purpose
-  EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E ${LINK}
-    ${CMAKE_CURRENT_SOURCE_DIR}/hpp/${FILE}
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/${FILE})
   PYTHON_INSTALL_ON_SITE(
     hpp ${FILE} ${PYTHON_SITELIB}
     )
 ENDFOREACH ()
 
 FOREACH (FILE __init__.py client.py robot.py  problem_solver.py benchmark.py ompl_benchmark_statistics.py)
-  # Create a symbolic link of FILE into the build directory
-  # This is for testing purpose
-  EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E ${LINK}
-    ${CMAKE_CURRENT_SOURCE_DIR}/hpp/corbaserver/${FILE}
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/${FILE})
   PYTHON_INSTALL_ON_SITE(
     hpp/corbaserver ${FILE} ${PYTHON_SITELIB}
     )
@@ -148,4 +138,3 @@ INSTALL(
   ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/robot.idl
   DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/idl/hpp/corbaserver
 )
-
