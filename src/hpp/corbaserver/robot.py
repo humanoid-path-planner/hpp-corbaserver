@@ -46,7 +46,11 @@ class Robot (object):
 
     ## Rebuild inner variables rankInConfiguration and rankInVelocity
     def rebuildRanks (self):
-        self.jointNames = self.hppcorba.robot.getJointNames ()
+        try:
+            self.jointNames = self.hppcorba.robot.getJointNames ()
+        except:
+            # No robot yet
+            return
         self.allJointNames = self.hppcorba.robot.getAllJointNames ()
         self.rankInConfiguration = dict ()
         self.rankInVelocity = dict ()
