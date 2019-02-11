@@ -461,8 +461,9 @@ class RobotXML (Robot):
         self.srdfString = srdfString
         Robot.__init__ (self, robotName, rootJointType, load, client)
     def loadModel (self, robotName, rootJointType):
-        self.hppcorba.robot.loadRobotModelFromString (robotName, rootJointType,
-                                          self.urdfString, self.srdfString)
+        if self.load:
+            self.hppcorba.robot.loadRobotModelFromString (
+                    robotName, rootJointType, self.urdfString, self.srdfString)
         self.rebuildRanks()
     def urdfPath (self):
         return self.urdfString
