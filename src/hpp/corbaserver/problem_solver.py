@@ -662,8 +662,8 @@ class ProblemSolver (object):
     #  direct path is not valid
     #  Call steering method between end of path and input config and append
     #  direct path in case of success.
-    def appendDirectPath (self, pathId, config):
-        return self.hppcorba.problem.appendDirectPath (pathId, config)
+    def appendDirectPath (self, pathId, config, validate):
+        return self.hppcorba.problem.appendDirectPath (pathId, config, validate)
 
     ## Concatenate path endId at the end of startId.
     #  \note No path are created. The resulting path is at rank startId.

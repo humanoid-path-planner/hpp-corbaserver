@@ -587,7 +587,7 @@ module hpp
       raises (Error);
 
     /// \copydoc hpp::corbaserver::problem_solver::ProblemSolver::appendDirectPath
-    void appendDirectPath (in unsigned long pathId, in floatSeq config)
+    void appendDirectPath (in unsigned long pathId, in floatSeq config, in boolean validate)
       raises (Error);
 
     /// \copydoc hpp::corbaserver::problem_solver::ProblemSolver::concatenatePath

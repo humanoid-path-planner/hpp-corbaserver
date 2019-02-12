@@ -26,6 +26,7 @@ namespace hpp
     namespace impl
     {
       using CORBA::Any;
+      using CORBA::Boolean;
       using CORBA::Long;
       using CORBA::ULong;
       using CORBA::UShort;
@@ -298,7 +299,8 @@ namespace hpp
 	  throw (hpp::Error);
 
 	virtual void appendDirectPath (ULong pathId,
-				       const hpp::floatSeq& config)
+				       const hpp::floatSeq& config,
+                                       Boolean validate)
 	  throw (hpp::Error);
 
         virtual void concatenatePath (ULong startId, ULong endId)

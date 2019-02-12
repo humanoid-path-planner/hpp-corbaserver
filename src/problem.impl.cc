@@ -1968,7 +1968,8 @@ namespace hpp
       // ---------------------------------------------------------------
 
       void Problem::appendDirectPath (ULong pathId,
-				      const hpp::floatSeq& config)
+				      const hpp::floatSeq& config,
+                                      Boolean validate)
 	throw (hpp::Error)
       {
 	try {
@@ -1995,13 +1996,15 @@ namespace hpp
                 << pinocchio::displayConfig (*end) << ".";
             throw std::runtime_error (oss.str ().c_str ());
           }
-	  PathPtr_t unused;
-	  PathValidationReportPtr_t report;
-	  if (!problemSolver()->problem()->pathValidation ()->validate
-	      (dp, false, unused, report)) {
-	    std::ostringstream oss; oss << *report;
-	    throw hpp::Error (oss.str ().c_str ());
-	  }
+          if (validate) {
+            PathPtr_t unused;
+            PathValidationReportPtr_t report;
+            if (!problemSolver()->problem()->pathValidation ()->validate
+                (dp, false, unused, report)) {
+              std::ostringstream oss; oss << *report;
+              throw hpp::Error (oss.str ().c_str ());
+            }
+          }
 	  path->appendPath (dp);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
