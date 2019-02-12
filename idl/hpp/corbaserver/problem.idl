@@ -562,6 +562,11 @@ module hpp
 			out unsigned long pathId, out string report)
       raises (Error);
 
+    /// Reverse a path
+    /// \return TRUE if created path is fully valid.
+    boolean reversePath (in unsigned long pathId, out unsigned long reversedPathId)
+      raises (Error);
+
     /// add a configuration to a roadmap
     ///
     /// \param config Configuration to add

@@ -288,6 +288,8 @@ namespace hpp
 				 CORBA::String_out report)
 	  throw (hpp::Error);
 
+        virtual bool reversePath(ULong pathId, ULong& reversedPathId) throw (hpp::Error);
+
 	virtual void addConfigToRoadmap (const hpp::floatSeq& config) throw (hpp::Error);
 
 	virtual void addEdgeToRoadmap (const hpp::floatSeq& config1,

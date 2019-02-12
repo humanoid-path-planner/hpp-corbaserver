@@ -1899,6 +1899,30 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+      bool Problem::reversePath (ULong pathId, ULong& reversedPathId)
+	throw (hpp::Error)
+      {
+	try {
+          if ( pathId >= problemSolver()->paths ().size ()) {
+	    std::ostringstream oss ("wrong path id. ");
+	    oss << "Number path: " << problemSolver()->paths ().size () << ".";
+            std::string err = oss.str();
+	    throw hpp::Error (err.c_str ());
+	  }
+	  PathVectorPtr_t path = problemSolver()->paths () [pathId];
+          PathVectorPtr_t reversed =
+            HPP_DYNAMIC_PTR_CAST(core::PathVector, path->reverse());
+          if (!reversed) return false;
+          problemSolver()->addPath (reversed);
+          reversedPathId = (ULong)problemSolver()->paths ().size () - 1; 
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+        }
+        return true;
+      }
+
+      // ---------------------------------------------------------------
+
       void  Problem::addConfigToRoadmap (const hpp::floatSeq& config)
 	throw (hpp::Error)
       {
