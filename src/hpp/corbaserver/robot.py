@@ -457,6 +457,7 @@ class HumanoidRobot (Robot):
 class RobotXML (Robot):
     def __init__ (self, robotName, rootJointType, urdfString, srdfString = "",
             load = True, client = None, hppcorbaClient = None,):
+        self.load = load
         self.urdfString = urdfString
         self.srdfString = srdfString
         Robot.__init__ (self, robotName, rootJointType, load, client)

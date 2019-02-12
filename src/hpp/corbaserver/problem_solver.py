@@ -421,6 +421,22 @@ class ProblemSolver (object):
     def setRightHandSideByName (self, constraintName, rhs):
         return self.hppcorba.problem.setRightHandSideByName (constraintName, rhs)
 
+    ## Set right hand side of constraints in config projector
+    #  \param config a robot configuration use to compute the right hand side
+    #         of constraints. Contains only right hand side of non-constant
+    #         constraints
+    #  \note Locked joints are also considered.
+    def setRightHandSideFromConfig (self, config):
+        return self.hppcorba.problem.setRightHandSideFromConfig (config)
+
+    ## Set right hand side of given constraint in config projector
+    #  \param constraintName name of the numerical constraint or locked joint
+    #  \param config a robot configuration use to compute the right hand side.
+    #         raises an exception if constraint has constant right hand side.
+    def setRightHandSideFromConfigByName (self, constraintName, config):
+        return self.hppcorba.problem.setRightHandSideFromConfigByName (constraintName, config)
+
+
     ## Apply constraints
     #
     #  \param q initial configuration

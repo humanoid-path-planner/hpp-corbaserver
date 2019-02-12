@@ -414,17 +414,17 @@ namespace hpp
 
       CORBA::Any* Problem::getParameter (const char* name) throw (Error)
       {
-        if (problemSolver()->problem() != NULL) {
-          try {
-            const Parameter& param = problemSolver()->problem()->getParameter (name);
-            CORBA::Any* ap = new CORBA::Any;
-            *ap = Parameter_CorbaAny::toCorbaAny(param);
-            return ap;
-          } catch (const std::exception& e) {
-            throw hpp::Error (e.what ());
+        try {
+          if (problemSolver()->problem() != NULL) {
+              const Parameter& param = problemSolver()->problem()->getParameter (name);
+              CORBA::Any* ap = new CORBA::Any;
+              *ap = Parameter_CorbaAny::toCorbaAny(param);
+              return ap;
           }
+          throw hpp::Error ("The problem is not initialized.");
+        } catch (std::exception& e) {
+          throw Error (e.what ());
         }
-        throw Error ("No problem in the ProblemSolver");
       }
 
       // ---------------------------------------------------------------
