@@ -25,6 +25,8 @@ namespace hpp
   {
     namespace impl
     {
+      using CORBA::Any;
+      using CORBA::Boolean;
       using CORBA::Long;
       using CORBA::ULong;
       using CORBA::UShort;
@@ -41,16 +43,18 @@ namespace hpp
 
         virtual Names_t* getSelected (const char* what) throw (hpp::Error);
 
-        virtual void setParameter (const char* name, const CORBA::Any& value)
+        virtual void setParameter (const char* name, const Any& value)
           throw (Error);
 
-        virtual CORBA::Any* getParameter (const char* name) throw (Error);
+        virtual Any* getParameter (const char* name) throw (Error);
 
         virtual char* getParameterDoc (const char* name) throw (Error);
 
         virtual bool selectProblem (const char* problemName) throw (hpp::Error);
 
         virtual void resetProblem () throw (hpp::Error);
+
+        virtual bool loadPlugin (const char* pluginName) throw (hpp::Error);
 
         virtual void movePathToProblem (ULong pathId, const char* problemName,
             const Names_t& jointNames) throw (hpp::Error);
@@ -94,6 +98,12 @@ namespace hpp
          const Transform_ frame2, const hpp::boolSeq& mask)
 	  throw (hpp::Error);
 
+	virtual void createTransformationSE3Constraint
+	(const char* constraintName, const char* joint1Name,
+	 const char* joint2Name, const Transform_ frame1,
+         const Transform_ frame2, const hpp::boolSeq& mask)
+	  throw (hpp::Error);
+
         virtual void createLockedJoint (const char* lockedJointName,
                                         const char* jointName,
                                         const hpp::floatSeq& value)
@@ -104,6 +114,9 @@ namespace hpp
                                            const hpp::floatSeq& value)
           throw (hpp::Error);
 
+        virtual void createManipulability (const char* name, const char* function)
+          throw (hpp::Error);
+
         void createRelativeComConstraint (const char* constraintName,
             const char* comn, const char* jointName, const floatSeq& point,
             const hpp::boolSeq& mask)
@@ -112,7 +125,8 @@ namespace hpp
         void createComBeetweenFeet (const char* constraintName, const char* comn,
             const char* jointLName, const char* jointRName,
             const floatSeq& pointL, const floatSeq& pointR,
-            const char* jointRefName, const hpp::boolSeq& mask)
+            const char* jointRefName, const floatSeq& pRef,
+            const hpp::boolSeq& mask)
           throw (hpp::Error);
 
 	virtual void createConvexShapeContactConstraint
@@ -275,6 +289,8 @@ namespace hpp
 				 CORBA::String_out report)
 	  throw (hpp::Error);
 
+        virtual bool reversePath(ULong pathId, ULong& reversedPathId) throw (hpp::Error);
+
 	virtual void addConfigToRoadmap (const hpp::floatSeq& config) throw (hpp::Error);
 
 	virtual void addEdgeToRoadmap (const hpp::floatSeq& config1,
@@ -283,7 +299,8 @@ namespace hpp
 	  throw (hpp::Error);
 
 	virtual void appendDirectPath (ULong pathId,
-				       const hpp::floatSeq& config)
+				       const hpp::floatSeq& config,
+                                       Boolean validate)
 	  throw (hpp::Error);
 
         virtual void concatenatePath (ULong startId, ULong endId)

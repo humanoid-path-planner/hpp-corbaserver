@@ -15,7 +15,6 @@
 module hpp
 {
   module corbaserver {
-  typedef sequence<double> dofSeq;
   /// \brief To define and solve a path planning problem.
   interface Problem
   {
@@ -62,6 +61,9 @@ module hpp
 
     /// Reset the current problem.
     void resetProblem () raises (Error);
+
+    /// \copydoc hpp::corbaserver::problem_solver::ProblemSolver::loadPlugin
+    boolean loadPlugin (in string pluginName) raises (Error);
 
     /// Move a path from the current problem to another problem.
     /// \param problemName the destination problem
@@ -177,6 +179,12 @@ module hpp
      in string joint2Name, in Transform_ ref,
      in boolSeq mask) raises (Error);
 
+    /// \copydoc hpp::corbaserver::Problem::createTransformationConstraint2
+    /// \note the function outputs an element of SE3
+    void createTransformationSE3Constraint
+    (in string constraintName, in string joint1Name, in string joint2Name,
+     in Transform_ frame1, in Transform_ frame2, in boolSeq mask) raises (Error);
+
     /// Create transformation constraint between two joints
     ///
     /// \param constraintName name of the constraint created,
@@ -211,6 +219,11 @@ module hpp
                                in unsigned long index,
                                in floatSeq value) raises (Error);
 
+    /// Create a manipulatibility constraint
+    /// \param name key of the constraint in the Problem Solver map
+    /// \param function name of the function used to get the Jacobian matrix.
+    void createManipulability (in string name,
+                               in string function) raises (Error);
 
     /// Create ComBeetweenFeet constraint between two joints
     ///
@@ -222,12 +235,14 @@ module hpp
     /// \param pointL point in local frame of jointL.
     /// \param pointR point in local frame of jointR.
     /// \param jointRefName name of second joint
+    /// \param pointRef point in local frame of jointRef
     /// \param mask Select axis to be constrained.
     /// If jointRef is "", the global frame is used.
     /// Constraints are stored in ProblemSolver object
     void createComBeetweenFeet (in string constraintName, in string comName,
             in string jointLName, in string jointRName, in floatSeq pointL,
-            in floatSeq pointR, in string jointRefName, in boolSeq mask)
+            in floatSeq pointR, in string jointRefName, in floatSeq pointRef,
+            in boolSeq mask)
         raises (Error);
 
     /// Create RelativeCom constraint between two joints
@@ -547,6 +562,11 @@ module hpp
 			out unsigned long pathId, out string report)
       raises (Error);
 
+    /// Reverse a path
+    /// \return TRUE if created path is fully valid.
+    boolean reversePath (in unsigned long pathId, out unsigned long reversedPathId)
+      raises (Error);
+
     /// add a configuration to a roadmap
     ///
     /// \param config Configuration to add
@@ -567,7 +587,7 @@ module hpp
       raises (Error);
 
     /// \copydoc hpp::corbaserver::problem_solver::ProblemSolver::appendDirectPath
-    void appendDirectPath (in unsigned long pathId, in floatSeq config)
+    void appendDirectPath (in unsigned long pathId, in floatSeq config, in boolean validate)
       raises (Error);
 
     /// \copydoc hpp::corbaserver::problem_solver::ProblemSolver::concatenatePath
@@ -604,7 +624,7 @@ module hpp
     /// Get the robot config at param on a path
     /// \param inPathId rank of the path in the problem
     /// \param atDistance : the user parameter choice
-    /// \return dofseq : the config at param
+    /// \return floatSeq : the config at param
     floatSeq configAtParam(in unsigned long inPathId, in double atDistance)
       raises (Error);
 
@@ -612,7 +632,7 @@ module hpp
     /// \param inPathId rank of the path in the problem
     /// \param orderId order of the derivative
     /// \param atDistance : the user parameter choice
-    /// \return dofseq : the velocity at param
+    /// \return floatSeq : the velocity at param
     floatSeq derivativeAtParam(in unsigned long inPathId, in unsigned long orderId, in double atDistance)
       raises (Error);
 

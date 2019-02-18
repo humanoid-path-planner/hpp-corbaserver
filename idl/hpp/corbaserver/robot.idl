@@ -17,7 +17,7 @@ module hpp
 {
   module corbaserver {
   /// Creation of a device, joints and bodies.
-  interface Robot {
+  interface RobotIDL {
     /// \name Loading URDF files
     /// \{
 

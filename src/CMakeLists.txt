@@ -30,10 +30,15 @@ OMNIIDL_INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/idl)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src)
 FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver)
 
-FOREACH(IDL ${IDL_SOURCES})
+FOREACH(IDL obstacle problem robot)
   GENERATE_IDL_CPP (hpp/corbaserver/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver)
   GENERATE_IDL_PYTHON (hpp/corbaserver/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver)
+ENDFOREACH()
+# Enable generation of dynamic type codes (in file commonDynSK.cc)
+GENERATE_IDL_CPP (hpp/corbaserver/common ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver ENABLE_Wba)
+GENERATE_IDL_PYTHON (hpp/corbaserver/common ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver)
 
+FOREACH(IDL ${IDL_SOURCES})
   INSTALL(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/${IDL}.hh
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp/corbaserver)
@@ -65,14 +70,7 @@ IF (NOT CLIENT_ONLY)
     tools.cc
     tools.hh
     conversions.cc
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/common.hh
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/problem.hh
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/obstacle.hh
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/robot.hh
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/commonSK.cc
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/obstacleSK.cc
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/robotSK.cc
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/problemSK.cc
+    ${ALL_IDL_CPP_STUBS}
     )
 
   PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-core)

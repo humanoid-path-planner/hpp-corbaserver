@@ -35,7 +35,7 @@ namespace hpp
       void connect (const char* iiop = "corbaloc:rir:/NameService",
           const char* context = "");
 
-      hpp::corbaserver::Robot_var& robot () {
+      hpp::corbaserver::RobotIDL_var& robot () {
         return robot_;
       }
 
@@ -48,7 +48,7 @@ namespace hpp
       }
 
     private:
-      hpp::corbaserver::Robot_var robot_;
+      hpp::corbaserver::RobotIDL_var robot_;
       hpp::corbaserver::Problem_var problem_;
       hpp::corbaserver::Obstacle_var obstacle_;
 
