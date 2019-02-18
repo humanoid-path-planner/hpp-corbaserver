@@ -11,9 +11,9 @@ class Test(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.omni_names = Popen(['/usr/bin/omniNames', '-start'], stdout=sys.stdout)
-        sleep(0.1)
+        sleep(1)
         cls.server = Popen(["../src/hppcorbaserver"], stdout=sys.stdout)
-        sleep(0.1)
+        sleep(1)
         cls.server.poll()
         if cls.server.returncode is not None:
             print("Process died")
