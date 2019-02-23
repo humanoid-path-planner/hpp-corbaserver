@@ -9,8 +9,8 @@
 // See the COPYING file for more information.
 
 #ifndef HPP_CORBASERVER_PROBLEM_SERVER_IDL
-# define HPP_CORBASERVER_PROBLEM_SERVER_IDL
-# include <hpp/corbaserver/common.idl>
+#define HPP_CORBASERVER_PROBLEM_SERVER_IDL
+#include <hpp/corbaserver/common.idl>
 
 module hpp
 {
