@@ -487,6 +487,17 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+      bool Problem::loadServerPlugin (const char* pluginName) throw (hpp::Error)
+      {
+        try {
+          return server_->loadPlugin (pluginName);
+        } catch (std::exception& exc) {
+          throw Error (exc.what ());
+        }
+      }
+
+      // ---------------------------------------------------------------
+
       void Problem::movePathToProblem (ULong pathId, const char* name,
           const Names_t& jointNames) throw (hpp::Error)
       {

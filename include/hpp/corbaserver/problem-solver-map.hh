@@ -20,6 +20,7 @@
 
 # include "hpp/corbaserver/fwd.hh"
 # include "hpp/corbaserver/config.hh"
+# include <hpp/corbaserver/problem-solver-map.hh>
 
 # include "hpp/core/fwd.hh"
 

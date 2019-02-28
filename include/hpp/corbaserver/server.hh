@@ -108,6 +108,11 @@ namespace hpp
       ///          application will be deadlocked.
       void requestShutdown (bool wait);
 
+      /// Load a plugin if not already loaded.
+      /// \return true if the plugin is correctly loaded, false otherwise (which
+      ///         includes the case where the plugin was already loaded).
+      bool loadPlugin (const std::string& libFilename);
+
       ProblemSolverMapPtr_t problemSolverMap ();
 
       core::ProblemSolverPtr_t problemSolver ();
@@ -141,6 +146,9 @@ namespace hpp
       /// to each constructor of implementation classes of the server
       /// Corba interface.
       ProblemSolverMapPtr_t problemSolverMap_;
+
+      typedef boost::shared_ptr<ServerPlugin> ServerPluginPtr_t;
+      std::map<std::string, ServerPluginPtr_t> plugins_;
     };
 
   } // end of namespace corbaServer.

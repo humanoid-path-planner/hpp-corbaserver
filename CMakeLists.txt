@@ -41,6 +41,7 @@ IF (NOT CLIENT_ONLY)
     include/hpp/corbaserver/object-map.hh
     include/hpp/corbaserver/problem-solver-map.hh
     include/hpp/corbaserver/server.hh
+    include/hpp/corbaserver/server-plugin.hh
     include/hpp/corbaserver/conversions.hh
     ${${PROJECT_NAME}_HEADERS}
     )
@@ -62,5 +63,10 @@ ADD_SUBDIRECTORY(src)
 ADD_SUBDIRECTORY(tests)
 
 PKG_CONFIG_APPEND_LIBS(${PROJECT_NAME})
+
+SET(PKG_CONFIG_EXTRA "${PKG_CONFIG_EXTRA}\ncmake_plugin=${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake/${PROJECT_NAME}-plugin.cmake")
+INSTALL(FILES cmake-modules/hpp-corbaserver-plugin.cmake
+  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake/
+  PERMISSIONS OWNER_READ GROUP_READ WORLD_READ OWNER_WRITE)
 
 SETUP_HPP_PROJECT_FINALIZE()

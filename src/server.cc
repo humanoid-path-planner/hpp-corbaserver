@@ -8,12 +8,16 @@
 //
 // See the COPYING file for more information.
 
+#include "hpp/corbaserver/server.hh"
+
 #include <errno.h>
 #include <pthread.h>
 #include <iostream>
+#include <dlfcn.h>
 
 #include <hpp/util/debug.hh>
-#include "hpp/corbaserver/server.hh"
+#include <hpp/core/plugin.hh>
+#include <hpp/corbaserver/server-plugin.hh>
 
 #include "server-private.hh"
 
@@ -216,6 +220,54 @@ namespace hpp
     ProblemSolverMapPtr_t Server::problemSolverMap ()
     {
       return problemSolverMap_;
+    }
+
+    bool Server::loadPlugin (const std::string& libFilename)
+    {
+      std::string lib = core::plugin::findPluginLibrary (libFilename);
+
+      typedef ::hpp::corbaServer::ServerPlugin* (*PluginFunction_t) (bool);
+
+      // Clear old errors
+      const char* error = dlerror ();
+      //void* library = dlopen(lib.c_str(), RTLD_NOW|RTLD_GLOBAL);
+      void* library = dlopen(lib.c_str(), RTLD_NOW);
+      error = dlerror ();
+      if (error != NULL) {
+        hppDout (error, "Error loading library " << lib << ": " << error);
+        return false;
+      }
+      if (library == NULL) {
+        // uncaught error ?
+        return false;
+      }
+
+      PluginFunction_t function = reinterpret_cast<PluginFunction_t>(dlsym(library, "createServerPlugin"));
+      error = dlerror ();
+      if (error != NULL) {
+        hppDout (error, "Error loading library " << lib << ":\n" << error);
+        return false;
+      }
+      if (function == NULL) {
+        hppDout (error, "Symbol createServerPlugin of (correctly loaded) library " << lib << " is NULL.");
+        return false;
+      }
+
+      ServerPluginPtr_t plugin (function(multiThread()));
+      if (!plugin) return false;
+      const std::string name = plugin->name();
+      if (plugins_.find (name) != plugins_.end()) {
+        hppDout (info, "Plugin " << lib << " already loaded.");
+        return false;
+      }
+      plugins_[name] = plugin;
+      plugin->setProblemSolverMap (problemSolverMap_);
+      plugin->startCorbaServer (mainContextId(), "corbaserver");
+
+      // I don't think we should do that because the symbols should not be removed...
+      // dlclose (library);
+
+      return true;
     }
 
     /// \brief If CORBA requests are pending, process them
