@@ -21,6 +21,11 @@ def newProblem ():
     cl = Client()
     cl.problem.resetProblem()
 
+def loadServerPlugin (name):
+    from hpp.corbaserver import Client
+    cl = Client()
+    return cl.problem.loadServerPlugin(name)
+
 def _convertToCorbaAny (value):
     import CORBA
     t = type(value)
