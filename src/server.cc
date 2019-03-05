@@ -152,12 +152,12 @@ namespace hpp
 
     void Server::parseArguments (int argc, const char* argv[])
     {
-      mainContextId_ = "hpp";
+      mainContextId_ = "corbaserver";
 
       for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--name") == 0) {
           if (i < argc - 1) {
-            mainContextId_.append(argv[i+1]);
+            mainContextId_ = argv[i+1];
             ++i;
           }
           else              usage(argv[0]);
@@ -262,7 +262,7 @@ namespace hpp
       }
       plugins_[name] = plugin;
       plugin->setProblemSolverMap (problemSolverMap_);
-      plugin->startCorbaServer (mainContextId(), "corbaserver");
+      plugin->startCorbaServer ("hpp", mainContextId());
 
       // I don't think we should do that because the symbols should not be removed...
       // dlclose (library);
