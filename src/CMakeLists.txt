@@ -82,6 +82,7 @@ IF (NOT CLIENT_ONLY)
     server.cc
     server-private.cc
     server-private.hh
+    problem-solver-map.cc
     tools.cc
     tools.hh
     conversions.cc
