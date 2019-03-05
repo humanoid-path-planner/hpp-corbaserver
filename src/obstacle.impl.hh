@@ -30,7 +30,12 @@ namespace hpp
       class Obstacle : public virtual POA_hpp::corbaserver::Obstacle
       {
       public:
-	Obstacle (corbaServer::Server* server);
+	Obstacle ();
+
+        void setServer (ServerPlugin* server)
+        {
+          server_ = server;
+        }
 
 	virtual void loadObstacleModel (const char* package,
 					const char* filename,
@@ -93,10 +98,10 @@ namespace hpp
         /// Map of object in construction.
         ObjectMap objectMap_;
 
-	/// \brief Pointer to the hpp::corbaServer::Server owning this object.
-	corbaServer::Server* server_;
+	/// \brief Pointer to the ServerPlugin owning this object.
+	ServerPlugin* server_;
 
-	/// \brief Pointer to hppPlanner object of hpp::corbaServer::Server.
+	/// \brief Pointer to hpp::core::ProblemSolver object of ServerPlugin.
 	core::ProblemSolverPtr_t problemSolver();
       };
 

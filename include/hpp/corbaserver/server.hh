@@ -11,6 +11,8 @@
 #ifndef HPP_CORBASERVER_SERVER_HH
 # define HPP_CORBASERVER_SERVER_HH
 
+# include <omniORB4/CORBA.h>
+
 # include <hpp/corbaserver/fwd.hh>
 # include <hpp/corbaserver/config.hh>
 # include <hpp/corbaserver/problem-solver-map.hh>
@@ -111,7 +113,8 @@ namespace hpp
       /// Load a plugin if not already loaded.
       /// \return true if the plugin is correctly loaded, false otherwise (which
       ///         includes the case where the plugin was already loaded).
-      bool loadPlugin (const std::string& libFilename);
+      bool loadPlugin (const std::string& contextName,
+          const std::string& libFilename);
 
       ProblemSolverMapPtr_t problemSolverMap ();
 
@@ -132,7 +135,9 @@ namespace hpp
 
       /// \}
 
-      impl::Server* private_;
+      CORBA::ORB_var orb_;
+      PortableServer::POA_var poa_;
+      ServerIDL* serverIDL_;
 
       std::string mainContextId_;
 
@@ -148,7 +153,14 @@ namespace hpp
       ProblemSolverMapPtr_t problemSolverMap_;
 
       typedef boost::shared_ptr<ServerPlugin> ServerPluginPtr_t;
-      std::map<std::string, ServerPluginPtr_t> plugins_;
+      typedef std::map<std::string, ServerPluginPtr_t> ServerPluginMap_t;
+      struct Context {
+        ServerPluginPtr_t main;
+        ServerPluginMap_t plugins;
+      };
+      std::map<std::string, Context> contexts_;
+
+      Context& getContext (const std::string& name);
     };
 
   } // end of namespace corbaServer.

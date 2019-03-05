@@ -21,6 +21,7 @@ SET(IDL_SOURCES
   obstacle
   problem
   robot
+  server_idl
   )
 
 # search for python
@@ -29,7 +30,7 @@ FINDPYTHON(2.7 EXACT REQUIRED)
 OMNIIDL_INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/idl)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src)
 
-FOREACH(IDL obstacle problem robot)
+FOREACH(IDL obstacle problem robot server_idl)
   GENERATE_IDL_CPP (hpp/corbaserver/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver)
   GENERATE_IDL_PYTHON (hpp/corbaserver/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver
     ARGUMENTS

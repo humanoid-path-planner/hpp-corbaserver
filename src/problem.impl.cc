@@ -59,7 +59,7 @@
 # include <hpp/constraints/static-stability.hh>
 #endif
 #include <hpp/constraints/configuration-constraint.hh>
-#include <hpp/corbaserver/server.hh>
+#include <hpp/corbaserver/server-plugin.hh>
 #include <hpp/pinocchio/body.hh>
 #include <hpp/pinocchio/center-of-mass-computation.hh>
 
@@ -269,15 +269,16 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      Problem::Problem (corbaServer::Server* server)
-	: server_ (server)
+      Problem::Problem ()
+        : server_ (NULL)
       {}
 
       // ---------------------------------------------------------------
 
       void Problem::shutdown ()
       {
-        server_->requestShutdown(false);
+        // TODO
+        //server_->requestShutdown(false);
       }
 
       // ---------------------------------------------------------------
@@ -479,17 +480,6 @@ namespace hpp
           core::ProblemSolverPtr_t ps = problemSolver();
           std::string libname = core::plugin::findPluginLibrary (pluginName);
           return core::plugin::loadPlugin (libname, ps);
-        } catch (std::exception& exc) {
-          throw Error (exc.what ());
-        }
-      }
-
-      // ---------------------------------------------------------------
-
-      bool Problem::loadServerPlugin (const char* pluginName) throw (hpp::Error)
-      {
-        try {
-          return server_->loadPlugin (pluginName);
         } catch (std::exception& exc) {
           throw Error (exc.what ());
         }

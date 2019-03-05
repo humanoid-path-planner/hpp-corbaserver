@@ -51,7 +51,12 @@ namespace hpp
       class Robot : public virtual POA_hpp::corbaserver::RobotIDL
       {
       public:
-	Robot (corbaServer::Server* server);
+	Robot ();
+
+        void setServer (ServerPlugin* server)
+        {
+          server_ = server;
+        }
 
 	virtual void
 	createRobot (const char* robotName) throw (hpp::Error);
@@ -268,12 +273,10 @@ namespace hpp
 
         ObjectMap objectMap_;
 
-	/// Pointer to the hpp::corbaServer::Server owning this object
-	corbaServer::Server* server_;
+        /// \brief Pointer to the ServerPlugin owning this object.
+	ServerPlugin* server_;
 
-	/// Pointer to Planner object of hpp::corbaServer::Server.
-	///
-	/// Instantiated at construction.
+        /// \brief Pointer to hpp::core::ProblemSolver object of ServerPlugin.
 	core::ProblemSolverPtr_t problemSolver();
       };
     } // end of namespace impl.

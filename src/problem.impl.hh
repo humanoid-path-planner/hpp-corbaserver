@@ -35,7 +35,12 @@ namespace hpp
       class Problem : public virtual POA_hpp::corbaserver::Problem
       {
       public:
-	Problem (corbaServer::Server* server);
+	Problem ();
+
+        void setServer (ServerPlugin* server)
+        {
+          server_ = server;
+        }
 
         virtual void shutdown ();
 
@@ -55,8 +60,6 @@ namespace hpp
         virtual void resetProblem () throw (hpp::Error);
 
         virtual bool loadPlugin (const char* pluginName) throw (hpp::Error);
-
-        virtual bool loadServerPlugin (const char* pluginName) throw (hpp::Error);
 
         virtual void movePathToProblem (ULong pathId, const char* problemName,
             const Names_t& jointNames) throw (hpp::Error);
@@ -362,8 +365,8 @@ namespace hpp
       private:
         /// Return the selected problem solver
         core::ProblemSolverPtr_t problemSolver ();
-	/// \brief Pointer to the Server owning this object
-	corbaServer::Server* server_;
+        /// \brief Pointer to the ServerPlugin owning this object.
+	ServerPlugin* server_;
       };
     } // end of namespace impl.
   } // end of namespace corbaServer.

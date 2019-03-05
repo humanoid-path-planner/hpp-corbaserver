@@ -5,6 +5,7 @@ import robot_idl
 import common_idl
 import obstacle_idl
 import problem_idl
+import server_idl_idl
 
 from .client import Client
 from .robot import Robot

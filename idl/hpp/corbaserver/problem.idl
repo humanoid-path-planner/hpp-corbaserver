@@ -65,12 +65,6 @@ module hpp
     /// \copydoc hpp::corbaserver::problem_solver::ProblemSolver::loadPlugin
     boolean loadPlugin (in string pluginName) raises (Error);
 
-    /// Load a plugin that creates a CORBA interface.
-    /// \param pluginName either an absolute filename or a filename relative
-    ///                   to `<a_path_in_LD_LIBRARY_PATH>/hppPlugins`.
-    /// \note The plugin will be available for any problem (even after resetting it).
-    boolean loadServerPlugin (in string pluginName) raises (Error);
-
     /// Move a path from the current problem to another problem.
     /// \param problemName the destination problem
     /// \param jointNames a list of joint names representing the subchain to

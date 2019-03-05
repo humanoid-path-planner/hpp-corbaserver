@@ -28,6 +28,7 @@ namespace hpp
   namespace corbaServer
   {
     class Server;
+    class ServerIDL;
     class ServerPlugin;
     class Client;
     class ProblemSolverMap;

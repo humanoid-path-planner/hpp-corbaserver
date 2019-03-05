@@ -57,7 +57,7 @@ namespace hpp
     {
       mutex_t::scoped_lock lock (*mutex_);
       ProblemMap_t::const_iterator it = map_->find (name);
-      if (it != map_->end ())
+      if (it == map_->end ())
         throw std::invalid_argument ("Could not find ProblemSolver named " + name );
       return it->second;
     }
@@ -72,17 +72,17 @@ namespace hpp
 
     void ProblemSolverMap::selected (const std::string& name)
     {
-      mutex_t::scoped_lock lock (*mutex_);
       if (!has (name))
         throw std::invalid_argument ("Could not find ProblemSolver named " + name);
+      mutex_t::scoped_lock lock (*mutex_);
       selected_ = name;
     }
 
     void ProblemSolverMap::add (const std::string& name, core::ProblemSolverPtr_t ps)
     {
-      mutex_t::scoped_lock lock (*mutex_);
       if (has (name))
         throw std::invalid_argument ("ProblemSolver named " + name + " already exists");
+      mutex_t::scoped_lock lock (*mutex_);
       map_->insert (std::make_pair(name,ps));
     }
 
@@ -96,7 +96,7 @@ namespace hpp
     {
       mutex_t::scoped_lock lock (*mutex_);
       ProblemMap_t::iterator it = map_->find (selected_);
-      assert (it != map_.end());
+      assert (it != map_->end());
       delete it->second;
       it->second = ps;
     }

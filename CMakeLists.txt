@@ -57,6 +57,7 @@ IF (NOT CLIENT_ONLY)
   ADD_REQUIRED_DEPENDENCY("hpp-core >= 4")
   ADD_REQUIRED_DEPENDENCY("hpp-constraints >= 4")
   ADD_REQUIRED_DEPENDENCY("hpp-pinocchio > 4")
+  ADD_REQUIRED_DEPENDENCY("hpp-template-corba >= 1.1")
 ENDIF (NOT CLIENT_ONLY)
 
 ADD_SUBDIRECTORY(src)
