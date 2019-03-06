@@ -27,40 +27,45 @@ class Client:
           'robot'   : hpp.corbaserver.RobotIDL,
           }
 
-  def makeClient(self, serviceName, class_, mainContext):
+  def _makeClient(self, serviceId, serviceName, class_, mainContext):
     """
     Create a client to a new CORBA service and add it to this class.
     """
     serviceName = serviceName.lower ()
     name = [CosNaming.NameComponent ("hpp", mainContext),
-            CosNaming.NameComponent ("basic", serviceName)]
+            CosNaming.NameComponent (serviceId, serviceName)]
+
+    fullServiceName = "/".join (["{0}.{1}".format(nc.id,nc.kind) for nc in name])
 
     try:
       obj = self.rootContext.resolve (name)
     except CosNaming.NamingContext.NotFound, ex:
       raise CorbaError (
-        'failed to find the service ``{0}\'\''.format (serviceName))
+        'failed to find the service ``{0}\'\''.format (fullServiceName))
 
     try:
       client = obj._narrow (class_)
     except KeyError:
-      raise CorbaError ('invalid service name ``{0}\'\''.format (serviceName))
+      raise CorbaError ('invalid service name ``{0}\'\''.format (fullServiceName))
 
     if client is None:
       # This happens when stubs from client and server are not synchronized.
       raise CorbaError (
         'failed to narrow client for service named ``{0}\'\''.format
-        (serviceName))
+        (fullServiceName))
     self.__dict__[serviceName] = client
 
-
-  def __init__(self, clients = defaultClients, url = None, mainContext = "corbaserver"):
+  def __init__(self, clients = defaultClients, url = None, context = "corbaserver"):
     """
     Initialize CORBA and create default clients.
     :param url: URL in the IOR, corbaloc, corbalocs, and corbanames formats.
                 For a remote corba server, use
                 url = "corbaloc:iiop:<host>:<port>/NameService"
     """
+    self._initOrb (url)
+    self._makeClients ("basic", clients, context)
+
+  def _initOrb (self, url):
     import sys
     self.orb = CORBA.ORB_init (sys.argv, CORBA.ORB_ID)
     if url is None:
@@ -71,8 +76,9 @@ class Client:
     if self.rootContext is None:
       raise CorbaError ('failed to narrow the root context')
 
-    for client, class_ in clients.iteritems():
-      self.makeClient (client, class_, mainContext)
+  def _makeClients (self, serviceId, clients, context):
+    for serviceName, class_ in clients.iteritems():
+      self._makeClient (serviceId, serviceName, class_, context)
 
 def _getIIOPurl ():
   """
