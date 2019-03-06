@@ -2341,7 +2341,15 @@ namespace hpp
 
       Long Problem::numberNodes () throw (hpp::Error)
       {
-	return (Long) problemSolver()->roadmap ()->nodes().size();
+        try {
+          if (problemSolver()->roadmap ()) {
+            return (Long) problemSolver()->roadmap ()->nodes().size();
+          } else {
+            throw std::runtime_error ("No roadmap in problem solver.");
+          }
+        } catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
       }
 
       // ---------------------------------------------------------------
