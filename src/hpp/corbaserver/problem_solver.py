@@ -16,11 +16,16 @@
 # hpp-corbaserver.  If not, see
 # <http://www.gnu.org/licenses/>.
 
-def newProblem (client = None):
+def newProblem (client = None, name = None):
     if client is None:
         from hpp.corbaserver import Client
         client = Client()
-    client.problem.resetProblem()
+    if name is not None:
+        if not client.problem.selectProblem(name):
+            # if not created, reset it.
+            client.problem.resetProblem()
+    else:
+        client.problem.resetProblem()
 
 def _convertToCorbaAny (value):
     import CORBA
