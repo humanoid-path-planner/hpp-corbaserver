@@ -28,8 +28,8 @@ namespace hpp
   namespace corbaServer
   {
     class Server;
-    class ServerIDL;
     class ServerPlugin;
+    class Tools;
     class Client;
     class ProblemSolverMap;
     typedef boost::shared_ptr <ProblemSolverMap> ProblemSolverMapPtr_t;

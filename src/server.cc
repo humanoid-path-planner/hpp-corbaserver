@@ -18,7 +18,7 @@
 #include <hpp/util/debug.hh>
 #include <hpp/core/plugin.hh>
 #include <hpp/corbaserver/server-plugin.hh>
-#include "hpp/corbaserver/server_idl.hh" 
+#include "hpp/corbaserver/tools.hh" 
 
 #include "basic-server.hh"
 
@@ -59,10 +59,10 @@ namespace hpp
       }
     } // end of anonymous namespace.
 
-    class ServerIDL : public virtual POA_hpp::ServerIDL
+    class Tools : public virtual POA_hpp::Tools
     {
       public:
-	ServerIDL () : server_ (NULL) {};
+	Tools () : server_ (NULL) {};
 
         void setServer (Server* server)
         {
@@ -74,6 +74,16 @@ namespace hpp
           try {
             std::string c (context), pn (pluginName);
             return server_->loadPlugin (c, pn);
+          } catch (const std::exception& e) {
+            throw hpp::Error (e.what ());
+          }
+        }
+
+        virtual CORBA::Boolean createContext (const char* context) throw (Error)
+        {
+          try {
+            std::string c (context);
+            return server_->createContext (c);
           } catch (const std::exception& e) {
             throw hpp::Error (e.what ());
           }
@@ -192,9 +202,9 @@ namespace hpp
     void Server::startCorbaServer()
     {
       // Create Server interface
-      serverIDL_ = new ServerIDL ();
-      serverIDL_->setServer (this);
-      /*servantId_ = */ poa_->activate_object(serverIDL_);
+      tools_ = new Tools ();
+      tools_->setServer (this);
+      /*servantId_ = */ poa_->activate_object(tools_);
 
       CosNaming::NamingContext_var rootContext;
       Object_var localObj;
@@ -229,11 +239,11 @@ namespace hpp
 
       try {
         // Bind a context called "hpp" to the root context:
-        localObj = serverIDL_->_this();
+        localObj = tools_->_this();
 
         contextName.length(1);
         contextName[0].id   = (const char*) "hpp";    // string copied
-        contextName[0].kind = (const char*) "server"; // string copied
+        contextName[0].kind = (const char*) "tools"; // string copied
         // Note on kind: The kind field is used to indicate the type
         // of the object. This is to avoid conventions such as that used
         // by files (name.type -- e.g. hpp.ps = postscript etc.)
@@ -247,18 +257,28 @@ namespace hpp
         }
       }
       catch(CORBA::COMM_FAILURE& ex) {
-        hppCorbaDout (error, "Caught system exception COMM_FAILURE -- unable to contact the "
-            << "naming service.");
+        hppCorbaDout (error, "Caught system exception COMM_FAILURE -- "
+            "unable to contact the naming service.");
         return;
       }
       catch(CORBA::SystemException&) {
         hppCorbaDout (error, "Caught a SystemException while creating the context.");
         return;
       }
-      serverIDL_->_remove_ref();
+      tools_->_remove_ref();
 
-      // Force create of main context
-      getContext (mainContextId());
+      // Creation of main context
+      createContext (mainContextId());
+    }
+
+
+    bool Server::createContext (const std::string& name)
+    {
+      if (contexts_.find (name) != contexts_.end())
+        return false;
+
+      getContext (name);
+      return true;
     }
 
     core::ProblemSolverPtr_t Server::problemSolver ()

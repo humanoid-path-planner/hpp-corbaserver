@@ -110,6 +110,8 @@ namespace hpp
       ///          application will be deadlocked.
       void requestShutdown (bool wait);
 
+      bool createContext (const std::string& contextName);
+
       /// Load a plugin if not already loaded.
       /// \return true if the plugin is correctly loaded, false otherwise (which
       ///         includes the case where the plugin was already loaded).
@@ -137,7 +139,7 @@ namespace hpp
 
       CORBA::ORB_var orb_;
       PortableServer::POA_var poa_;
-      ServerIDL* serverIDL_;
+      Tools* tools_;
 
       std::string mainContextId_;
 

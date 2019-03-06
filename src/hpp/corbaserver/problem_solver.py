@@ -16,15 +16,11 @@
 # hpp-corbaserver.  If not, see
 # <http://www.gnu.org/licenses/>.
 
-def newProblem ():
-    from hpp.corbaserver import Client
-    cl = Client()
-    cl.problem.resetProblem()
-
-def loadServerPlugin (name):
-    from hpp.corbaserver import Client
-    cl = Client()
-    return cl.problem.loadServerPlugin(name)
+def newProblem (client = None):
+    if client is None:
+        from hpp.corbaserver import Client
+        client = Client()
+    client.problem.resetProblem()
 
 def _convertToCorbaAny (value):
     import CORBA
