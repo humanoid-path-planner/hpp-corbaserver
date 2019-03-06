@@ -81,8 +81,6 @@ IF (NOT CLIENT_ONLY)
     robot.impl.hh
     client.cc
     server.cc
-    server-private.cc
-    server-private.hh
     problem-solver-map.cc
     tools.cc
     tools.hh
