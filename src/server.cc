@@ -298,7 +298,7 @@ namespace hpp
       }
 
       Context context;
-      context.main = ServerPluginPtr_t (new BasicServer (multiThread()));
+      context.main = ServerPluginPtr_t (new BasicServer (this, multiThread()));
       ProblemSolverMapPtr_t psm (new ProblemSolverMap (*problemSolverMap_));
       context.main->setProblemSolverMap (psm);
       context.main->startCorbaServer ("hpp", name);
@@ -312,7 +312,7 @@ namespace hpp
       // Load the plugin
       std::string lib = core::plugin::findPluginLibrary (libFilename);
 
-      typedef ::hpp::corbaServer::ServerPlugin* (*PluginFunction_t) (bool);
+      typedef ::hpp::corbaServer::ServerPlugin* (*PluginFunction_t) (Server*,bool);
 
       // Clear old errors
       const char* error = dlerror ();
@@ -342,7 +342,7 @@ namespace hpp
       // Get the context.
       Context& context = getContext (contextName);
 
-      ServerPluginPtr_t plugin (function(multiThread()));
+      ServerPluginPtr_t plugin (function(this, multiThread()));
       if (!plugin) return false;
       const std::string name = plugin->name();
       if (context.plugins.find (name) != context.plugins.end()) {

@@ -42,7 +42,7 @@ namespace hpp {
     class HPP_CORBASERVER_LOCAL BasicServer: public ServerPlugin
     {
       public:
-        BasicServer (bool multithread);
+        BasicServer (Server* parent, bool multithread);
 
         ~BasicServer ();
 
@@ -58,8 +58,8 @@ namespace hpp {
         corba::Server <impl::Robot   >* robotImpl_;
     }; // class ServerPlugin
 
-    BasicServer::BasicServer (bool mThd)
-      : ServerPlugin (mThd)
+    BasicServer::BasicServer (Server* parent, bool mThd)
+      : ServerPlugin (parent, mThd)
       , obstacleImpl_ (new corba::Server <impl::Obstacle> (0, NULL, mThd, "child"))
       , problemImpl_  (new corba::Server <impl::Problem > (0, NULL, mThd, "child"))
       , robotImpl_    (new corba::Server <impl::Robot   > (0, NULL, mThd, "child"))

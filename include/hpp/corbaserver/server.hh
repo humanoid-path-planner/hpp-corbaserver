@@ -83,6 +83,11 @@ namespace hpp
       /// \brief Shutdown CORBA server
       ~Server ();
 
+      PortableServer::POA_var poa ()
+      {
+        return poa_;
+      }
+
       /// \brief Initialize CORBA server to process requests from clients
       /// \return 0 if success, -1 if failure.
       void startCorbaServer ();

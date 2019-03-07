@@ -59,6 +59,7 @@
 # include <hpp/constraints/static-stability.hh>
 #endif
 #include <hpp/constraints/configuration-constraint.hh>
+#include <hpp/corbaserver/server.hh>
 #include <hpp/corbaserver/server-plugin.hh>
 #include <hpp/pinocchio/body.hh>
 #include <hpp/pinocchio/center-of-mass-computation.hh>
@@ -277,8 +278,7 @@ namespace hpp
 
       void Problem::shutdown ()
       {
-        // TODO
-        //server_->requestShutdown(false);
+        server_->parent()->requestShutdown(false);
       }
 
       // ---------------------------------------------------------------
