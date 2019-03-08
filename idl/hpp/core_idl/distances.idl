@@ -8,8 +8,8 @@
 //
 // See the COPYING file for more information.
 
-#ifndef HPP_CORE_WEIGHED_DISTANCE_IDL
-#define HPP_CORE_WEIGHED_DISTANCE_IDL
+#ifndef HPP_CORE_DISTANCES_IDL
+#define HPP_CORE_DISTANCES_IDL
 #include <hpp/common.idl>
 
 module hpp
@@ -31,4 +31,4 @@ module hpp
   }; // module core
 }; // module hpp
 
-#endif // HPP_CORE_WEIGHED_DISTANCE_IDL
+#endif // HPP_CORE_DISTANCES_IDL

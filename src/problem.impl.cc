@@ -2603,18 +2603,21 @@ namespace hpp
         core::ProblemSolverPtr_t ps = problemSolver();
         DevicePtr_t robot = getRobotOrThrow (ps);
         core::DistancePtr_t distance = problem (ps, true)->distance();
-        if (HPP_DYNAMIC_PTR_CAST(core::WeighedDistance, distance)) {
-          std::cout << "WeighedDistance" << std::endl;
-          PortableServer::Servant_var<core_idl::WeighedDistance> d (new core_idl::WeighedDistance (robot,
-                HPP_DYNAMIC_PTR_CAST(core::WeighedDistance, distance)));
+
+        core::WeighedDistancePtr_t wDistance = HPP_DYNAMIC_PTR_CAST(core::WeighedDistance, distance);
+        if (wDistance) {
+          PortableServer::Servant_var<core_idl::WeighedDistance> d (
+              new core_idl::WeighedDistance (robot, wDistance));
           // ObjectId_var object is here to delete the servantId.
           PortableServer::ObjectId_var servantId = server_->parent()->poa()->activate_object(d);
           (void) servantId;
           return d->_this();
         } else {
-          std::cout << "Distance" << std::endl;
-          core_idl::Distance* d (new core_idl::Distance (robot, distance));
-          server_->parent()->poa()->activate_object(d);
+          PortableServer::Servant_var<core_idl::Distance> d (
+              new core_idl::Distance (robot, distance));
+          // ObjectId_var object is here to delete the servantId.
+          PortableServer::ObjectId_var servantId = server_->parent()->poa()->activate_object(d);
+          (void) servantId;
           return d->_this();
         }
       }

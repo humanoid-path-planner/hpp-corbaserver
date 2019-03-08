@@ -8,8 +8,9 @@
 //
 // See the COPYING file for more information.
 
-#ifndef SRC_WEIGHED_DISTANCE_HH
-# define SRC_WEIGHED_DISTANCE_HH
+#ifndef SRC_DISTANCES_HH
+# define SRC_DISTANCES_HH
+
 # include <vector>
 # include <stdlib.h>
 
@@ -38,13 +39,9 @@ namespace hpp
       {
         public:
           DistanceServant (const core::DevicePtr_t& robot,
-              const core::DistancePtr_t& d) : robot_(robot), d_ (d) {
-            std::cout << "Creating " << this << std::endl;
-          }
+              const core::DistancePtr_t& d) : robot_(robot), d_ (d) {}
 
-          virtual ~DistanceServant () {
-            std::cout << "Deleting " << this << std::endl;
-          }
+          virtual ~DistanceServant () {}
 
           CORBA::Double value (const floatSeq& q1, const floatSeq& q2) throw (Error)
           {
@@ -98,4 +95,4 @@ namespace hpp
   } // end of namespace corbaServer.
 } // end of namespace hpp.
 
-#endif // SRC_WEIGHED_DISTANCE_HH
+#endif // SRC_DISTANCES_HH
