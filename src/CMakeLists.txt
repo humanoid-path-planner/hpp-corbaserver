@@ -32,19 +32,21 @@ INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src)
 
 FOREACH(IDL obstacle problem robot tools)
   GENERATE_IDL_CPP (hpp/corbaserver/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver)
-  GENERATE_IDL_PYTHON (hpp/corbaserver/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver
+  GENERATE_IDL_PYTHON (${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver
     ARGUMENTS
     -p${CMAKE_SOURCE_DIR}/cmake/hpp/idl
     -bomniidl_be_python_with_docstring
+    -Wbpackage=hpp_idl
     -K
     )
 ENDFOREACH()
 # Enable generation of dynamic type codes (in file commonDynSK.cc)
 GENERATE_IDL_CPP (hpp/corbaserver/common ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver ENABLE_Wba)
-GENERATE_IDL_PYTHON (hpp/corbaserver/common ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver
+GENERATE_IDL_PYTHON (common ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver
     ARGUMENTS
     -p${CMAKE_SOURCE_DIR}/cmake/hpp/idl
     -bomniidl_be_python_with_docstring
+    -Wbpackage=hpp_idl
     -K
   )
 
@@ -52,13 +54,13 @@ FOREACH(IDL ${IDL_SOURCES})
   INSTALL(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/${IDL}.hh
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp/corbaserver)
-  INSTALL(
-    FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/${IDL}_idl.py
-    DESTINATION ${PYTHON_SITELIB}/hpp/corbaserver
-    )
   INSTALL(FILES ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/${IDL}.idl
     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/idl/hpp/corbaserver)
 ENDFOREACH()
+INSTALL(
+  DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/hpp_idl
+  DESTINATION ${PYTHON_SITELIB}
+  )
 
 ADD_CUSTOM_TARGET(generate_idl_cpp DEPENDS ${ALL_IDL_CPP_STUBS})
 ADD_CUSTOM_TARGET(generate_idl_python DEPENDS ${ALL_IDL_PYTHON_STUBS})

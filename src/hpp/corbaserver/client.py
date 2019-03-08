@@ -5,7 +5,7 @@ create client to wanted HPP services.
 from omniORB import CORBA
 import CosNaming
 
-import hpp.corbaserver
+import hpp_idl.hpp.corbaserver
 
 class CorbaError(Exception):
   """
@@ -22,9 +22,9 @@ class Client:
   """
 
   defaultClients = {
-          'problem' : hpp.corbaserver.Problem,
-          'obstacle': hpp.corbaserver.Obstacle,
-          'robot'   : hpp.corbaserver.RobotIDL,
+          'problem' : hpp_idl.hpp.corbaserver.Problem,
+          'obstacle': hpp_idl.hpp.corbaserver.Obstacle,
+          'robot'   : hpp_idl.hpp.corbaserver.RobotIDL,
           }
 
   def _makeClient(self, serviceId, serviceName, class_, mainContext):
