@@ -28,9 +28,9 @@
 
 #define HPP_CORBASERVER_DEFINE_PLUGIN(PluginClassName)                         \
     extern "C" {                                                               \
-      ::hpp::corbaServer::ServerPlugin* createServerPlugin (::hpp::corbaServer::Server* server, bool multithread)  \
+      ::hpp::corbaServer::ServerPlugin* createServerPlugin (::hpp::corbaServer::Server* server)  \
       {                                                                        \
-        return new PluginClassName (server, multithread);                      \
+        return new PluginClassName (server);                                   \
       }                                                                        \
     }
 
@@ -69,11 +69,10 @@ namespace hpp {
       }
 
     protected:
-      ServerPlugin (Server* parent, bool multithread)
-        : parent_ (parent), multithread_ (multithread) {}
+      ServerPlugin (Server* parent)
+        : parent_ (parent) {}
 
       Server* parent_;
-      bool multithread_;
       ProblemSolverMapPtr_t problemSolverMap_;
     }; // class ServerPlugin
   } // namespace corbaserver

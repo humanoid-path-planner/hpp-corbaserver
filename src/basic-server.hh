@@ -42,7 +42,7 @@ namespace hpp {
     class HPP_CORBASERVER_LOCAL BasicServer: public ServerPlugin
     {
       public:
-        BasicServer (Server* parent, bool multithread);
+        BasicServer (Server* parent);
 
         ~BasicServer ();
 
@@ -58,22 +58,19 @@ namespace hpp {
         corba::Server <impl::Robot   >* robotImpl_;
     }; // class ServerPlugin
 
-    BasicServer::BasicServer (Server* parent, bool mThd)
-      : ServerPlugin (parent, mThd)
-      , obstacleImpl_ (new corba::Server <impl::Obstacle> (0, NULL, mThd, "child"))
-      , problemImpl_  (new corba::Server <impl::Problem > (0, NULL, mThd, "child"))
-      , robotImpl_    (new corba::Server <impl::Robot   > (0, NULL, mThd, "child"))
+    BasicServer::BasicServer (Server* parent)
+      : ServerPlugin (parent)
+      , obstacleImpl_ (NULL)
+      , problemImpl_  (NULL)
+      , robotImpl_    (NULL)
     {
-      obstacleImpl_->implementation ().setServer (this);
-      problemImpl_ ->implementation ().setServer (this);
-      robotImpl_   ->implementation ().setServer (this);
     }
 
     BasicServer::~BasicServer ()
     {
-      delete obstacleImpl_;
-      delete problemImpl_;
-      delete robotImpl_;
+      if (obstacleImpl_) delete obstacleImpl_;
+      if (problemImpl_ ) delete problemImpl_;
+      if (robotImpl_   ) delete robotImpl_;
     }
 
     std::string BasicServer::name () const
@@ -85,6 +82,15 @@ namespace hpp {
     void BasicServer::startCorbaServer(const std::string& contextId,
         const std::string& contextKind)
     {
+      bool mThd = parent()->multiThread();
+      obstacleImpl_ = new corba::Server <impl::Obstacle> (0, NULL, mThd, "child");
+      problemImpl_  = new corba::Server <impl::Problem > (0, NULL, mThd, "child");
+      robotImpl_    = new corba::Server <impl::Robot   > (0, NULL, mThd, "child");
+
+      obstacleImpl_->implementation ().setServer (this);
+      problemImpl_ ->implementation ().setServer (this);
+      robotImpl_   ->implementation ().setServer (this);
+
       if (obstacleImpl_->startCorbaServer(contextId, contextKind,
             "basic", "obstacle") != 0) {
         HPP_THROW_EXCEPTION (hpp::Exception,
