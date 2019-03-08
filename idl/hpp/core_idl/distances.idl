@@ -1,0 +1,34 @@
+// Copyright (C) 2019 by Joseph Mirabel, LAAS-CNRS.
+//
+// This file is part of the hpp-corbaserver.
+//
+// This software is provided "as is" without warranty of any kind,
+// either expressed or implied, including but not limited to the
+// implied warranties of fitness for a particular purpose.
+//
+// See the COPYING file for more information.
+
+#ifndef HPP_CORE_WEIGHED_DISTANCE_IDL
+#define HPP_CORE_WEIGHED_DISTANCE_IDL
+#include <hpp/common.idl>
+
+module hpp
+{
+  module core_idl {
+
+  interface Distance
+  {
+    double value (in floatSeq q1, in floatSeq q2) raises (Error);
+  }; // interface Distance
+
+  /// \brief To define and solve a path planning problem.
+  interface WeighedDistance : Distance
+  {
+    floatSeq getWeights() raises (Error);
+    void setWeights(in floatSeq weights) raises (Error);
+  }; // interface WeighedDistance
+
+  }; // module core
+}; // module hpp
+
+#endif // HPP_CORE_WEIGHED_DISTANCE_IDL

@@ -17,6 +17,8 @@
 # include "hpp/corbaserver/problem-idl.hh"
 # include "hpp/corbaserver/problem-solver-map.hh"
 
+# include "hpp/core_idl/distances-idl.hh"
+
 # include "hpp/corbaserver/deprecated.hh"
 
 namespace hpp
@@ -359,6 +361,10 @@ namespace hpp
         virtual void readRoadmap (const char* filename) throw (hpp::Error);
 
         virtual void scCreateScalarMultiply (const char* outName, Double scalar, const char* inName) throw (hpp::Error);
+
+        hpp::core_idl::Distance_ptr getDistance () throw (hpp::Error);
+
+        void setDistance (hpp::core_idl::Distance_ptr distance) throw (hpp::Error);
 
       private:
         /// Return the selected problem solver

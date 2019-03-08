@@ -11,6 +11,7 @@
 #ifndef HPP_CORBASERVER_PROBLEM_SERVER_IDL
 #define HPP_CORBASERVER_PROBLEM_SERVER_IDL
 #include <hpp/common.idl>
+#include <hpp/core_idl/distances.idl>
 
 module hpp
 {
@@ -707,6 +708,10 @@ module hpp
     /// Read a roadmap from a file
     /// \param filename name of the file from which the roadmap is read.
     void readRoadmap (in string filename) raises (Error);
+
+    core_idl::Distance getDistance () raises (Error);
+
+    void setDistance (in core_idl::Distance distance) raises (Error);
     /// \}
   };
   }; // interface Problem

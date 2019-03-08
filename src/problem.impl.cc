@@ -64,6 +64,7 @@
 #include <hpp/pinocchio/body.hh>
 #include <hpp/pinocchio/center-of-mass-computation.hh>
 
+#include "distances.hh"
 #include "problem.impl.hh"
 #include "tools.hh"
 
@@ -2593,6 +2594,46 @@ namespace hpp
         } catch (const std::exception& exc) {
           throw hpp::Error (exc.what ());
         }
+      }
+
+      // ---------------------------------------------------------------
+
+      hpp::core_idl::Distance_ptr Problem::getDistance () throw (hpp::Error)
+      {
+        core::ProblemSolverPtr_t ps = problemSolver();
+        DevicePtr_t robot = getRobotOrThrow (ps);
+        core::DistancePtr_t distance = problem (ps, true)->distance();
+        if (HPP_DYNAMIC_PTR_CAST(core::WeighedDistance, distance)) {
+          std::cout << "WeighedDistance" << std::endl;
+          PortableServer::Servant_var<core_idl::WeighedDistance> d (new core_idl::WeighedDistance (robot,
+                HPP_DYNAMIC_PTR_CAST(core::WeighedDistance, distance)));
+          // ObjectId_var object is here to delete the servantId.
+          PortableServer::ObjectId_var servantId = server_->parent()->poa()->activate_object(d);
+          (void) servantId;
+          return d->_this();
+        } else {
+          std::cout << "Distance" << std::endl;
+          core_idl::Distance* d (new core_idl::Distance (robot, distance));
+          server_->parent()->poa()->activate_object(d);
+          return d->_this();
+        }
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::setDistance (hpp::core_idl::Distance_ptr distance) throw (hpp::Error)
+      {
+        PortableServer::Servant servant = server_->parent()->poa()->reference_to_servant(distance);
+        core_idl::DistanceBase* d = dynamic_cast<core_idl::DistanceBase*> (servant);
+
+        if (d == NULL) {
+          // TODO in this case, we should define a distance from the CORBA type.
+          // This would allow to implement a distance class in Python.
+          throw Error ("Not a distance servant");
+        }
+        core::ProblemSolverPtr_t ps = problemSolver();
+        core::ProblemPtr_t p = problem (ps, true);
+        p->distance (d->get());
       }
 
     } // namespace impl

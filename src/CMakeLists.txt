@@ -31,26 +31,40 @@ INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src)
 
 FOREACH(IDL ${IDL_SOURCES})
   GENERATE_IDL_CPP (hpp/corbaserver/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver
-    ARGUMENTS -Wbh=-idl.hh)
+    HEADER_SUFFIX -idl.hh)
   GENERATE_IDL_PYTHON (${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver
     ENABLE_DOCSTRING
+    STUBS hpp_stubs.corbaserver
     ARGUMENTS
     -Wbmodules=hpp_idl
-    -Wbstubs=hpp_stubs.corbaserver
     -Wbextern=common:hpp_stubs
+    -Wbextern=distances:hpp_stubs.core
     )
 ENDFOREACH()
 # Enable generation of dynamic type codes (in file commonDynSK.cc)
 GENERATE_IDL_CPP (hpp/common ${CMAKE_SOURCE_DIR}/idl/hpp ENABLE_Wba
-  ARGUMENTS -Wbh=-idl.hh)
+  HEADER_SUFFIX -idl.hh)
 GENERATE_IDL_PYTHON (common ${CMAKE_SOURCE_DIR}/idl/hpp
     ENABLE_DOCSTRING
+    STUBS hpp_stubs
     ARGUMENTS
     -Wbmodules=hpp_idl
-    -Wbstubs=hpp_stubs
   )
 
 MAKE_DIRECTORY(${CMAKE_BINARY_DIR}/src/hpp_idl)
+MAKE_DIRECTORY(${CMAKE_BINARY_DIR}/src/hpp/core_idl)
+FOREACH(IDL distances)
+  GENERATE_IDL_CPP (hpp/core_idl/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/core_idl
+    HEADER_SUFFIX -idl.hh)
+  GENERATE_IDL_PYTHON (${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/core_idl
+      ENABLE_DOCSTRING
+      STUBS hpp_stubs.core
+      ARGUMENTS
+      -Wbmodules=hpp_idl
+      -Wbextern=common:hpp_stubs
+    )
+ENDFOREACH()
+
 FOREACH(IDL ${IDL_SOURCES})
   INSTALL(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/${IDL}-idl.hh
@@ -88,6 +102,7 @@ IF (NOT CLIENT_ONLY)
     tools.cc
     tools.hh
     conversions.cc
+    distances.hh
     ${ALL_IDL_CPP_STUBS}
     )
 
@@ -138,12 +153,3 @@ FOREACH (FILE __init__.py client.py robot.py  problem_solver.py tools.py benchma
     hpp/corbaserver ${FILE}
     )
 ENDFOREACH ()
-
-INSTALL(
-  FILES
-  ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/common.idl
-  ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/obstacle.idl
-  ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/problem.idl
-  ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/robot.idl
-  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/idl/hpp/corbaserver
-)
