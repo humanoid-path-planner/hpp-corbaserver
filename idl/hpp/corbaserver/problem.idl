@@ -14,6 +14,7 @@
 #include <hpp/core_idl/distances.idl>
 #include <hpp/core_idl/paths.idl>
 #include <hpp/core_idl/steering_methods.idl>
+#include <hpp/core_idl/path_validations.idl>
 
 module hpp
 {
@@ -718,6 +719,8 @@ module hpp
     core_idl::Path getPath (in unsigned long pathId) raises (Error);
 
     core_idl::SteeringMethod getSteeringMethod () raises (Error);
+
+    core_idl::PathValidation getPathValidation () raises (Error);
     /// \}
   };
   }; // interface Problem

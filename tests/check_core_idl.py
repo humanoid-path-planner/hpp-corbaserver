@@ -6,7 +6,11 @@ from hpp.corbaserver.tools import Tools
 newProblem()
 robot = Robot ("ur5")
 ps = ProblemSolver (robot)
+
 distance = ps.hppcorba.problem.getDistance()
+sm = ps.hppcorba.problem.getSteeringMethod ()
+pv = ps.hppcorba.problem.getPathValidation ()
+
 tools = Tools()
 
 q0 = robot.getCurrentConfig()
@@ -17,13 +21,13 @@ weights[0] = 0
 distance.setWeights (weights)
 distance.value (q0, qr)
 
-sm = ps.hppcorba.problem.getSteeringMethod ()
-
 path = sm.call (q0, qr)
 
 path.value(0)
 path.derivative(0.5, 1)
 path.outputSize()
+
+isValid, validPart, report = pv.validate (path, False)
 
 tools.deleteServantFromObject(distance)
 tools.deleteServantFromObject(path)

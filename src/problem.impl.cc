@@ -68,6 +68,7 @@
 #include "distances.hh"
 #include "paths.hh"
 #include "steering-methods.hh"
+#include "path-validations.hh"
 #include "problem.impl.hh"
 #include "tools.hh"
 
@@ -2653,7 +2654,6 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-
       hpp::core_idl::SteeringMethod_ptr Problem::getSteeringMethod () throw (Error)
       {
         core::ProblemSolverPtr_t ps = problemSolver();
@@ -2663,6 +2663,19 @@ namespace hpp
         return server_->parent()->makeServant <hpp::core_idl::SteeringMethod_ptr> (
             new core_idl::SteeringMethod (server_->parent(),
               core_idl::SteeringMethod::Storage (robot, sm)));
+      }
+
+      // ---------------------------------------------------------------
+
+      hpp::core_idl::PathValidation_ptr Problem::getPathValidation () throw (Error)
+      {
+        core::ProblemSolverPtr_t ps = problemSolver();
+        DevicePtr_t robot = getRobotOrThrow (ps);
+        core::PathValidationPtr_t pv = problem (ps, true)->pathValidation();
+
+        return server_->parent()->makeServant <hpp::core_idl::PathValidation_ptr> (
+            new core_idl::PathValidation (server_->parent(),
+              core_idl::PathValidation::Storage (pv)));
       }
 
     } // namespace impl
