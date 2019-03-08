@@ -89,6 +89,11 @@ namespace hpp
           }
         }
 
+        virtual void shutdown ()
+        {
+          server_->requestShutdown(false);
+        }
+
       private:
         Server* server_;
     };
@@ -270,7 +275,6 @@ namespace hpp
       // Creation of main context
       createContext (mainContextId());
     }
-
 
     bool Server::createContext (const std::string& name)
     {

@@ -276,13 +276,6 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::shutdown ()
-      {
-        server_->parent()->requestShutdown(false);
-      }
-
-      // ---------------------------------------------------------------
-
       void Problem::setMaxNumThreads (UShort n) throw (hpp::Error)
       {
         try {

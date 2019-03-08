@@ -42,8 +42,6 @@ namespace hpp
           server_ = server;
         }
 
-        virtual void shutdown ();
-
         virtual Names_t* getAvailable (const char* what) throw (hpp::Error);
 
         virtual Names_t* getSelected (const char* what) throw (hpp::Error);

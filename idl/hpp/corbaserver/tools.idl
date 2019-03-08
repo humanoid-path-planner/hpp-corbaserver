@@ -30,6 +30,9 @@ module hpp
     /// All contexts share the same map of ProblemSolver. Each context can
     /// whichever ProblemSolver in this map.
     boolean createContext (in string context_) raises (Error);
+
+    /// Shutdown the server.
+    void shutdown ();
   }; // interface Tools
 }; // module hpp
 #endif

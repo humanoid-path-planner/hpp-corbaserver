@@ -88,6 +88,11 @@ namespace hpp
         return poa_;
       }
 
+      CORBA::ORB_var orb()
+      {
+        return orb_;
+      }
+
       /// \brief Initialize CORBA server to process requests from clients
       /// \return 0 if success, -1 if failure.
       void startCorbaServer ();
