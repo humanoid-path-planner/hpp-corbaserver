@@ -2608,19 +2608,13 @@ namespace hpp
 
         core::WeighedDistancePtr_t wDistance = HPP_DYNAMIC_PTR_CAST(core::WeighedDistance, distance);
         if (wDistance) {
-          PortableServer::Servant_var<core_idl::WeighedDistance> d (
-              new core_idl::WeighedDistance (robot, wDistance));
-          // ObjectId_var object is here to delete the servantId.
-          PortableServer::ObjectId_var servantId = server_->parent()->poa()->activate_object(d);
-          (void) servantId;
-          return d->_this();
+          return server_->parent()->makeServant <hpp::core_idl::Distance_ptr> (
+              new core_idl::WeighedDistance (server_->parent(),
+                core_idl::WeighedDistance::Storage (robot, wDistance)));
         } else {
-          PortableServer::Servant_var<core_idl::Distance> d (
-              new core_idl::Distance (robot, distance));
-          // ObjectId_var object is here to delete the servantId.
-          PortableServer::ObjectId_var servantId = server_->parent()->poa()->activate_object(d);
-          (void) servantId;
-          return d->_this();
+          return server_->parent()->makeServant <hpp::core_idl::Distance_ptr>
+            (new core_idl::Distance (server_->parent(),
+                core_idl::Distance::Storage (robot, distance)));
         }
       }
 
@@ -2652,11 +2646,8 @@ namespace hpp
         }
 
         core::PathVectorPtr_t pv = ps->paths()[pathId];
-        PortableServer::Servant_var<core_idl::Path> d (new core_idl::Path (pv));
-        // ObjectId_var object is here to delete the servantId.
-        PortableServer::ObjectId_var servantId = server_->parent()->poa()->activate_object(d);
-        (void) servantId;
-        return d->_this();
+        return server_->parent()->makeServant <hpp::core_idl::Path_ptr>
+          (new core_idl::Path (server_->parent(), pv));
       }
 
     } // namespace impl

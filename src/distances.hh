@@ -20,77 +20,88 @@
 # include <hpp/corbaserver/conversions.hh>
 # include "hpp/core_idl/distances-idl.hh"
 
+# include "servant-base.hh"
+
 namespace hpp
 {
   namespace corbaServer
   {
     namespace core_idl
     {
-      class DistanceBase
-      {
-        public:
-          virtual ~DistanceBase () {}
+      typedef AbstractServantBase<core::DistancePtr_t> DistanceBase;
 
-          virtual core::DistancePtr_t get() = 0;
+      template <typename D>
+      struct DistanceStorage {
+        core::DevicePtr_t r;
+        D d;
+        DistanceStorage (const core::DevicePtr_t& _r, const D& _d) : r(_r), d(_d) {}
+        operator core::DistancePtr_t () const { return d; }
       };
 
-      template <typename Base>
+      template <typename Base, typename _Storage>
       class DistanceServant : public DistanceBase, public virtual Base
       {
         public:
-          DistanceServant (const core::DevicePtr_t& robot,
-              const core::DistancePtr_t& d) : robot_(robot), d_ (d) {}
+          typedef _Storage Storage;
+
+          DistanceServant (Server* server, const Storage& s) :
+            DistanceBase (server), s_ (s) {}
 
           virtual ~DistanceServant () {}
 
           CORBA::Double value (const floatSeq& q1, const floatSeq& q2) throw (Error)
           {
-            Configuration_t qq1 (floatSeqToConfig(robot_, q1, true)),
-                            qq2 (floatSeqToConfig(robot_, q2, true));
-            return (*d_) (qq1,qq2);
+            Configuration_t qq1 (floatSeqToConfig(s_.r, q1, true)),
+                            qq2 (floatSeqToConfig(s_.r, q2, true));
+            return (*s_.d) (qq1,qq2);
           }
 
           virtual core::DistancePtr_t get ()
           {
-            return d_;
+            return (core::DistancePtr_t)s_;
+          }
+
+          Storage getS ()
+          {
+            return s_;
           }
 
         protected:
-          core::DevicePtr_t robot_;
-
-        private:
-          core::DistancePtr_t d_;
+          Storage s_;
       };
 
-      typedef DistanceServant<POA_hpp::core_idl::Distance> Distance;
+      typedef DistanceServant<POA_hpp::core_idl::Distance, DistanceStorage<core::DistancePtr_t> > Distance;
 
-      class WeighedDistance : public DistanceServant<POA_hpp::core_idl::WeighedDistance>
+      template <typename Base, typename Storage>
+      class WeighedDistanceServant : public DistanceServant<Base, Storage>
       {
+        protected:
+          using DistanceBase::server_;
         public:
-          typedef DistanceServant<POA_hpp::core_idl::WeighedDistance> Base;
-          WeighedDistance (const core::DevicePtr_t& robot,
-              const core::WeighedDistancePtr_t& d)
-            : Base(robot, d), d_ (d) {}
+          typedef DistanceServant<Base, Storage> Parent;
+          using Parent::getS;
 
-          ~WeighedDistance () {}
+          WeighedDistanceServant (Server* server, const Storage& s)
+            : Parent(server, s) {}
+
+          ~WeighedDistanceServant () {}
 
           floatSeq* getWeights () throw (Error)
           {
-            return vectorToFloatSeq (d_->weights());
+            return vectorToFloatSeq (getS().d->weights());
           }
 
           void setWeights (const floatSeq& weights) throw (Error)
           {
             try {
-              return d_->weights(floatSeqToVector(weights));
+              return getS().d->weights(floatSeqToVector(weights));
             } catch (const std::exception& e) {
               throw Error (e.what ());
             }
           }
-
-        private:
-          core::WeighedDistancePtr_t d_;
       };
+
+      typedef WeighedDistanceServant<POA_hpp::core_idl::WeighedDistance, DistanceStorage<core::WeighedDistancePtr_t> > WeighedDistance;
     } // end of namespace core.
   } // end of namespace corbaServer.
 } // end of namespace hpp.

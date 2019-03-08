@@ -1,0 +1,48 @@
+// Copyright (C) 2019 by Joseph Mirabel, LAAS-CNRS.
+//
+// This file is part of the hpp-corbaserver.
+//
+// This software is provided "as is" without warranty of any kind,
+// either expressed or implied, including but not limited to the
+// implied warranties of fitness for a particular purpose.
+//
+// See the COPYING file for more information.
+
+#ifndef HPP_CORE_PATHS_IDL
+#define HPP_CORE_PATHS_IDL
+#include <hpp/common.idl>
+
+module hpp
+{
+  module core_idl {
+  typedef unsigned long long size_t;
+
+  interface Path
+  {
+    long outputSize () raises (Error);
+
+    long outputDerivativeSize () raises (Error);
+
+    double length () raises (Error);
+
+    string print () raises (Error);
+
+    floatSeq value (in double t, out boolean success) raises (Error);
+
+    floatSeq derivative (in double t, in short order) raises (Error);
+  }; // interface Path
+
+  interface PathVector : Path {
+    size_t numberPaths () raises (Error);
+
+    Path pathAtRank (in size_t rank) raises (Error);
+    
+    void appendPath (in Path p) raises (Error);
+
+    void concatenate (in PathVector p) raises (Error);
+  }; // interface PathVector
+
+  }; // module core
+}; // module hpp
+
+#endif // HPP_CORE_PATHS_IDL

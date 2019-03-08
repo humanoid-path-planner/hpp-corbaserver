@@ -93,6 +93,10 @@ namespace hpp
         return orb_;
       }
 
+      template <typename S, typename P> S* reference_to_servant (const P& p);
+
+      template <typename P, typename S> P makeServant (S* s);
+
       /// \brief Initialize CORBA server to process requests from clients
       /// \return 0 if success, -1 if failure.
       void startCorbaServer ();
@@ -175,6 +179,21 @@ namespace hpp
       Context& getContext (const std::string& name);
     };
 
+
+    template <typename S, typename P> S* Server::reference_to_servant (const P& p)
+    {
+      PortableServer::Servant s = poa()->reference_to_servant(p);
+      return dynamic_cast<S*> (s);
+    }
+
+    template <typename P, typename S> P Server::makeServant (S* s)
+    {
+      PortableServer::Servant_var<S> d (s);
+      // ObjectId_var object is here to delete the servantId.
+      PortableServer::ObjectId_var servantId = poa()->activate_object(d);
+      (void) servantId;
+      return d->_this();
+    }
   } // end of namespace corbaServer.
 } // end of namespace hpp.
 #endif
