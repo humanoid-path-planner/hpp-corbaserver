@@ -39,6 +39,7 @@ FOREACH(IDL ${IDL_SOURCES})
     -Wbmodules=hpp_idl
     -Wbextern=common:hpp_stubs
     -Wbextern=distances:hpp_stubs.core
+    -Wbextern=paths:hpp_stubs.core
     )
 ENDFOREACH()
 # Enable generation of dynamic type codes (in file commonDynSK.cc)
@@ -53,7 +54,7 @@ GENERATE_IDL_PYTHON (common ${CMAKE_SOURCE_DIR}/idl/hpp
 
 MAKE_DIRECTORY(${CMAKE_BINARY_DIR}/src/hpp_idl)
 MAKE_DIRECTORY(${CMAKE_BINARY_DIR}/src/hpp/core_idl)
-FOREACH(IDL distances)
+FOREACH(IDL distances paths)
   GENERATE_IDL_CPP (hpp/core_idl/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/core_idl
     HEADER_SUFFIX -idl.hh)
   GENERATE_IDL_PYTHON (${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/core_idl
@@ -103,6 +104,7 @@ IF (NOT CLIENT_ONLY)
     tools.hh
     conversions.cc
     distances.hh
+    paths.hh
     ${ALL_IDL_CPP_STUBS}
     )
 

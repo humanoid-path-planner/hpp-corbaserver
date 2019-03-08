@@ -16,6 +16,7 @@
 #include <boost/algorithm/string.hpp>
 
 #include <hpp/util/debug.hh>
+#include <hpp/util/exception-factory.hh>
 #include <hpp/util/portability.hh>
 
 #include <hpp/fcl/shape/geometric_shapes.h>
@@ -65,6 +66,7 @@
 #include <hpp/pinocchio/center-of-mass-computation.hh>
 
 #include "distances.hh"
+#include "paths.hh"
 #include "problem.impl.hh"
 #include "tools.hh"
 
@@ -2637,6 +2639,24 @@ namespace hpp
         core::ProblemSolverPtr_t ps = problemSolver();
         core::ProblemPtr_t p = problem (ps, true);
         p->distance (d->get());
+      }
+
+      // ---------------------------------------------------------------
+
+      hpp::core_idl::Path_ptr Problem::getPath (ULong pathId) throw (Error)
+      {
+        core::ProblemSolverPtr_t ps = problemSolver();
+        if (pathId >= ps->paths ().size ()) {
+          HPP_THROW(Error, "wrong path id: " << pathId
+              << ", number path: " << ps->paths ().size () << ".");
+        }
+
+        core::PathVectorPtr_t pv = ps->paths()[pathId];
+        PortableServer::Servant_var<core_idl::Path> d (new core_idl::Path (pv));
+        // ObjectId_var object is here to delete the servantId.
+        PortableServer::ObjectId_var servantId = server_->parent()->poa()->activate_object(d);
+        (void) servantId;
+        return d->_this();
       }
 
     } // namespace impl

@@ -366,6 +366,8 @@ namespace hpp
 
         void setDistance (hpp::core_idl::Distance_ptr distance) throw (hpp::Error);
 
+        hpp::core_idl::Path_ptr getPath (ULong pathId) throw (Error);
+
       private:
         /// Return the selected problem solver
         core::ProblemSolverPtr_t problemSolver ();

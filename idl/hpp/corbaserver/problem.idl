@@ -12,6 +12,7 @@
 #define HPP_CORBASERVER_PROBLEM_SERVER_IDL
 #include <hpp/common.idl>
 #include <hpp/core_idl/distances.idl>
+#include <hpp/core_idl/paths.idl>
 
 module hpp
 {
@@ -712,6 +713,8 @@ module hpp
     core_idl::Distance getDistance () raises (Error);
 
     void setDistance (in core_idl::Distance distance) raises (Error);
+
+    core_idl::Path getPath (in unsigned long pathId) raises (Error);
     /// \}
   };
   }; // interface Problem
