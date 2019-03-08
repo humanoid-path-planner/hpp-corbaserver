@@ -67,6 +67,7 @@
 
 #include "distances.hh"
 #include "paths.hh"
+#include "steering-methods.hh"
 #include "problem.impl.hh"
 #include "tools.hh"
 
@@ -2648,6 +2649,20 @@ namespace hpp
         core::PathVectorPtr_t pv = ps->paths()[pathId];
         return server_->parent()->makeServant <hpp::core_idl::Path_ptr>
           (new core_idl::Path (server_->parent(), pv));
+      }
+
+      // ---------------------------------------------------------------
+
+
+      hpp::core_idl::SteeringMethod_ptr Problem::getSteeringMethod () throw (Error)
+      {
+        core::ProblemSolverPtr_t ps = problemSolver();
+        DevicePtr_t robot = getRobotOrThrow (ps);
+        core::SteeringMethodPtr_t sm = problem (ps, true)->steeringMethod();
+
+        return server_->parent()->makeServant <hpp::core_idl::SteeringMethod_ptr> (
+            new core_idl::SteeringMethod (server_->parent(),
+              core_idl::SteeringMethod::Storage (robot, sm)));
       }
 
     } // namespace impl

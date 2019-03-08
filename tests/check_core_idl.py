@@ -17,8 +17,9 @@ weights[0] = 0
 distance.setWeights (weights)
 distance.value (q0, qr)
 
-res, pid, msg = ps.directPath (q0, qr, False)
-path = ps.hppcorba.problem.getPath (pid)
+sm = ps.hppcorba.problem.getSteeringMethod ()
+
+path = sm.call (q0, qr)
 
 path.value(0)
 path.derivative(0.5, 1)
@@ -26,5 +27,6 @@ path.outputSize()
 
 tools.deleteServantFromObject(distance)
 tools.deleteServantFromObject(path)
+tools.deleteServantFromObject(sm)
 
 tools.shutdown()

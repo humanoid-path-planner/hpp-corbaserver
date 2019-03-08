@@ -368,6 +368,8 @@ namespace hpp
 
         hpp::core_idl::Path_ptr getPath (ULong pathId) throw (Error);
 
+        hpp::core_idl::SteeringMethod_ptr getSteeringMethod () throw (Error);
+
       private:
         /// Return the selected problem solver
         core::ProblemSolverPtr_t problemSolver ();

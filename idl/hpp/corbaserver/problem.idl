@@ -13,6 +13,7 @@
 #include <hpp/common.idl>
 #include <hpp/core_idl/distances.idl>
 #include <hpp/core_idl/paths.idl>
+#include <hpp/core_idl/steering_methods.idl>
 
 module hpp
 {
@@ -715,6 +716,8 @@ module hpp
     void setDistance (in core_idl::Distance distance) raises (Error);
 
     core_idl::Path getPath (in unsigned long pathId) raises (Error);
+
+    core_idl::SteeringMethod getSteeringMethod () raises (Error);
     /// \}
   };
   }; // interface Problem
