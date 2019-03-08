@@ -89,6 +89,20 @@ namespace hpp
           }
         }
 
+        virtual void deleteServant (const char* id) throw (Error)
+        {
+          try {
+            CORBA::Object_ptr obj = server_->orb()->string_to_object (id);
+            // TODO add a list of servant in Server and remove the servant.
+            // The list can be use for garbage collection.
+            // PortableServer::Servant servant = server_->poa()->id_to_servant(objectId.in());
+            PortableServer::ObjectId_var objectId = server_->poa()->reference_to_id (obj);
+            server_->poa()->deactivate_object(objectId.in());
+          } catch (const std::exception& e) {
+            throw hpp::Error (e.what ());
+          }
+        }
+
         virtual void shutdown ()
         {
           server_->requestShutdown(false);
