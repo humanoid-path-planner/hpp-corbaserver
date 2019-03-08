@@ -8,15 +8,19 @@
 //
 // See the COPYING file for more information.
 
+#include "hpp/corbaserver/server.hh"
+
 #include <errno.h>
 #include <pthread.h>
 #include <iostream>
+#include <dlfcn.h>
 
 #include <hpp/util/debug.hh>
-#include "hpp/corbaserver/server.hh"
+#include <hpp/core/plugin.hh>
+#include <hpp/corbaserver/server-plugin.hh>
+#include "hpp/corbaserver/tools.hh" 
 
-#include "server-private.hh"
-
+#include "basic-server.hh"
 
 namespace hpp
 {
@@ -55,6 +59,39 @@ namespace hpp
       }
     } // end of anonymous namespace.
 
+    class Tools : public virtual POA_hpp::Tools
+    {
+      public:
+	Tools () : server_ (NULL) {};
+
+        void setServer (Server* server)
+        {
+          server_ = server;
+        }
+
+        virtual CORBA::Boolean loadServerPlugin (const char* context, const char* pluginName) throw (Error)
+        {
+          try {
+            std::string c (context), pn (pluginName);
+            return server_->loadPlugin (c, pn);
+          } catch (const std::exception& e) {
+            throw hpp::Error (e.what ());
+          }
+        }
+
+        virtual CORBA::Boolean createContext (const char* context) throw (Error)
+        {
+          try {
+            std::string c (context);
+            return server_->createContext (c);
+          } catch (const std::exception& e) {
+            throw hpp::Error (e.what ());
+          }
+        }
+
+      private:
+        Server* server_;
+    };
 
     Server::Server(core::ProblemSolverPtr_t problemSolver, int argc,
 		   const char *argv[], bool inMultiThread) :
@@ -63,8 +100,6 @@ namespace hpp
     {
       // Register log function.
       omniORB::setLogFunction (&logFunction);
-
-      private_ = new impl::Server;
 
       parseArguments (argc, argv);
 
@@ -79,8 +114,6 @@ namespace hpp
       // Register log function.
       omniORB::setLogFunction (&logFunction);
 
-      private_ = new impl::Server;
-
       parseArguments (argc, argv);
 
       initORBandServers (argc, argv, multiThread_);
@@ -89,9 +122,6 @@ namespace hpp
     /// \brief Shutdown CORBA server
     Server::~Server()
     {
-      private_->deactivateAndDestroyServers();
-      delete private_;
-      private_ = NULL;
     }
 
     /// CORBA SERVER INITIALIZATION
@@ -104,14 +134,14 @@ namespace hpp
       PortableServer::POA_var rootPoa;
 
       /// ORB init
-      private_->orb_ = ORB_init (argc, const_cast<char **> (argv));
-      if (is_nil(private_->orb_)) {
+      orb_ = ORB_init (argc, const_cast<char **> (argv));
+      if (is_nil(orb_)) {
 	std::string msg ("failed to initialize ORB");
 	hppDout (error, msg.c_str ());
 	throw std::runtime_error (msg.c_str ());
       }
       /// ORB init
-      obj = private_->orb_->resolve_initial_references("RootPOA");
+      obj = orb_->resolve_initial_references("RootPOA");
 
       /// Create thread policy
 
@@ -135,25 +165,24 @@ namespace hpp
       policyList[0] = PortableServer::ThreadPolicy::_duplicate(threadPolicy);
 
       try {
-        private_->poa_ = rootPoa->create_POA
+        poa_ = rootPoa->create_POA
           ("child", PortableServer::POAManager::_nil(), policyList);
       } catch (PortableServer::POA::AdapterAlreadyExists& /*e*/) {
-        private_->poa_ = rootPoa->find_POA ("child", false);
+        poa_ = rootPoa->find_POA ("child", false);
       }
 
       // Destroy policy object
       threadPolicy->destroy();
-      private_->createAndActivateServers(this);
     }
 
     void Server::parseArguments (int argc, const char* argv[])
     {
-      mainContextId_ = "hpp";
+      mainContextId_ = "corbaserver";
 
       for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--name") == 0) {
           if (i < argc - 1) {
-            mainContextId_.append(argv[i+1]);
+            mainContextId_ = argv[i+1];
             ++i;
           }
           else              usage(argv[0]);
@@ -172,40 +201,84 @@ namespace hpp
 
     void Server::startCorbaServer()
     {
-      // Obtain a reference to objects, and register them in
-      // the naming service.
-      Object_var robotObj = private_->robotServant_->_this();
-      Object_var obstacleObj = private_->obstacleServant_->_this();
-      Object_var problemObj = private_->problemServant_->_this();
+      // Create Server interface
+      tools_ = new Tools ();
+      tools_->setServer (this);
+      /*servantId_ = */ poa_->activate_object(tools_);
 
-      private_->createHppContext (mainContextId());
-      // Bind robotObj with name Robot to the hppContext:
-      CosNaming::Name objectName;
-      objectName.length(1);
-      objectName[0].id   = (const char*) "basic";   // string copied
-      objectName[0].kind = (const char*) "robot"; // string copied
+      CosNaming::NamingContext_var rootContext;
+      Object_var localObj;
+      CosNaming::Name contextName;
 
-      private_->bindObjectToName(robotObj, objectName);
-      private_->robotServant_->_remove_ref();
+      try {
+        // Obtain a reference to the root context of the Name service:
+        localObj = orb_->resolve_initial_references("NameService");
+      } catch(const CORBA::Exception& e) {
+        hppCorbaDout (error, "CORBA::Exception " << e._name() << ":" 
+            << e._rep_id() << " : failed to get the name service");
+        return;
+      }
 
-      // Bind obstacleObj with name Obstacle to the hppContext:
-      objectName.length(1);
-      objectName[0].id   = (const char*) "basic"; // string copied
-      objectName[0].kind = (const char*) "obstacle";   // string copied
+      try {
+        // Narrow the reference returned.
+        rootContext = CosNaming::NamingContext::_narrow(localObj);
+        if( is_nil(rootContext) ) {
+          hppCorbaDout (error, "Failed to narrow the root naming context.");
+          return;
+        }
+      }
+      catch(CORBA::ORB::InvalidName& ex) {
+        // This should not happen!
+        hppCorbaDout (error, "Service required is invalid [does not exist].");
+        return;
+      } catch(const CORBA::Exception& e) {
+        hppCorbaDout (error, "CORBA::Exception " << e._name() << ":" 
+            << e._rep_id() << " : failed to narrow the root naming context");
+        return;
+      }
 
-      private_->bindObjectToName(obstacleObj, objectName);
-      private_->obstacleServant_->_remove_ref();
+      try {
+        // Bind a context called "hpp" to the root context:
+        localObj = tools_->_this();
 
-      // Bind problemObj with name Problem to the hppContext:
-      objectName.length(1);
-      objectName[0].id   = (const char*) "basic"; // string copied
-      objectName[0].kind = (const char*) "problem";   // string copied
+        contextName.length(1);
+        contextName[0].id   = (const char*) "hpp";    // string copied
+        contextName[0].kind = (const char*) "tools"; // string copied
+        // Note on kind: The kind field is used to indicate the type
+        // of the object. This is to avoid conventions such as that used
+        // by files (name.type -- e.g. hpp.ps = postscript etc.)
 
-      private_->bindObjectToName(problemObj, objectName);
-      private_->problemServant_->_remove_ref();
+        try {
+          rootContext->bind(contextName, localObj);
+        }
+        catch(CosNaming::NamingContext::AlreadyBound& ex)
+        {
+          rootContext->rebind(contextName, localObj);
+        }
+      }
+      catch(CORBA::COMM_FAILURE& ex) {
+        hppCorbaDout (error, "Caught system exception COMM_FAILURE -- "
+            "unable to contact the naming service.");
+        return;
+      }
+      catch(CORBA::SystemException&) {
+        hppCorbaDout (error, "Caught a SystemException while creating the context.");
+        return;
+      }
+      tools_->_remove_ref();
 
-      PortableServer::POAManager_var pman = private_->poa_->the_POAManager();
-      pman->activate();
+      // Creation of main context
+      createContext (mainContextId());
+    }
+
+
+    bool Server::createContext (const std::string& name)
+    {
+      if (contexts_.find (name) != contexts_.end())
+        return false;
+
+      getContext (name);
+      return true;
     }
 
     core::ProblemSolverPtr_t Server::problemSolver ()
@@ -218,25 +291,93 @@ namespace hpp
       return problemSolverMap_;
     }
 
+    Server::Context& Server::getContext (const std::string& name)
+    {
+      if (contexts_.find (name) != contexts_.end()) {
+        return contexts_[name];
+      }
+
+      Context context;
+      context.main = ServerPluginPtr_t (new BasicServer (multiThread()));
+      ProblemSolverMapPtr_t psm (new ProblemSolverMap (*problemSolverMap_));
+      context.main->setProblemSolverMap (psm);
+      context.main->startCorbaServer ("hpp", name);
+
+      return contexts_.insert (std::make_pair(name, context)).first->second;
+    }
+
+    bool Server::loadPlugin (const std::string& contextName,
+        const std::string& libFilename)
+    {
+      // Load the plugin
+      std::string lib = core::plugin::findPluginLibrary (libFilename);
+
+      typedef ::hpp::corbaServer::ServerPlugin* (*PluginFunction_t) (bool);
+
+      // Clear old errors
+      const char* error = dlerror ();
+      //void* library = dlopen(lib.c_str(), RTLD_NOW|RTLD_GLOBAL);
+      void* library = dlopen(lib.c_str(), RTLD_NOW);
+      error = dlerror ();
+      if (error != NULL) {
+        hppDout (error, "Error loading library " << lib << ": " << error);
+        return false;
+      }
+      if (library == NULL) {
+        // uncaught error ?
+        return false;
+      }
+
+      PluginFunction_t function = reinterpret_cast<PluginFunction_t>(dlsym(library, "createServerPlugin"));
+      error = dlerror ();
+      if (error != NULL) {
+        hppDout (error, "Error loading library " << lib << ":\n" << error);
+        return false;
+      }
+      if (function == NULL) {
+        hppDout (error, "Symbol createServerPlugin of (correctly loaded) library " << lib << " is NULL.");
+        return false;
+      }
+
+      // Get the context.
+      Context& context = getContext (contextName);
+
+      ServerPluginPtr_t plugin (function(multiThread()));
+      if (!plugin) return false;
+      const std::string name = plugin->name();
+      if (context.plugins.find (name) != context.plugins.end()) {
+        hppDout (info, "Plugin " << lib << " already loaded.");
+        return false;
+      }
+      context.plugins[name] = plugin;
+      plugin->setProblemSolverMap (context.main->problemSolverMap());
+      plugin->startCorbaServer ("hpp", contextName);
+
+      // I don't think we should do that because the symbols should not be removed...
+      // dlclose (library);
+
+      return true;
+    }
+
     /// \brief If CORBA requests are pending, process them
     int Server::processRequest (bool loop)
     {
       if (loop)
 	{
 	  hppDout (info, "start processing CORBA requests for ever.");
-	  private_->orb_->run();
+	  orb_->run();
 	}
       else
 	{
-	  if (private_->orb_->work_pending())
-	    private_->orb_->perform_work();
+	  if (orb_->work_pending())
+	    orb_->perform_work();
 	}
       return 0;
     }
 
     void Server::requestShutdown (bool wait)
     {
-      private_->orb_->shutdown (wait);
+      orb_->shutdown (wait);
     }
 
   } // end of namespace corbaServer.

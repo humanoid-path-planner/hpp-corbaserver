@@ -21,6 +21,7 @@ SET(IDL_SOURCES
   obstacle
   problem
   robot
+  tools
   )
 
 # search for python
@@ -29,7 +30,7 @@ FINDPYTHON(2.7 EXACT REQUIRED)
 OMNIIDL_INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/idl)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src)
 
-FOREACH(IDL obstacle problem robot)
+FOREACH(IDL obstacle problem robot tools)
   GENERATE_IDL_CPP (hpp/corbaserver/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver)
   GENERATE_IDL_PYTHON (hpp/corbaserver/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver
     ARGUMENTS
@@ -80,8 +81,7 @@ IF (NOT CLIENT_ONLY)
     robot.impl.hh
     client.cc
     server.cc
-    server-private.cc
-    server-private.hh
+    problem-solver-map.cc
     tools.cc
     tools.hh
     conversions.cc
@@ -138,7 +138,7 @@ FOREACH (FILE __init__.py quaternion.py transform.py)
     )
 ENDFOREACH ()
 
-FOREACH (FILE __init__.py client.py robot.py  problem_solver.py benchmark.py ompl_benchmark_statistics.py)
+FOREACH (FILE __init__.py client.py robot.py  problem_solver.py tools.py benchmark.py ompl_benchmark_statistics.py)
   PYTHON_INSTALL_ON_SITE(
     hpp/corbaserver ${FILE}
     )

@@ -59,7 +59,7 @@
 # include <hpp/constraints/static-stability.hh>
 #endif
 #include <hpp/constraints/configuration-constraint.hh>
-#include <hpp/corbaserver/server.hh>
+#include <hpp/corbaserver/server-plugin.hh>
 #include <hpp/pinocchio/body.hh>
 #include <hpp/pinocchio/center-of-mass-computation.hh>
 
@@ -269,15 +269,16 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      Problem::Problem (corbaServer::Server* server)
-	: server_ (server)
+      Problem::Problem ()
+        : server_ (NULL)
       {}
 
       // ---------------------------------------------------------------
 
       void Problem::shutdown ()
       {
-        server_->requestShutdown(false);
+        // TODO
+        //server_->requestShutdown(false);
       }
 
       // ---------------------------------------------------------------
@@ -378,7 +379,7 @@ namespace hpp
         _CASE_PUSH_TO ("PathValidation"      , problemSolver()->pathValidationType (tol))
         _CASE_PUSH_TO ("SteeringMethod"      , problemSolver()->steeringMethodType ())
         _CASE_PUSH_TO ("Distance"            , problemSolver()->distanceType ())
-        _CASE_PUSH_TO ("Problem"             , server_->problemSolverMap()->selected_)
+        _CASE_PUSH_TO ("Problem"             , server_->problemSolverMap()->selectedName())
         _CASE_SET_RET ("Type", types)
         if (!ok) {
           throw Error (("Type \"" + std::string(what) + "\" not known").c_str());
@@ -458,8 +459,8 @@ namespace hpp
         std::string psName (name);
         ProblemSolverMapPtr_t psMap (server_->problemSolverMap());
         bool has = psMap->has (psName);
-        if (!has) psMap->map_[psName] = core::ProblemSolver::create ();
-        psMap->selected_ = psName;
+        if (!has) psMap->add (psName, core::ProblemSolver::create ());
+        psMap->selected (psName);
         return !has;
       }
 
@@ -468,8 +469,7 @@ namespace hpp
       void Problem::resetProblem () throw (hpp::Error)
       {
         ProblemSolverMapPtr_t psMap (server_->problemSolverMap());
-        delete psMap->map_ [ psMap->selected_ ];
-        psMap->map_ [ psMap->selected_ ] = core::ProblemSolver::create ();
+        psMap->replaceSelected (core::ProblemSolver::create ());
       }
 
       // ---------------------------------------------------------------
@@ -493,7 +493,7 @@ namespace hpp
         ProblemSolverMapPtr_t psMap (server_->problemSolverMap());
         if (!psMap->has (std::string(name))) throw Error ("No ProblemSolver of this name");
         core::ProblemSolverPtr_t current = problemSolver(),
-                                 other = psMap->map_[std::string(name)];
+                                 other = psMap->get(std::string(name));
 
         if (pathId >= current->paths().size()) {
           std::ostringstream oss ("wrong path id: ");

@@ -39,7 +39,7 @@
 #include <hpp/core/config-validations.hh>
 #include <hpp/core/distance-between-objects.hh>
 #include <hpp/core/weighed-distance.hh>
-#include <hpp/corbaserver/server.hh>
+#include <hpp/corbaserver/server-plugin.hh>
 #include "robot.impl.hh"
 #include "tools.hh"
 
@@ -103,8 +103,8 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      Robot::Robot(corbaServer::Server* server) :
-	server_(server)
+      Robot::Robot() :
+	server_(NULL)
       {
       }
 

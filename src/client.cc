@@ -43,11 +43,9 @@ namespace hpp
 
       // Bind robotObj with name Robot to the hppContext:
       CosNaming::Name objectName;
-      std::string fullContext ("hpp");
-      fullContext += context;
       objectName.length(2);
-      objectName[0].id   = (const char*) fullContext.c_str(); // string copied
-      objectName[0].kind = (const char*) "corbaserver"; // string copied
+      objectName[0].id   = (const char*) "hpp"; // string copied
+      objectName[0].kind = (const char*) context; // string copied
       objectName[1].id   = (const char*) "basic";   // string copied
       objectName[1].kind = (const char*) "robot"; // string copied
 

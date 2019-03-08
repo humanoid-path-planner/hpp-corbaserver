@@ -1,0 +1,35 @@
+// Copyright (C) 2009, 2010 by Florent Lamiraux, Thomas Moulard, JRL.
+//
+// This file is part of the hpp-corbaserver.
+//
+// This software is provided "as is" without warranty of any kind,
+// either expressed or implied, including but not limited to the
+// implied warranties of fitness for a particular purpose.
+//
+// See the COPYING file for more information.
+
+#ifndef HPP_CORBASERVER_TOOLS_IDL
+#define HPP_CORBASERVER_TOOLS_IDL
+#include <hpp/corbaserver/common.idl>
+
+module hpp
+{
+  /// Utilities to create new contexts and load new interfaces at runtime.
+  interface Tools {
+    /// Load a plugin that creates a CORBA interface.
+    /// \param pluginName either an absolute filename or a filename relative
+    ///                   to `<a_path_in_LD_LIBRARY_PATH>/hppPlugins`.
+    /// \note The plugin will be available for any problem (even after resetting it).
+    /// \note The context is created if it does not exists.
+    boolean loadServerPlugin (in string context_, in string pluginName) raises (Error);
+
+    /// Create a new context.
+    ///
+    /// A context is a set of servant classes that works on a ProblemSolver.
+    ///
+    /// All contexts share the same map of ProblemSolver. Each context can
+    /// whichever ProblemSolver in this map.
+    boolean createContext (in string context_) raises (Error);
+  }; // interface Tools
+}; // module hpp
+#endif

@@ -27,7 +27,7 @@
 
 #include "tools.hh"
 
-#include "hpp/corbaserver/server.hh"
+#include <hpp/corbaserver/server-plugin.hh>
 
 namespace hpp
 {
@@ -35,8 +35,8 @@ namespace hpp
   {
     namespace impl
     {
-      Obstacle::Obstacle (corbaServer::Server* server)
-	: server_ (server)
+      Obstacle::Obstacle ()
+	: server_ (NULL)
       {}
 
       core::ProblemSolverPtr_t Obstacle::problemSolver()

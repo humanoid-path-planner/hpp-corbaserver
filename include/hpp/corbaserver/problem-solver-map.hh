@@ -17,6 +17,7 @@
 #ifndef HPP_CORBASERVER_PROBLEM_SOLVER_MAP_HH
 # define HPP_CORBASERVER_PROBLEM_SOLVER_MAP_HH
 # include <map>
+# include <boost/thread/mutex.hpp>
 
 # include "hpp/corbaserver/fwd.hh"
 # include "hpp/corbaserver/config.hh"
@@ -30,40 +31,46 @@ namespace hpp
     class HPP_CORBASERVER_DLLAPI ProblemSolverMap {
       public:
         typedef std::map<std::string, core::ProblemSolverPtr_t> ProblemMap_t;
-
-        std::string selected_;
-        ProblemMap_t map_;
+        typedef boost::shared_ptr<ProblemMap_t> ProblemMapPtr_t;
+        typedef boost::mutex mutex_t;
+        typedef boost::shared_ptr<mutex_t> mutexPtr_t;
 
         ProblemSolverMap (core::ProblemSolverPtr_t init,
-            const std::string& name = "default") :
-          selected_ (name)
-          {
-            map_[selected_] = init;
-          }
+            const std::string& name = "default");
 
-        core::ProblemSolverPtr_t operator-> () {
-          return selected();
-        }
-        operator core::ProblemSolverPtr_t () {
-          return selected();
-        }
-        core::ProblemSolverPtr_t selected () {
-          return map_[selected_];
-        }
-        bool has (const std::string& name) const
-        {
-          // ProblemMap_t::const_iterator it = map_.find (name);
-          // return it != map_.end ();
-          return map_.end() != map_.find (name);
-        }
+        ProblemSolverMap (const ProblemSolverMap& map);
+
+        core::ProblemSolverPtr_t operator-> ();
+        operator core::ProblemSolverPtr_t ();
+
+        core::ProblemSolverPtr_t selected () const;
+        core::ProblemSolverPtr_t get (const std::string& name) const;
+        void selected (const std::string& name);
+
+        bool has (const std::string& name) const;
+        void add (const std::string& name, core::ProblemSolverPtr_t ps);
+        void remove (const std::string& name);
+        void replaceSelected (core::ProblemSolverPtr_t ps);
+
         template <typename ReturnType> ReturnType keys () const
         {
+          mutex_t::scoped_lock lock (*mutex_);
           ReturnType l;
-          for (ProblemMap_t::const_iterator it = map_.begin ();
-              it != map_.end (); ++it)
+          for (ProblemMap_t::const_iterator it = map_->begin ();
+              it != map_->end (); ++it)
             l.push_back (it->first);
           return l;
         }
+
+        const std::string& selectedName () const
+        {
+          return selected_;
+        }
+
+      private:
+        std::string selected_;
+        ProblemMapPtr_t map_;
+        mutexPtr_t mutex_;
     };
   } // end of namespace corbaServer.
 } // end of namespace hpp.
