@@ -31,11 +31,21 @@ INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src)
 
 FOREACH(IDL obstacle problem robot)
   GENERATE_IDL_CPP (hpp/corbaserver/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver)
-  GENERATE_IDL_PYTHON (hpp/corbaserver/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver)
+  GENERATE_IDL_PYTHON (hpp/corbaserver/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver
+    ARGUMENTS
+    -p${CMAKE_SOURCE_DIR}/cmake/hpp/idl
+    -bomniidl_be_python_with_docstring
+    -K
+    )
 ENDFOREACH()
 # Enable generation of dynamic type codes (in file commonDynSK.cc)
 GENERATE_IDL_CPP (hpp/corbaserver/common ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver ENABLE_Wba)
-GENERATE_IDL_PYTHON (hpp/corbaserver/common ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver)
+GENERATE_IDL_PYTHON (hpp/corbaserver/common ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver
+    ARGUMENTS
+    -p${CMAKE_SOURCE_DIR}/cmake/hpp/idl
+    -bomniidl_be_python_with_docstring
+    -K
+  )
 
 FOREACH(IDL ${IDL_SOURCES})
   INSTALL(
