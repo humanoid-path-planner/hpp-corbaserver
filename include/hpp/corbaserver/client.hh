@@ -13,9 +13,9 @@
 
 # include <omniORB4/CORBA.h>
 
-# include <hpp/corbaserver/robot.hh>
-# include <hpp/corbaserver/problem.hh>
-# include <hpp/corbaserver/obstacle.hh>
+# include <hpp/corbaserver/robot-idl.hh>
+# include <hpp/corbaserver/problem-idl.hh>
+# include <hpp/corbaserver/obstacle-idl.hh>
 
 # include <hpp/corbaserver/config.hh>
 

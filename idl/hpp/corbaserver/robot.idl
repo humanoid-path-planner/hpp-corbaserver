@@ -11,7 +11,7 @@
 
 #ifndef HPP_CORBASERVER_ROBOT_SERVER_IDL
 #define HPP_CORBASERVER_ROBOT_SERVER_IDL
-#include <hpp/corbaserver/common.idl>
+#include <hpp/common.idl>
 
 module hpp
 {

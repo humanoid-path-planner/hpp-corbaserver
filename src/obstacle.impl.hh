@@ -17,7 +17,7 @@
 
 # include <hpp/core/problem-solver.hh>
 # include <hpp/corbaserver/fwd.hh>
-# include <hpp/corbaserver/obstacle.hh>
+# include <hpp/corbaserver/obstacle-idl.hh>
 # include <hpp/corbaserver/object-map.hh>
 
 /// \brief Implement CORBA interface ``Obstacle''.

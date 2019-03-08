@@ -18,7 +18,7 @@
 #include <hpp/util/debug.hh>
 #include <hpp/core/plugin.hh>
 #include <hpp/corbaserver/server-plugin.hh>
-#include "hpp/corbaserver/tools.hh" 
+#include "hpp/corbaserver/tools-idl.hh" 
 
 #include "basic-server.hh"
 

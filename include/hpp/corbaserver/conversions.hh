@@ -20,7 +20,7 @@
 # include <hpp/util/exception-factory.hh>
 
 # include <hpp/corbaserver/fwd.hh>
-# include <hpp/corbaserver/common.hh>
+# include <hpp/common-idl.hh>
 
 namespace hpp {
   namespace corbaServer {

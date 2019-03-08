@@ -14,7 +14,7 @@
 # include <stdlib.h>
 
 # include "hpp/corbaserver/fwd.hh"
-# include "hpp/corbaserver/problem.hh"
+# include "hpp/corbaserver/problem-idl.hh"
 # include "hpp/corbaserver/problem-solver-map.hh"
 
 # include "hpp/corbaserver/deprecated.hh"
