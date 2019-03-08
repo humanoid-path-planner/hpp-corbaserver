@@ -50,6 +50,7 @@ GENERATE_IDL_PYTHON (common ${CMAKE_SOURCE_DIR}/idl/hpp
     -Wbstubs=hpp_stubs
   )
 
+MAKE_DIRECTORY(${CMAKE_BINARY_DIR}/src/hpp_idl)
 FOREACH(IDL ${IDL_SOURCES})
   INSTALL(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/${IDL}-idl.hh
@@ -70,12 +71,6 @@ INSTALL(
 
 ADD_CUSTOM_TARGET(generate_idl_cpp DEPENDS ${ALL_IDL_CPP_STUBS})
 ADD_CUSTOM_TARGET(generate_idl_python DEPENDS ${ALL_IDL_PYTHON_STUBS})
-
-# "omniidl -bpython" generates an hpp.corbaserver python module inside the hpp.corbaserver python module...
-ADD_CUSTOM_TARGET(clean_idl_python
-  COMMAND ${CMAKE_COMMAND} -E remove_directory "${PROJECT_BINARY_DIR}/src/hpp/corbaserver/hpp"
-  DEPENDS generate_idl_python
-  )
 
 IF (NOT CLIENT_ONLY)
   ADD_LIBRARY(${LIBRARY_NAME}
@@ -125,7 +120,6 @@ ENDIF (NOT CLIENT_ONLY)
 
 ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_cpp)
 ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_python)
-ADD_DEPENDENCIES (${LIBRARY_NAME} clean_idl_python)
 
 IF(WIN32)
   SET(LINK copy_if_different)
