@@ -53,7 +53,7 @@ namespace hpp
           {
             Configuration_t qq1 (floatSeqToConfig(s_.r, q1, true)),
                             qq2 (floatSeqToConfig(s_.r, q2, true));
-            return server_->template makeServant<hpp::core_idl::Path_ptr> (
+            return makeServant<hpp::core_idl::Path_ptr> (server_,
                 new Path (server_, (*s_.d) (qq1,qq2)));
           }
 

@@ -65,6 +65,7 @@
 #include <hpp/pinocchio/body.hh>
 #include <hpp/pinocchio/center-of-mass-computation.hh>
 
+#include "servant-base.hh"
 #include "distances.hh"
 #include "paths.hh"
 #include "steering-methods.hh"
@@ -2610,12 +2611,12 @@ namespace hpp
 
         core::WeighedDistancePtr_t wDistance = HPP_DYNAMIC_PTR_CAST(core::WeighedDistance, distance);
         if (wDistance) {
-          return server_->parent()->makeServant <hpp::core_idl::Distance_ptr> (
+          return makeServant <hpp::core_idl::Distance_ptr> (server_->parent(),
               new core_idl::WeighedDistance (server_->parent(),
                 core_idl::WeighedDistance::Storage (robot, wDistance)));
         } else {
-          return server_->parent()->makeServant <hpp::core_idl::Distance_ptr>
-            (new core_idl::Distance (server_->parent(),
+          return makeServant <hpp::core_idl::Distance_ptr> (server_->parent(),
+             new core_idl::Distance (server_->parent(),
                 core_idl::Distance::Storage (robot, distance)));
         }
       }
@@ -2624,17 +2625,18 @@ namespace hpp
 
       void Problem::setDistance (hpp::core_idl::Distance_ptr distance) throw (hpp::Error)
       {
-        PortableServer::Servant servant = server_->parent()->poa()->reference_to_servant(distance);
-        core_idl::DistanceBase* d = dynamic_cast<core_idl::DistanceBase*> (servant);
-
-        if (d == NULL) {
+        core::DistancePtr_t d;
+        try {
+          d = reference_to_servant_base<core::DistancePtr_t>(server_->parent(), distance)->get();
+        } catch (const Error& e) {
           // TODO in this case, we should define a distance from the CORBA type.
           // This would allow to implement a distance class in Python.
-          throw Error ("Not a distance servant");
+          throw;
         }
+
         core::ProblemSolverPtr_t ps = problemSolver();
         core::ProblemPtr_t p = problem (ps, true);
-        p->distance (d->get());
+        p->distance (d);
       }
 
       // ---------------------------------------------------------------
@@ -2648,8 +2650,8 @@ namespace hpp
         }
 
         core::PathVectorPtr_t pv = ps->paths()[pathId];
-        return server_->parent()->makeServant <hpp::core_idl::Path_ptr>
-          (new core_idl::Path (server_->parent(), pv));
+        return makeServant <hpp::core_idl::Path_ptr> (server_->parent(),
+            new core_idl::Path (server_->parent(), pv));
       }
 
       // ---------------------------------------------------------------
@@ -2660,7 +2662,7 @@ namespace hpp
         DevicePtr_t robot = getRobotOrThrow (ps);
         core::SteeringMethodPtr_t sm = problem (ps, true)->steeringMethod();
 
-        return server_->parent()->makeServant <hpp::core_idl::SteeringMethod_ptr> (
+        return makeServant <hpp::core_idl::SteeringMethod_ptr> (server_->parent(),
             new core_idl::SteeringMethod (server_->parent(),
               core_idl::SteeringMethod::Storage (robot, sm)));
       }
@@ -2673,7 +2675,7 @@ namespace hpp
         DevicePtr_t robot = getRobotOrThrow (ps);
         core::PathValidationPtr_t pv = problem (ps, true)->pathValidation();
 
-        return server_->parent()->makeServant <hpp::core_idl::PathValidation_ptr> (
+        return makeServant <hpp::core_idl::PathValidation_ptr> (server_->parent(),
             new core_idl::PathValidation (server_->parent(),
               core_idl::PathValidation::Storage (pv)));
       }

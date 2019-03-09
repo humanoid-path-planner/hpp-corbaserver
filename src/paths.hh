@@ -114,12 +114,12 @@ namespace hpp
 
           void appendPath (hpp::core_idl::Path_ptr path) throw (Error)
           {
-            getS()->appendPath(server_->template reference_to_servant<PathBase>(path)->get());
+            getS()->appendPath(reference_to_servant_base<core::PathPtr_t>(server_, path)->get());
           }
 
           void concatenate (hpp::core_idl::PathVector_ptr path) throw (Error)
           {
-            getS()->appendPath(server_->template reference_to_servant<PathVectorServant>(path)->getS());
+            getS()->appendPath(reference_to_servant<PathVectorServant>(server_, path)->getS());
           }
       };
 
