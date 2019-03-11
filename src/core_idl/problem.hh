@@ -31,7 +31,7 @@ namespace hpp
   {
     namespace core_idl
     {
-      class Problem : public virtual POA_hpp::core_idl::Problem
+      class Problem : public virtual POA_hpp::core_idl::Problem, public AbstractServantKey
       {
         public:
           typedef core::ProblemPtr_t Storage;
@@ -91,6 +91,25 @@ namespace hpp
             }
 
             p_->steeringMethod (d);
+          }
+
+          struct PtrWapper
+          {
+            core::ProblemPtr_t p;
+            PtrWapper (core::ProblemPtr_t _p) : p (_p) {}
+            operator core::ProblemPtr_t() const { return p; }
+            core::ProblemPtr_t operator->() const { return p; }
+            core::ProblemPtr_t get() const { return p; }
+          };
+
+          virtual PtrWapper get ()
+          {
+            return PtrWapper(p_);
+          }
+
+          virtual void* getServantKey ()
+          {
+            return p_;
           }
 
         protected:

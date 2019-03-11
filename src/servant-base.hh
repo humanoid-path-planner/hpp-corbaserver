@@ -23,12 +23,24 @@ namespace hpp
 #define SERVANT_BASE_TYPEDEFS(Obj)                                             \
     typedef Obj         Object;                                                \
     typedef Obj ## _ptr Object_ptr;
-    template <typename T> class AbstractServantBase
+
+    class AbstractServantKey
+    {
+      public:
+        virtual Server::ServantKey getServantKey () /*const*/ = 0;
+    };
+
+    template <typename T> class AbstractServantBase : AbstractServantKey
     {
       public:
         virtual ~AbstractServantBase () {}
 
         virtual T get() = 0;
+
+        virtual Server::ServantKey getServantKey ()
+        {
+          return get().get();
+        }
 
       protected:
         AbstractServantBase (Server* server) : server_ (server) {}
@@ -77,10 +89,19 @@ namespace hpp
 
     template <typename P, typename S> P makeServant (Server* server, S* s)
     {
+      Server::ServantKey servantKey = s->getServantKey();
+      S* servant = dynamic_cast<S*> (server->getServant (servantKey));
+      if (servant != NULL) {
+        delete s;
+        return servant->_this();
+      }
+
       PortableServer::Servant_var<S> d (s);
       // ObjectId_var object is here to delete the servantId.
       PortableServer::ObjectId_var servantId = server->poa()->activate_object(d);
       (void) servantId;
+
+      server->addServantKeyAndServant (servantKey, d.in());
       return d->_this();
     }
 

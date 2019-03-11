@@ -132,6 +132,14 @@ namespace hpp
 
       core::ProblemSolverPtr_t problemSolver ();
 
+      typedef void* ServantKey;
+
+      PortableServer::Servant getServant (ServantKey servantKey) const;
+
+      void addServantKeyAndServant (ServantKey servantKey, PortableServer::Servant servant);
+
+      void removeServant (PortableServer::Servant servant);
+
     private:
 
       ///\name CORBA server initialization
@@ -173,6 +181,11 @@ namespace hpp
       std::map<std::string, Context> contexts_;
 
       Context& getContext (const std::string& name);
+
+      typedef std::map <ServantKey, PortableServer::Servant> ServantKeyToServantMap_t;
+      typedef std::map <PortableServer::Servant, ServantKey> ServantToServantKeyMap_t;
+      ServantKeyToServantMap_t servantKeyToServantMap_;
+      ServantToServantKeyMap_t servantToServantKeyMap_;
     };
   } // end of namespace corbaServer.
 } // end of namespace hpp.

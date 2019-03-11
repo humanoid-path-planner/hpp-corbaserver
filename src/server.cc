@@ -21,6 +21,7 @@
 #include "hpp/corbaserver/tools-idl.hh" 
 
 #include "basic-server.hh"
+#include "servant-base.hh"
 
 namespace hpp
 {
@@ -93,10 +94,11 @@ namespace hpp
         {
           try {
             CORBA::Object_ptr obj = server_->orb()->string_to_object (id);
-            // TODO add a list of servant in Server and remove the servant.
-            // The list can be use for garbage collection.
-            // PortableServer::Servant servant = server_->poa()->id_to_servant(objectId.in());
             PortableServer::ObjectId_var objectId = server_->poa()->reference_to_id (obj);
+            // Remove reference in servant object map
+            ServantBase_var servant = server_->poa()->id_to_servant(objectId.in());
+            server_->removeServant (servant.in());
+            // Deactivate object
             server_->poa()->deactivate_object(objectId.in());
           } catch (const std::exception& e) {
             throw hpp::Error (e.what ());
@@ -396,6 +398,39 @@ namespace hpp
     void Server::requestShutdown (bool wait)
     {
       orb_->shutdown (wait);
+    }
+
+    PortableServer::Servant Server::getServant (ServantKey servantKey) const
+    {
+      ServantKeyToServantMap_t::const_iterator _servant
+        = servantKeyToServantMap_.find (servantKey);
+      if (_servant == servantKeyToServantMap_.end())
+        return NULL;
+      return _servant->second;
+    }
+
+    void Server::addServantKeyAndServant (ServantKey servantKey, PortableServer::Servant servant)
+    {
+      typedef std::pair<ServantToServantKeyMap_t::iterator, bool> Ret_t;
+      Ret_t ret = servantToServantKeyMap_.insert (std::make_pair(servant, servantKey));
+      if (!ret.second) // Object not added because it already exists
+      {
+        std::cerr << "An servant object was lost." << std::endl;
+        ret.first->second = servantKey;
+      }
+
+      typedef std::pair<ServantKeyToServantMap_t::iterator, bool> Ret2_t;
+      Ret2_t ret2 = servantKeyToServantMap_.insert (std::make_pair(servantKey, servant));
+      if (!ret2.second)
+        ret2.first->second = servant;
+    }
+
+    void Server::removeServant (PortableServer::Servant servant)
+    {
+      ServantToServantKeyMap_t::iterator _it = servantToServantKeyMap_.find(servant);
+      if (_it == servantToServantKeyMap_.end()) return;
+      servantKeyToServantMap_.erase (_it->second);
+      servantToServantKeyMap_.erase (_it);
     }
 
   } // end of namespace corbaServer.
