@@ -24,7 +24,7 @@ class Client:
   defaultClients = {
           'problem' : hpp_idl.hpp.corbaserver.Problem,
           'obstacle': hpp_idl.hpp.corbaserver.Obstacle,
-          'robot'   : hpp_idl.hpp.corbaserver.RobotIDL,
+          'robot'   : hpp_idl.hpp.corbaserver.Robot,
           }
 
   def _makeClient(self, serviceId, serviceName, class_, mainContext):

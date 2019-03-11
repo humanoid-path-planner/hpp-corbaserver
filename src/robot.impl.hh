@@ -48,7 +48,7 @@ namespace hpp
       /// \brief Implementation of corba interface hpp::Robot.
       ///
       /// The construction of a
-      class Robot : public virtual POA_hpp::corbaserver::RobotIDL
+      class Robot : public virtual POA_hpp::corbaserver::Robot
       {
       public:
 	Robot ();
