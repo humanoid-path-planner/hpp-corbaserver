@@ -42,6 +42,7 @@ FOREACH(IDL ${IDL_SOURCES})
     -Wbextern=paths:hpp_stubs.core
     -Wbextern=steering_methods:hpp_stubs.core
     -Wbextern=path_validations:hpp_stubs.core
+    -Wbextern=problem:hpp_stubs.core
     )
 ENDFOREACH()
 # Enable generation of dynamic type codes (in file commonDynSK.cc)
@@ -56,8 +57,10 @@ GENERATE_IDL_PYTHON (common ${CMAKE_SOURCE_DIR}/idl/hpp
 
 MAKE_DIRECTORY(${CMAKE_BINARY_DIR}/src/hpp_idl)
 MAKE_DIRECTORY(${CMAKE_BINARY_DIR}/src/hpp/core_idl)
-FOREACH(IDL distances paths steering_methods path_validations)
+FOREACH(IDL distances paths steering_methods path_validations problem)
   GENERATE_IDL_CPP (hpp/core_idl/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/core_idl
+    ARGUMENTS
+    -Wbguard_prefix=hpp_core_idl
     HEADER_SUFFIX -idl.hh)
   GENERATE_IDL_PYTHON (${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/core_idl
       ENABLE_DOCSTRING
@@ -105,8 +108,6 @@ IF (NOT CLIENT_ONLY)
     tools.cc
     tools.hh
     conversions.cc
-    distances.hh
-    paths.hh
     ${ALL_IDL_CPP_STUBS}
     )
 

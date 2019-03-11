@@ -18,6 +18,7 @@
 # include "hpp/corbaserver/problem-solver-map.hh"
 
 # include "hpp/core_idl/distances-idl.hh"
+# include "hpp/core_idl/problem-idl.hh"
 
 # include "hpp/corbaserver/deprecated.hh"
 
@@ -371,6 +372,8 @@ namespace hpp
         hpp::core_idl::SteeringMethod_ptr getSteeringMethod () throw (Error);
 
         hpp::core_idl::PathValidation_ptr getPathValidation () throw (Error);
+
+        hpp::core_idl::Problem_ptr getProblem () throw (Error);
 
       private:
         /// Return the selected problem solver

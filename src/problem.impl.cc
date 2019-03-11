@@ -70,6 +70,7 @@
 #include "core_idl/paths.hh"
 #include "core_idl/steering-methods.hh"
 #include "core_idl/path-validations.hh"
+#include "core_idl/problem.hh"
 #include "problem.impl.hh"
 #include "tools.hh"
 
@@ -2672,6 +2673,18 @@ namespace hpp
         return makeServant <hpp::core_idl::PathValidation_ptr> (server_->parent(),
             new core_idl::PathValidation (server_->parent(),
               core_idl::PathValidation::Storage (pv)));
+      }
+
+      // ---------------------------------------------------------------
+
+      hpp::core_idl::Problem_ptr Problem::getProblem () throw (Error)
+      {
+        core::ProblemSolverPtr_t ps = problemSolver();
+        core::ProblemPtr_t pb = problem (ps, true);
+
+        return makeServant <hpp::core_idl::Problem_ptr> (server_->parent(),
+            new core_idl::Problem (server_->parent(),
+              core_idl::Problem::Storage (pb)));
       }
 
     } // namespace impl

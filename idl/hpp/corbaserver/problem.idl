@@ -15,6 +15,7 @@
 #include <hpp/core_idl/paths.idl>
 #include <hpp/core_idl/steering_methods.idl>
 #include <hpp/core_idl/path_validations.idl>
+#include <hpp/core_idl/problem.idl>
 
 module hpp
 {
@@ -721,6 +722,8 @@ module hpp
     core_idl::SteeringMethod getSteeringMethod () raises (Error);
 
     core_idl::PathValidation getPathValidation () raises (Error);
+
+    core_idl::Problem getProblem () raises (Error);
     /// \}
   };
   }; // interface Problem

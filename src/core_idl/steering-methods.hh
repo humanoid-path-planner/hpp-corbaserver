@@ -31,18 +31,30 @@ namespace hpp
       typedef AbstractServantBase<core::SteeringMethodPtr_t> SteeringMethodBase;
 
       template <typename D>
-      struct SteeringMethodStorage {
-        core::DevicePtr_t r;
-        D d;
-        SteeringMethodStorage (const core::DevicePtr_t& _r, const D& _d) : r(_r), d(_d) {}
-        operator core::SteeringMethodPtr_t () const { return d; }
-      };
-
-      template <typename Base, typename _Storage>
-      class SteeringMethodServant : public SteeringMethodBase, public virtual Base
+      class SteeringMethodStorage : public AbstractStorage<D, core::SteeringMethod>
       {
         public:
+          typedef AbstractStorage <D, core::SteeringMethod> parent_t;
+          using parent_t::element;
+          using typename parent_t::ptr_t;
+
+          core::DevicePtr_t r;
+          SteeringMethodStorage (const core::DevicePtr_t& _r, const ptr_t& _d)
+            : parent_t(_d), r(_r) {}
+
+          template <typename T> SteeringMethodStorage<T> cast () const
+          {
+            return SteeringMethodStorage<T> (r, HPP_DYNAMIC_PTR_CAST(T, element));
+          }
+      };
+
+      template <typename _Base, typename _Storage>
+      class SteeringMethodServant : public SteeringMethodBase, public virtual _Base
+      {
+        public:
+          typedef _Base    Base;
           typedef _Storage Storage;
+          SERVANT_BASE_TYPEDEFS(hpp::core_idl::SteeringMethod)
 
           SteeringMethodServant (Server* server, const Storage& s) :
             SteeringMethodBase (server), s_ (s) {}
@@ -54,7 +66,7 @@ namespace hpp
             Configuration_t qq1 (floatSeqToConfig(s_.r, q1, true)),
                             qq2 (floatSeqToConfig(s_.r, q2, true));
             return makeServant<hpp::core_idl::Path_ptr> (server_,
-                new Path (server_, (*s_.d) (qq1,qq2)));
+                new Path (server_, (*s_.element) (qq1,qq2)));
           }
 
           virtual core::SteeringMethodPtr_t get ()
@@ -71,7 +83,9 @@ namespace hpp
           Storage s_;
       };
 
-      typedef SteeringMethodServant<POA_hpp::core_idl::SteeringMethod, SteeringMethodStorage<core::SteeringMethodPtr_t> > SteeringMethod;
+      typedef SteeringMethodServant<POA_hpp::core_idl::SteeringMethod, SteeringMethodStorage<core::SteeringMethod> > SteeringMethod;
+
+      typedef boost::mpl::vector<SteeringMethod> SteeringMethods;
 
     } // end of namespace core.
   } // end of namespace corbaServer.
