@@ -30,18 +30,13 @@ namespace hpp
     {
       typedef AbstractServantBase<core::PathValidationPtr_t> PathValidationBase;
 
-      template <typename D>
-      struct PathValidationStorage {
-        D d;
-        PathValidationStorage (const D& _d) : d(_d) {}
-        operator core::PathValidationPtr_t () const { return d; }
-      };
-
-      template <typename Base, typename _Storage>
-      class PathValidationServant : public PathValidationBase, public virtual Base
+      template <typename _Base, typename _Storage>
+      class PathValidationServant : public PathValidationBase, public virtual _Base
       {
         public:
+          typedef _Base    Base;
           typedef _Storage Storage;
+          SERVANT_BASE_TYPEDEFS(hpp::core_idl::PathValidation)
 
           PathValidationServant (Server* server, const Storage& s) :
             PathValidationBase (server), s_ (s) {}
@@ -85,7 +80,9 @@ namespace hpp
           Storage s_;
       };
 
-      typedef PathValidationServant<POA_hpp::core_idl::PathValidation, PathValidationStorage<core::PathValidationPtr_t> > PathValidation;
+      typedef PathValidationServant<POA_hpp::core_idl::PathValidation, core::PathValidationPtr_t > PathValidation;
+
+      typedef boost::mpl::vector<PathValidation> PathValidations;
 
     } // end of namespace core.
   } // end of namespace corbaServer.
