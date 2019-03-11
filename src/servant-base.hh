@@ -11,12 +11,18 @@
 #ifndef SRC_SERVANT_BASE_HH
 # define SRC_SERVANT_BASE_HH
 
-#include <hpp/common-idl.hh>
+# include <boost/mpl/vector.hpp>
+# include <boost/mpl/for_each.hpp>
+
+# include <hpp/common-idl.hh>
 
 namespace hpp
 {
   namespace corbaServer
   {
+#define SERVANT_BASE_TYPEDEFS(Obj)                                             \
+    typedef Obj         Object;                                                \
+    typedef Obj ## _ptr Object_ptr;
     template <typename T> class AbstractServantBase
     {
       public:
@@ -28,6 +34,29 @@ namespace hpp
         AbstractServantBase (Server* server) : server_ (server) {}
 
         Server* server_;
+    };
+
+    /// Abstraction of storage ot HPP class.
+    /// Child classed must implement
+    /// \code
+    /// template <typename T> DistanceStorage<T> cast () const
+    /// {
+    /// return DistanceStorage<T> (r, HPP_DYNAMIC_PTR_CAST(T, d));
+    /// }
+    /// \endcode
+    template <typename T, typename Base> class AbstractStorage
+    {
+      public:
+        typedef boost::shared_ptr<T> ptr_t;
+
+        ptr_t element;
+
+        AbstractStorage (const ptr_t& _element) : element(_element) {}
+        operator boost::shared_ptr<Base> () const { return element; }
+
+        // Mimic boost::shared_ptr<D> interface:
+        typedef T element_type;
+        operator bool () const { return element; }
     };
 
     typedef PortableServer::Servant_var<PortableServer::ServantBase> ServantBase_var;
@@ -53,6 +82,60 @@ namespace hpp
       PortableServer::ObjectId_var servantId = server->poa()->activate_object(d);
       (void) servantId;
       return d->_this();
+    }
+
+    namespace details
+    {
+      template <typename T, template<typename> class StorageTpl,
+               typename ObjectRef, typename ObjectRef_Helper>
+      struct DownCast
+      {
+        typedef typename ObjectRef::_var_type ObjectRefVar;
+
+        Server* s;
+        StorageTpl<T> t;
+        ObjectRefVar& servant;
+        DownCast (Server* server, const StorageTpl<T>& _t, ObjectRefVar& _servant)
+          : s(server), t(_t), servant(_servant) {}
+        template<typename Servant> void operator()(boost::type<Servant>)
+        {
+          // Servant -> Storage to dynamic cast.
+          typedef typename Servant::Storage Storage;
+
+          if (!ObjectRef_Helper::is_nil(servant)) return;
+          Storage u = storage_cast<typename Storage::element_type>();
+          if (u)
+            servant = makeServant <typename Servant::Object_ptr> (s, new Servant (s, u));
+        }
+
+        /// Enabled only if StorageTpl != boost::shared_ptr
+        template <typename U>
+        StorageTpl<U> storage_cast(typename boost::enable_if_c<(!boost::is_same<boost::shared_ptr<U>,StorageTpl<U> >::value)>::type* =0) const
+        {
+          return t.template cast<U>();
+        }
+
+        /// Enabled only if StorageTpl == boost::shared_ptr
+        template <typename U>
+        boost::shared_ptr<U> storage_cast(typename boost::enable_if_c<(boost::is_same<boost::shared_ptr<U>,StorageTpl<U> >::value)>::type* =0) const
+        {
+          return boost::dynamic_pointer_cast<U>(t);
+        }
+      };
+    }
+
+    /// \tparam ObjectRef_Helper needed for the is_nil static member function.
+    template <typename ObjectRef, typename ObjectRef_Helper, typename Types,
+      typename T, template<typename> class StorageTpl>
+    typename ObjectRef::_var_type makeServantDownCast (Server* server, const StorageTpl<T>& t)
+    {
+      typedef typename ObjectRef::_var_type ObjectRefVar;
+      ObjectRefVar d (ObjectRef_Helper::_nil());
+
+      details::DownCast<T, StorageTpl, ObjectRef, ObjectRef_Helper> downCast (server, t, d);
+      boost::mpl::for_each<Types, boost::type<boost::mpl::_> > (downCast);
+
+      return d;
     }
   } // end of namespace corbaServer.
 } // end of namespace hpp.

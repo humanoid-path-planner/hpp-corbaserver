@@ -2609,16 +2609,11 @@ namespace hpp
         DevicePtr_t robot = getRobotOrThrow (ps);
         core::DistancePtr_t distance = problem (ps, true)->distance();
 
-        core::WeighedDistancePtr_t wDistance = HPP_DYNAMIC_PTR_CAST(core::WeighedDistance, distance);
-        if (wDistance) {
-          return makeServant <hpp::core_idl::Distance_ptr> (server_->parent(),
-              new core_idl::WeighedDistance (server_->parent(),
-                core_idl::WeighedDistance::Storage (robot, wDistance)));
-        } else {
-          return makeServant <hpp::core_idl::Distance_ptr> (server_->parent(),
-             new core_idl::Distance (server_->parent(),
-                core_idl::Distance::Storage (robot, distance)));
-        }
+        hpp::core_idl::Distance_var d = makeServantDownCast <
+          hpp::core_idl::Distance, hpp::core_idl::Distance_Helper,
+          core_idl::Distances>
+            (server_->parent(), core_idl::Distance::Storage (robot, distance));
+        return d._retn();
       }
 
       // ---------------------------------------------------------------

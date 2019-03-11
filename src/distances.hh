@@ -31,18 +31,30 @@ namespace hpp
       typedef AbstractServantBase<core::DistancePtr_t> DistanceBase;
 
       template <typename D>
-      struct DistanceStorage {
-        core::DevicePtr_t r;
-        D d;
-        DistanceStorage (const core::DevicePtr_t& _r, const D& _d) : r(_r), d(_d) {}
-        operator core::DistancePtr_t () const { return d; }
-      };
-
-      template <typename Base, typename _Storage>
-      class DistanceServant : public DistanceBase, public virtual Base
+      class DistanceStorage : public AbstractStorage <D, core::Distance>
       {
         public:
+          typedef AbstractStorage <D, core::Distance> parent_t;
+          using parent_t::element;
+          using typename parent_t::ptr_t;
+
+          core::DevicePtr_t r;
+          DistanceStorage (const core::DevicePtr_t& _r, const ptr_t& _d)
+            : parent_t(_d), r(_r) {}
+
+          template <typename T> DistanceStorage<T> cast () const
+          {
+            return DistanceStorage<T> (r, HPP_DYNAMIC_PTR_CAST(T, element));
+          }
+      };
+
+      template <typename _Base, typename _Storage>
+      class DistanceServant : public DistanceBase, public virtual _Base
+      {
+        public:
+          typedef _Base    Base;
           typedef _Storage Storage;
+          SERVANT_BASE_TYPEDEFS(hpp::core_idl::Distance)
 
           DistanceServant (Server* server, const Storage& s) :
             DistanceBase (server), s_ (s) {}
@@ -53,7 +65,7 @@ namespace hpp
           {
             Configuration_t qq1 (floatSeqToConfig(s_.r, q1, true)),
                             qq2 (floatSeqToConfig(s_.r, q2, true));
-            return (*s_.d) (qq1,qq2);
+            return (*s_.element) (qq1,qq2);
           }
 
           virtual core::DistancePtr_t get ()
@@ -70,16 +82,17 @@ namespace hpp
           Storage s_;
       };
 
-      typedef DistanceServant<POA_hpp::core_idl::Distance, DistanceStorage<core::DistancePtr_t> > Distance;
+      typedef DistanceServant<POA_hpp::core_idl::Distance, DistanceStorage<core::Distance> > Distance;
 
-      template <typename Base, typename Storage>
-      class WeighedDistanceServant : public DistanceServant<Base, Storage>
+      template <typename _Base, typename Storage>
+      class WeighedDistanceServant : public DistanceServant<_Base, Storage>
       {
         protected:
           using DistanceBase::server_;
         public:
-          typedef DistanceServant<Base, Storage> Parent;
+          typedef DistanceServant<_Base, Storage> Parent;
           using Parent::getS;
+          SERVANT_BASE_TYPEDEFS(hpp::core_idl::WeighedDistance)
 
           WeighedDistanceServant (Server* server, const Storage& s)
             : Parent(server, s) {}
@@ -88,20 +101,22 @@ namespace hpp
 
           floatSeq* getWeights () throw (Error)
           {
-            return vectorToFloatSeq (getS().d->weights());
+            return vectorToFloatSeq (getS().element->weights());
           }
 
           void setWeights (const floatSeq& weights) throw (Error)
           {
             try {
-              return getS().d->weights(floatSeqToVector(weights));
+              return getS().element->weights(floatSeqToVector(weights));
             } catch (const std::exception& e) {
               throw Error (e.what ());
             }
           }
       };
 
-      typedef WeighedDistanceServant<POA_hpp::core_idl::WeighedDistance, DistanceStorage<core::WeighedDistancePtr_t> > WeighedDistance;
+      typedef WeighedDistanceServant<POA_hpp::core_idl::WeighedDistance, DistanceStorage<core::WeighedDistance> > WeighedDistance;
+
+      typedef boost::mpl::vector<WeighedDistance, Distance> Distances;
     } // end of namespace core.
   } // end of namespace corbaServer.
 } // end of namespace hpp.
