@@ -93,6 +93,31 @@ namespace hpp
             p_->steeringMethod (d);
           }
 
+          hpp::core_idl::PathValidation_ptr getPathValidation () throw (hpp::Error)
+          {
+            core::PathValidationPtr_t pathValidation = p_->pathValidation();
+
+            hpp::core_idl::PathValidation_var d = makeServantDownCast <
+              hpp::core_idl::PathValidation, hpp::core_idl::PathValidation_Helper,
+              PathValidations>
+                (server_, PathValidation::Storage (pathValidation));
+            return d._retn();
+          }
+
+          void setPathValidation (hpp::core_idl::PathValidation_ptr pathValidation) throw (hpp::Error)
+          {
+            core::PathValidationPtr_t d;
+            try {
+              d = reference_to_servant_base<core::PathValidationPtr_t>(server_, pathValidation)->get();
+            } catch (const Error& e) {
+              // TODO in this case, we should define a pathValidation from the CORBA type.
+              // This would allow to implement a pathValidation class in Python.
+              throw;
+            }
+
+            p_->pathValidation (d);
+          }
+
           struct PtrWapper
           {
             core::ProblemPtr_t p;
