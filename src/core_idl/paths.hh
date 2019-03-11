@@ -133,7 +133,7 @@ namespace hpp
       hpp::core_idl::Path_ptr makePathServant (Server* server, const PathPtr_t& path)
       {
         hpp::core_idl::Path_var d = makeServantDownCast <
-          hpp::core_idl::Path, hpp::core_idl::Path_Helper, core_idl::Paths>
+          hpp::core_idl::Path, core_idl::Paths>
             (server, path);
         return d._retn();
       }

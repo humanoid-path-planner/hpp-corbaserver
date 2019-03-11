@@ -108,7 +108,7 @@ namespace hpp
     namespace details
     {
       template <typename T, template<typename> class StorageTpl,
-               typename ObjectRef, typename ObjectRef_Helper>
+               typename ObjectRef>
       struct DownCast
       {
         typedef typename ObjectRef::_var_type ObjectRefVar;
@@ -123,7 +123,7 @@ namespace hpp
           // Servant -> Storage to dynamic cast.
           typedef typename Servant::Storage Storage;
 
-          if (!ObjectRef_Helper::is_nil(servant)) return;
+          if (!CORBA::Object_Helper::is_nil(servant)) return;
           Storage u = storage_cast<typename Storage::element_type>();
           if (u)
             servant = makeServant <typename Servant::Object_ptr> (s, new Servant (s, u));
@@ -146,14 +146,15 @@ namespace hpp
     }
 
     /// \tparam ObjectRef_Helper needed for the is_nil static member function.
-    template <typename ObjectRef, typename ObjectRef_Helper, typename Types,
+    template <typename ObjectRef, typename Types,
       typename T, template<typename> class StorageTpl>
     typename ObjectRef::_var_type makeServantDownCast (Server* server, const StorageTpl<T>& t)
     {
       typedef typename ObjectRef::_var_type ObjectRefVar;
-      ObjectRefVar d (ObjectRef_Helper::_nil());
+      ObjectRefVar d;
+      assert (CORBA::Object_Helper::is_nil(d.in()));
 
-      details::DownCast<T, StorageTpl, ObjectRef, ObjectRef_Helper> downCast (server, t, d);
+      details::DownCast<T, StorageTpl, ObjectRef> downCast (server, t, d);
       boost::mpl::for_each<Types, boost::type<boost::mpl::_> > (downCast);
 
       return d;
