@@ -20,7 +20,7 @@
 # include <hpp/corbaserver/conversions.hh>
 # include "hpp/core_idl/distances-idl.hh"
 
-# include "servant-base.hh"
+# include "../servant-base.hh"
 
 namespace hpp
 {
