@@ -18,7 +18,7 @@
 # include "hpp/corbaserver/problem-solver-map.hh"
 
 # include "hpp/core_idl/distances-idl.hh"
-# include "hpp/core_idl/problem-idl.hh"
+# include "hpp/core_idl/_problem-idl.hh"
 
 # include "hpp/corbaserver/deprecated.hh"
 

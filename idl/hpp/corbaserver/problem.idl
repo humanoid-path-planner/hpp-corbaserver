@@ -15,7 +15,7 @@
 #include <hpp/core_idl/paths.idl>
 #include <hpp/core_idl/steering_methods.idl>
 #include <hpp/core_idl/path_validations.idl>
-#include <hpp/core_idl/problem.idl>
+#include <hpp/core_idl/_problem.idl>
 
 module hpp
 {

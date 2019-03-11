@@ -27,7 +27,7 @@ module hpp
   {
     HPP_CORE_IDL_GET_SET(Distance,Distance);
     HPP_CORE_IDL_GET_SET(SteeringMethod,SteeringMethod);
-    //HPP_CORE_IDL_GET_SET(PathValidation,PathValidation);
+    HPP_CORE_IDL_GET_SET(PathValidation,PathValidation);
   }; // interface Problem
 
   }; // module core

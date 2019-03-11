@@ -18,7 +18,7 @@
 
 # include <hpp/corbaserver/fwd.hh>
 # include <hpp/corbaserver/conversions.hh>
-# include "hpp/core_idl/problem-idl.hh"
+# include "hpp/core_idl/_problem-idl.hh"
 
 # include "../servant-base.hh"
 # include "distances.hh"
