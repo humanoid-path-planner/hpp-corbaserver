@@ -2645,8 +2645,7 @@ namespace hpp
         }
 
         core::PathVectorPtr_t pv = ps->paths()[pathId];
-        return makeServant <hpp::core_idl::Path_ptr> (server_->parent(),
-            new core_idl::Path (server_->parent(), pv));
+        return core_idl::makePathServant (server_->parent(), pv);
       }
 
       // ---------------------------------------------------------------
