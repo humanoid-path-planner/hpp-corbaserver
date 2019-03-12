@@ -10,7 +10,7 @@
 
 #ifndef HPP_CORBASERVER_OBSTACLE_SERVER_IDL
 #define HPP_CORBASERVER_OBSTACLE_SERVER_IDL
-#include <hpp/corbaserver/common.idl>
+#include <hpp/common.idl>
 
 module hpp
 {

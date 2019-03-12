@@ -14,8 +14,11 @@
 # include <stdlib.h>
 
 # include "hpp/corbaserver/fwd.hh"
-# include "hpp/corbaserver/problem.hh"
+# include "hpp/corbaserver/problem-idl.hh"
 # include "hpp/corbaserver/problem-solver-map.hh"
+
+# include "hpp/core_idl/distances-idl.hh"
+# include "hpp/core_idl/_problem-idl.hh"
 
 # include "hpp/corbaserver/deprecated.hh"
 
@@ -41,8 +44,6 @@ namespace hpp
         {
           server_ = server;
         }
-
-        virtual void shutdown ();
 
         virtual Names_t* getAvailable (const char* what) throw (hpp::Error);
 
@@ -361,6 +362,18 @@ namespace hpp
         virtual void readRoadmap (const char* filename) throw (hpp::Error);
 
         virtual void scCreateScalarMultiply (const char* outName, Double scalar, const char* inName) throw (hpp::Error);
+
+        hpp::core_idl::Distance_ptr getDistance () throw (hpp::Error);
+
+        void setDistance (hpp::core_idl::Distance_ptr distance) throw (hpp::Error);
+
+        hpp::core_idl::Path_ptr getPath (ULong pathId) throw (Error);
+
+        hpp::core_idl::SteeringMethod_ptr getSteeringMethod () throw (Error);
+
+        hpp::core_idl::PathValidation_ptr getPathValidation () throw (Error);
+
+        hpp::core_idl::Problem_ptr getProblem () throw (Error);
 
       private:
         /// Return the selected problem solver

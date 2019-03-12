@@ -24,7 +24,7 @@ namespace hpp
     /// Implementation of Hpp module Corba server.
 
     ///  This class initializes the Corba server and starts the following Corba interface implementations.
-    ///  \li hpp::corbaserver::RobotIDL: to build a hpp::model::Device and to insert it in a hpp::core::ProblemSolver object,
+    ///  \li hpp::corbaserver::Robot: to build a hpp::model::Device and to insert it in a hpp::core::ProblemSolver object,
     ///  \li hpp::corbaserver::Obstacle: to build obstacles and insert them in a hpp::core::ProblemSolver object,
     ///  \li hpp::corbaserver::Problem: to define a path planning problem and solve it.
 
@@ -83,6 +83,16 @@ namespace hpp
       /// \brief Shutdown CORBA server
       ~Server ();
 
+      PortableServer::POA_var poa ()
+      {
+        return poa_;
+      }
+
+      CORBA::ORB_var orb()
+      {
+        return orb_;
+      }
+
       /// \brief Initialize CORBA server to process requests from clients
       /// \return 0 if success, -1 if failure.
       void startCorbaServer ();
@@ -121,6 +131,14 @@ namespace hpp
       ProblemSolverMapPtr_t problemSolverMap ();
 
       core::ProblemSolverPtr_t problemSolver ();
+
+      typedef void* ServantKey;
+
+      PortableServer::Servant getServant (ServantKey servantKey) const;
+
+      void addServantKeyAndServant (ServantKey servantKey, PortableServer::Servant servant);
+
+      void removeServant (PortableServer::Servant servant);
 
     private:
 
@@ -163,8 +181,12 @@ namespace hpp
       std::map<std::string, Context> contexts_;
 
       Context& getContext (const std::string& name);
-    };
 
+      typedef std::map <ServantKey, PortableServer::Servant> ServantKeyToServantMap_t;
+      typedef std::map <PortableServer::Servant, ServantKey> ServantToServantKeyMap_t;
+      ServantKeyToServantMap_t servantKeyToServantMap_;
+      ServantToServantKeyMap_t servantToServantKeyMap_;
+    };
   } // end of namespace corbaServer.
 } // end of namespace hpp.
 #endif

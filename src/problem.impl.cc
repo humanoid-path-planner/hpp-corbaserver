@@ -16,6 +16,7 @@
 #include <boost/algorithm/string.hpp>
 
 #include <hpp/util/debug.hh>
+#include <hpp/util/exception-factory.hh>
 #include <hpp/util/portability.hh>
 
 #include <hpp/fcl/shape/geometric_shapes.h>
@@ -59,10 +60,17 @@
 # include <hpp/constraints/static-stability.hh>
 #endif
 #include <hpp/constraints/configuration-constraint.hh>
+#include <hpp/corbaserver/server.hh>
 #include <hpp/corbaserver/server-plugin.hh>
 #include <hpp/pinocchio/body.hh>
 #include <hpp/pinocchio/center-of-mass-computation.hh>
 
+#include "servant-base.hh"
+#include "core_idl/distances.hh"
+#include "core_idl/paths.hh"
+#include "core_idl/steering-methods.hh"
+#include "core_idl/path-validations.hh"
+#include "core_idl/problem.hh"
 #include "problem.impl.hh"
 #include "tools.hh"
 
@@ -272,14 +280,6 @@ namespace hpp
       Problem::Problem ()
         : server_ (NULL)
       {}
-
-      // ---------------------------------------------------------------
-
-      void Problem::shutdown ()
-      {
-        // TODO
-        //server_->requestShutdown(false);
-      }
 
       // ---------------------------------------------------------------
 
@@ -2600,6 +2600,90 @@ namespace hpp
         } catch (const std::exception& exc) {
           throw hpp::Error (exc.what ());
         }
+      }
+
+      // ---------------------------------------------------------------
+
+      hpp::core_idl::Distance_ptr Problem::getDistance () throw (hpp::Error)
+      {
+        core::ProblemSolverPtr_t ps = problemSolver();
+        DevicePtr_t robot = getRobotOrThrow (ps);
+        core::DistancePtr_t distance = problem (ps, true)->distance();
+
+        hpp::core_idl::Distance_var d = makeServantDownCast <
+          hpp::core_idl::Distance, core_idl::Distances>
+            (server_->parent(), core_idl::Distance::Storage (robot, distance));
+        return d._retn();
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::setDistance (hpp::core_idl::Distance_ptr distance) throw (hpp::Error)
+      {
+        core::DistancePtr_t d;
+        try {
+          d = reference_to_servant_base<core::DistancePtr_t>(server_->parent(), distance)->get();
+        } catch (const Error& e) {
+          // TODO in this case, we should define a distance from the CORBA type.
+          // This would allow to implement a distance class in Python.
+          throw;
+        }
+
+        core::ProblemSolverPtr_t ps = problemSolver();
+        core::ProblemPtr_t p = problem (ps, true);
+        p->distance (d);
+      }
+
+      // ---------------------------------------------------------------
+
+      hpp::core_idl::Path_ptr Problem::getPath (ULong pathId) throw (Error)
+      {
+        core::ProblemSolverPtr_t ps = problemSolver();
+        if (pathId >= ps->paths ().size ()) {
+          HPP_THROW(Error, "wrong path id: " << pathId
+              << ", number path: " << ps->paths ().size () << ".");
+        }
+
+        core::PathVectorPtr_t pv = ps->paths()[pathId];
+        return core_idl::makePathServant (server_->parent(), pv);
+      }
+
+      // ---------------------------------------------------------------
+
+      hpp::core_idl::SteeringMethod_ptr Problem::getSteeringMethod () throw (Error)
+      {
+        core::ProblemSolverPtr_t ps = problemSolver();
+        DevicePtr_t robot = getRobotOrThrow (ps);
+        core::SteeringMethodPtr_t sm = problem (ps, true)->steeringMethod();
+
+        return makeServant <hpp::core_idl::SteeringMethod_ptr> (server_->parent(),
+            new core_idl::SteeringMethod (server_->parent(),
+              core_idl::SteeringMethod::Storage (robot, sm)));
+      }
+
+      // ---------------------------------------------------------------
+
+      hpp::core_idl::PathValidation_ptr Problem::getPathValidation () throw (Error)
+      {
+        core::ProblemSolverPtr_t ps = problemSolver();
+        DevicePtr_t robot = getRobotOrThrow (ps);
+        core::PathValidationPtr_t pv = problem (ps, true)->pathValidation();
+
+        return makeServant <hpp::core_idl::PathValidation_ptr> (server_->parent(),
+            new core_idl::PathValidation (server_->parent(),
+              core_idl::PathValidation::Storage (pv)));
+      }
+
+      // ---------------------------------------------------------------
+
+      hpp::core_idl::Problem_ptr Problem::getProblem () throw (Error)
+      {
+        core::ProblemSolverPtr_t ps = problemSolver();
+        core::ProblemPtr_t pb = problem (ps, true);
+
+        return makeServant <hpp::core_idl::Problem_ptr> (server_->parent(),
+            new core_idl::Problem (server_->parent(),
+              core_idl::Problem::Storage (pb)));
       }
 
     } // namespace impl

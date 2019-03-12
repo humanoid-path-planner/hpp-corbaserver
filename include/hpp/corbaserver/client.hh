@@ -13,9 +13,9 @@
 
 # include <omniORB4/CORBA.h>
 
-# include <hpp/corbaserver/robot.hh>
-# include <hpp/corbaserver/problem.hh>
-# include <hpp/corbaserver/obstacle.hh>
+# include <hpp/corbaserver/robot-idl.hh>
+# include <hpp/corbaserver/problem-idl.hh>
+# include <hpp/corbaserver/obstacle-idl.hh>
 
 # include <hpp/corbaserver/config.hh>
 
@@ -35,7 +35,7 @@ namespace hpp
       void connect (const char* iiop = "corbaloc:rir:/NameService",
           const char* context = "corbaserver");
 
-      hpp::corbaserver::RobotIDL_var& robot () {
+      hpp::corbaserver::Robot_var& robot () {
         return robot_;
       }
 
@@ -48,7 +48,7 @@ namespace hpp
       }
 
     private:
-      hpp::corbaserver::RobotIDL_var robot_;
+      hpp::corbaserver::Robot_var robot_;
       hpp::corbaserver::Problem_var problem_;
       hpp::corbaserver::Obstacle_var obstacle_;
 

@@ -16,7 +16,7 @@
 // # include <hpp/pinocchio/object-factory.hh>
 # include "hpp/core/problem-solver.hh"
 # include "hpp/corbaserver/fwd.hh"
-# include "hpp/corbaserver/robot.hh" 
+# include "hpp/corbaserver/robot-idl.hh" 
 # include "hpp/corbaserver/object-map.hh" 
 
 namespace hpp
@@ -48,7 +48,7 @@ namespace hpp
       /// \brief Implementation of corba interface hpp::Robot.
       ///
       /// The construction of a
-      class Robot : public virtual POA_hpp::corbaserver::RobotIDL
+      class Robot : public virtual POA_hpp::corbaserver::Robot
       {
       public:
 	Robot ();

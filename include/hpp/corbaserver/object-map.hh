@@ -21,7 +21,7 @@
 # include <hpp/fcl/shape/geometric_shapes.h>
 
 # include <hpp/corbaserver/fwd.hh>
-# include <hpp/corbaserver/common.hh>
+# include <hpp/common-idl.hh>
 
 namespace hpp {
   namespace corbaServer {

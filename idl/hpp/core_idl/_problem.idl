@@ -1,0 +1,42 @@
+// Copyright (C) 2019 by Joseph Mirabel, LAAS-CNRS.
+//
+// This file is part of the hpp-corbaserver.
+//
+// This software is provided "as is" without warranty of any kind,
+// either expressed or implied, including but not limited to the
+// implied warranties of fitness for a particular purpose.
+//
+// See the COPYING file for more information.
+
+#ifndef HPP_CORE_PROBLEM_IDL
+#define HPP_CORE_PROBLEM_IDL
+#include <hpp/common.idl>
+
+#define HPP_CORE_IDL_GET_SET(what,type)                                        \
+    type get##what () raises (Error);                                          \
+    void set##what (in type _type) raises (Error) 
+
+module hpp
+{
+  module core_idl {
+  interface Distance;
+  interface SteeringMethod;
+  interface PathValidation;
+
+  interface Problem
+  {
+    HPP_CORE_IDL_GET_SET(Distance,Distance);
+    HPP_CORE_IDL_GET_SET(SteeringMethod,SteeringMethod);
+    HPP_CORE_IDL_GET_SET(PathValidation,PathValidation);
+  }; // interface Problem
+
+  }; // module core
+}; // module hpp
+
+#undef HPP_CORE_IDL_GET_SET
+
+#include <hpp/core_idl/distances.idl>
+#include <hpp/core_idl/steering_methods.idl>
+#include <hpp/core_idl/path_validations.idl>
+
+#endif // HPP_CORE_PROBLEM_IDL

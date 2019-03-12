@@ -10,7 +10,12 @@
 
 #ifndef HPP_CORBASERVER_PROBLEM_SERVER_IDL
 #define HPP_CORBASERVER_PROBLEM_SERVER_IDL
-#include <hpp/corbaserver/common.idl>
+#include <hpp/common.idl>
+#include <hpp/core_idl/distances.idl>
+#include <hpp/core_idl/paths.idl>
+#include <hpp/core_idl/steering_methods.idl>
+#include <hpp/core_idl/path_validations.idl>
+#include <hpp/core_idl/_problem.idl>
 
 module hpp
 {
@@ -18,9 +23,6 @@ module hpp
   /// \brief To define and solve a path planning problem.
   interface Problem
   {
-    /// Shutdown the server.
-    void shutdown ();
-
     /// Set random seed of random number generator
     void setRandomSeed (in long seed) raises (Error);
 
@@ -710,6 +712,18 @@ module hpp
     /// Read a roadmap from a file
     /// \param filename name of the file from which the roadmap is read.
     void readRoadmap (in string filename) raises (Error);
+
+    core_idl::Distance getDistance () raises (Error);
+
+    void setDistance (in core_idl::Distance distance) raises (Error);
+
+    core_idl::Path getPath (in unsigned long pathId) raises (Error);
+
+    core_idl::SteeringMethod getSteeringMethod () raises (Error);
+
+    core_idl::PathValidation getPathValidation () raises (Error);
+
+    core_idl::Problem getProblem () raises (Error);
     /// \}
   };
   }; // interface Problem

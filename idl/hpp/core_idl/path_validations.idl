@@ -1,0 +1,30 @@
+// Copyright (C) 2019 by Joseph Mirabel, LAAS-CNRS.
+//
+// This file is part of the hpp-corbaserver.
+//
+// This software is provided "as is" without warranty of any kind,
+// either expressed or implied, including but not limited to the
+// implied warranties of fitness for a particular purpose.
+//
+// See the COPYING file for more information.
+
+#ifndef HPP_CORE_PATH_VALIDATIONS_IDL
+#define HPP_CORE_PATH_VALIDATIONS_IDL
+#include <hpp/common.idl>
+
+#include <hpp/core_idl/paths.idl>
+
+module hpp
+{
+  module core_idl {
+  typedef string PathValidationReport;
+
+  interface PathValidation
+  {
+    boolean validate (in Path p, in boolean reverse, out Path validPart, out PathValidationReport report) raises (Error);
+  }; // interface SteeringMethod
+
+  }; // module core
+}; // module hpp
+
+#endif // HPP_CORE_PATH_VALIDATIONS_IDL

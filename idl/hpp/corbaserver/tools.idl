@@ -10,7 +10,7 @@
 
 #ifndef HPP_CORBASERVER_TOOLS_IDL
 #define HPP_CORBASERVER_TOOLS_IDL
-#include <hpp/corbaserver/common.idl>
+#include <hpp/common.idl>
 
 module hpp
 {
@@ -30,6 +30,13 @@ module hpp
     /// All contexts share the same map of ProblemSolver. Each context can
     /// whichever ProblemSolver in this map.
     boolean createContext (in string context_) raises (Error);
+
+    /// Delete a servant
+    /// It throws an exception if the object could not be deleted.
+    void deleteServant (in string id) raises (Error);
+
+    /// Shutdown the server.
+    void shutdown ();
   }; // interface Tools
 }; // module hpp
 #endif

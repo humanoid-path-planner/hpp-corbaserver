@@ -52,7 +52,7 @@ namespace hpp
       // Invoke the root context to retrieve the object reference
       CORBA::Object_var managerObj = nc->resolve(objectName);
       // Narrow the previous object to obtain the correct type
-      robot_ = hpp::corbaserver::RobotIDL::_narrow (managerObj.in ());
+      robot_ = hpp::corbaserver::Robot::_narrow (managerObj.in ());
 
       // Bind obstacleObj with name Obstacle to the hppContext:
       objectName[1].id   = (const char*) "basic"; // string copied

@@ -17,7 +17,6 @@
 
 SET(LIBRARY_NAME ${PROJECT_NAME})
 SET(IDL_SOURCES
-  common
   obstacle
   problem
   robot
@@ -30,44 +29,68 @@ FINDPYTHON(2.7 EXACT REQUIRED)
 OMNIIDL_INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/idl)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src)
 
-FOREACH(IDL obstacle problem robot tools)
-  GENERATE_IDL_CPP (hpp/corbaserver/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver)
-  GENERATE_IDL_PYTHON (hpp/corbaserver/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver
+FOREACH(IDL ${IDL_SOURCES})
+  GENERATE_IDL_CPP (hpp/corbaserver/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver
+    HEADER_SUFFIX -idl.hh)
+  GENERATE_IDL_PYTHON (${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver
+    ENABLE_DOCSTRING
+    STUBS hpp_stubs.corbaserver
     ARGUMENTS
-    -p${CMAKE_SOURCE_DIR}/cmake/hpp/idl
-    -bomniidl_be_python_with_docstring
-    -K
+    -Wbmodules=hpp_idl
+    -Wbextern=common:hpp_stubs
+    -Wbextern=distances:hpp_stubs.core
+    -Wbextern=paths:hpp_stubs.core
+    -Wbextern=steering_methods:hpp_stubs.core
+    -Wbextern=path_validations:hpp_stubs.core
+    -Wbextern=_problem:hpp_stubs.core
     )
 ENDFOREACH()
 # Enable generation of dynamic type codes (in file commonDynSK.cc)
-GENERATE_IDL_CPP (hpp/corbaserver/common ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver ENABLE_Wba)
-GENERATE_IDL_PYTHON (hpp/corbaserver/common ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver
+GENERATE_IDL_CPP (hpp/common ${CMAKE_SOURCE_DIR}/idl/hpp ENABLE_Wba
+  HEADER_SUFFIX -idl.hh)
+GENERATE_IDL_PYTHON (common ${CMAKE_SOURCE_DIR}/idl/hpp
+    ENABLE_DOCSTRING
+    STUBS hpp_stubs
     ARGUMENTS
-    -p${CMAKE_SOURCE_DIR}/cmake/hpp/idl
-    -bomniidl_be_python_with_docstring
-    -K
+    -Wbmodules=hpp_idl
   )
+
+MAKE_DIRECTORY(${CMAKE_BINARY_DIR}/src/hpp_idl)
+MAKE_DIRECTORY(${CMAKE_BINARY_DIR}/src/hpp/core_idl)
+FOREACH(IDL distances paths steering_methods path_validations _problem)
+  GENERATE_IDL_CPP (hpp/core_idl/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/core_idl
+    ARGUMENTS
+    -Wbguard_prefix=hpp_core_idl
+    HEADER_SUFFIX -idl.hh)
+  GENERATE_IDL_PYTHON (${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/core_idl
+      ENABLE_DOCSTRING
+      STUBS hpp_stubs.core
+      ARGUMENTS
+      -Wbmodules=hpp_idl
+      -Wbextern=common:hpp_stubs
+    )
+ENDFOREACH()
 
 FOREACH(IDL ${IDL_SOURCES})
   INSTALL(
-    FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/${IDL}.hh
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/${IDL}-idl.hh
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp/corbaserver)
-  INSTALL(
-    FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/${IDL}_idl.py
-    DESTINATION ${PYTHON_SITELIB}/hpp/corbaserver
-    )
   INSTALL(FILES ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/${IDL}.idl
     DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/idl/hpp/corbaserver)
 ENDFOREACH()
+INSTALL(
+  FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/common-idl.hh
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp)
+INSTALL(FILES ${CMAKE_SOURCE_DIR}/idl/hpp/common.idl
+  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/idl/hpp)
+
+INSTALL(
+  DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/hpp_idl ${CMAKE_CURRENT_BINARY_DIR}/hpp_stubs
+  DESTINATION ${PYTHON_SITELIB}
+  )
 
 ADD_CUSTOM_TARGET(generate_idl_cpp DEPENDS ${ALL_IDL_CPP_STUBS})
 ADD_CUSTOM_TARGET(generate_idl_python DEPENDS ${ALL_IDL_PYTHON_STUBS})
-
-# "omniidl -bpython" generates an hpp.corbaserver python module inside the hpp.corbaserver python module...
-ADD_CUSTOM_TARGET(clean_idl_python
-  COMMAND ${CMAKE_COMMAND} -E remove_directory "${PROJECT_BINARY_DIR}/src/hpp/corbaserver/hpp"
-  DEPENDS generate_idl_python
-  )
 
 IF (NOT CLIENT_ONLY)
   ADD_LIBRARY(${LIBRARY_NAME}
@@ -107,14 +130,7 @@ ELSE (NOT CLIENT_ONLY)
   ADD_LIBRARY(${LIBRARY_NAME}
     SHARED
     client.cc
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/common.hh
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/problem.hh
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/obstacle.hh
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/robot.hh
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/commonSK.cc
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/obstacleSK.cc
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/robotSK.cc
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/problemSK.cc
+    ${ALL_IDL_CPP_STUBS}
     )
 
   PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} omniORB4)
@@ -124,7 +140,6 @@ ENDIF (NOT CLIENT_ONLY)
 
 ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_cpp)
 ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_python)
-ADD_DEPENDENCIES (${LIBRARY_NAME} clean_idl_python)
 
 IF(WIN32)
   SET(LINK copy_if_different)
@@ -143,12 +158,3 @@ FOREACH (FILE __init__.py client.py robot.py  problem_solver.py tools.py benchma
     hpp/corbaserver ${FILE}
     )
 ENDFOREACH ()
-
-INSTALL(
-  FILES
-  ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/common.idl
-  ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/obstacle.idl
-  ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/problem.idl
-  ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/robot.idl
-  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/idl/hpp/corbaserver
-)

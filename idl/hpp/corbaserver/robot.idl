@@ -11,13 +11,13 @@
 
 #ifndef HPP_CORBASERVER_ROBOT_SERVER_IDL
 #define HPP_CORBASERVER_ROBOT_SERVER_IDL
-#include <hpp/corbaserver/common.idl>
+#include <hpp/common.idl>
 
 module hpp
 {
   module corbaserver {
   /// Creation of a device, joints and bodies.
-  interface RobotIDL {
+  interface Robot {
     /// \name Loading URDF files
     /// \{
 

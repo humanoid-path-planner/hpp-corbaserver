@@ -1304,7 +1304,10 @@ namespace hpp
             HPP_THROW(Error, "Collision pair (" << innerObject << ", " << outerObject << ") not found");
           }
 
-          geomData.activateCollisionPair(pid, active);
+          if (active)
+            geomData.activateCollisionPair(pid);
+          else
+            geomData.deactivateCollisionPair(pid);
 
           ps->initValidations();
 	} catch (const std::exception& exc) {
