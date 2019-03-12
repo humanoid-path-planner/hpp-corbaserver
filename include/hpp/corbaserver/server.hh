@@ -24,7 +24,7 @@ namespace hpp
     /// Implementation of Hpp module Corba server.
 
     ///  This class initializes the Corba server and starts the following Corba interface implementations.
-    ///  \li hpp::corbaserver::RobotIDL: to build a hpp::model::Device and to insert it in a hpp::core::ProblemSolver object,
+    ///  \li hpp::corbaserver::Robot: to build a hpp::model::Device and to insert it in a hpp::core::ProblemSolver object,
     ///  \li hpp::corbaserver::Obstacle: to build obstacles and insert them in a hpp::core::ProblemSolver object,
     ///  \li hpp::corbaserver::Problem: to define a path planning problem and solve it.
 
