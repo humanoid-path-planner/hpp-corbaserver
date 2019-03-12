@@ -31,15 +31,13 @@ namespace hpp
       typedef AbstractServantBase<core::PathValidationPtr_t> PathValidationBase;
 
       template <typename _Base, typename _Storage>
-      class PathValidationServant : public PathValidationBase, public virtual _Base
+      class PathValidationServant : public ServantBase<core::PathValidationPtr_t, _Storage>, public virtual _Base
       {
-        public:
-          typedef _Base    Base;
-          typedef _Storage Storage;
-          SERVANT_BASE_TYPEDEFS(hpp::core_idl::PathValidation)
+          SERVANT_BASE_TYPEDEFS(hpp::core_idl::PathValidation, core::PathValidationPtr_t);
 
+        public:
           PathValidationServant (Server* server, const Storage& s) :
-            PathValidationBase (server), s_ (s) {}
+            _ServantBase (server, s) {}
 
           virtual ~PathValidationServant () {}
 
@@ -65,19 +63,6 @@ namespace hpp
             validPart = makeServant<hpp::core_idl::Path_ptr> (server_, new Path (server_, vp));
             return res;
           }
-
-          virtual core::PathValidationPtr_t get ()
-          {
-            return (core::PathValidationPtr_t)s_;
-          }
-
-          Storage getS ()
-          {
-            return s_;
-          }
-
-        protected:
-          Storage s_;
       };
 
       typedef PathValidationServant<POA_hpp::core_idl::PathValidation, core::PathValidationPtr_t > PathValidation;

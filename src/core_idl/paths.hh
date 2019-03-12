@@ -32,76 +32,60 @@ namespace hpp
       typedef AbstractServantBase<core::PathPtr_t> PathBase;
 
       template <typename _Base, typename _Storage>
-      class PathServant : public PathBase, public virtual _Base
+      class PathServant : public ServantBase<core::PathPtr_t, _Storage>, public virtual _Base
       {
-        public:
-          typedef _Base    Base;
-          typedef _Storage Storage;
-          SERVANT_BASE_TYPEDEFS(hpp::core_idl::Path)
+          SERVANT_BASE_TYPEDEFS(hpp::core_idl::Path, core::PathPtr_t);
 
-          PathServant (Server* server, const Storage& s) : PathBase (server), s_ (s) {}
+        public:
+          PathServant (Server* server, const Storage& s)
+          : _ServantBase (server, s) {}
 
           virtual ~PathServant () {}
 
           CORBA::Long outputSize () throw (Error)
           {
-            return (CORBA::Long)s_->outputSize();
+            return (CORBA::Long)get()->outputSize();
           }
 
           CORBA::Long outputDerivativeSize () throw (Error)
           {
-            return (CORBA::Long)s_->outputDerivativeSize();
+            return (CORBA::Long)get()->outputDerivativeSize();
           }
 
           CORBA::Double length () throw (Error)
           {
-            return s_->length ();
+            return get()->length ();
           }
 
           char* print () throw (Error)
           {
-            std::ostringstream oss; oss << *s_;
+            std::ostringstream oss; oss << *get();
             std::string res = oss.str();
             return CORBA::string_dup(res.c_str());
           }
 
           floatSeq* value (CORBA::Double t, CORBA::Boolean& success) throw (Error)
           {
-            return vectorToFloatSeq (s_->operator() (t, success));
+            return vectorToFloatSeq (get()->operator() (t, success));
           }
 
           floatSeq* derivative (CORBA::Double t, CORBA::Short order) throw (Error)
           {
-            vector_t res (s_->outputDerivativeSize());
-            s_->derivative (res, t, order);
+            vector_t res (get()->outputDerivativeSize());
+            get()->derivative (res, t, order);
             return vectorToFloatSeq (res);
           }
-
-          virtual core::PathPtr_t get ()
-          {
-            return (core::PathPtr_t)s_;
-          }
-
-          Storage getS ()
-          {
-            return s_;
-          }
-
-        protected:
-          Storage s_;
       };
 
       typedef PathServant<POA_hpp::core_idl::Path, core::PathPtr_t> Path;
 
-      template <typename _Base, typename Storage>
-      class PathVectorServant : public PathServant<_Base, Storage>
+      template <typename _Base, typename _Storage>
+      class PathVectorServant : public PathServant<_Base, _Storage>
       {
-        protected:
-          using PathBase::server_;
+          SERVANT_BASE_TYPEDEFS(hpp::core_idl::PathVector, core::PathPtr_t);
+
         public:
-          typedef PathServant<_Base, Storage> Parent;
-          using Parent::getS;
-          SERVANT_BASE_TYPEDEFS(hpp::core_idl::PathVector)
+          typedef PathServant<Base, Storage> Parent;
 
           PathVectorServant (Server* server, const Storage& s) : Parent (server, s) {}
 

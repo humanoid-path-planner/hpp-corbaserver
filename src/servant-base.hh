@@ -20,14 +20,22 @@ namespace hpp
 {
   namespace corbaServer
   {
-#define SERVANT_BASE_TYPEDEFS(Obj)                                             \
-    typedef Obj         Object;                                                \
-    typedef Obj ## _ptr Object_ptr;
+#define SERVANT_BASE_TYPEDEFS(idlObj, hppObj)                                  \
+    protected:                                                                 \
+      using AbstractServantBase<hppObj>::server_;                              \
+    public:                                                                    \
+      typedef _Base    Base;                                                   \
+      typedef _Storage Storage;                                                \
+      typedef idlObj         Object;                                           \
+      typedef idlObj ## _ptr Object_ptr;                                       \
+      typedef ServantBase<hppObj, _Storage> _ServantBase;                      \
+      using _ServantBase::get;                                                 \
+      using _ServantBase::getS
 
     class AbstractServantKey
     {
       public:
-        virtual Server::ServantKey getServantKey () /*const*/ = 0;
+        virtual Server::ServantKey getServantKey () const = 0;
     };
 
     template <typename T> class AbstractServantBase : AbstractServantKey
@@ -35,9 +43,9 @@ namespace hpp
       public:
         virtual ~AbstractServantBase () {}
 
-        virtual T get() = 0;
+        virtual T get() const = 0;
 
-        virtual Server::ServantKey getServantKey ()
+        virtual Server::ServantKey getServantKey () const
         {
           return get().get();
         }
@@ -46,6 +54,29 @@ namespace hpp
         AbstractServantBase (Server* server) : server_ (server) {}
 
         Server* server_;
+    };
+
+    template <typename T, typename _Storage> class ServantBase : public AbstractServantBase<T>
+    {
+      public:
+        typedef _Storage Storage;
+        virtual ~ServantBase () {}
+
+        virtual T get () const
+        {
+          return (T)s;
+        }
+
+        const Storage& getS () const
+        {
+          return s;
+        }
+
+      protected:
+        ServantBase (Server* server, const Storage& _s)
+          : AbstractServantBase<T> (server), s(_s) {}
+
+        Storage s;
     };
 
     /// Abstraction of storage ot HPP class.

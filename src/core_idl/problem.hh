@@ -35,7 +35,8 @@ namespace hpp
       {
         public:
           typedef core::ProblemPtr_t Storage;
-          SERVANT_BASE_TYPEDEFS(hpp::core_idl::Problem)
+          typedef hpp::core_idl::Problem     Object;
+          typedef hpp::core_idl::Problem_ptr Object_ptr;
 
           Problem (Server* server, const Storage& p) : server_ (server), p_ (p) {}
 
@@ -124,12 +125,12 @@ namespace hpp
             core::ProblemPtr_t get() const { return p; }
           };
 
-          virtual PtrWapper get ()
+          virtual PtrWapper get () const
           {
             return PtrWapper(p_);
           }
 
-          virtual void* getServantKey ()
+          virtual void* getServantKey () const
           {
             return p_;
           }

@@ -49,50 +49,31 @@ namespace hpp
       };
 
       template <typename _Base, typename _Storage>
-      class DistanceServant : public DistanceBase, public virtual _Base
+      class DistanceServant : public ServantBase<core::DistancePtr_t, _Storage>, public virtual _Base
       {
+          SERVANT_BASE_TYPEDEFS(hpp::core_idl::Distance, core::DistancePtr_t);
         public:
-          typedef _Base    Base;
-          typedef _Storage Storage;
-          SERVANT_BASE_TYPEDEFS(hpp::core_idl::Distance)
-
-          DistanceServant (Server* server, const Storage& s) :
-            DistanceBase (server), s_ (s) {}
+          DistanceServant (Server* server, const Storage& s)
+            : _ServantBase (server, s) {}
 
           virtual ~DistanceServant () {}
 
           CORBA::Double value (const floatSeq& q1, const floatSeq& q2) throw (Error)
           {
-            Configuration_t qq1 (floatSeqToConfig(s_.r, q1, true)),
-                            qq2 (floatSeqToConfig(s_.r, q2, true));
-            return (*s_.element) (qq1,qq2);
+            Configuration_t qq1 (floatSeqToConfig(getS().r, q1, true)),
+                            qq2 (floatSeqToConfig(getS().r, q2, true));
+            return (*get()) (qq1,qq2);
           }
-
-          virtual core::DistancePtr_t get ()
-          {
-            return (core::DistancePtr_t)s_;
-          }
-
-          Storage getS ()
-          {
-            return s_;
-          }
-
-        protected:
-          Storage s_;
       };
 
       typedef DistanceServant<POA_hpp::core_idl::Distance, DistanceStorage<core::Distance> > Distance;
 
-      template <typename _Base, typename Storage>
-      class WeighedDistanceServant : public DistanceServant<_Base, Storage>
+      template <typename _Base, typename _Storage>
+      class WeighedDistanceServant : public DistanceServant<_Base, _Storage>
       {
-        protected:
-          using DistanceBase::server_;
+          SERVANT_BASE_TYPEDEFS(hpp::core_idl::WeighedDistance, core::DistancePtr_t);
         public:
-          typedef DistanceServant<_Base, Storage> Parent;
-          using Parent::getS;
-          SERVANT_BASE_TYPEDEFS(hpp::core_idl::WeighedDistance)
+          typedef DistanceServant<Base, Storage> Parent;
 
           WeighedDistanceServant (Server* server, const Storage& s)
             : Parent(server, s) {}
