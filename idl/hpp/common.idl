@@ -8,8 +8,8 @@
 //
 // See the COPYING file for more information.
 
-#ifndef HPP_CORBASERVER_COMMON_IDL
-#define HPP_CORBASERVER_COMMON_IDL
+#ifndef HPP_COMMON_IDL
+#define HPP_COMMON_IDL
 
 module hpp
 {
@@ -35,4 +35,4 @@ module hpp
   typedef double Quaternion_ [4];
 };
 
-#endif //! HPP_CORBASERVER_COMMON_IDL
+#endif //! HPP_COMMON_IDL
