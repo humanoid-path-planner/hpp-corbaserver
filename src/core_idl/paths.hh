@@ -14,12 +14,13 @@
 # include <stdlib.h>
 
 # include "hpp/core/path.hh"
+# include "hpp/core/path-vector.hh"
 
 # include <hpp/corbaserver/fwd.hh>
 # include <hpp/corbaserver/conversions.hh>
 # include "hpp/core_idl/paths-idl.hh"
 
-# include "../servant-base.hh"
+# include "hpp/corbaserver/servant-base.hh"
 
 namespace hpp
 {

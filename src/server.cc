@@ -18,10 +18,10 @@
 #include <hpp/util/debug.hh>
 #include <hpp/core/plugin.hh>
 #include <hpp/corbaserver/server-plugin.hh>
-#include "hpp/corbaserver/tools-idl.hh" 
+#include "hpp/corbaserver/tools-idl.hh"
 
 #include "basic-server.hh"
-#include "servant-base.hh"
+#include "hpp/corbaserver/servant-base.hh"
 
 namespace hpp
 {

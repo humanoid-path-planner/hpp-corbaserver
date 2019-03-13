@@ -11,10 +11,12 @@
 #ifndef SRC_SERVANT_BASE_HH
 # define SRC_SERVANT_BASE_HH
 
+# include <boost/type.hpp>
 # include <boost/mpl/vector.hpp>
 # include <boost/mpl/for_each.hpp>
 
 # include <hpp/common-idl.hh>
+# include <hpp/corbaserver/server.hh>
 
 namespace hpp
 {
@@ -24,7 +26,7 @@ namespace hpp
     /// Classes and functions related to the addition of HPP class bindings.
     ///
     /// Example usage can be found in classes
-    /// hpp::corbaServer::core_idl::Path, 
+    /// hpp::corbaServer::core_idl::Path,
     /// hpp::corbaServer::core_idl::PathVector,
     /// hpp::corbaServer::core_idl::Distance
     ///
@@ -59,6 +61,7 @@ namespace hpp
       typedef _Storage Storage;                                                \
       typedef idlObj         Object;                                           \
       typedef idlObj ## _ptr Object_ptr;                                       \
+      typedef idlObj ## _var Object_var;                                       \
       typedef ServantBase<hppObj, _Storage> _ServantBase;                      \
       using _ServantBase::get;                                                 \
       using _ServantBase::getS
@@ -71,7 +74,7 @@ namespace hpp
     };
 
     /// Base class for classes which provides bindings for HPP classes.
-    /// Example usage are hpp::corbaServer::core_idl::Path, 
+    /// Example usage are hpp::corbaServer::core_idl::Path,
     /// hpp::corbaServer::core_idl::PathVector,
     /// hpp::corbaServer::core_idl::Distance
     template <typename T> class AbstractServantBase : AbstractServantKey
@@ -144,6 +147,15 @@ namespace hpp
         typedef T element_type;
         operator bool () const { return element; }
     };
+
+    template <typename BaseType, typename ServantType>
+    struct ServantFactory
+    {
+          Storage u = storage_cast<typename Storage::element_type>();
+          if (u)
+            servant = makeServant <typename Servant::Object_ptr> (s, new Servant (s, u));
+    };
+
 
     typedef PortableServer::Servant_var<PortableServer::ServantBase> ServantBase_var;
 
@@ -230,7 +242,7 @@ namespace hpp
     /// \endcond
 
     /// Create and activate a omniORB servant with class downcasting.
-    /// This automaticcally downcast 
+    /// This automatically downcast to the leftmost type in \c Types.
     /// \tparam ObjectRef the return type.
     /// \tparam Types a boost::mpl::vector of types to check. The order matters.
     ///               Put the base classes **after** their children.

@@ -14,13 +14,14 @@
 # include <vector>
 # include <stdlib.h>
 
+# include "hpp/core/distance.hh"
 # include "hpp/core/weighed-distance.hh"
 
 # include <hpp/corbaserver/fwd.hh>
 # include <hpp/corbaserver/conversions.hh>
 # include "hpp/core_idl/distances-idl.hh"
 
-# include "../servant-base.hh"
+# include "hpp/corbaserver/servant-base.hh"
 
 namespace hpp
 {

@@ -40,6 +40,7 @@ IF (NOT CLIENT_ONLY)
     include/hpp/corbaserver/fwd.hh
     include/hpp/corbaserver/object-map.hh
     include/hpp/corbaserver/problem-solver-map.hh
+    include/hpp/corbaserver/servant-base.hh
     include/hpp/corbaserver/server.hh
     include/hpp/corbaserver/server-plugin.hh
     include/hpp/corbaserver/conversions.hh

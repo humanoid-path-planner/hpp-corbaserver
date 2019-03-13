@@ -20,7 +20,7 @@
 # include <hpp/corbaserver/conversions.hh>
 # include "hpp/core_idl/_problem-idl.hh"
 
-# include "../servant-base.hh"
+# include "hpp/corbaserver/servant-base.hh"
 # include "distances.hh"
 # include "steering-methods.hh"
 # include "path-validations.hh"

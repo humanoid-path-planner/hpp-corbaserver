@@ -65,7 +65,7 @@
 #include <hpp/pinocchio/body.hh>
 #include <hpp/pinocchio/center-of-mass-computation.hh>
 
-#include "servant-base.hh"
+#include "hpp/corbaserver/servant-base.hh"
 #include "core_idl/distances.hh"
 #include "core_idl/paths.hh"
 #include "core_idl/steering-methods.hh"

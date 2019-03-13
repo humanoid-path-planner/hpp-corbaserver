@@ -20,7 +20,7 @@
 # include <hpp/corbaserver/conversions.hh>
 # include "hpp/core_idl/path_validations-idl.hh"
 
-# include "../servant-base.hh"
+# include "hpp/corbaserver/servant-base.hh"
 
 namespace hpp
 {
