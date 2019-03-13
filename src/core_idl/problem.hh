@@ -47,9 +47,8 @@ namespace hpp
             core::DistancePtr_t distance = p_->distance();
             DevicePtr_t robot = p_->robot();
 
-            hpp::core_idl::Distance_var d = makeServantDownCast <
-              hpp::core_idl::Distance, Distances>
-                (server_, Distance::Storage (robot, distance));
+            hpp::core_idl::Distance_var d = makeServantDownCast<Distance>
+              (server_, Distance::Storage (robot, distance));
             return d._retn();
           }
 
@@ -72,8 +71,7 @@ namespace hpp
             core::SteeringMethodPtr_t steeringMethod = p_->steeringMethod();
             DevicePtr_t robot = p_->robot();
 
-            hpp::core_idl::SteeringMethod_var d = makeServantDownCast <
-              hpp::core_idl::SteeringMethod, SteeringMethods>
+            hpp::core_idl::SteeringMethod_var d = makeServantDownCast<SteeringMethod>
                 (server_, SteeringMethod::Storage (robot, steeringMethod));
             return d._retn();
           }
@@ -96,8 +94,7 @@ namespace hpp
           {
             core::PathValidationPtr_t pathValidation = p_->pathValidation();
 
-            hpp::core_idl::PathValidation_var d = makeServantDownCast <
-              hpp::core_idl::PathValidation, PathValidations>
+            hpp::core_idl::PathValidation_var d = makeServantDownCast<PathValidation>
                 (server_, PathValidation::Storage (pathValidation));
             return d._retn();
           }

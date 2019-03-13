@@ -211,12 +211,16 @@ namespace hpp
     }
     /// \endcond
 
+    /// Cast the storage class of a servant.
     template <typename U, typename V, template<typename> class StorageTpl>
     static StorageTpl<U> storage_cast(const StorageTpl<V>& o)
     {
       return details::storage_cast_impl<U, V, StorageTpl>::run (o);
     }
 
+    /// Class used to dynamiccally cast HPP classes and create the corresponding
+    /// servant.
+    /// \sa HPP_CORBASERVER_ADD_DOWNCAST_OBJECT
     template <typename ServantBaseType>
     class ServantFactoryBase
     {
@@ -278,72 +282,10 @@ namespace hpp
       vec.push_back(object);
     }
 
-    /// \cond
-    namespace details
-    {
-      template <typename T, template<typename> class StorageTpl,
-               typename ObjectRef>
-      struct DownCast
-      {
-        typedef typename ObjectRef::_var_type ObjectRefVar;
-
-        Server* s;
-        StorageTpl<T> t;
-        ObjectRefVar& servant;
-        DownCast (Server* server, const StorageTpl<T>& _t, ObjectRefVar& _servant)
-          : s(server), t(_t), servant(_servant) {}
-        template<typename Servant> void operator()(boost::type<Servant>)
-        {
-          // Servant -> Storage to dynamic cast.
-          typedef typename Servant::Storage Storage;
-
-          if (!CORBA::Object_Helper::is_nil(servant)) return;
-          Storage u = storage_cast<typename Storage::element_type>();
-          if (u)
-            servant = makeServant <typename Servant::Object_ptr> (s, new Servant (s, u));
-        }
-
-        /// Enabled only if StorageTpl != boost::shared_ptr
-        template <typename U>
-        StorageTpl<U> storage_cast(typename boost::enable_if_c<(!boost::is_same<boost::shared_ptr<U>,StorageTpl<U> >::value)>::type* =0) const
-        {
-          return t.template cast<U>();
-        }
-
-        /// Enabled only if StorageTpl == boost::shared_ptr
-        template <typename U>
-        boost::shared_ptr<U> storage_cast(typename boost::enable_if_c<(boost::is_same<boost::shared_ptr<U>,StorageTpl<U> >::value)>::type* =0) const
-        {
-          return boost::dynamic_pointer_cast<U>(t);
-        }
-      };
-    }
-    /// \endcond
-
     /// Create and activate a omniORB servant with class downcasting.
-    /// This automatically downcast to the leftmost type in \c Types.
-    /// \tparam ObjectRef the return type.
-    /// \tparam Types a boost::mpl::vector of types to check. The order matters.
-    ///               Put the base classes **after** their children.
-    /// \tparam T the HPP class
-    /// \tparam StorageTpl either boost::shared_ptr or a class inheriting from
-    ///                    AbstractStorage
-    template <typename ObjectRef, typename Types,
-      typename T, template<typename> class StorageTpl>
-    typename ObjectRef::_var_type makeServantDownCast (Server* server, const StorageTpl<T>& t)
-    {
-      typedef typename ObjectRef::_var_type ObjectRefVar;
-      ObjectRefVar d;
-      assert (CORBA::Object_Helper::is_nil(d.in()));
-
-      details::DownCast<T, StorageTpl, ObjectRef> downCast (server, t, d);
-      boost::mpl::for_each<Types, boost::type<boost::mpl::_> > (downCast);
-
-      return d;
-    }
-
-    template <typename ServantBaseType, typename Storage>
-    typename ServantBaseType::Object_var makeServantDownCast2 (Server* server, const Storage& t)
+    /// \tparam ServantBaseType the top classes of the hierarchy.
+    template <typename ServantBaseType>
+    typename ServantBaseType::Object_var makeServantDownCast (Server* server, const typename ServantBaseType::Storage& t)
     {
       typedef typename ServantBaseType::Object_var Object_var;
       Object_var servant;
@@ -365,6 +307,14 @@ namespace hpp
   } // end of namespace corbaServer.
 } // end of namespace hpp.
 
+/// Declare a new element of a HPP class hierachy.
+/// \param depth the depth in the hierarchy tree.
+/// Example:
+/// \code
+/// HPP_CORBASERVER_ADD_DOWNCAST_OBJECT(Path      , Path, 0)
+/// // PathVector directly inherits from Path
+/// HPP_CORBASERVER_ADD_DOWNCAST_OBJECT(PathVector, Path, 1)
+/// \endcode
 #define HPP_CORBASERVER_ADD_DOWNCAST_OBJECT(ServantType, BaseServantType, depth) \
   struct HPP_CORE_DLLAPI __InitializerClass_##ServantType {                    \
     __InitializerClass_##ServantType () {                                      \

@@ -15,12 +15,14 @@
 # include <stdlib.h>
 
 # include "hpp/core/path-validation.hh"
+# include "hpp/core/path-validation-report.hh"
 
 # include <hpp/corbaserver/fwd.hh>
 # include <hpp/corbaserver/conversions.hh>
 # include "hpp/core_idl/path_validations-idl.hh"
 
 # include "hpp/corbaserver/servant-base.hh"
+# include "paths.hh"
 
 namespace hpp
 {

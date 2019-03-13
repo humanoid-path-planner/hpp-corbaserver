@@ -22,6 +22,8 @@
 
 # include "hpp/corbaserver/servant-base.hh"
 
+# include "paths.hh"
+
 namespace hpp
 {
   namespace corbaServer

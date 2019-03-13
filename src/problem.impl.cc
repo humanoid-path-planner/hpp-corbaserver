@@ -2610,8 +2610,7 @@ namespace hpp
         DevicePtr_t robot = getRobotOrThrow (ps);
         core::DistancePtr_t distance = problem (ps, true)->distance();
 
-        hpp::core_idl::Distance_var d = makeServantDownCast <
-          hpp::core_idl::Distance, core_idl::Distances>
+        hpp::core_idl::Distance_var d = makeServantDownCast<core_idl::Distance>
             (server_->parent(), core_idl::Distance::Storage (robot, distance));
         return d._retn();
       }

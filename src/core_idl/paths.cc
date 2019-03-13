@@ -26,7 +26,7 @@ namespace hpp
     {
       hpp::core_idl::Path_ptr makePathServant (Server* server, const PathPtr_t& path)
       {
-        hpp::core_idl::Path_var d = makeServantDownCast2<Path> (server, path);
+        hpp::core_idl::Path_var d = makeServantDownCast<Path> (server, path);
         return d._retn();
       }
 

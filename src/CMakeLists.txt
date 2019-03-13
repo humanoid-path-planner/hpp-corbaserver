@@ -111,6 +111,8 @@ IF (NOT CLIENT_ONLY)
     ${ALL_IDL_CPP_STUBS}
     core_idl/paths.cc
     core_idl/distances.cc
+    core_idl/path-validations.cc
+    core_idl/steering-methods.cc
     )
 
   PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-core)
