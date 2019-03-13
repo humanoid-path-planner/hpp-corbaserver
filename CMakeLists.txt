@@ -45,6 +45,8 @@ IF (NOT CLIENT_ONLY)
     include/hpp/corbaserver/server-plugin.hh
     include/hpp/corbaserver/conversions.hh
 
+    include/hpp/corbaserver/constraints_idl/constraints.hh
+
     include/hpp/corbaserver/core_idl/distances.hh
     include/hpp/corbaserver/core_idl/paths.hh
     include/hpp/corbaserver/core_idl/path-validations.hh

@@ -375,6 +375,8 @@ namespace hpp
 
         hpp::core_idl::Problem_ptr getProblem () throw (Error);
 
+        hpp::constraints_idl::Implicit_ptr getConstraint (const char* name) throw (Error);
+
       private:
         /// Return the selected problem solver
         core::ProblemSolverPtr_t problemSolver ();

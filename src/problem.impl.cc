@@ -66,6 +66,8 @@
 #include <hpp/pinocchio/center-of-mass-computation.hh>
 
 #include "hpp/corbaserver/servant-base.hh"
+
+#include "hpp/corbaserver/constraints_idl/constraints.hh"
 #include "hpp/corbaserver/core_idl/distances.hh"
 #include "hpp/corbaserver/core_idl/paths.hh"
 #include "hpp/corbaserver/core_idl/steering-methods.hh"
@@ -2685,6 +2687,21 @@ namespace hpp
         return makeServant <hpp::core_idl::Problem_ptr> (server_->parent(),
             new core_idl::Problem (server_->parent(),
               core_idl::Problem::Storage (pb)));
+      }
+
+      // ---------------------------------------------------------------
+
+      hpp::constraints_idl::Implicit_ptr Problem::getConstraint (const char* name)
+        throw (Error)
+      {
+        const std::string fn (name);
+        core::ProblemSolverPtr_t ps = problemSolver();
+        if (!ps->numericalConstraints.has(fn))
+          throw Error (("Constraint " + fn + " not found").c_str());
+
+        hpp::constraints_idl::Implicit_var d = makeServantDownCast <constraints_idl::Implicit>
+          (server_->parent(), ps->numericalConstraints.get(fn));
+        return d._retn();
       }
 
     } // namespace impl

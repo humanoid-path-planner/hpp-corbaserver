@@ -38,6 +38,7 @@ FOREACH(IDL ${IDL_SOURCES})
     ARGUMENTS
     -Wbmodules=hpp_idl
     -Wbextern=common:hpp_stubs
+    -Wbextern=constraints:hpp_stubs.constraints
     -Wbextern=distances:hpp_stubs.core
     -Wbextern=paths:hpp_stubs.core
     -Wbextern=steering_methods:hpp_stubs.core
@@ -80,6 +81,24 @@ FOREACH(IDL distances paths steering_methods path_validations _problem)
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp/core_idl)
 ENDFOREACH()
 
+MAKE_DIRECTORY(${CMAKE_BINARY_DIR}/src/hpp/constraints_idl)
+FOREACH(IDL constraints)
+  GENERATE_IDL_CPP (hpp/constraints_idl/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/constraints_idl
+    ARGUMENTS
+    -Wbguard_prefix=hpp_constraints_idl
+    HEADER_SUFFIX -idl.hh)
+  GENERATE_IDL_PYTHON (${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/constraints_idl
+      ENABLE_DOCSTRING
+      STUBS hpp_stubs.constraints
+      ARGUMENTS
+      -Wbmodules=hpp_idl
+      -Wbextern=common:hpp_stubs
+    )
+  INSTALL(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/constraints_idl/${IDL}-idl.hh
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp/constraints_idl)
+ENDFOREACH()
+
 INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/idl/hpp
   DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/idl)
 
@@ -108,6 +127,7 @@ IF (NOT CLIENT_ONLY)
     tools.hh
     conversions.cc
     ${ALL_IDL_CPP_STUBS}
+    constraints_idl/constraints.cc
     core_idl/paths.cc
     core_idl/distances.cc
     core_idl/path-validations.cc
