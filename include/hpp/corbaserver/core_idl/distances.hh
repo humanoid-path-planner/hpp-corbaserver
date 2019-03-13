@@ -8,8 +8,8 @@
 //
 // See the COPYING file for more information.
 
-#ifndef SRC_DISTANCES_HH
-# define SRC_DISTANCES_HH
+#ifndef HPP_CORE_IDL_DISTANCES_HH
+# define HPP_CORE_IDL_DISTANCES_HH
 
 # include <vector>
 # include <stdlib.h>
@@ -103,4 +103,4 @@ namespace hpp
   } // end of namespace corbaServer.
 } // end of namespace hpp.
 
-#endif // SRC_DISTANCES_HH
+#endif // HPP_CORE_IDL_DISTANCES_HH

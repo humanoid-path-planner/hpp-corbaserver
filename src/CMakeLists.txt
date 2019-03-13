@@ -44,6 +44,9 @@ FOREACH(IDL ${IDL_SOURCES})
     -Wbextern=path_validations:hpp_stubs.core
     -Wbextern=_problem:hpp_stubs.core
     )
+  INSTALL(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/${IDL}-idl.hh
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp/corbaserver)
 ENDFOREACH()
 # Enable generation of dynamic type codes (in file commonDynSK.cc)
 GENERATE_IDL_CPP (hpp/common ${CMAKE_SOURCE_DIR}/idl/hpp ENABLE_Wba
@@ -54,6 +57,9 @@ GENERATE_IDL_PYTHON (common ${CMAKE_SOURCE_DIR}/idl/hpp
     ARGUMENTS
     -Wbmodules=hpp_idl
   )
+INSTALL(
+  FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/common-idl.hh
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp)
 
 MAKE_DIRECTORY(${CMAKE_BINARY_DIR}/src/hpp_idl)
 MAKE_DIRECTORY(${CMAKE_BINARY_DIR}/src/hpp/core_idl)
@@ -69,20 +75,13 @@ FOREACH(IDL distances paths steering_methods path_validations _problem)
       -Wbmodules=hpp_idl
       -Wbextern=common:hpp_stubs
     )
+  INSTALL(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/core_idl/${IDL}-idl.hh
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp/core_idl)
 ENDFOREACH()
 
-FOREACH(IDL ${IDL_SOURCES})
-  INSTALL(
-    FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/${IDL}-idl.hh
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp/corbaserver)
-  INSTALL(FILES ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/${IDL}.idl
-    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/idl/hpp/corbaserver)
-ENDFOREACH()
-INSTALL(
-  FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/common-idl.hh
-  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp)
-INSTALL(FILES ${CMAKE_SOURCE_DIR}/idl/hpp/common.idl
-  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/idl/hpp)
+INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/idl/hpp
+  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/idl)
 
 INSTALL(
   DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/hpp_idl ${CMAKE_CURRENT_BINARY_DIR}/hpp_stubs

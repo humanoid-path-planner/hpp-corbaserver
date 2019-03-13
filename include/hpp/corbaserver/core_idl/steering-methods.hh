@@ -8,8 +8,8 @@
 //
 // See the COPYING file for more information.
 
-#ifndef SRC_STEERING_METHODS_HH
-# define SRC_STEERING_METHODS_HH
+#ifndef HPP_CORE_IDL_STEERING_METHODS_HH
+# define HPP_CORE_IDL_STEERING_METHODS_HH
 
 # include <vector>
 # include <stdlib.h>
@@ -78,4 +78,4 @@ namespace hpp
   } // end of namespace corbaServer.
 } // end of namespace hpp.
 
-#endif // SRC_STEERING_METHODS_HH
+#endif // HPP_CORE_IDL_STEERING_METHODS_HH

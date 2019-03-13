@@ -9,21 +9,21 @@
 //
 // See the COPYING file for more information.
 
-#ifndef SRC_PROBLEM_HH
-# define SRC_PROBLEM_HH
+#ifndef HPP_CORE_IDL_PROBLEM_HH
+# define HPP_CORE_IDL_PROBLEM_HH
 # include <vector>
 # include <stdlib.h>
 
-# include "hpp/core/path.hh"
+# include <hpp/core/problem.hh>
 
 # include <hpp/corbaserver/fwd.hh>
 # include <hpp/corbaserver/conversions.hh>
-# include "hpp/core_idl/_problem-idl.hh"
+# include <hpp/core_idl/_problem-idl.hh>
 
-# include "hpp/corbaserver/servant-base.hh"
-# include "distances.hh"
-# include "steering-methods.hh"
-# include "path-validations.hh"
+# include <hpp/corbaserver/servant-base.hh>
+# include <hpp/corbaserver/core_idl/distances.hh>
+# include <hpp/corbaserver/core_idl/steering-methods.hh>
+# include <hpp/corbaserver/core_idl/path-validations.hh>
 
 namespace hpp
 {
@@ -140,4 +140,4 @@ namespace hpp
   } // end of namespace corbaServer.
 } // end of namespace hpp.
 
-#endif // SRC_PROBLEM_HH
+#endif // HPP_CORE_IDL_PROBLEM_HH

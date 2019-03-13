@@ -8,7 +8,7 @@
 //
 // See the COPYING file for more information.
 
-# include "distances.hh"
+#include "hpp/corbaserver/core_idl/distances.hh"
 
 namespace hpp
 {

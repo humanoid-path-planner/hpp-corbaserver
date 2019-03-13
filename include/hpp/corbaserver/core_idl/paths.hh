@@ -8,8 +8,8 @@
 //
 // See the COPYING file for more information.
 
-#ifndef SRC_PATHS_HH
-# define SRC_PATHS_HH
+#ifndef HPP_CORE_IDL_PATHS_HH
+# define HPP_CORE_IDL_PATHS_HH
 # include <vector>
 # include <stdlib.h>
 
@@ -120,4 +120,4 @@ namespace hpp
   } // end of namespace corbaServer.
 } // end of namespace hpp.
 
-#endif // SRC_PATHS_HH
+#endif // HPP_CORE_IDL_PATHS_HH

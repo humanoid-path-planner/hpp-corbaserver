@@ -8,7 +8,7 @@
 //
 // See the COPYING file for more information.
 
-# include "paths.hh"
+#include "hpp/corbaserver/core_idl/paths.hh"
 
 namespace hpp
 {

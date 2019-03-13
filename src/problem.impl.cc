@@ -66,11 +66,11 @@
 #include <hpp/pinocchio/center-of-mass-computation.hh>
 
 #include "hpp/corbaserver/servant-base.hh"
-#include "core_idl/distances.hh"
-#include "core_idl/paths.hh"
-#include "core_idl/steering-methods.hh"
-#include "core_idl/path-validations.hh"
-#include "core_idl/problem.hh"
+#include "hpp/corbaserver/core_idl/distances.hh"
+#include "hpp/corbaserver/core_idl/paths.hh"
+#include "hpp/corbaserver/core_idl/steering-methods.hh"
+#include "hpp/corbaserver/core_idl/path-validations.hh"
+#include "hpp/corbaserver/core_idl/problem.hh"
 #include "problem.impl.hh"
 #include "tools.hh"
 
