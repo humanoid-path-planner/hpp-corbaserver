@@ -113,8 +113,6 @@ namespace hpp
 
       typedef PathVectorServant<POA_hpp::core_idl::PathVector, core::PathVectorPtr_t> PathVector;
 
-      typedef boost::mpl::vector<PathVector, Path> Paths;
-
       hpp::core_idl::Path_ptr makePathServant (Server* server, const PathPtr_t& path);
     } // end of namespace core.
   } // end of namespace corbaServer.

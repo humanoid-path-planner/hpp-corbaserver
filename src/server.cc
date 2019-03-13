@@ -351,7 +351,11 @@ namespace hpp
       PluginFunction_t function = reinterpret_cast<PluginFunction_t>(dlsym(library, "createServerPlugin"));
       error = dlerror ();
       if (error != NULL) {
-        hppDout (error, "Error loading library " << lib << ":\n" << error);
+#ifdef HPP_DEBUG
+        hppDout (error, "Error loading library:\n" << error);
+#else
+        std::cerr << "Error loading library:\n" << error << std::endl;
+#endif
         return false;
       }
       if (function == NULL) {

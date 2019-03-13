@@ -22,7 +22,7 @@
 
 # include "hpp/corbaserver/servant-base.hh"
 
-# include "paths.hh"
+# include <hpp/corbaserver/core_idl/paths.hh>
 
 namespace hpp
 {
@@ -71,9 +71,6 @@ namespace hpp
       };
 
       typedef SteeringMethodServant<POA_hpp::core_idl::SteeringMethod, SteeringMethodStorage<core::SteeringMethod> > SteeringMethod;
-
-      typedef boost::mpl::vector<SteeringMethod> SteeringMethods;
-
     } // end of namespace core.
   } // end of namespace corbaServer.
 } // end of namespace hpp.

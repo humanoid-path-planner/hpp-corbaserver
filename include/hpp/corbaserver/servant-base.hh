@@ -8,12 +8,10 @@
 //
 // See the COPYING file for more information.
 
-#ifndef SRC_SERVANT_BASE_HH
-# define SRC_SERVANT_BASE_HH
+#ifndef HPP_CORBASERVER_SERVANT_BASE_HH
+# define HPP_CORBASERVER_SERVANT_BASE_HH
 
 # include <boost/type.hpp>
-# include <boost/mpl/vector.hpp>
-# include <boost/mpl/for_each.hpp>
 
 # include <hpp/common-idl.hh>
 # include <hpp/corbaserver/server.hh>
@@ -289,7 +287,7 @@ namespace hpp
     {
       typedef typename ServantBaseType::Object_var Object_var;
       Object_var servant;
-      assert (CORBA::Object_Helper::is_nil(d.in()));
+      assert (CORBA::Object_Helper::is_nil(servant.in()));
 
       typedef std::vector< ServantFactoryBase<ServantBaseType>* > vector_t;
       typedef typename vector_t::iterator iterator;
@@ -326,4 +324,4 @@ namespace hpp
     __InitializerClass_##ServantType __instance_##ServantType;                 \
   }
 
-#endif // SRC_SERVANT_BASE_HH
+#endif // HPP_CORBASERVER_SERVANT_BASE_HH

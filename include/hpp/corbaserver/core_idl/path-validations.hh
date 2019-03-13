@@ -22,7 +22,7 @@
 # include "hpp/core_idl/path_validations-idl.hh"
 
 # include "hpp/corbaserver/servant-base.hh"
-# include "paths.hh"
+# include <hpp/corbaserver/core_idl/paths.hh>
 
 namespace hpp
 {
@@ -68,8 +68,6 @@ namespace hpp
       };
 
       typedef PathValidationServant<POA_hpp::core_idl::PathValidation, core::PathValidationPtr_t > PathValidation;
-
-      typedef boost::mpl::vector<PathValidation> PathValidations;
 
     } // end of namespace core.
   } // end of namespace corbaServer.

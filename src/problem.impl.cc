@@ -2655,9 +2655,10 @@ namespace hpp
         DevicePtr_t robot = getRobotOrThrow (ps);
         core::SteeringMethodPtr_t sm = problem (ps, true)->steeringMethod();
 
-        return makeServant <hpp::core_idl::SteeringMethod_ptr> (server_->parent(),
-            new core_idl::SteeringMethod (server_->parent(),
-              core_idl::SteeringMethod::Storage (robot, sm)));
+        hpp::core_idl::SteeringMethod_var d =
+          makeServantDownCast <core_idl::SteeringMethod> (server_->parent(),
+              core_idl::SteeringMethod::Storage (robot, sm));
+        return d._retn();
       }
 
       // ---------------------------------------------------------------
@@ -2668,9 +2669,10 @@ namespace hpp
         DevicePtr_t robot = getRobotOrThrow (ps);
         core::PathValidationPtr_t pv = problem (ps, true)->pathValidation();
 
-        return makeServant <hpp::core_idl::PathValidation_ptr> (server_->parent(),
-            new core_idl::PathValidation (server_->parent(),
-              core_idl::PathValidation::Storage (pv)));
+        hpp::core_idl::PathValidation_var d =
+          makeServantDownCast <core_idl::PathValidation> (server_->parent(),
+              core_idl::PathValidation::Storage (pv));
+        return d._retn();
       }
 
       // ---------------------------------------------------------------

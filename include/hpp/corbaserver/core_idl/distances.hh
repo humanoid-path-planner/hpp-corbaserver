@@ -97,8 +97,6 @@ namespace hpp
       };
 
       typedef WeighedDistanceServant<POA_hpp::core_idl::WeighedDistance, DistanceStorage<core::WeighedDistance> > WeighedDistance;
-
-      typedef boost::mpl::vector<WeighedDistance, Distance> Distances;
     } // end of namespace core.
   } // end of namespace corbaServer.
 } // end of namespace hpp.
