@@ -115,13 +115,7 @@ namespace hpp
 
       typedef boost::mpl::vector<PathVector, Path> Paths;
 
-      hpp::core_idl::Path_ptr makePathServant (Server* server, const PathPtr_t& path)
-      {
-        hpp::core_idl::Path_var d = makeServantDownCast <
-          hpp::core_idl::Path, core_idl::Paths>
-            (server, path);
-        return d._retn();
-      }
+      hpp::core_idl::Path_ptr makePathServant (Server* server, const PathPtr_t& path);
     } // end of namespace core.
   } // end of namespace corbaServer.
 } // end of namespace hpp.

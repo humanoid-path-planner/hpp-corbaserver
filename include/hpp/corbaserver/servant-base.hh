@@ -148,15 +148,6 @@ namespace hpp
         operator bool () const { return element; }
     };
 
-    template <typename BaseType, typename ServantType>
-    struct ServantFactory
-    {
-          Storage u = storage_cast<typename Storage::element_type>();
-          if (u)
-            servant = makeServant <typename Servant::Object_ptr> (s, new Servant (s, u));
-    };
-
-
     typedef PortableServer::Servant_var<PortableServer::ServantBase> ServantBase_var;
 
     template <typename S, typename P> PortableServer::Servant_var<S> reference_to_servant (Server* server, const P& p)
@@ -197,6 +188,94 @@ namespace hpp
 
       server->addServantKeyAndServant (servantKey, d.in());
       return d->_this();
+    }
+
+    /// \cond
+    namespace details
+    {
+      /// Enabled only if StorageTpl != boost::shared_ptr
+      template <typename U, typename V, template<typename> class StorageTpl>
+      struct storage_cast_impl {
+        static StorageTpl<U> run (const StorageTpl<V>& o) {
+          return o.template cast<U>();
+        }
+      };
+
+      /// Enabled only if StorageTpl == boost::shared_ptr
+      template <typename U, typename V>
+      struct storage_cast_impl<U, V, boost::shared_ptr> {
+        static boost::shared_ptr<U> run (const boost::shared_ptr<V>& o) {
+          return boost::dynamic_pointer_cast<U>(o);
+        }
+      };
+    }
+    /// \endcond
+
+    template <typename U, typename V, template<typename> class StorageTpl>
+    static StorageTpl<U> storage_cast(const StorageTpl<V>& o)
+    {
+      return details::storage_cast_impl<U, V, StorageTpl>::run (o);
+    }
+
+    template <typename ServantBaseType>
+    class ServantFactoryBase
+    {
+      public:
+        typedef typename ServantBaseType::Storage Storage;
+        typedef typename ServantBaseType::Object_var Object_var;
+
+        ServantFactoryBase (const size_type& depth) : depth_ (depth) {}
+
+        virtual Object_var servant (Server* server, const Storage& obj) = 0;
+
+        /// Get the depth in the hierarchy tree.
+        /// This allows to ensure that child classes are always handled before
+        /// parent classes.
+        size_type depth () const
+        {
+          return depth_;
+        }
+      private:
+        size_type depth_;
+    };
+
+    template <typename ServantBaseType, typename ServantType>
+    struct ServantFactory : ServantFactoryBase<ServantBaseType>
+    {
+      typedef typename ServantBaseType::Object_var Object_var;
+      typedef typename ServantBaseType::Storage StorageBase;
+
+      ServantFactory (const size_type& depth) :
+        ServantFactoryBase<ServantBaseType> (depth) {}
+
+      virtual Object_var servant (Server* s, const StorageBase& o)
+      {
+        typedef typename ServantType::Storage Storage;
+        Storage u = storage_cast<typename Storage::element_type>(o);
+        Object_var ret;
+        if (u) ret = makeServant <Object_var> (s, new ServantType (s, u));
+        return ret;
+      }
+    };
+
+    template <typename ServantBaseType>
+    std::vector< ServantFactoryBase<ServantBaseType>* >& objectDowncasts ();
+
+    template <typename ServantBaseType>
+    void addDowncastObjects (ServantFactoryBase<ServantBaseType>* const object)
+    {
+      typedef std::vector< ServantFactoryBase<ServantBaseType>* > vector_t;
+      typedef typename vector_t::iterator iterator;
+
+      vector_t& vec = objectDowncasts<ServantBaseType>();
+      size_type d = object->depth();
+      for (iterator _obj = vec.begin(); _obj != vec.end(); ++_obj) {
+        if (d >= (*_obj)->depth()) {
+          vec.insert(_obj, object);
+          return;
+        }
+      }
+      vec.push_back(object);
     }
 
     /// \cond
@@ -263,8 +342,38 @@ namespace hpp
       return d;
     }
 
+    template <typename ServantBaseType, typename Storage>
+    typename ServantBaseType::Object_var makeServantDownCast2 (Server* server, const Storage& t)
+    {
+      typedef typename ServantBaseType::Object_var Object_var;
+      Object_var servant;
+      assert (CORBA::Object_Helper::is_nil(d.in()));
+
+      typedef std::vector< ServantFactoryBase<ServantBaseType>* > vector_t;
+      typedef typename vector_t::iterator iterator;
+
+      vector_t& vec = objectDowncasts<ServantBaseType>();
+      for (iterator _obj = vec.begin(); _obj != vec.end(); ++_obj) {
+        servant = (*_obj)->servant(server, t);
+        if (!CORBA::Object_Helper::is_nil(servant.in())) break;
+      }
+
+      return servant;
+    }
+
     /// \}
   } // end of namespace corbaServer.
 } // end of namespace hpp.
+
+#define HPP_CORBASERVER_ADD_DOWNCAST_OBJECT(ServantType, BaseServantType, depth) \
+  struct HPP_CORE_DLLAPI __InitializerClass_##ServantType {                    \
+    __InitializerClass_##ServantType () {                                      \
+      ::hpp::corbaServer::addDowncastObjects<BaseServantType> \
+      ( new ::hpp::corbaServer::ServantFactory<BaseServantType, ServantType> (depth)); \
+    }                                                                          \
+  };                                                                           \
+  extern "C" {                                                                 \
+    __InitializerClass_##ServantType __instance_##ServantType;                 \
+  }
 
 #endif // SRC_SERVANT_BASE_HH

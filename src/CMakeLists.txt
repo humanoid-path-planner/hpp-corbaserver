@@ -109,6 +109,8 @@ IF (NOT CLIENT_ONLY)
     tools.hh
     conversions.cc
     ${ALL_IDL_CPP_STUBS}
+    core_idl/paths.cc
+    core_idl/distances.cc
     )
 
   PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-core)
