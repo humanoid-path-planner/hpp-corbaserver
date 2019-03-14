@@ -110,12 +110,22 @@ namespace hpp
 
         virtual TShPtr_t get () const
         {
-          return ((TShPtr_t) s);
+          TWkPtr_t wk ((StorageElementWkPtr_t) s);
+          if (wk.expired()) {
+            // Object expired. Remove the servant and throw.
+            deleteThis();
+          }
+          return wk.lock();
         }
 
         StorageElementShPtr_t getT () const
         {
-          return ((StorageElementShPtr_t) s);
+          StorageElementWkPtr_t wk ((StorageElementWkPtr_t) s);
+          if (wk.expired()) {
+            // Object expired. Remove the servant and throw.
+            deleteThis();
+          }
+          return wk.lock();
         }
 
         const Storage& getS () const
@@ -123,11 +133,44 @@ namespace hpp
           return s;
         }
 
+        /// Set to true if the servant should take ownership of this object.
+        void persistantStorage (bool persistant)
+        {
+          if (persistant) p_ = get();
+          else p_.reset();
+        }
+
+        /// See persistantStorage(bool)
+        bool persistantStorage () const
+        {
+          return p_;
+        }
+
       protected:
         ServantBase (Server* server, const Storage& _s)
-          : AbstractServantBase<T> (server), s(_s) {}
+          : AbstractServantBase<T> (server), s(_s)
+        {
+          persistantStorage (true);
+        }
 
         Storage s;
+
+      private:
+        void deleteThis () const
+        {
+          // Object expired. Try to remove the server.
+          PortableServer::Servant servant = dynamic_cast<PortableServer::Servant>(const_cast<ServantBase*>(this));
+          if (servant == NULL)
+            throw Error ("The object was deleted. I could not delete the servant.");
+          this->server_->removeServant (servant);
+          // Deactivate object
+          PortableServer::ObjectId_var objectId
+            = this->server_->poa()->servant_to_id(servant);
+          this->server_->poa()->deactivate_object(objectId.in());
+          throw Error ("The object has been deleted. I delete the servant.");
+        }
+
+        TShPtr_t p_;
     };
 
     /// Abstraction of storage ot HPP class.
@@ -148,12 +191,12 @@ namespace hpp
     template <typename T, typename Base> class AbstractStorage
     {
       public:
-        typedef boost::shared_ptr<T> ptr_t;
+        typedef boost::weak_ptr<T> ptr_t;
 
         ptr_t element;
 
         AbstractStorage (const ptr_t& _element) : element(_element) {}
-        operator boost::shared_ptr<T   > () const { return element; }
+        operator boost::shared_ptr<T   > () const { return element.lock(); }
         operator boost::weak_ptr  <T   > () const { return element; }
         long use_count() const { return element.use_count(); }
 

@@ -43,7 +43,7 @@ namespace hpp
 
           template <typename T> DistanceStorage<T> cast () const
           {
-            return DistanceStorage<T> (r, HPP_DYNAMIC_PTR_CAST(T, element));
+            return DistanceStorage<T> (r, HPP_DYNAMIC_PTR_CAST(T, element.lock()));
           }
       };
 

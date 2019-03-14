@@ -44,7 +44,7 @@ namespace hpp
 
           template <typename T> SteeringMethodStorage<T> cast () const
           {
-            return SteeringMethodStorage<T> (r, HPP_DYNAMIC_PTR_CAST(T, element));
+            return SteeringMethodStorage<T> (r, HPP_DYNAMIC_PTR_CAST(T, element.lock()));
           }
       };
 
