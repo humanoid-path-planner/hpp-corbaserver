@@ -26,12 +26,10 @@ namespace hpp
   {
     namespace constraints_idl
     {
-      typedef AbstractServantBase<constraints::ImplicitPtr_t> ImplicitBase;
-
       template <typename _Base, typename _Storage>
-      class ImplicitServant : public ServantBase<constraints::ImplicitPtr_t, _Storage>, public virtual _Base
+      class ImplicitServant : public ServantBase<constraints::Implicit, _Storage>, public virtual _Base
       {
-          SERVANT_BASE_TYPEDEFS(hpp::constraints_idl::Implicit, constraints::ImplicitPtr_t);
+          SERVANT_BASE_TYPEDEFS(hpp::constraints_idl::Implicit, constraints::Implicit);
 
         public:
           ImplicitServant (Server* server, const Storage& s)

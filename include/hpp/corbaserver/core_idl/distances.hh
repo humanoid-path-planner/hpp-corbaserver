@@ -29,8 +29,6 @@ namespace hpp
   {
     namespace core_idl
     {
-      typedef AbstractServantBase<core::DistancePtr_t> DistanceBase;
-
       template <typename D>
       class DistanceStorage : public AbstractStorage <D, core::Distance>
       {
@@ -50,9 +48,9 @@ namespace hpp
       };
 
       template <typename _Base, typename _Storage>
-      class DistanceServant : public ServantBase<core::DistancePtr_t, _Storage>, public virtual _Base
+      class DistanceServant : public ServantBase<core::Distance, _Storage>, public virtual _Base
       {
-          SERVANT_BASE_TYPEDEFS(hpp::core_idl::Distance, core::DistancePtr_t);
+          SERVANT_BASE_TYPEDEFS(hpp::core_idl::Distance, core::Distance);
         public:
           DistanceServant (Server* server, const Storage& s)
             : _ServantBase (server, s) {}
@@ -72,7 +70,7 @@ namespace hpp
       template <typename _Base, typename _Storage>
       class WeighedDistanceServant : public DistanceServant<_Base, _Storage>
       {
-          SERVANT_BASE_TYPEDEFS(hpp::core_idl::WeighedDistance, core::DistancePtr_t);
+          SERVANT_BASE_TYPEDEFS(hpp::core_idl::WeighedDistance, core::Distance);
         public:
           typedef DistanceServant<Base, Storage> Parent;
 
@@ -83,13 +81,13 @@ namespace hpp
 
           floatSeq* getWeights () throw (Error)
           {
-            return vectorToFloatSeq (getS().element->weights());
+            return vectorToFloatSeq (getT()->weights());
           }
 
           void setWeights (const floatSeq& weights) throw (Error)
           {
             try {
-              return getS().element->weights(floatSeqToVector(weights));
+              return getT()->weights(floatSeqToVector(weights));
             } catch (const std::exception& e) {
               throw Error (e.what ());
             }

@@ -62,6 +62,7 @@ namespace hpp
       typedef idlObj ## _var Object_var;                                       \
       typedef ServantBase<hppObj, _Storage> _ServantBase;                      \
       using _ServantBase::get;                                                 \
+      using _ServantBase::getT;                                                \
       using _ServantBase::getS
 
     /// Abstract class used to avoid duplication of the servants.
@@ -80,7 +81,10 @@ namespace hpp
       public:
         virtual ~AbstractServantBase () {}
 
-        virtual T get() const = 0;
+        typedef boost::shared_ptr<T> TShPtr_t;
+        typedef boost::weak_ptr  <T> TWkPtr_t;
+
+        virtual TShPtr_t get() const = 0;
 
         virtual Server::ServantKey getServantKey () const
         {
@@ -97,11 +101,21 @@ namespace hpp
     {
       public:
         typedef _Storage Storage;
+        using typename AbstractServantBase<T>::TShPtr_t;
+        using typename AbstractServantBase<T>::TWkPtr_t;
+        typedef boost::  weak_ptr<typename Storage::element_type> StorageElementWkPtr_t;
+        typedef boost::shared_ptr<typename Storage::element_type> StorageElementShPtr_t;
+
         virtual ~ServantBase () {}
 
-        virtual T get () const
+        virtual TShPtr_t get () const
         {
-          return (T)s;
+          return ((TShPtr_t) s);
+        }
+
+        StorageElementShPtr_t getT () const
+        {
+          return ((StorageElementShPtr_t) s);
         }
 
         const Storage& getS () const
@@ -139,11 +153,13 @@ namespace hpp
         ptr_t element;
 
         AbstractStorage (const ptr_t& _element) : element(_element) {}
-        operator boost::shared_ptr<Base> () const { return element; }
+        operator boost::shared_ptr<T   > () const { return element; }
+        operator boost::weak_ptr  <T   > () const { return element; }
+        long use_count() const { return element.use_count(); }
 
         // Mimic boost::shared_ptr<D> interface:
         typedef T element_type;
-        operator bool () const { return element; }
+        operator bool () const { return use_count()>0; }
     };
 
     typedef PortableServer::Servant_var<PortableServer::ServantBase> ServantBase_var;
@@ -206,6 +222,14 @@ namespace hpp
           return boost::dynamic_pointer_cast<U>(o);
         }
       };
+
+      /// Enabled only if StorageTpl == boost::weak_ptr
+      template <typename U, typename V>
+      struct storage_cast_impl<U, V, boost::weak_ptr> {
+        static boost::weak_ptr<U> run (const boost::weak_ptr<V>& o) {
+          return boost::dynamic_pointer_cast<U>(o.lock());
+        }
+      };
     }
     /// \endcond
 
@@ -255,7 +279,7 @@ namespace hpp
         typedef typename ServantType::Storage Storage;
         Storage u = storage_cast<typename Storage::element_type>(o);
         Object_var ret;
-        if (u) ret = makeServant <Object_var> (s, new ServantType (s, u));
+        if (u.use_count()>0) ret = makeServant <Object_var> (s, new ServantType (s, u));
         return ret;
       }
     };

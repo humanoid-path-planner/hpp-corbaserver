@@ -2623,7 +2623,7 @@ namespace hpp
       {
         core::DistancePtr_t d;
         try {
-          d = reference_to_servant_base<core::DistancePtr_t>(server_->parent(), distance)->get();
+          d = reference_to_servant_base<core::Distance>(server_->parent(), distance)->get();
         } catch (const Error& e) {
           // TODO in this case, we should define a distance from the CORBA type.
           // This would allow to implement a distance class in Python.

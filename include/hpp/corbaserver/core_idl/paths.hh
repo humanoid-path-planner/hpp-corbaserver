@@ -30,12 +30,10 @@ namespace hpp
     {
       hpp::core_idl::Path_ptr makePathServant (Server* server, const PathPtr_t& path);
 
-      typedef AbstractServantBase<core::PathPtr_t> PathBase;
-
       template <typename _Base, typename _Storage>
-      class PathServant : public ServantBase<core::PathPtr_t, _Storage>, public virtual _Base
+      class PathServant : public ServantBase<core::Path, _Storage>, public virtual _Base
       {
-          SERVANT_BASE_TYPEDEFS(hpp::core_idl::Path, core::PathPtr_t);
+          SERVANT_BASE_TYPEDEFS(hpp::core_idl::Path, core::Path);
 
         public:
           PathServant (Server* server, const Storage& s)
@@ -83,7 +81,7 @@ namespace hpp
       template <typename _Base, typename _Storage>
       class PathVectorServant : public PathServant<_Base, _Storage>
       {
-          SERVANT_BASE_TYPEDEFS(hpp::core_idl::PathVector, core::PathPtr_t);
+          SERVANT_BASE_TYPEDEFS(hpp::core_idl::PathVector, core::Path);
 
         public:
           typedef PathServant<Base, Storage> Parent;
@@ -92,28 +90,26 @@ namespace hpp
 
           std::size_t numberPaths () throw (Error)
           {
-            return this->getS()->numberPaths();
+            return getT()->numberPaths();
           }
 
           hpp::core_idl::Path_ptr pathAtRank (std::size_t rank) throw (Error)
           {
-            return makePathServant (server_, getS()->pathAtRank(rank));
+            return makePathServant (server_, getT()->pathAtRank(rank));
           }
 
           void appendPath (hpp::core_idl::Path_ptr path) throw (Error)
           {
-            getS()->appendPath(reference_to_servant_base<core::PathPtr_t>(server_, path)->get());
+            getT()->appendPath(reference_to_servant_base<core::Path>(server_, path)->get());
           }
 
           void concatenate (hpp::core_idl::PathVector_ptr path) throw (Error)
           {
-            getS()->appendPath(reference_to_servant<PathVectorServant>(server_, path)->getS());
+            getT()->appendPath(reference_to_servant<PathVectorServant>(server_, path)->getT());
           }
       };
 
       typedef PathVectorServant<POA_hpp::core_idl::PathVector, core::PathVectorPtr_t> PathVector;
-
-      hpp::core_idl::Path_ptr makePathServant (Server* server, const PathPtr_t& path);
     } // end of namespace core.
   } // end of namespace corbaServer.
 } // end of namespace hpp.

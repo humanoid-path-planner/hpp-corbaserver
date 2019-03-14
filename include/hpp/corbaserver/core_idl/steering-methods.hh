@@ -30,8 +30,6 @@ namespace hpp
   {
     namespace core_idl
     {
-      typedef AbstractServantBase<core::SteeringMethodPtr_t> SteeringMethodBase;
-
       template <typename D>
       class SteeringMethodStorage : public AbstractStorage<D, core::SteeringMethod>
       {
@@ -51,9 +49,9 @@ namespace hpp
       };
 
       template <typename _Base, typename _Storage>
-      class SteeringMethodServant : public ServantBase<core::SteeringMethodPtr_t, _Storage>, public virtual _Base
+      class SteeringMethodServant : public ServantBase<core::SteeringMethod, _Storage>, public virtual _Base
       {
-          SERVANT_BASE_TYPEDEFS(hpp::core_idl::SteeringMethod, core::SteeringMethodPtr_t);
+          SERVANT_BASE_TYPEDEFS(hpp::core_idl::SteeringMethod, core::SteeringMethod);
 
         public:
           SteeringMethodServant (Server* server, const Storage& s) :
@@ -65,8 +63,9 @@ namespace hpp
           {
             Configuration_t qq1 (floatSeqToConfig(getS().r, q1, true)),
                             qq2 (floatSeqToConfig(getS().r, q2, true));
-            return makeServant<hpp::core_idl::Path_ptr> (server_,
-                new Path (server_, (*get()) (qq1,qq2)));
+            hpp::core_idl::Path_var p =
+              makeServantDownCast<core_idl::Path> (server_, (*get()) (qq1,qq2));
+            return p._retn();
           }
       };
 
