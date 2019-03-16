@@ -47,13 +47,6 @@ IF (NOT CLIENT_ONLY)
     include/hpp/corbaserver/server-plugin.hh
     include/hpp/corbaserver/conversions.hh
 
-    include/hpp/corbaserver/constraints_idl/constraints.hh
-
-    include/hpp/corbaserver/core_idl/distances.hh
-    include/hpp/corbaserver/core_idl/paths.hh
-    include/hpp/corbaserver/core_idl/path-validations.hh
-    include/hpp/corbaserver/core_idl/problem.hh
-    include/hpp/corbaserver/core_idl/steering-methods.hh
     ${${PROJECT_NAME}_HEADERS}
     )
 ENDIF (NOT CLIENT_ONLY)

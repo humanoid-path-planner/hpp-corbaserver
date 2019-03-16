@@ -81,8 +81,10 @@ FOREACH(IDL distances paths steering_methods path_validations _problem)
       -Wbmodules=hpp_idl
       -Wbextern=common:hpp_stubs
     )
-  INSTALL(
-    FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/core_idl/${IDL}-idl.hh
+  INSTALL(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/core_idl/${IDL}-idl.hh
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/core_idl/${IDL}.hh
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/core_idl/${IDL}-fwd.hh
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp/core_idl)
 ENDFOREACH()
 
@@ -104,8 +106,10 @@ FOREACH(IDL constraints)
       -Wbmodules=hpp_idl
       -Wbextern=common:hpp_stubs
     )
-  INSTALL(
-    FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/constraints_idl/${IDL}-idl.hh
+  INSTALL(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/constraints_idl/${IDL}-idl.hh
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/constraints_idl/${IDL}.hh
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/constraints_idl/${IDL}-fwd.hh
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp/constraints_idl)
 ENDFOREACH()
 
