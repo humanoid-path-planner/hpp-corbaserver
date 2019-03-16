@@ -1,0 +1,61 @@
+MACRO(GENERATE_IDL_CPP_IMPL FILENAME DIRECTORY)
+  SET(oneValueArgs HH_SUFFIX HPP_SUFFIX HXX_SUFFIX CC_SUFFIX)
+  SET(multiValueArgs ARGUMENTS)
+  CMAKE_PARSE_ARGUMENTS(_omni "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+  # Set default values
+  IF(NOT DEFINED _omni_HH_SUFFIX )
+    SET(_omni_HH_SUFFIX  ".hh" )
+  ENDIF()
+  IF(NOT DEFINED _omni_HPP_SUFFIX)
+    SET(_omni_HPP_SUFFIX "-fwd.hpp")
+  ENDIF()
+  IF(NOT DEFINED _omni_HXX_SUFFIX)
+    SET(_omni_HXX_SUFFIX ".hh")
+  ENDIF()
+  IF(NOT DEFINED _omni_CC_SUFFIX )
+    SET(_omni_CC_SUFFIX  ".cc" )
+  ENDIF()
+
+  GET_FILENAME_COMPONENT (_PATH ${FILENAME} PATH)
+  GET_FILENAME_COMPONENT (_NAME ${FILENAME} NAME)
+
+  IF (_PATH STREQUAL "")
+    SET(_PATH "./")
+  ENDIF (_PATH STREQUAL "")
+  FIND_PROGRAM(OMNIIDL omniidl)
+  IF(${OMNIIDL} STREQUAL OMNIIDL-NOTFOUND)
+    MESSAGE(FATAL_ERROR "cannot find omniidl.")
+  ENDIF(${OMNIIDL} STREQUAL OMNIIDL-NOTFOUND)
+
+  SET(IDL_COMPILED_FILES)
+  FOREACH(suffix HPP_SUFFIX HXX_SUFFIX CC_SUFFIX)
+    LIST(APPEND IDL_COMPILED_FILES ${FILENAME}${_omni_${suffix}})
+  ENDFOREACH()
+
+  SET(_omniidl_args -p${CMAKE_SOURCE_DIR}/cmake-modules/omniidl -bcxx_impl -k
+    -Wbh=${_omni_HH_SUFFIX} -Wbhh=${_omni_HPP_SUFFIX} -Wbi=${_omni_HXX_SUFFIX} -Wbc=${_omni_CC_SUFFIX}
+    ${_OMNIIDL_INCLUDE_FLAG} ${_omni_ARGUMENTS})
+
+  ADD_CUSTOM_COMMAND(
+    OUTPUT ${IDL_COMPILED_FILES}
+    COMMAND ${OMNIIDL}
+    ARGS ${_omniidl_args} -C${_PATH} ${DIRECTORY}/${_NAME}.idl
+    MAIN_DEPENDENCY ${DIRECTORY}/${_NAME}.idl
+    COMMENT "Generating C++ implementations for ${_NAME}"
+    )
+
+  LIST(APPEND ALL_IDL_CPP_IMPL_STUBS ${IDL_COMPILED_FILES})
+
+  # Clean generated files.
+  SET_PROPERTY(
+    DIRECTORY APPEND PROPERTY
+    ADDITIONAL_MAKE_CLEAN_FILES
+    ${IDL_COMPILED_FILES}
+    )
+  #SET_PROPERTY(SOURCE ${IDL_COMPILED_FILES}
+  #APPEND_STRING PROPERTY
+  #COMPILE_FLAGS "-Wno-conversion -Wno-cast-qual -Wno-unused-variable -Wno-unused-parameter")
+
+  LIST(APPEND LOGGING_WATCHED_VARIABLES OMNIIDL ALL_IDL_CPP_IMPL_STUBS)
+ENDMACRO()

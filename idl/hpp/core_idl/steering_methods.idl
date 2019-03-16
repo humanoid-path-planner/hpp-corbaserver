@@ -21,9 +21,12 @@ module hpp
   interface SteeringMethod
   {
     Path call (in floatSeq q1, in floatSeq q2) raises (Error);
+    //-> operator()
   }; // interface SteeringMethod
 
   }; // module core
 }; // module hpp
+//* #include <hpp/core/steering-method.hh>
+//* #include <hpp/core_idl/paths.hh>
 
 #endif // HPP_CORE_STEERING_METHODS_IDL

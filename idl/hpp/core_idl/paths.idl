@@ -20,19 +20,32 @@ module hpp
 
   interface Path
   {
-    long outputSize () raises (Error);
+    size_type outputSize () raises (Error);
 
-    long outputDerivativeSize () raises (Error);
+    size_type outputDerivativeSize () raises (Error);
 
-    double length () raises (Error);
+    value_type length () raises (Error);
 
     string str () raises (Error);
 
-    floatSeq value (in double t, out boolean success) raises (Error);
+    floatSeq call (in value_type t, out boolean success) raises (Error);
+    //-> operator()
 
-    floatSeq derivative (in double t, in short order) raises (Error);
+    floatSeq derivative (in value_type t, in short order) raises (Error);
+    //* vector_t res (get()->outputDerivativeSize());
+    //* get()->derivative (res, t, order);
+    //* return vectorToFloatSeq (res);
+
+    Path extract (in value_type tmin, in value_type tmax) raises (Error);
 
     PathVector asVector () raises (Error);
+    //* PathPtr_t p = get();
+    //* PathVectorPtr_t pv =
+    //*   core::PathVector::create (p->outputSize(), p->outputDerivativeSize());
+    //* pv->appendPath (p);
+    //*
+    //* return makeServant<hpp::core_idl::PathVector_ptr>
+    //*   (server_, new PathVector (server_, pv));
   }; // interface Path
 
   interface PathVector : Path {
@@ -47,5 +60,7 @@ module hpp
 
   }; // module core
 }; // module hpp
+//* #include <hpp/core/path.hh>
+//* #include <hpp/core/path-vector.hh>
 
 #endif // HPP_CORE_PATHS_IDL

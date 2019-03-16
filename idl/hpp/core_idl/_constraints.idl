@@ -1,0 +1,46 @@
+// Copyright (C) 2019 by Joseph Mirabel, LAAS-CNRS.
+//
+// This file is part of the hpp-corbaserver.
+//
+// This software is provided "as is" without warranty of any kind,
+// either expressed or implied, including but not limited to the
+// implied warranties of fitness for a particular purpose.
+//
+// See the COPYING file for more information.
+
+#ifndef HPP_CORE_CONSTRAINTS_IDL
+#define HPP_CORE_CONSTRAINTS_IDL
+#include <hpp/common.idl>
+
+#include <hpp/constraints_idl/constraints.idl>
+
+module hpp
+{
+  module core_idl {
+
+  interface Constraint
+  {
+    bool apply (inout floatSeq config) raises (Error);
+    string name () raises (Error);
+    boolean isSatisfied (in floatSeq config, out floatSeq error) raises (Error);
+  }; // interface SteeringMethod
+
+  interface ConfigProjector
+  {
+    void setRightHandSideFromConfig (in floatSeq config);
+    void setRightHandSideFromConfig (in constraints_idl::Implicit nm, in floatSeq config)
+    void setRightHandSide (in floatSeq param);
+    void setRightHandSide (in constraints_idl::Implicit nm, in floatSeq rhs);
+    floatSeq rightHandSide () const;
+    void rightHandSideAt (in value_type s);
+  }; // interface SteeringMethod
+
+  interface ConstraintSet
+  {
+    ConfigProjector configProjector () raises (Error);
+  }; // interface SteeringMethod
+
+  }; // module core
+}; // module hpp
+
+#endif // HPP_CORE_CONSTRAINTS_IDL

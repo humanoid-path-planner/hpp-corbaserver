@@ -69,6 +69,11 @@ FOREACH(IDL distances paths steering_methods path_validations _problem)
     ARGUMENTS
     -Wbguard_prefix=hpp_core_idl
     HEADER_SUFFIX -idl.hh)
+  GENERATE_IDL_CPP_IMPL (hpp/core_idl/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/core_idl
+    ARGUMENTS
+    -Wbguard_prefix=hpp_core_idl
+    -Wbinc_prefix=hpp/core_idl
+    HH_SUFFIX -idl.hh)
   GENERATE_IDL_PYTHON (${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/core_idl
       ENABLE_DOCSTRING
       STUBS hpp_stubs.core
@@ -87,6 +92,11 @@ FOREACH(IDL constraints)
     ARGUMENTS
     -Wbguard_prefix=hpp_constraints_idl
     HEADER_SUFFIX -idl.hh)
+  GENERATE_IDL_CPP_IMPL (hpp/constraints_idl/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/constraints_idl
+    ARGUMENTS
+    -Wbguard_prefix=hpp_constraints_idl
+    -Wbinc_prefix=hpp/constraints_idl
+    HH_SUFFIX -idl.hh)
   GENERATE_IDL_PYTHON (${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/constraints_idl
       ENABLE_DOCSTRING
       STUBS hpp_stubs.constraints
@@ -107,7 +117,7 @@ INSTALL(
   DESTINATION ${PYTHON_SITELIB}
   )
 
-ADD_CUSTOM_TARGET(generate_idl_cpp DEPENDS ${ALL_IDL_CPP_STUBS})
+ADD_CUSTOM_TARGET(generate_idl_cpp DEPENDS ${ALL_IDL_CPP_STUBS} ${ALL_IDL_CPP_IMPL_STUBS})
 ADD_CUSTOM_TARGET(generate_idl_python DEPENDS ${ALL_IDL_PYTHON_STUBS})
 
 IF (NOT CLIENT_ONLY)
@@ -126,12 +136,9 @@ IF (NOT CLIENT_ONLY)
     tools.cc
     tools.hh
     conversions.cc
+
     ${ALL_IDL_CPP_STUBS}
-    constraints_idl/constraints.cc
-    core_idl/paths.cc
-    core_idl/distances.cc
-    core_idl/path-validations.cc
-    core_idl/steering-methods.cc
+    ${ALL_IDL_CPP_IMPL_STUBS}
     )
 
   PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-core)

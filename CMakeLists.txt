@@ -26,6 +26,8 @@ INCLUDE(cmake/idl.cmake)
 INCLUDE(cmake/python.cmake)
 INCLUDE(cmake/test.cmake)
 
+INCLUDE(cmake-modules/omniidl.cmake)
+
 SET(PROJECT_NAME hpp-corbaserver)
 SET(PROJECT_DESCRIPTION "Corba server for Humanoid Path Planner applications")
 

@@ -15,6 +15,14 @@ namespace hpp
   namespace corbaServer
   {
     template <>
+    std::vector< ServantFactoryBase<constraints_idl::DifferentiableFunction>* >&
+    objectDowncasts<constraints_idl::DifferentiableFunction> ()
+    {
+      static std::vector< ServantFactoryBase<constraints_idl::DifferentiableFunction>* > vector;
+      return vector;
+    }
+
+    template <>
     std::vector< ServantFactoryBase<constraints_idl::Implicit>* >&
     objectDowncasts<constraints_idl::Implicit> ()
     {
@@ -24,6 +32,8 @@ namespace hpp
 
     namespace constraints_idl
     {
+      HPP_CORBASERVER_ADD_DOWNCAST_OBJECT(DifferentiableFunction, DifferentiableFunction, 0)
+
       HPP_CORBASERVER_ADD_DOWNCAST_OBJECT(Implicit, Implicit, 0)
     } // end of namespace constraints.
   } // end of namespace corbaServer.

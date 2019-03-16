@@ -16,13 +16,40 @@ module hpp
 {
   module constraints_idl {
 
+  interface DifferentiableFunction
+  {
+      floatSeq value (in floatSeq arg) raises (Error);
+      //* return vectorToFloatSeq (
+      //*     (*get()) (floatSeqToVector(arg, get()->inputSize())).vector()
+      //*     );
+
+      floatSeqSeq jacobian (in floatSeq arg) raises (Error);
+      //* matrix_t J (get()->outputDerivativeSize(), get()->inputDerivativeSize());
+      //* get()->jacobian (J, floatSeqToVector(arg));
+      //* return matrixToFloatSeqSeq (J);
+
+      size_type inputSize () raises (Error);
+      size_type inputDerivativeSize () raises (Error);
+      size_type  outputSize () raises (Error);
+      size_type  outputDerivativeSize () raises (Error);
+      string name () raises (Error);
+
+      string str () raises (Error);
+  };
+
   interface Implicit
   {
+    DifferentiableFunction function () raises (Error);
+    //-> functionPtr
+
     void setRightHandSideFromConfig (in floatSeq config) raises (Error);
+    //-> rightHandSideFromConfig
 
     void setRightHandSide (in floatSeq rhs) raises (Error);
+    //-> rightHandSide
 
     floatSeq getRightHandSide () raises (Error);
+    //-> rightHandSide
 
     size_type rhsSize () raises (Error);
 
@@ -33,5 +60,7 @@ module hpp
 
   }; // module core
 }; // module hpp
+//* #include <hpp/constraints/differentiable-function.hh>
+//* #include <hpp/constraints/implicit.hh>
 
 #endif // HPP_CORE_PATHS_IDL

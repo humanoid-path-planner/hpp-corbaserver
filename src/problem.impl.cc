@@ -67,12 +67,12 @@
 
 #include "hpp/corbaserver/servant-base.hh"
 
-#include "hpp/corbaserver/constraints_idl/constraints.hh"
-#include "hpp/corbaserver/core_idl/distances.hh"
-#include "hpp/corbaserver/core_idl/paths.hh"
-#include "hpp/corbaserver/core_idl/steering-methods.hh"
-#include "hpp/corbaserver/core_idl/path-validations.hh"
-#include "hpp/corbaserver/core_idl/problem.hh"
+#include "hpp/constraints_idl/constraints.hh"
+#include "hpp/core_idl/distances.hh"
+#include "hpp/core_idl/paths.hh"
+#include "hpp/core_idl/steering_methods.hh"
+#include "hpp/core_idl/path_validations.hh"
+#include "hpp/core_idl/_problem.hh"
 #include "problem.impl.hh"
 #include "tools.hh"
 
@@ -2612,8 +2612,9 @@ namespace hpp
         DevicePtr_t robot = getRobotOrThrow (ps);
         core::DistancePtr_t distance = problem (ps, true)->distance();
 
-        hpp::core_idl::Distance_var d = makeServantDownCast<core_idl::Distance>
-            (server_->parent(), core_idl::Distance::Storage (robot, distance));
+        hpp::core_idl::Distance_var d = makeServantDownCast<core_impl::Distance>
+            (server_->parent(), core_impl::Distance::Storage (distance));
+            //(server_->parent(), core_impl::Distance::Storage (robot, distance));
         return d._retn();
       }
 
@@ -2646,7 +2647,8 @@ namespace hpp
         }
 
         core::PathVectorPtr_t pv = ps->paths()[pathId];
-        return core_idl::makePathServant (server_->parent(), pv);
+        hpp::core_idl::Path_var d = makeServantDownCast<core_impl::Path> (server_->parent(), pv);
+        return d._retn();
       }
 
       // ---------------------------------------------------------------
@@ -2658,8 +2660,9 @@ namespace hpp
         core::SteeringMethodPtr_t sm = problem (ps, true)->steeringMethod();
 
         hpp::core_idl::SteeringMethod_var d =
-          makeServantDownCast <core_idl::SteeringMethod> (server_->parent(),
-              core_idl::SteeringMethod::Storage (robot, sm));
+          makeServantDownCast <core_impl::SteeringMethod> (server_->parent(),
+              core_impl::SteeringMethod::Storage (sm));
+              //core_idl::SteeringMethod::Storage (robot, sm));
         return d._retn();
       }
 
@@ -2672,8 +2675,8 @@ namespace hpp
         core::PathValidationPtr_t pv = problem (ps, true)->pathValidation();
 
         hpp::core_idl::PathValidation_var d =
-          makeServantDownCast <core_idl::PathValidation> (server_->parent(),
-              core_idl::PathValidation::Storage (pv));
+          makeServantDownCast <core_impl::PathValidation> (server_->parent(),
+              core_impl::PathValidation::Storage (pv));
         return d._retn();
       }
 
@@ -2685,8 +2688,8 @@ namespace hpp
         core::ProblemPtr_t pb = problem (ps, true);
 
         return makeServant <hpp::core_idl::Problem_ptr> (server_->parent(),
-            new core_idl::Problem (server_->parent(),
-              core_idl::Problem::Storage (pb)));
+            new core_impl::Problem (server_->parent(),
+              core_impl::Problem::Storage (pb)));
       }
 
       // ---------------------------------------------------------------
@@ -2699,7 +2702,7 @@ namespace hpp
         if (!ps->numericalConstraints.has(fn))
           throw Error (("Constraint " + fn + " not found").c_str());
 
-        hpp::constraints_idl::Implicit_var d = makeServantDownCast <constraints_idl::Implicit>
+        hpp::constraints_idl::Implicit_var d = makeServantDownCast <constraints_impl::Implicit>
           (server_->parent(), ps->numericalConstraints.get(fn));
         return d._retn();
       }

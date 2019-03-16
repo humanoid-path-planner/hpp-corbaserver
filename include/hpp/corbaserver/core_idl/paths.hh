@@ -41,17 +41,17 @@ namespace hpp
 
           virtual ~PathServant () {}
 
-          CORBA::Long outputSize () throw (Error)
+          size_type outputSize () throw (Error)
           {
-            return (CORBA::Long)get()->outputSize();
+            return get()->outputSize();
           }
 
-          CORBA::Long outputDerivativeSize () throw (Error)
+          size_type outputDerivativeSize () throw (Error)
           {
-            return (CORBA::Long)get()->outputDerivativeSize();
+            return get()->outputDerivativeSize();
           }
 
-          CORBA::Double length () throw (Error)
+          value_type length () throw (Error)
           {
             return get()->length ();
           }
@@ -63,16 +63,21 @@ namespace hpp
             return CORBA::string_dup(res.c_str());
           }
 
-          floatSeq* value (CORBA::Double t, CORBA::Boolean& success) throw (Error)
+          floatSeq* value (value_type t, CORBA::Boolean& success) throw (Error)
           {
             return vectorToFloatSeq (get()->operator() (t, success));
           }
 
-          floatSeq* derivative (CORBA::Double t, CORBA::Short order) throw (Error)
+          floatSeq* derivative (value_type t, CORBA::Short order) throw (Error)
           {
             vector_t res (get()->outputDerivativeSize());
             get()->derivative (res, t, order);
             return vectorToFloatSeq (res);
+          }
+
+          hpp::core_idl::Path_ptr extract (value_type tmin, value_type tmax) throw (Error)
+          {
+            return makePathServant (server_, get()->extract(core::interval_t(tmin, tmax)));
           }
 
           hpp::core_idl::PathVector_ptr asVector () throw (Error);
@@ -107,7 +112,7 @@ namespace hpp
 
           void concatenate (hpp::core_idl::PathVector_ptr path) throw (Error)
           {
-            getT()->appendPath(reference_to_servant<PathVectorServant>(server_, path)->getT());
+            getT()->concatenate (reference_to_servant<PathVectorServant>(server_, path)->getT());
           }
       };
 

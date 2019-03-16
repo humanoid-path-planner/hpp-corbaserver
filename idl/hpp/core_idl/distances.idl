@@ -18,17 +18,22 @@ module hpp
 
   interface Distance
   {
-    double value (in floatSeq q1, in floatSeq q2) raises (Error);
+    value_type call (in floatSeq q1, in floatSeq q2) raises (Error);
+    //-> operator()
   }; // interface Distance
 
   /// \brief To define and solve a path planning problem.
   interface WeighedDistance : Distance
   {
     floatSeq getWeights() raises (Error);
+    //-> weights
     void setWeights(in floatSeq weights) raises (Error);
+    //-> weights
   }; // interface WeighedDistance
 
   }; // module core
 }; // module hpp
+//* #include <hpp/core/distance.hh>
+//* #include <hpp/core/weighed-distance.hh>
 
 #endif // HPP_CORE_DISTANCES_IDL
