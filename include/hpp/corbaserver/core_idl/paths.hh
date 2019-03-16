@@ -56,7 +56,7 @@ namespace hpp
             return get()->length ();
           }
 
-          char* print () throw (Error)
+          char* str () throw (Error)
           {
             std::ostringstream oss; oss << *get();
             std::string res = oss.str();
@@ -74,6 +74,8 @@ namespace hpp
             get()->derivative (res, t, order);
             return vectorToFloatSeq (res);
           }
+
+          hpp::core_idl::PathVector_ptr asVector () throw (Error);
       };
 
       typedef PathServant<POA_hpp::core_idl::Path, core::PathPtr_t> Path;
@@ -110,6 +112,20 @@ namespace hpp
       };
 
       typedef PathVectorServant<POA_hpp::core_idl::PathVector, core::PathVectorPtr_t> PathVector;
+
+
+      template <typename _Base, typename _Storage>
+      hpp::core_idl::PathVector_ptr PathServant<_Base,_Storage>::asVector () throw (Error)
+      {
+        PathPtr_t p = get();
+        PathVectorPtr_t pv =
+          core::PathVector::create (p->outputSize(), p->outputDerivativeSize());
+        pv->appendPath (p);
+
+        return makeServant<hpp::core_idl::PathVector_ptr>
+          (server_, new PathVector (server_, pv));
+      }
+
     } // end of namespace core.
   } // end of namespace corbaServer.
 } // end of namespace hpp.

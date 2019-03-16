@@ -7,9 +7,6 @@ newProblem()
 robot = Robot ("ur5")
 ps = ProblemSolver (robot)
 
-# As of now, this isn't safe because
-# it is hard to know when C++ class ProblemSolver
-# deletes the current problem and create a new one.
 problem = ps.hppcorba.problem.getProblem()
 
 distance = problem.getDistance()
@@ -33,15 +30,11 @@ path = sm.call (q0, qr)
 path.value(0)
 path.derivative(0.5, 1)
 path.outputSize()
+print path.str()
 
 isValid, validPart, report = pv.validate (path, False)
 
 # Decrease the object ref count of the underlying HPP object
-tools.deleteServantFromObject(distance)
-tools.deleteServantFromObject(path)
-tools.deleteServantFromObject(sm)
-tools.deleteServantFromObject(pv)
-# As of now, there is no ref count on class Problem
-tools.deleteServantFromObject(problem)
+tools.deleteServantFromObject(distance, path, sm, pv, problem)
 
 tools.shutdown()

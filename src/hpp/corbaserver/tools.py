@@ -45,12 +45,11 @@ def Tools(url = None):
         'failed to narrow client for service named ``{0}\'\''.format
         (serviceName))
 
-    def deleteServantFromObject (obj):
+    def deleteServantFromObject (*args):
         """
         delete a servant from an object (and not an IOR as with deleteServant)
         """
-        ior = orb.object_to_string (obj)
-        return client.deleteServant(ior)
+        return all( [ client.deleteServant(orb.object_to_string(o)) for o in args ] )
 
     client.deleteServantFromObject = deleteServantFromObject
 
