@@ -73,5 +73,12 @@ SET(PKG_CONFIG_EXTRA "${PKG_CONFIG_EXTRA}\ncmake_plugin=${CMAKE_INSTALL_PREFIX}/
 INSTALL(FILES cmake-modules/hpp-corbaserver-plugin.cmake
   DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake/
   PERMISSIONS OWNER_READ GROUP_READ WORLD_READ OWNER_WRITE)
+# install omniidl backend
+INSTALL(FILES
+  cmake-modules/omniidl/cxx_impl/__init__.py
+  cmake-modules/omniidl/cxx_impl/main.py
+  cmake-modules/omniidl/cxx_impl/template.py
+  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/omniidl/cxx_impl
+  PERMISSIONS OWNER_READ GROUP_READ WORLD_READ OWNER_WRITE)
 
 SETUP_HPP_PROJECT_FINALIZE()
