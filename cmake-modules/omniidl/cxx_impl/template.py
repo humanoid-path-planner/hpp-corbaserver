@@ -136,17 +136,25 @@ operation_impl_code = """
 template <typename _Base, typename _Storage>
 @return_type@ @impl_tpl_name@<_Base, _Storage>::@opname@ (@arg_defs@)
 {
-  // automatically generated code.
-  @conversions@
-  @store_return@ (getT()->@hpp_opname@ (@arg_calls@));
-  @do_return@
+  try {
+    // automatically generated code.
+    @conversions@
+    @store_return@ (getT()->@hpp_opname@ (@arg_calls@));
+    @do_return@
+  } catch (const std::exception& e) {
+    throw ::hpp::Error (e.what());
+  }
 }"""
 
 provided_operation_impl_code = """
 template <typename _Base, typename _Storage>
 @return_type@ @impl_tpl_name@<_Base, _Storage>::@opname@ (@arg_defs@)
 {
- @implementation@
+  try {
+   @implementation@
+  } catch (const std::exception& e) {
+    throw ::hpp::Error (e.what());
+  }
 }"""
 
 predefined_operations_impl_code = \
@@ -155,10 +163,14 @@ predefined_operations_impl_code = \
 template <typename _Base, typename _Storage>
 @return_type@ @impl_tpl_name@<_Base, _Storage>::str ()
 {
-  // automatically generated code.
-  std::ostringstream oss; oss << *get();
-  std::string res = oss.str();
-  return CORBA::string_dup(res.c_str());
+  try {
+    // automatically generated code.
+    std::ostringstream oss; oss << *get();
+    std::string res = oss.str();
+    return CORBA::string_dup(res.c_str());
+  } catch (const std::exception& e) {
+    throw ::hpp::Error (e.what());
+  }
 }""",
 }
 
