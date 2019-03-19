@@ -28,12 +28,16 @@ FINDPYTHON(2.7 EXACT REQUIRED)
 
 OMNIIDL_INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/idl)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src)
-FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver)
 
-FOREACH(IDL ${IDL_SOURCES})
+FOREACH(IDL obstacle problem robot)
   GENERATE_IDL_CPP (hpp/corbaserver/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver)
   GENERATE_IDL_PYTHON (hpp/corbaserver/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver)
+ENDFOREACH()
+# Enable generation of dynamic type codes (in file commonDynSK.cc)
+GENERATE_IDL_CPP (hpp/corbaserver/common ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver ENABLE_Wba)
+GENERATE_IDL_PYTHON (hpp/corbaserver/common ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver)
 
+FOREACH(IDL ${IDL_SOURCES})
   INSTALL(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/${IDL}.hh
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp/corbaserver)
@@ -47,6 +51,12 @@ ENDFOREACH()
 
 ADD_CUSTOM_TARGET(generate_idl_cpp DEPENDS ${ALL_IDL_CPP_STUBS})
 ADD_CUSTOM_TARGET(generate_idl_python DEPENDS ${ALL_IDL_PYTHON_STUBS})
+
+# "omniidl -bpython" generates an hpp.corbaserver python module inside the hpp.corbaserver python module...
+ADD_CUSTOM_TARGET(clean_idl_python
+  COMMAND ${CMAKE_COMMAND} -E remove_directory "${PROJECT_BINARY_DIR}/src/hpp/corbaserver/hpp"
+  DEPENDS generate_idl_python
+  )
 
 IF (NOT CLIENT_ONLY)
   ADD_LIBRARY(${LIBRARY_NAME}
@@ -65,14 +75,7 @@ IF (NOT CLIENT_ONLY)
     tools.cc
     tools.hh
     conversions.cc
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/common.hh
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/problem.hh
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/obstacle.hh
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/robot.hh
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/commonSK.cc
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/obstacleSK.cc
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/robotSK.cc
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/problemSK.cc
+    ${ALL_IDL_CPP_STUBS}
     )
 
   PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-core)
@@ -111,6 +114,7 @@ ENDIF (NOT CLIENT_ONLY)
 
 ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_cpp)
 ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_python)
+ADD_DEPENDENCIES (${LIBRARY_NAME} clean_idl_python)
 
 IF(WIN32)
   SET(LINK copy_if_different)
@@ -119,24 +123,14 @@ ELSE(WIN32)
 ENDIF(WIN32)
 
 FOREACH (FILE __init__.py quaternion.py transform.py)
-  # Create a symbolic link of FILE into the build directory
-  # This is for testing purpose
-  EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E ${LINK}
-    ${CMAKE_CURRENT_SOURCE_DIR}/hpp/${FILE}
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/${FILE})
   PYTHON_INSTALL_ON_SITE(
-    hpp ${FILE} ${PYTHON_SITELIB}
+    hpp ${FILE}
     )
 ENDFOREACH ()
 
 FOREACH (FILE __init__.py client.py robot.py  problem_solver.py benchmark.py ompl_benchmark_statistics.py)
-  # Create a symbolic link of FILE into the build directory
-  # This is for testing purpose
-  EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E ${LINK}
-    ${CMAKE_CURRENT_SOURCE_DIR}/hpp/corbaserver/${FILE}
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/${FILE})
   PYTHON_INSTALL_ON_SITE(
-    hpp/corbaserver ${FILE} ${PYTHON_SITELIB}
+    hpp/corbaserver ${FILE}
     )
 ENDFOREACH ()
 
@@ -148,4 +142,3 @@ INSTALL(
   ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/robot.idl
   DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/idl/hpp/corbaserver
 )
-

@@ -14,7 +14,6 @@
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <boost/assign/list_of.hpp>
 #include <boost/algorithm/string.hpp>
-#include <boost/icl/interval_set.hpp>
 
 #include <hpp/util/debug.hh>
 #include <hpp/util/portability.hh>
@@ -29,6 +28,7 @@
 #include <hpp/core/connected-component.hh>
 #include <hpp/core/edge.hh>
 #include <hpp/core/node.hh>
+#include <hpp/core/path.hh>
 #include <hpp/core/path-planner.hh>
 #include <hpp/core/path-optimizer.hh>
 #include <hpp/core/path-vector.hh>
@@ -36,11 +36,9 @@
 #include <hpp/core/path-validation.hh>
 #include <hpp/core/path-validation-report.hh>
 #include <hpp/core/problem.hh>
-#include <hpp/core/straight-path.hh>
-#include <hpp/core/path.hh>
-#include <hpp/core/path-vector.hh>
 #include <hpp/core/subchain-path.hh>
 #include <hpp/core/roadmap.hh>
+#include <hpp/core/plugin.hh>
 #include <hpp/core/problem-solver.hh>
 #include <hpp/core/steering-method.hh>
 #include <hpp/core/parser/roadmap-factory.hh>
@@ -56,6 +54,7 @@
 #include <hpp/constraints/locked-joint.hh>
 #include <hpp/constraints/symbolic-calculus.hh>
 #include <hpp/constraints/symbolic-function.hh>
+#include <hpp/constraints/manipulability.hh>
 #ifdef HPP_CONSTRAINTS_USE_QPOASES
 # include <hpp/constraints/static-stability.hh>
 #endif
@@ -99,33 +98,6 @@ using hpp::constraints::LockedJointPtr_t;
 using hpp::constraints::Implicit;
 using hpp::constraints::ImplicitPtr_t;
 
-namespace boost {
-  namespace icl {
-    template<>
-      struct interval_traits< hpp::core::segment_t >
-      {
-        typedef hpp::core::segment_t interval_type;
-        typedef hpp::core::size_type      domain_type;
-        typedef std::less<domain_type>    domain_compare;
-
-        static interval_type construct(const domain_type& lo, const domain_type& up)
-        { return interval_type(lo, up - lo); }
-
-        static domain_type lower(const interval_type& inter){ return inter.first; };
-        static domain_type upper(const interval_type& inter){ return inter.first + inter.second; };
-      };
-
-    template<>
-      struct interval_bound_type<hpp::core::segment_t>
-      {
-        typedef interval_bound_type type;
-        BOOST_STATIC_CONSTANT(bound_type, value = interval_bounds::static_right_open);//[lo..up)
-      };
-
-  } // namespace icl
-} // namespace boost
-
-
 namespace hpp
 {
   namespace corbaServer
@@ -148,6 +120,24 @@ namespace hpp
               const CORBA::Any& corbaAny;
               Parameter& param;
               bool& done;
+              void operator()(std::pair<vector_t, floatSeq>) {
+                if (done) return;
+                floatSeq* d = new floatSeq();
+                if (corbaAny >>= d) {
+                  param = Parameter (floatSeqToVector (*d));
+                  done = true;
+                } else
+                  delete d;
+              }
+              void operator()(std::pair<matrix_t, floatSeqSeq>) {
+                if (done) return;
+                floatSeqSeq* d = new floatSeqSeq();
+                if (corbaAny >>= d) {
+                  param = Parameter (floatSeqSeqToMatrix (*d));
+                  done = true;
+                } else
+                  delete d;
+              }
               template <typename T> void operator()(T) {
                 if (done) return;
                 typename T::second_type d;
@@ -177,8 +167,8 @@ namespace hpp
 
               // This two do not work because omniidl must be given the option -Wba in order to generate 
               // a DynSK.cc file containing the conversion to/from Any type.
-              // std::pair<vector_t   , floatSeq>,
-              // std::pair<matrix_t   , floatSeqSeq>
+              , std::pair<matrix_t   , floatSeqSeq>
+              , std::pair<vector_t   , floatSeq>
                 > Parameter_AnyPairs_t;
 
           public:
@@ -197,7 +187,7 @@ namespace hpp
                   out <<= p.boolValue();
                   break;
                 case Parameter::INT:
-                  out <<= p.intValue();
+                  out <<= (CORBA::Long)p.intValue();
                   break;
                 case Parameter::FLOAT:
                   out <<= p.floatValue();
@@ -228,16 +218,6 @@ namespace hpp
 
         typedef hpp::core::segment_t segment_t;
         typedef hpp::core::segments_t segments_t;
-        typedef boost::icl::interval_set<size_type, std::less, segment_t>
-          BoostIntervalSet_t;
-
-        segments_t convertInterval (const BoostIntervalSet_t& intSet)
-        {
-          segments_t ret;
-          for (BoostIntervalSet_t::const_iterator _int = intSet.begin (); _int != intSet.end (); ++_int)
-            ret.push_back(*_int);
-          return ret;
-        }
 
         template <int PositionOrientationFlag> DifferentiableFunctionPtr_t
           buildGenericFunc(const DevicePtr_t& robot,
@@ -434,17 +414,17 @@ namespace hpp
 
       CORBA::Any* Problem::getParameter (const char* name) throw (Error)
       {
-        if (problemSolver()->problem() != NULL) {
-          try {
-            const Parameter& param = problemSolver()->problem()->getParameter (name);
-            CORBA::Any* ap = new CORBA::Any;
-            *ap = Parameter_CorbaAny::toCorbaAny(param);
-            return ap;
-          } catch (const std::exception& e) {
-            throw hpp::Error (e.what ());
+        try {
+          if (problemSolver()->problem() != NULL) {
+              const Parameter& param = problemSolver()->problem()->getParameter (name);
+              CORBA::Any* ap = new CORBA::Any;
+              *ap = Parameter_CorbaAny::toCorbaAny(param);
+              return ap;
           }
+          throw hpp::Error ("The problem is not initialized.");
+        } catch (std::exception& e) {
+          throw Error (e.what ());
         }
-        throw Error ("No problem in the ProblemSolver");
       }
 
       // ---------------------------------------------------------------
@@ -494,6 +474,19 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+      bool Problem::loadPlugin (const char* pluginName) throw (hpp::Error)
+      {
+        try {
+          core::ProblemSolverPtr_t ps = problemSolver();
+          std::string libname = core::plugin::findPluginLibrary (pluginName);
+          return core::plugin::loadPlugin (libname, ps);
+        } catch (std::exception& exc) {
+          throw Error (exc.what ());
+        }
+      }
+
+      // ---------------------------------------------------------------
+
       void Problem::movePathToProblem (ULong pathId, const char* name,
           const Names_t& jointNames) throw (hpp::Error)
       {
@@ -502,30 +495,41 @@ namespace hpp
         core::ProblemSolverPtr_t current = problemSolver(),
                                  other = psMap->map_[std::string(name)];
 
-        BoostIntervalSet_t ints;
-        for (CORBA::ULong i = 0; i < jointNames.length (); ++i) {
-          JointPtr_t joint = problemSolver()->robot ()->getJointByName
-	    (std::string(jointNames[i]));
-          if (joint == NULL) {
-	    std::ostringstream oss;
-	    oss << "Joint " << jointNames[i] << "not found.";
-	    throw hpp::Error (oss.str ().c_str ());
-	  }
-          ints.insert(segment_t(joint->rankInConfiguration(), joint->configSize()));
-        }
-        segments_t intervals = convertInterval(ints);
-
         if (pathId >= current->paths().size()) {
           std::ostringstream oss ("wrong path id: ");
           oss << pathId << ", number path: "
             << current->paths ().size () << ".";
           throw Error (oss.str().c_str());
         }
-        core::SubchainPathPtr_t nPath =
-          core::SubchainPath::create (current->paths()[pathId], intervals);
-        core::PathVectorPtr_t pv =
+
+        core::PathVectorPtr_t pv;
+        if (jointNames.length() == 0) {
+          pv = current->paths()[pathId];
+        } else {
+          segments_t cInts, vInts;
+          for (CORBA::ULong i = 0; i < jointNames.length (); ++i) {
+            JointPtr_t joint = problemSolver()->robot ()->getJointByName
+              (std::string(jointNames[i]));
+            if (joint == NULL) {
+              std::ostringstream oss;
+              oss << "Joint " << jointNames[i] << "not found.";
+              throw hpp::Error (oss.str ().c_str ());
+            }
+            cInts.push_back(segment_t(joint->rankInConfiguration(), joint->configSize()));
+            vInts.push_back(segment_t(joint->rankInVelocity     (), joint->numberDof ()));
+          }
+
+          Eigen::BlockIndex::sort (cInts);
+          Eigen::BlockIndex::sort (vInts);
+          Eigen::BlockIndex::shrink (cInts);
+          Eigen::BlockIndex::shrink (vInts);
+
+          core::SubchainPathPtr_t nPath =
+            core::SubchainPath::create (current->paths()[pathId], cInts, vInts);
+          pv = 
             core::PathVector::create(nPath->outputSize(), nPath->outputDerivativeSize());
-        pv->appendPath(nPath);
+          pv->appendPath(nPath);
+        }
         other->addPath(pv);
       }
 
@@ -637,8 +641,9 @@ namespace hpp
        const char* joint2Name, const Double* p, const hpp::boolSeq& mask)
 	throw (hpp::Error)
       {
+        try {
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
-        Transform3f::Quaternion_t quat (p [3], p [0], p [1], p [2]);
+        Transform3f::Quaternion quat (p [3], p [0], p [1], p [2]);
 	Transform3f rotation (quat.matrix(), vector3_t::Zero());
         std::string name (constraintName);
 
@@ -650,6 +655,9 @@ namespace hpp
 
         problemSolver()->addNumericalConstraint
           (name, Implicit::create (func));
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
       }
 
       // ---------------------------------------------------------------
@@ -659,6 +667,7 @@ namespace hpp
        const char* joint2Name, const Transform_ p, const hpp::boolSeq& mask)
 	throw (hpp::Error)
       {
+        try {
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
         Transform3f ref (toTransform3f(p));
         std::string name (constraintName);
@@ -671,6 +680,9 @@ namespace hpp
 
         problemSolver()->addNumericalConstraint
           (name, Implicit::create (func));
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
       }
 
       // ---------------------------------------------------------------
@@ -681,6 +693,7 @@ namespace hpp
        const hpp::boolSeq& mask)
 	throw (hpp::Error)
       {
+        try {
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
         std::string name (constraintName);
         DifferentiableFunctionPtr_t func = buildGenericFunc
@@ -692,6 +705,34 @@ namespace hpp
 
         problemSolver()->addNumericalConstraint
           (name, Implicit::create (func));
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // ---------------------------------------------------------------
+
+      void Problem::createTransformationSE3Constraint
+      (const char* constraintName, const char* joint1Name,
+       const char* joint2Name, const Transform_ frame1, const Transform_ frame2,
+       const hpp::boolSeq& mask)
+	throw (hpp::Error)
+      {
+        try {
+	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
+        std::string name (constraintName);
+        DifferentiableFunctionPtr_t func = buildGenericFunc
+          <constraints::OutputSE3Bit | constraints::PositionBit | constraints::OrientationBit> (
+              problemSolver()->robot(), name,
+              joint1Name           , joint2Name,
+              toTransform3f(frame1), toTransform3f(frame2),
+              boolSeqToBoolVector(mask, 6));
+
+        problemSolver()->addNumericalConstraint
+          (name, Implicit::create (func));
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
       }
 
       // ---------------------------------------------------------------
@@ -740,6 +781,29 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+      void Problem::createManipulability (const char* _name,
+          const char* _function) throw (hpp::Error)
+      {
+	try {
+          core::ProblemSolverPtr_t ps = problemSolver();
+          DevicePtr_t robot = getRobotOrThrow (ps);
+
+          std::string function (_function), name (_name);
+          if (!ps->numericalConstraints.has(function))
+            throw Error (("Constraint " + function + " not found").c_str());
+          DifferentiableFunctionPtr_t f (ps->numericalConstraints.get(function)->functionPtr());
+
+          ps->addNumericalConstraint (name, Implicit::create (
+                constraints::Manipulability::create (f, robot, name)
+                ));
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // ---------------------------------------------------------------
+
+
       void Problem::createRelativeComConstraint (const char* constraintName,
           const char* comName, const char* jointName, const floatSeq& p,
           const hpp::boolSeq& mask)
@@ -779,7 +843,7 @@ namespace hpp
       void Problem::createComBeetweenFeet
       (const char* constraintName, const char* comName, const char* jointLName,
        const char* jointRName, const floatSeq& pL, const floatSeq& pR,
-       const char* jointRefName, const hpp::boolSeq& mask)
+       const char* jointRefName, const floatSeq& pRef, const hpp::boolSeq& mask)
 	throw (hpp::Error)
       {
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
@@ -787,7 +851,7 @@ namespace hpp
         CenterOfMassComputationPtr_t comc;
 	vector3_t pointL = floatSeqToVector3 (pL);
 	vector3_t pointR = floatSeqToVector3 (pR);
-	vector3_t pointRef (0,0,0);
+	vector3_t pointRef = floatSeqToVector3 (pRef);
 
 	std::vector<bool> m = boolSeqToBoolVector (mask);
 	try {
@@ -799,12 +863,17 @@ namespace hpp
 	  else
 	    jointRef = problemSolver()->robot()->getJointByName(jointRefName);
           std::string name (constraintName), comN (comName);
+
+          constraints::ComparisonTypes_t comps = boost::assign::list_of
+            (constraints::EqualToZero) (constraints::EqualToZero)
+            (constraints::Superior)    (constraints::Inferior);
+
           if (comN.compare ("") == 0) {
             problemSolver()->addNumericalConstraint
               (name, Implicit::create
 	       (ComBetweenFeet::create (name, problemSolver()->robot(),
 					jointL, jointR, pointL, pointR,
-					jointRef, pointRef, m)));
+					jointRef, pointRef, m), comps));
           } else {
             if (!problemSolver()->centerOfMassComputations.has(comN))
               throw hpp::Error ("Partial COM not found.");
@@ -813,7 +882,7 @@ namespace hpp
               (name, Implicit::create
 	       (ComBetweenFeet::create (name, problemSolver()->robot(), comc,
 					jointL, jointR, pointL, pointR,
-					jointRef, pointRef, m)));
+					jointRef, pointRef, m), comps));
           }
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -978,6 +1047,7 @@ namespace hpp
        const hpp::floatSeq& point2, const hpp::boolSeq& mask)
 	throw (hpp::Error)
       {
+        try {
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
 	vector3_t p1 = floatSeqToVector3 (point1);
 	vector3_t p2 = floatSeqToVector3 (point2);
@@ -991,6 +1061,9 @@ namespace hpp
 
         problemSolver()->addNumericalConstraint
           (name, Implicit::create (func));
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
       }
 
       // ---------------------------------------------------------------
@@ -999,6 +1072,7 @@ namespace hpp
           const hpp::floatSeq& goal,
           const hpp::floatSeq& weights) throw (hpp::Error)
       {
+        try {
         DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	std::string name (constraintName);
         problemSolver()->numericalConstraints.add
@@ -1008,6 +1082,9 @@ namespace hpp
              floatSeqToConfig (robot, goal, true),
              floatSeqToVector (weights, robot->numberDof()))
             ));
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
       }
 
       // ---------------------------------------------------------------
@@ -1822,6 +1899,30 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+      bool Problem::reversePath (ULong pathId, ULong& reversedPathId)
+	throw (hpp::Error)
+      {
+	try {
+          if ( pathId >= problemSolver()->paths ().size ()) {
+	    std::ostringstream oss ("wrong path id. ");
+	    oss << "Number path: " << problemSolver()->paths ().size () << ".";
+            std::string err = oss.str();
+	    throw hpp::Error (err.c_str ());
+	  }
+	  PathVectorPtr_t path = problemSolver()->paths () [pathId];
+          PathVectorPtr_t reversed =
+            HPP_DYNAMIC_PTR_CAST(core::PathVector, path->reverse());
+          if (!reversed) return false;
+          problemSolver()->addPath (reversed);
+          reversedPathId = (ULong)problemSolver()->paths ().size () - 1; 
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+        }
+        return true;
+      }
+
+      // ---------------------------------------------------------------
+
       void  Problem::addConfigToRoadmap (const hpp::floatSeq& config)
 	throw (hpp::Error)
       {
@@ -1867,7 +1968,8 @@ namespace hpp
       // ---------------------------------------------------------------
 
       void Problem::appendDirectPath (ULong pathId,
-				      const hpp::floatSeq& config)
+				      const hpp::floatSeq& config,
+                                      Boolean validate)
 	throw (hpp::Error)
       {
 	try {
@@ -1894,13 +1996,15 @@ namespace hpp
                 << pinocchio::displayConfig (*end) << ".";
             throw std::runtime_error (oss.str ().c_str ());
           }
-	  PathPtr_t unused;
-	  PathValidationReportPtr_t report;
-	  if (!problemSolver()->problem()->pathValidation ()->validate
-	      (dp, false, unused, report)) {
-	    std::ostringstream oss; oss << *report;
-	    throw hpp::Error (oss.str ().c_str ());
-	  }
+          if (validate) {
+            PathPtr_t unused;
+            PathValidationReportPtr_t report;
+            if (!problemSolver()->problem()->pathValidation ()->validate
+                (dp, false, unused, report)) {
+              std::ostringstream oss; oss << *report;
+              throw hpp::Error (oss.str ().c_str ());
+            }
+          }
 	  path->appendPath (dp);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());

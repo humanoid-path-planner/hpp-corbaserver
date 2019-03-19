@@ -28,7 +28,7 @@ namespace hpp {
 
     void toTransform3f (const Transform_ in, Transform3f& out)
     {
-      Transform3f::Quaternion_t Q (in [6], in [3], in [4], in [5]);
+      Transform3f::Quaternion Q (in [6], in [3], in [4], in [5]);
       out.translation() << in [0], in [1], in [2];
       out.rotation() = Q.matrix();
     }
@@ -42,7 +42,7 @@ namespace hpp {
 
     void toHppTransform (const Transform3f& in, Transform_ out)
     {
-      Transform3f::Quaternion_t q (in.rotation());
+      Transform3f::Quaternion q (in.rotation());
       out[3] = q.x();
       out[4] = q.y();
       out[5] = q.z();

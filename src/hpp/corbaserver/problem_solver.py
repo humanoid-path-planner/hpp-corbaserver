@@ -26,12 +26,17 @@ def _convertToCorbaAny (value):
     t = type(value)
     if t is float:
         return CORBA.Any(CORBA.TC_double, value)
-    elif t is int:
-        return CORBA.Any(CORBA.TC_longlong, value)
-    elif t is bool:
+    elif isinstance(value, bool):
         return CORBA.Any(CORBA.TC_boolean, value)
-    elif t is str:
+    elif isinstance(value, (long, int)):
+        return CORBA.Any(CORBA.TC_longlong, value)
+    elif isinstance(value, str):
         return CORBA.Any(CORBA.TC_string, value)
+    elif isinstance (value, (list, tuple)):
+        if isinstance (value[0], (list, tuple)):
+            return CORBA.Any(CORBA.TypeCode("IDL:hpp/floatSeqSeq:1.0"), value)
+        else:
+            return CORBA.Any(CORBA.TypeCode("IDL:hpp/floatSeq:1.0"), value)
     else: # Assume value is already a CORBA.Any
         return value
 
@@ -48,6 +53,13 @@ class ProblemSolver (object):
         self.client = robot.client
         self.hppcorba = robot.client if hppcorbaClient is None else hppcorbaClient
         self.robot = robot
+
+    ## Load a plugin into the current ProblemSolver.
+    #  \param pluginName either an absolute filename or a filename relative
+    #                    to `<a_path_in_LD_LIBRARY_PATH>/hppPlugins`.
+    #  \note This is reset each time resetProblem is called.
+    def loadPlugin (self, pluginName):
+        return self.hppcorba.problem.loadPlugin (pluginName)
 
     ## Set random seed of random number generator
     def setRandomSeed (self, seed):
@@ -91,8 +103,9 @@ class ProblemSolver (object):
 
     ## Get parameter with given name
     #  raise an exception when the parameter is not found.
-    def getParameter (self, name):
-        return self.hppcorba.problem.getParameter (name)
+    def getParameter (self, name, keep_any=False):
+        any = self.hppcorba.problem.getParameter (name)
+        return any if keep_any else any.value()
 
     ## Get parameter documentation
     #  raise an exception when the parameter is not found.
@@ -408,6 +421,22 @@ class ProblemSolver (object):
     def setRightHandSideByName (self, constraintName, rhs):
         return self.hppcorba.problem.setRightHandSideByName (constraintName, rhs)
 
+    ## Set right hand side of constraints in config projector
+    #  \param config a robot configuration use to compute the right hand side
+    #         of constraints. Contains only right hand side of non-constant
+    #         constraints
+    #  \note Locked joints are also considered.
+    def setRightHandSideFromConfig (self, config):
+        return self.hppcorba.problem.setRightHandSideFromConfig (config)
+
+    ## Set right hand side of given constraint in config projector
+    #  \param constraintName name of the numerical constraint or locked joint
+    #  \param config a robot configuration use to compute the right hand side.
+    #         raises an exception if constraint has constant right hand side.
+    def setRightHandSideFromConfigByName (self, constraintName, config):
+        return self.hppcorba.problem.setRightHandSideFromConfigByName (constraintName, config)
+
+
     ## Apply constraints
     #
     #  \param q initial configuration
@@ -633,8 +662,8 @@ class ProblemSolver (object):
     #  direct path is not valid
     #  Call steering method between end of path and input config and append
     #  direct path in case of success.
-    def appendDirectPath (self, pathId, config):
-        return self.hppcorba.problem.appendDirectPath (pathId, config)
+    def appendDirectPath (self, pathId, config, validate):
+        return self.hppcorba.problem.appendDirectPath (pathId, config, validate)
 
     ## Concatenate path endId at the end of startId.
     #  \note No path are created. The resulting path is at rank startId.

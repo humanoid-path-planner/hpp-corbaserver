@@ -22,14 +22,12 @@ SET(CXX_DISABLE_WERROR true)
 
 INCLUDE(cmake/base.cmake)
 INCLUDE(cmake/hpp.cmake)
-INCLUDE(cmake/cpack.cmake)
 INCLUDE(cmake/idl.cmake)
 INCLUDE(cmake/python.cmake)
 INCLUDE(cmake/test.cmake)
 
 SET(PROJECT_NAME hpp-corbaserver)
 SET(PROJECT_DESCRIPTION "Corba server for Humanoid Path Planner applications")
-SET(PROJECT_URL "ssh://trac.laas.fr/git/jrl/corba/hpp-corbaserver")
 
 SET(CLIENT_ONLY FALSE CACHE BOOL "Set to true to install the client only")
 
@@ -61,8 +59,8 @@ IF (NOT CLIENT_ONLY)
 ENDIF (NOT CLIENT_ONLY)
 
 ADD_SUBDIRECTORY(src)
+ADD_SUBDIRECTORY(tests)
 
 PKG_CONFIG_APPEND_LIBS(${PROJECT_NAME})
 
 SETUP_HPP_PROJECT_FINALIZE()
-SETUP_PROJECT_CPACK()

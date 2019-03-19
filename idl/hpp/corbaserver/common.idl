@@ -9,7 +9,7 @@
 // See the COPYING file for more information.
 
 #ifndef HPP_CORBASERVER_SERVER_IDL
-# define HPP_CORBASERVER_SERVER_IDL
+#define HPP_CORBASERVER_SERVER_IDL
 
 /// \brief main CORBA module.
 module hpp
