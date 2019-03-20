@@ -26,6 +26,10 @@ module hpp
 
     value_type length () raises (Error);
 
+    floatSeq initial () raises (Error);
+
+    floatSeq end () raises (Error);
+
     string str () raises (Error);
 
     floatSeq call (in value_type t, out boolean success) raises (Error);
