@@ -93,55 +93,6 @@ def hpp_servant_name(name, environment=None):
         scope._scopedName = scope._scopedName[i:]
     return scope.fullyQualify(cxx=1)
 
-# type conversions
-def argConversion(name, _type, _in, _out, param):
-    tmp = "_" + name
-    if _type.char() or _type.floating() or _type.boolean() or _type.integer():
-        return name, ""
-    if _type.string():
-        if _out: raise makeError("out string is currently not supported", param.file(), param.line())
-        return tmp, "std::string {} ({});".format (tmp,name)
-    if _type.typedef():
-        if _type.type().name() in ("size_t", "size_type", "value_type"):
-            return name, ""
-        elif _type.type().name() == "floatSeq":
-            if _out: raise makeError("out floatSeq is currently not supported", param.file(), param.line())
-            return tmp, "hpp::core::vector_t {} = hpp::corbaServer::floatSeqToVector ({});".format (tmp,name)
-        print "typedef", _type.type().name()
-        return name, ""
-    if _type.objref():
-        if _out: raise makeError("out objects is currently not supported", param.file(), param.line())
-        #conv = "{type} {tmp} = reference_to_servant_base<{type}>(server_, {name})->get();" \
-        conv = "{type} {tmp} = reference_to_servant<{servanttype}>(server_, {name})->getT();" \
-                .format(type=hpp_name(id.Name(_type.type().scopedName()).suffix("Ptr_t")),
-                        servanttype=hpp_servant_name(id.Name(_type.type().scopedName())),
-                        tmp=tmp, name=name)
-        return tmp, conv
-    print _type.type(), _type.kind()
-    return name, ""
-
-def retConversion(type):
-    if type.void():
-        return "", ""
-    if type.char() or type.floating() or type.boolean() or type.integer():
-        return "return", ""
-    if type.string():
-        return "return ::hpp::corbaServer::c_str", ""
-    if type.typedef():
-        if type.type().name() in ("size_t", "size_type", "value_type"):
-            return "return", ""
-        elif type.type().name() == "floatSeq":
-            return "return hpp::corbaServer::vectorToFloatSeq", ""
-        print "typedef", type.type().name()
-        return "", ""
-    if type.objref():
-        store = "{type} __return__".format(type=hpp_name(id.Name(type.type().scopedName()).suffix("Ptr_t")))
-        conv  = "return makeServantDownCast<{type}>(server_, __return__)._retn();" \
-                .format(type=hpp_servant_name(id.Name(type.type().scopedName())))
-        return store, conv
-    print type.type(), type.kind()
-    return "", ""
-
 def namespaces (name, environment=None):
     scope = hpp_servant_scope (name)
     if environment:
@@ -203,11 +154,84 @@ def run(tree):
                close_namespaces         = closens,
                )
 
+class Builder(idlvisitor.AstVisitor):
+    def __init__ (self):
+        self._modules = {}
+
+    def registerModule (self, m):
+        mname = m.identifier()
+        if mname.endswith("_idl"): mname = mname[:-4]
+        self._modules[m.identifier()] = mname
+        for comment in m.comments():
+            if comment.text().startswith("// ") or comment.text().startswith("///"):
+                pass
+            elif comment.text().startswith("//->"):
+                self._modules[m.identifier()] = comment.text()[4:].strip()
+
+    def toCppNamespace (self, name):
+        scope = [ self._modules[n] for n in name.scope() ] + [ name.simple(cxx=0), ]
+        return id.Name (scope)
+
+    # type conversions
+    def argConversion(self, name, _type, _in, _out, param):
+        tmp = "_" + name
+        if _type.char() or _type.floating() or _type.boolean() or _type.integer():
+            return name, ""
+        if _type.string():
+            if _out: raise makeError("out string is currently not supported", param.file(), param.line())
+            return tmp, "std::string {} ({});".format (tmp,name)
+        if _type.typedef():
+            if _type.type().name() in ("size_t", "size_type", "value_type"):
+                return name, ""
+            elif _type.type().name() == "floatSeq":
+                if _out: raise makeError("out floatSeq is currently not supported", param.file(), param.line())
+                return tmp, "hpp::core::vector_t {} = hpp::corbaServer::floatSeqToVector ({});".format (tmp,name)
+            print "typedef", _type.type().name()
+            return name, ""
+        if _type.objref():
+            if _out: raise makeError("out objects is currently not supported", param.file(), param.line())
+            conv = "{type} {tmp} = reference_to_servant<{servanttype}>(server_, {name})->getT();" \
+                    .format(type=self.toCppNamespace(id.Name(_type.type().scopedName()).suffix("Ptr_t")).fullyQualify(cxx=1),
+                            servanttype=hpp_servant_name(id.Name(_type.type().scopedName())),
+                            tmp=tmp, name=name)
+            return tmp, conv
+        print _type.type(), _type.kind()
+        return name, ""
+
+    def retConversion(self, type):
+        if type.void():
+            return "", ""
+        if type.char() or type.floating() or type.boolean() or type.integer():
+            return "return", ""
+        if type.string():
+            return "return ::hpp::corbaServer::c_str", ""
+        if type.typedef():
+            if type.type().name() in ("size_t", "size_type", "value_type"):
+                return "return", ""
+            elif type.type().name() == "floatSeq":
+                return "return hpp::corbaServer::vectorToFloatSeq", ""
+            print "typedef", type.type().name()
+            return "", ""
+        if type.objref():
+            store = "{type} __return__".format(type=self.toCppNamespace(id.Name(type.type().scopedName()).suffix("Ptr_t")).fullyQualify(cxx=1))
+            conv  = "return makeServantDownCast<{type}>(server_, __return__)._retn();" \
+                    .format(type=hpp_servant_name(id.Name(type.type().scopedName())))
+            return store, conv
+        print type.type(), type.kind()
+        return "", ""
+
+    # modules can contain interfaces
+    def visitModule(self, node):
+        self.registerModule (node)
+        for n in node.definitions():
+            n.accept(self)
 
 # Build the interface implementations (hpp, hxx)
 #
-class BuildInterfaceImplementations(idlvisitor.AstVisitor):
+class BuildInterfaceImplementations(Builder):
     def __init__(self, decl, impl):
+        #super(BuildInterfaceImplementations, self).__init__()
+        Builder.__init__(self)
         self.interface_declarations    = decl
         self.interface_implementations = impl
         self.environment = id.Name (["hpp", "corbaServer", ""])
@@ -235,7 +259,7 @@ class BuildInterfaceImplementations(idlvisitor.AstVisitor):
 
         storage.members = []
         for m in node.members():
-            type = hpp_scope(id.Name(m.memberType().scopedName())).suffix("Ptr_t")
+            type = self.toCppNamespace(id.Name(m.memberType().scopedName())).suffix("Ptr_t")
             for d in m.declarators():
                 storage.members.append ((type, d.identifier()))
 
@@ -258,11 +282,6 @@ class BuildInterfaceImplementations(idlvisitor.AstVisitor):
 
         self.storages[storage.class_sc.fullyQualify(cxx=0)] = storage
 
-    # modules can contain interfaces
-    def visitModule(self, node):
-        for n in node.definitions():
-            n.accept(self)
-
     # interfaces cannot be further nested
     def visitInterface(self, node):
         scopedName = id.Name(node.scopedName())
@@ -271,12 +290,12 @@ class BuildInterfaceImplementations(idlvisitor.AstVisitor):
         impl_name = scopedName.simple(cxx=1)
         impl_tpl_name = impl_tplname (scopedName)
         cxx_fqname = scopedName.fullyQualify()
-        hpp_class = hpp_name (scopedName)
+        hpp_class = self.toCppNamespace (scopedName).fullyQualify(cxx=1)
 
         fqname = scopedName.fullyQualify(cxx = 0)
 
         is_base_class = not bool(node.inherits())
-        ptr_t = hpp_name (scopedName.suffix("Ptr_t"))
+        ptr_t = self.toCppNamespace (scopedName.suffix("Ptr_t")).fullyQualify(cxx=1)
         if is_base_class:
             key = hpp_servant_name (scopedName)
             impl_base_name = "ServantBase"
@@ -345,7 +364,7 @@ class BuildInterfaceImplementations(idlvisitor.AstVisitor):
                                 opname = attribname,
                                 arg_defs = inType + " _" + attribname)
 
-                        tmpVar, conv = argConversion ("_" + attribname, attrType, True, False, c)
+                        tmpVar, conv = self.argConversion ("_" + attribname, attrType, True, False, c)
                         implementations.out (template.operation_impl_code,
                                 return_type = "void",
                                 impl_tpl_name = impl_tpl_name,
@@ -362,7 +381,7 @@ class BuildInterfaceImplementations(idlvisitor.AstVisitor):
                             opname = attribname,
                             arg_defs = "")
 
-                    store_return, do_return = retConversion (attrType)
+                    store_return, do_return = self.retConversion (attrType)
                     implementations.out (template.operation_impl_code,
                             return_type = returnType,
                             impl_tpl_name = impl_tpl_name,
@@ -383,7 +402,7 @@ class BuildInterfaceImplementations(idlvisitor.AstVisitor):
                     
                     argname = id.mapID(p.identifier())
                     if not comments_impl:
-                        tmpVar, conv = argConversion (argname, paramType, p.is_in(), p.is_out(), p)
+                        tmpVar, conv = self.argConversion (argname, paramType, p.is_in(), p.is_out(), p)
                         if conv:
                             conversions.append(conv)
                     else:
@@ -397,7 +416,7 @@ class BuildInterfaceImplementations(idlvisitor.AstVisitor):
                 if c.contexts() != []:
                     params.append("CORBA::Context_ptr _ctxt")
 
-                store_return, do_return = retConversion (types.Type(c.returnType()))
+                store_return, do_return = self.retConversion (types.Type(c.returnType()))
                 return_type = types.Type(c.returnType()).op(types.RET)
 
                 opname = id.mapID(c.identifier())
@@ -476,8 +495,10 @@ class BuildInterfaceImplementations(idlvisitor.AstVisitor):
 
 # Build the interface object downcasts (cc)
 #
-class BuildInterfaceObjectDowncasts(idlvisitor.AstVisitor):
+class BuildInterfaceObjectDowncasts(Builder):
     def __init__(self, methods, adders):
+        #super(BuildInterfaceObjectDowncasts, self).__init__()
+        Builder.__init__(self)
         self.methods = methods
         self.adders  = adders
         self.environment = id.Name (["hpp", "corbaServer", ""])
@@ -487,11 +508,6 @@ class BuildInterfaceObjectDowncasts(idlvisitor.AstVisitor):
         for n in node.declarations():
             if ast.shouldGenerateCodeForDecl(n):
                 n.accept(self)
-
-    # modules can contain interfaces
-    def visitModule(self, node):
-        for n in node.definitions():
-            n.accept(self)
 
     # interfaces cannot be further nested
     def visitInterface(self, node):

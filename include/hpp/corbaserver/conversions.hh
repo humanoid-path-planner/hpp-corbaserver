@@ -36,6 +36,11 @@ namespace hpp {
 
     floatSeq* vectorToFloatSeq (core::vectorIn_t input);
 
+    inline floatSeq* vectorToFloatSeq (core::ConfigurationPtr_t input)
+    {
+      return vectorToFloatSeq (*input);
+    }
+
     /// Returns a sequence of the rows of the input matrix.
     // Return [ [input.row(0)], [input.row(1)], ...]
     floatSeqSeq* matrixToFloatSeqSeq (core::matrixIn_t input);
