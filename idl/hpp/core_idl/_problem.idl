@@ -18,6 +18,7 @@ module hpp
   interface Distance;
   interface SteeringMethod;
   interface PathValidation;
+  interface ConfigurationShooter;
 
   interface Problem
   {
@@ -33,6 +34,10 @@ module hpp
     //-> pathValidation
     void setPathValidation (in PathValidation d) raises (Error);
     //-> pathValidation
+    ConfigurationShooter getConfigurationShooter () raises (Error);
+    //-> configurationShooter
+    void setConfigurationShooter (in ConfigurationShooter d) raises (Error);
+    //-> configurationShooter
   }; // interface Problem
 
   }; // module core
@@ -42,9 +47,11 @@ module hpp
 //* #include <hpp/core_idl/distances.hh>
 //* #include <hpp/core_idl/steering_methods.hh>
 //* #include <hpp/core_idl/path_validations.hh>
+//* #include <hpp/core_idl/configuration_shooters.hh>
 
 #include <hpp/core_idl/distances.idl>
 #include <hpp/core_idl/steering_methods.idl>
 #include <hpp/core_idl/path_validations.idl>
+#include <hpp/core_idl/configuration_shooters.idl>
 
 #endif // HPP_CORE_PROBLEM_IDL
