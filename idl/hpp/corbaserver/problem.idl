@@ -720,6 +720,8 @@ module hpp
 
     core_idl::Path getPath (in unsigned long pathId) raises (Error);
 
+    unsigned long addPath (in core_idl::PathVector _path) raises (Error);
+
     core_idl::SteeringMethod getSteeringMethod () raises (Error);
 
     core_idl::PathValidation getPathValidation () raises (Error);

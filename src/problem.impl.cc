@@ -2653,6 +2653,24 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+      ULong Problem::addPath (hpp::core_idl::PathVector_ptr _path) throw (Error)
+      {
+        core::PathVectorPtr_t path;
+        try {
+          path = reference_to_servant<core_impl::PathVector> (server_->parent(), _path)->getT();
+        } catch (const Error& e) {
+          // TODO in this case, we should define a distance from the CORBA type.
+          // This would allow to implement a distance class in Python.
+          throw;
+        }
+        if (!path) throw Error ("Could not convert the path into a PathVector");
+        core::ProblemSolverPtr_t ps = problemSolver();
+        ps->addPath(path);
+        return (ULong)(ps->paths().size()-1);
+      }
+
+      // ---------------------------------------------------------------
+
       hpp::core_idl::SteeringMethod_ptr Problem::getSteeringMethod () throw (Error)
       {
         core::ProblemSolverPtr_t ps = problemSolver();
