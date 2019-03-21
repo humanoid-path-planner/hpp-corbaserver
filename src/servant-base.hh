@@ -142,7 +142,7 @@ namespace hpp
 
         // Mimic boost::shared_ptr<D> interface:
         typedef T element_type;
-        operator bool () const { return element; }
+        operator bool () const { return (bool)element; }
     };
 
     typedef PortableServer::Servant_var<PortableServer::ServantBase> ServantBase_var;
