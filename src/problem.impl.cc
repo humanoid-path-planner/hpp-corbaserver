@@ -65,12 +65,14 @@
 #include <hpp/pinocchio/body.hh>
 #include <hpp/pinocchio/center-of-mass-computation.hh>
 
-#include "servant-base.hh"
-#include "core_idl/distances.hh"
-#include "core_idl/paths.hh"
-#include "core_idl/steering-methods.hh"
-#include "core_idl/path-validations.hh"
-#include "core_idl/problem.hh"
+#include "hpp/corbaserver/servant-base.hh"
+
+#include "hpp/constraints_idl/constraints.hh"
+#include "hpp/core_idl/distances.hh"
+#include "hpp/core_idl/paths.hh"
+#include "hpp/core_idl/steering_methods.hh"
+#include "hpp/core_idl/path_validations.hh"
+#include "hpp/core_idl/_problem.hh"
 #include "problem.impl.hh"
 #include "tools.hh"
 
@@ -2610,9 +2612,9 @@ namespace hpp
         DevicePtr_t robot = getRobotOrThrow (ps);
         core::DistancePtr_t distance = problem (ps, true)->distance();
 
-        hpp::core_idl::Distance_var d = makeServantDownCast <
-          hpp::core_idl::Distance, core_idl::Distances>
-            (server_->parent(), core_idl::Distance::Storage (robot, distance));
+        hpp::core_idl::Distance_var d = makeServantDownCast<core_impl::Distance>
+            (server_->parent(), core_impl::Distance::Storage (distance));
+            //(server_->parent(), core_impl::Distance::Storage (robot, distance));
         return d._retn();
       }
 
@@ -2622,7 +2624,7 @@ namespace hpp
       {
         core::DistancePtr_t d;
         try {
-          d = reference_to_servant_base<core::DistancePtr_t>(server_->parent(), distance)->get();
+          d = reference_to_servant_base<core::Distance>(server_->parent(), distance)->get();
         } catch (const Error& e) {
           // TODO in this case, we should define a distance from the CORBA type.
           // This would allow to implement a distance class in Python.
@@ -2645,7 +2647,27 @@ namespace hpp
         }
 
         core::PathVectorPtr_t pv = ps->paths()[pathId];
-        return core_idl::makePathServant (server_->parent(), pv);
+        hpp::core_idl::Path_var d = makeServantDownCast<core_impl::Path> (server_->parent(), pv);
+        return d._retn();
+      }
+
+      // ---------------------------------------------------------------
+
+      ULong Problem::addPath (hpp::core_idl::PathVector_ptr _path) throw (Error)
+      {
+        core::PathVectorPtr_t path;
+        try {
+          core::PathPtr_t p = reference_to_servant_base<core::Path> (server_->parent(), _path)->get();
+          path = HPP_DYNAMIC_PTR_CAST (core::PathVector, p);
+        } catch (const Error& e) {
+          // TODO in this case, we should define a distance from the CORBA type.
+          // This would allow to implement a distance class in Python.
+          throw;
+        }
+        if (!path) throw Error ("Could not convert the path into a PathVector");
+        core::ProblemSolverPtr_t ps = problemSolver();
+        ps->addPath(path);
+        return (ULong)(ps->paths().size()-1);
       }
 
       // ---------------------------------------------------------------
@@ -2656,9 +2678,11 @@ namespace hpp
         DevicePtr_t robot = getRobotOrThrow (ps);
         core::SteeringMethodPtr_t sm = problem (ps, true)->steeringMethod();
 
-        return makeServant <hpp::core_idl::SteeringMethod_ptr> (server_->parent(),
-            new core_idl::SteeringMethod (server_->parent(),
-              core_idl::SteeringMethod::Storage (robot, sm)));
+        hpp::core_idl::SteeringMethod_var d =
+          makeServantDownCast <core_impl::SteeringMethod> (server_->parent(),
+              core_impl::SteeringMethod::Storage (sm));
+              //core_idl::SteeringMethod::Storage (robot, sm));
+        return d._retn();
       }
 
       // ---------------------------------------------------------------
@@ -2669,9 +2693,10 @@ namespace hpp
         DevicePtr_t robot = getRobotOrThrow (ps);
         core::PathValidationPtr_t pv = problem (ps, true)->pathValidation();
 
-        return makeServant <hpp::core_idl::PathValidation_ptr> (server_->parent(),
-            new core_idl::PathValidation (server_->parent(),
-              core_idl::PathValidation::Storage (pv)));
+        hpp::core_idl::PathValidation_var d =
+          makeServantDownCast <core_impl::PathValidation> (server_->parent(),
+              core_impl::PathValidation::Storage (pv));
+        return d._retn();
       }
 
       // ---------------------------------------------------------------
@@ -2682,8 +2707,23 @@ namespace hpp
         core::ProblemPtr_t pb = problem (ps, true);
 
         return makeServant <hpp::core_idl::Problem_ptr> (server_->parent(),
-            new core_idl::Problem (server_->parent(),
-              core_idl::Problem::Storage (pb)));
+            new core_impl::Problem (server_->parent(),
+              core_impl::Problem::Storage (pb)));
+      }
+
+      // ---------------------------------------------------------------
+
+      hpp::constraints_idl::Implicit_ptr Problem::getConstraint (const char* name)
+        throw (Error)
+      {
+        const std::string fn (name);
+        core::ProblemSolverPtr_t ps = problemSolver();
+        if (!ps->numericalConstraints.has(fn))
+          throw Error (("Constraint " + fn + " not found").c_str());
+
+        hpp::constraints_idl::Implicit_var d = makeServantDownCast <constraints_impl::Implicit>
+          (server_->parent(), ps->numericalConstraints.get(fn));
+        return d._retn();
       }
 
     } // namespace impl

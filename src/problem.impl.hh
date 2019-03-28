@@ -369,11 +369,15 @@ namespace hpp
 
         hpp::core_idl::Path_ptr getPath (ULong pathId) throw (Error);
 
+        ULong addPath (hpp::core_idl::PathVector_ptr _path) throw (Error);
+
         hpp::core_idl::SteeringMethod_ptr getSteeringMethod () throw (Error);
 
         hpp::core_idl::PathValidation_ptr getPathValidation () throw (Error);
 
         hpp::core_idl::Problem_ptr getProblem () throw (Error);
+
+        hpp::constraints_idl::Implicit_ptr getConstraint (const char* name) throw (Error);
 
       private:
         /// Return the selected problem solver

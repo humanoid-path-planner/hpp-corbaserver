@@ -9,21 +9,21 @@
 //
 // See the COPYING file for more information.
 
-#ifndef SRC_PROBLEM_HH
-# define SRC_PROBLEM_HH
+#ifndef HPP_CORE_IDL_PROBLEM_HH
+# define HPP_CORE_IDL_PROBLEM_HH
 # include <vector>
 # include <stdlib.h>
 
-# include "hpp/core/path.hh"
+# include <hpp/core/problem.hh>
 
 # include <hpp/corbaserver/fwd.hh>
 # include <hpp/corbaserver/conversions.hh>
-# include "hpp/core_idl/_problem-idl.hh"
+# include <hpp/core_idl/_problem-idl.hh>
 
-# include "../servant-base.hh"
-# include "distances.hh"
-# include "steering-methods.hh"
-# include "path-validations.hh"
+# include <hpp/corbaserver/servant-base.hh>
+# include <hpp/corbaserver/core_idl/distances.hh>
+# include <hpp/corbaserver/core_idl/steering-methods.hh>
+# include <hpp/corbaserver/core_idl/path-validations.hh>
 
 namespace hpp
 {
@@ -31,25 +31,23 @@ namespace hpp
   {
     namespace core_idl
     {
-      class Problem : public virtual POA_hpp::core_idl::Problem, public AbstractServantKey
+      template <typename _Base, typename _Storage>
+      class ProblemServant : public ServantBase<core::Problem, _Storage >, public virtual _Base
       {
+          SERVANT_BASE_TYPEDEFS(hpp::core_idl::Problem, core::Problem);
         public:
-          typedef core::ProblemPtr_t Storage;
-          typedef hpp::core_idl::Problem     Object;
-          typedef hpp::core_idl::Problem_ptr Object_ptr;
+          ProblemServant (Server* server, const Storage& p)
+            : _ServantBase (server, p) {}
 
-          Problem (Server* server, const Storage& p) : server_ (server), p_ (p) {}
-
-          virtual ~Problem () {}
+          virtual ~ProblemServant () {}
 
           hpp::core_idl::Distance_ptr getDistance () throw (hpp::Error)
           {
-            core::DistancePtr_t distance = p_->distance();
-            DevicePtr_t robot = p_->robot();
+            core::DistancePtr_t distance = get()->distance();
+            DevicePtr_t robot = get()->robot();
 
-            hpp::core_idl::Distance_var d = makeServantDownCast <
-              hpp::core_idl::Distance, Distances>
-                (server_, Distance::Storage (robot, distance));
+            hpp::core_idl::Distance_var d = makeServantDownCast<Distance>
+              (server_, Distance::Storage (robot, distance));
             return d._retn();
           }
 
@@ -57,23 +55,22 @@ namespace hpp
           {
             core::DistancePtr_t d;
             try {
-              d = reference_to_servant_base<core::DistancePtr_t>(server_, distance)->get();
+              d = reference_to_servant_base<core::Distance>(server_, distance)->get();
             } catch (const Error& e) {
               // TODO in this case, we should define a distance from the CORBA type.
               // This would allow to implement a distance class in Python.
               throw;
             }
 
-            p_->distance (d);
+            get()->distance (d);
           }
 
           hpp::core_idl::SteeringMethod_ptr getSteeringMethod () throw (hpp::Error)
           {
-            core::SteeringMethodPtr_t steeringMethod = p_->steeringMethod();
-            DevicePtr_t robot = p_->robot();
+            core::SteeringMethodPtr_t steeringMethod = get()->steeringMethod();
+            DevicePtr_t robot = get()->robot();
 
-            hpp::core_idl::SteeringMethod_var d = makeServantDownCast <
-              hpp::core_idl::SteeringMethod, SteeringMethods>
+            hpp::core_idl::SteeringMethod_var d = makeServantDownCast<SteeringMethod>
                 (server_, SteeringMethod::Storage (robot, steeringMethod));
             return d._retn();
           }
@@ -82,22 +79,21 @@ namespace hpp
           {
             core::SteeringMethodPtr_t d;
             try {
-              d = reference_to_servant_base<core::SteeringMethodPtr_t>(server_, steeringMethod)->get();
+              d = reference_to_servant_base<core::SteeringMethod>(server_, steeringMethod)->get();
             } catch (const Error& e) {
               // TODO in this case, we should define a steeringMethod from the CORBA type.
               // This would allow to implement a steeringMethod class in Python.
               throw;
             }
 
-            p_->steeringMethod (d);
+            get()->steeringMethod (d);
           }
 
           hpp::core_idl::PathValidation_ptr getPathValidation () throw (hpp::Error)
           {
-            core::PathValidationPtr_t pathValidation = p_->pathValidation();
+            core::PathValidationPtr_t pathValidation = get()->pathValidation();
 
-            hpp::core_idl::PathValidation_var d = makeServantDownCast <
-              hpp::core_idl::PathValidation, PathValidations>
+            hpp::core_idl::PathValidation_var d = makeServantDownCast<PathValidation>
                 (server_, PathValidation::Storage (pathValidation));
             return d._retn();
           }
@@ -106,41 +102,20 @@ namespace hpp
           {
             core::PathValidationPtr_t d;
             try {
-              d = reference_to_servant_base<core::PathValidationPtr_t>(server_, pathValidation)->get();
+              d = reference_to_servant_base<core::PathValidation>(server_, pathValidation)->get();
             } catch (const Error& e) {
               // TODO in this case, we should define a pathValidation from the CORBA type.
               // This would allow to implement a pathValidation class in Python.
               throw;
             }
 
-            p_->pathValidation (d);
+            get()->pathValidation (d);
           }
-
-          struct PtrWapper
-          {
-            core::ProblemPtr_t p;
-            PtrWapper (core::ProblemPtr_t _p) : p (_p) {}
-            operator core::ProblemPtr_t() const { return p; }
-            core::ProblemPtr_t operator->() const { return p; }
-            core::ProblemPtr_t get() const { return p; }
-          };
-
-          virtual PtrWapper get () const
-          {
-            return PtrWapper(p_);
-          }
-
-          virtual void* getServantKey () const
-          {
-            return p_;
-          }
-
-        protected:
-          Server* server_;
-          Storage p_;
       };
+
+      typedef ProblemServant<POA_hpp::core_idl::Problem, core::ProblemPtr_t> Problem;
     } // end of namespace core.
   } // end of namespace corbaServer.
 } // end of namespace hpp.
 
-#endif // SRC_PROBLEM_HH
+#endif // HPP_CORE_IDL_PROBLEM_HH

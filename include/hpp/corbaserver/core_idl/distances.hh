@@ -8,19 +8,20 @@
 //
 // See the COPYING file for more information.
 
-#ifndef SRC_DISTANCES_HH
-# define SRC_DISTANCES_HH
+#ifndef HPP_CORE_IDL_DISTANCES_HH
+# define HPP_CORE_IDL_DISTANCES_HH
 
 # include <vector>
 # include <stdlib.h>
 
+# include "hpp/core/distance.hh"
 # include "hpp/core/weighed-distance.hh"
 
 # include <hpp/corbaserver/fwd.hh>
 # include <hpp/corbaserver/conversions.hh>
 # include "hpp/core_idl/distances-idl.hh"
 
-# include "../servant-base.hh"
+# include "hpp/corbaserver/servant-base.hh"
 
 namespace hpp
 {
@@ -28,8 +29,6 @@ namespace hpp
   {
     namespace core_idl
     {
-      typedef AbstractServantBase<core::DistancePtr_t> DistanceBase;
-
       template <typename D>
       class DistanceStorage : public AbstractStorage <D, core::Distance>
       {
@@ -44,14 +43,14 @@ namespace hpp
 
           template <typename T> DistanceStorage<T> cast () const
           {
-            return DistanceStorage<T> (r, HPP_DYNAMIC_PTR_CAST(T, element));
+            return DistanceStorage<T> (r, HPP_DYNAMIC_PTR_CAST(T, element.lock()));
           }
       };
 
       template <typename _Base, typename _Storage>
-      class DistanceServant : public ServantBase<core::DistancePtr_t, _Storage>, public virtual _Base
+      class DistanceServant : public ServantBase<core::Distance, _Storage>, public virtual _Base
       {
-          SERVANT_BASE_TYPEDEFS(hpp::core_idl::Distance, core::DistancePtr_t);
+          SERVANT_BASE_TYPEDEFS(hpp::core_idl::Distance, core::Distance);
         public:
           DistanceServant (Server* server, const Storage& s)
             : _ServantBase (server, s) {}
@@ -71,7 +70,7 @@ namespace hpp
       template <typename _Base, typename _Storage>
       class WeighedDistanceServant : public DistanceServant<_Base, _Storage>
       {
-          SERVANT_BASE_TYPEDEFS(hpp::core_idl::WeighedDistance, core::DistancePtr_t);
+          SERVANT_BASE_TYPEDEFS(hpp::core_idl::WeighedDistance, core::Distance);
         public:
           typedef DistanceServant<Base, Storage> Parent;
 
@@ -82,13 +81,13 @@ namespace hpp
 
           floatSeq* getWeights () throw (Error)
           {
-            return vectorToFloatSeq (getS().element->weights());
+            return vectorToFloatSeq (getT()->weights());
           }
 
           void setWeights (const floatSeq& weights) throw (Error)
           {
             try {
-              return getS().element->weights(floatSeqToVector(weights));
+              return getT()->weights(floatSeqToVector(weights));
             } catch (const std::exception& e) {
               throw Error (e.what ());
             }
@@ -96,10 +95,8 @@ namespace hpp
       };
 
       typedef WeighedDistanceServant<POA_hpp::core_idl::WeighedDistance, DistanceStorage<core::WeighedDistance> > WeighedDistance;
-
-      typedef boost::mpl::vector<WeighedDistance, Distance> Distances;
     } // end of namespace core.
   } // end of namespace corbaServer.
 } // end of namespace hpp.
 
-#endif // SRC_DISTANCES_HH
+#endif // HPP_CORE_IDL_DISTANCES_HH

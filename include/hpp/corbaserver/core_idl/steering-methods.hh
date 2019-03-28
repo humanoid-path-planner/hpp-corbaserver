@@ -8,8 +8,8 @@
 //
 // See the COPYING file for more information.
 
-#ifndef SRC_STEERING_METHODS_HH
-# define SRC_STEERING_METHODS_HH
+#ifndef HPP_CORE_IDL_STEERING_METHODS_HH
+# define HPP_CORE_IDL_STEERING_METHODS_HH
 
 # include <vector>
 # include <stdlib.h>
@@ -20,7 +20,9 @@
 # include <hpp/corbaserver/conversions.hh>
 # include "hpp/core_idl/steering_methods-idl.hh"
 
-# include "../servant-base.hh"
+# include "hpp/corbaserver/servant-base.hh"
+
+# include <hpp/corbaserver/core_idl/paths.hh>
 
 namespace hpp
 {
@@ -28,8 +30,6 @@ namespace hpp
   {
     namespace core_idl
     {
-      typedef AbstractServantBase<core::SteeringMethodPtr_t> SteeringMethodBase;
-
       template <typename D>
       class SteeringMethodStorage : public AbstractStorage<D, core::SteeringMethod>
       {
@@ -44,14 +44,14 @@ namespace hpp
 
           template <typename T> SteeringMethodStorage<T> cast () const
           {
-            return SteeringMethodStorage<T> (r, HPP_DYNAMIC_PTR_CAST(T, element));
+            return SteeringMethodStorage<T> (r, HPP_DYNAMIC_PTR_CAST(T, element.lock()));
           }
       };
 
       template <typename _Base, typename _Storage>
-      class SteeringMethodServant : public ServantBase<core::SteeringMethodPtr_t, _Storage>, public virtual _Base
+      class SteeringMethodServant : public ServantBase<core::SteeringMethod, _Storage>, public virtual _Base
       {
-          SERVANT_BASE_TYPEDEFS(hpp::core_idl::SteeringMethod, core::SteeringMethodPtr_t);
+          SERVANT_BASE_TYPEDEFS(hpp::core_idl::SteeringMethod, core::SteeringMethod);
 
         public:
           SteeringMethodServant (Server* server, const Storage& s) :
@@ -63,17 +63,15 @@ namespace hpp
           {
             Configuration_t qq1 (floatSeqToConfig(getS().r, q1, true)),
                             qq2 (floatSeqToConfig(getS().r, q2, true));
-            return makeServant<hpp::core_idl::Path_ptr> (server_,
-                new Path (server_, (*get()) (qq1,qq2)));
+            hpp::core_idl::Path_var p =
+              makeServantDownCast<core_idl::Path> (server_, (*get()) (qq1,qq2));
+            return p._retn();
           }
       };
 
       typedef SteeringMethodServant<POA_hpp::core_idl::SteeringMethod, SteeringMethodStorage<core::SteeringMethod> > SteeringMethod;
-
-      typedef boost::mpl::vector<SteeringMethod> SteeringMethods;
-
     } // end of namespace core.
   } // end of namespace corbaServer.
 } // end of namespace hpp.
 
-#endif // SRC_STEERING_METHODS_HH
+#endif // HPP_CORE_IDL_STEERING_METHODS_HH

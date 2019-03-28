@@ -11,6 +11,7 @@
 #ifndef HPP_CORBASERVER_PROBLEM_SERVER_IDL
 #define HPP_CORBASERVER_PROBLEM_SERVER_IDL
 #include <hpp/common.idl>
+#include <hpp/constraints_idl/constraints.idl>
 #include <hpp/core_idl/distances.idl>
 #include <hpp/core_idl/paths.idl>
 #include <hpp/core_idl/steering_methods.idl>
@@ -719,11 +720,15 @@ module hpp
 
     core_idl::Path getPath (in unsigned long pathId) raises (Error);
 
+    unsigned long addPath (in core_idl::PathVector _path) raises (Error);
+
     core_idl::SteeringMethod getSteeringMethod () raises (Error);
 
     core_idl::PathValidation getPathValidation () raises (Error);
 
     core_idl::Problem getProblem () raises (Error);
+
+    constraints_idl::Implicit getConstraint (in string constraintName) raises (Error);
     /// \}
   };
   }; // interface Problem

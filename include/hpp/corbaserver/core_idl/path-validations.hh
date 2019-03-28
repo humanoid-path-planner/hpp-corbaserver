@@ -8,19 +8,21 @@
 //
 // See the COPYING file for more information.
 
-#ifndef SRC_PATH_VALIATIONS_HH
-# define SRC_PATH_VALIATIONS_HH
+#ifndef HPP_CORE_IDL_PATH_VALIATIONS_HH
+# define HPP_CORE_IDL_PATH_VALIATIONS_HH
 
 # include <vector>
 # include <stdlib.h>
 
 # include "hpp/core/path-validation.hh"
+# include "hpp/core/path-validation-report.hh"
 
 # include <hpp/corbaserver/fwd.hh>
 # include <hpp/corbaserver/conversions.hh>
 # include "hpp/core_idl/path_validations-idl.hh"
 
-# include "../servant-base.hh"
+# include "hpp/corbaserver/servant-base.hh"
+# include <hpp/corbaserver/core_idl/paths.hh>
 
 namespace hpp
 {
@@ -28,12 +30,10 @@ namespace hpp
   {
     namespace core_idl
     {
-      typedef AbstractServantBase<core::PathValidationPtr_t> PathValidationBase;
-
       template <typename _Base, typename _Storage>
-      class PathValidationServant : public ServantBase<core::PathValidationPtr_t, _Storage>, public virtual _Base
+      class PathValidationServant : public ServantBase<core::PathValidation, _Storage>, public virtual _Base
       {
-          SERVANT_BASE_TYPEDEFS(hpp::core_idl::PathValidation, core::PathValidationPtr_t);
+          SERVANT_BASE_TYPEDEFS(hpp::core_idl::PathValidation, core::PathValidation);
 
         public:
           PathValidationServant (Server* server, const Storage& s) :
@@ -46,7 +46,7 @@ namespace hpp
               hpp::core_idl::Path_out validPart,
               hpp::core_idl::PathValidationReport_out report) throw (Error)
           {
-            core::PathPtr_t p (reference_to_servant_base<core::PathPtr_t>(server_, path)->get());
+            core::PathPtr_t p (reference_to_servant_base<core::Path>(server_, path)->get());
             core::PathPtr_t vp;
             core::PathValidationReportPtr_t pvr;
 
@@ -67,10 +67,8 @@ namespace hpp
 
       typedef PathValidationServant<POA_hpp::core_idl::PathValidation, core::PathValidationPtr_t > PathValidation;
 
-      typedef boost::mpl::vector<PathValidation> PathValidations;
-
     } // end of namespace core.
   } // end of namespace corbaServer.
 } // end of namespace hpp.
 
-#endif // SRC_PATH_VALIATIONS_HH
+#endif // HPP_CORE_IDL_PATH_VALIATIONS_HH

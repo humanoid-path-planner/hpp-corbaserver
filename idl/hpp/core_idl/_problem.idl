@@ -12,31 +12,46 @@
 #define HPP_CORE_PROBLEM_IDL
 #include <hpp/common.idl>
 
-#define HPP_CORE_IDL_GET_SET(what,type)                                        \
-    type get##what () raises (Error);                                          \
-    void set##what (in type _type) raises (Error) 
-
 module hpp
 {
   module core_idl {
   interface Distance;
   interface SteeringMethod;
   interface PathValidation;
+  interface ConfigurationShooter;
 
   interface Problem
   {
-    HPP_CORE_IDL_GET_SET(Distance,Distance);
-    HPP_CORE_IDL_GET_SET(SteeringMethod,SteeringMethod);
-    HPP_CORE_IDL_GET_SET(PathValidation,PathValidation);
+    Distance getDistance () raises (Error);
+    //-> distance
+    void setDistance (in Distance d) raises (Error);
+    //-> distance
+    SteeringMethod getSteeringMethod () raises (Error);
+    //-> steeringMethod
+    void setSteeringMethod (in SteeringMethod d) raises (Error);
+    //-> steeringMethod
+    PathValidation getPathValidation () raises (Error);
+    //-> pathValidation
+    void setPathValidation (in PathValidation d) raises (Error);
+    //-> pathValidation
+    ConfigurationShooter getConfigurationShooter () raises (Error);
+    //-> configurationShooter
+    void setConfigurationShooter (in ConfigurationShooter d) raises (Error);
+    //-> configurationShooter
   }; // interface Problem
 
   }; // module core
 }; // module hpp
 
-#undef HPP_CORE_IDL_GET_SET
+//* #include <hpp/core/problem.hh>
+//* #include <hpp/core_idl/distances.hh>
+//* #include <hpp/core_idl/steering_methods.hh>
+//* #include <hpp/core_idl/path_validations.hh>
+//* #include <hpp/core_idl/configuration_shooters.hh>
 
 #include <hpp/core_idl/distances.idl>
 #include <hpp/core_idl/steering_methods.idl>
 #include <hpp/core_idl/path_validations.idl>
+#include <hpp/core_idl/configuration_shooters.idl>
 
 #endif // HPP_CORE_PROBLEM_IDL

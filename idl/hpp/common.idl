@@ -13,6 +13,9 @@
 
 module hpp
 {
+  typedef double value_type;
+  typedef long long size_type;
+
   /// Sequence of names
   typedef sequence <string> Names_t;
   /// Corba exception travelling through the Corba channel

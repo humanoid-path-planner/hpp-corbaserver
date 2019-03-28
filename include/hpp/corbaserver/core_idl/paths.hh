@@ -8,18 +8,19 @@
 //
 // See the COPYING file for more information.
 
-#ifndef SRC_PATHS_HH
-# define SRC_PATHS_HH
+#ifndef HPP_CORE_IDL_PATHS_HH
+# define HPP_CORE_IDL_PATHS_HH
 # include <vector>
 # include <stdlib.h>
 
 # include "hpp/core/path.hh"
+# include "hpp/core/path-vector.hh"
 
 # include <hpp/corbaserver/fwd.hh>
 # include <hpp/corbaserver/conversions.hh>
 # include "hpp/core_idl/paths-idl.hh"
 
-# include "../servant-base.hh"
+# include "hpp/corbaserver/servant-base.hh"
 
 namespace hpp
 {
@@ -29,12 +30,10 @@ namespace hpp
     {
       hpp::core_idl::Path_ptr makePathServant (Server* server, const PathPtr_t& path);
 
-      typedef AbstractServantBase<core::PathPtr_t> PathBase;
-
       template <typename _Base, typename _Storage>
-      class PathServant : public ServantBase<core::PathPtr_t, _Storage>, public virtual _Base
+      class PathServant : public ServantBase<core::Path, _Storage>, public virtual _Base
       {
-          SERVANT_BASE_TYPEDEFS(hpp::core_idl::Path, core::PathPtr_t);
+          SERVANT_BASE_TYPEDEFS(hpp::core_idl::Path, core::Path);
 
         public:
           PathServant (Server* server, const Storage& s)
@@ -42,39 +41,46 @@ namespace hpp
 
           virtual ~PathServant () {}
 
-          CORBA::Long outputSize () throw (Error)
+          size_type outputSize () throw (Error)
           {
-            return (CORBA::Long)get()->outputSize();
+            return get()->outputSize();
           }
 
-          CORBA::Long outputDerivativeSize () throw (Error)
+          size_type outputDerivativeSize () throw (Error)
           {
-            return (CORBA::Long)get()->outputDerivativeSize();
+            return get()->outputDerivativeSize();
           }
 
-          CORBA::Double length () throw (Error)
+          value_type length () throw (Error)
           {
             return get()->length ();
           }
 
-          char* print () throw (Error)
+          char* str () throw (Error)
           {
             std::ostringstream oss; oss << *get();
             std::string res = oss.str();
             return CORBA::string_dup(res.c_str());
           }
 
-          floatSeq* value (CORBA::Double t, CORBA::Boolean& success) throw (Error)
+          floatSeq* value (value_type t, CORBA::Boolean& success) throw (Error)
           {
             return vectorToFloatSeq (get()->operator() (t, success));
           }
 
-          floatSeq* derivative (CORBA::Double t, CORBA::Short order) throw (Error)
+          floatSeq* derivative (value_type t, CORBA::Short order) throw (Error)
           {
             vector_t res (get()->outputDerivativeSize());
             get()->derivative (res, t, order);
             return vectorToFloatSeq (res);
           }
+
+          hpp::core_idl::Path_ptr extract (value_type tmin, value_type tmax) throw (Error)
+          {
+            return makePathServant (server_, get()->extract(core::interval_t(tmin, tmax)));
+          }
+
+          hpp::core_idl::PathVector_ptr asVector () throw (Error);
       };
 
       typedef PathServant<POA_hpp::core_idl::Path, core::PathPtr_t> Path;
@@ -82,7 +88,7 @@ namespace hpp
       template <typename _Base, typename _Storage>
       class PathVectorServant : public PathServant<_Base, _Storage>
       {
-          SERVANT_BASE_TYPEDEFS(hpp::core_idl::PathVector, core::PathPtr_t);
+          SERVANT_BASE_TYPEDEFS(hpp::core_idl::PathVector, core::Path);
 
         public:
           typedef PathServant<Base, Storage> Parent;
@@ -91,38 +97,42 @@ namespace hpp
 
           std::size_t numberPaths () throw (Error)
           {
-            return this->getS()->numberPaths();
+            return getT()->numberPaths();
           }
 
           hpp::core_idl::Path_ptr pathAtRank (std::size_t rank) throw (Error)
           {
-            return makePathServant (server_, getS()->pathAtRank(rank));
+            return makePathServant (server_, getT()->pathAtRank(rank));
           }
 
           void appendPath (hpp::core_idl::Path_ptr path) throw (Error)
           {
-            getS()->appendPath(reference_to_servant_base<core::PathPtr_t>(server_, path)->get());
+            getT()->appendPath(reference_to_servant_base<core::Path>(server_, path)->get());
           }
 
           void concatenate (hpp::core_idl::PathVector_ptr path) throw (Error)
           {
-            getS()->appendPath(reference_to_servant<PathVectorServant>(server_, path)->getS());
+            getT()->concatenate (reference_to_servant<PathVectorServant>(server_, path)->getT());
           }
       };
 
       typedef PathVectorServant<POA_hpp::core_idl::PathVector, core::PathVectorPtr_t> PathVector;
 
-      typedef boost::mpl::vector<PathVector, Path> Paths;
 
-      hpp::core_idl::Path_ptr makePathServant (Server* server, const PathPtr_t& path)
+      template <typename _Base, typename _Storage>
+      hpp::core_idl::PathVector_ptr PathServant<_Base,_Storage>::asVector () throw (Error)
       {
-        hpp::core_idl::Path_var d = makeServantDownCast <
-          hpp::core_idl::Path, core_idl::Paths>
-            (server, path);
-        return d._retn();
+        PathPtr_t p = get();
+        PathVectorPtr_t pv =
+          core::PathVector::create (p->outputSize(), p->outputDerivativeSize());
+        pv->appendPath (p);
+
+        return makeServant<hpp::core_idl::PathVector_ptr>
+          (server_, new PathVector (server_, pv));
       }
+
     } // end of namespace core.
   } // end of namespace corbaServer.
 } // end of namespace hpp.
 
-#endif // SRC_PATHS_HH
+#endif // HPP_CORE_IDL_PATHS_HH

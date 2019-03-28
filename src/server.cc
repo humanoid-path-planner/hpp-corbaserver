@@ -16,12 +16,13 @@
 #include <dlfcn.h>
 
 #include <hpp/util/debug.hh>
+#include <hpp/util/exception-factory.hh>
 #include <hpp/core/plugin.hh>
 #include <hpp/corbaserver/server-plugin.hh>
-#include "hpp/corbaserver/tools-idl.hh" 
+#include "hpp/corbaserver/tools-idl.hh"
 
 #include "basic-server.hh"
-#include "servant-base.hh"
+#include "hpp/corbaserver/servant-base.hh"
 
 namespace hpp
 {
@@ -340,23 +341,20 @@ namespace hpp
       void* library = dlopen(lib.c_str(), RTLD_NOW);
       error = dlerror ();
       if (error != NULL) {
-        hppDout (error, "Error loading library " << lib << ": " << error);
-        return false;
+        HPP_THROW (std::runtime_error, "Error loading library " << lib << ": " << error);
       }
       if (library == NULL) {
         // uncaught error ?
-        return false;
+        HPP_THROW (std::runtime_error, "Unknown error while loading library " << lib << ".");
       }
 
       PluginFunction_t function = reinterpret_cast<PluginFunction_t>(dlsym(library, "createServerPlugin"));
       error = dlerror ();
       if (error != NULL) {
-        hppDout (error, "Error loading library " << lib << ":\n" << error);
-        return false;
+        HPP_THROW (std::runtime_error, "Error loading library " << lib << ": " << error);
       }
       if (function == NULL) {
-        hppDout (error, "Symbol createServerPlugin of (correctly loaded) library " << lib << " is NULL.");
-        return false;
+        HPP_THROW (std::runtime_error, "Symbol createServerPlugin of (correctly loaded) library " << lib << " is NULL.");
       }
 
       // Get the context.

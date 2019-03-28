@@ -1,0 +1,66 @@
+// Copyright (C) 2019 by Joseph Mirabel, LAAS-CNRS.
+//
+// This file is part of the hpp-corbaserver.
+//
+// This software is provided "as is" without warranty of any kind,
+// either expressed or implied, including but not limited to the
+// implied warranties of fitness for a particular purpose.
+//
+// See the COPYING file for more information.
+
+#ifndef HPP_CONSTRAINTS_CONSTRAINTS_IDL
+#define HPP_CONSTRAINTS_CONSTRAINTS_IDL
+#include <hpp/common.idl>
+
+module hpp
+{
+  module constraints_idl {
+
+  interface DifferentiableFunction
+  {
+      floatSeq value (in floatSeq arg) raises (Error);
+      //* return vectorToFloatSeq (
+      //*     (*get()) (floatSeqToVector(arg, get()->inputSize())).vector()
+      //*     );
+
+      floatSeqSeq jacobian (in floatSeq arg) raises (Error);
+      //* matrix_t J (get()->outputDerivativeSize(), get()->inputDerivativeSize());
+      //* get()->jacobian (J, floatSeqToVector(arg));
+      //* return matrixToFloatSeqSeq (J);
+
+      size_type inputSize () raises (Error);
+      size_type inputDerivativeSize () raises (Error);
+      size_type  outputSize () raises (Error);
+      size_type  outputDerivativeSize () raises (Error);
+      string name () raises (Error);
+
+      string str () raises (Error);
+  };
+
+  interface Implicit
+  {
+    DifferentiableFunction function () raises (Error);
+    //-> functionPtr
+
+    void setRightHandSideFromConfig (in floatSeq config) raises (Error);
+    //-> rightHandSideFromConfig
+
+    void setRightHandSide (in floatSeq rhs) raises (Error);
+    //-> rightHandSide
+
+    floatSeq getRightHandSide () raises (Error);
+    //-> rightHandSide
+
+    size_type rhsSize () raises (Error);
+
+    boolean constantRightHandSide () raises (Error);
+
+    floatSeq rightHandSideAt (in value_type s) raises (Error);
+  }; // interface Implicit
+
+  }; // module core
+}; // module hpp
+//* #include <hpp/constraints/differentiable-function.hh>
+//* #include <hpp/constraints/implicit.hh>
+
+#endif // HPP_CORE_PATHS_IDL

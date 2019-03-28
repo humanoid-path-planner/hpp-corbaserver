@@ -38,12 +38,16 @@ FOREACH(IDL ${IDL_SOURCES})
     ARGUMENTS
     -Wbmodules=hpp_idl
     -Wbextern=common:hpp_stubs
+    -Wbextern=constraints:hpp_stubs.constraints
     -Wbextern=distances:hpp_stubs.core
     -Wbextern=paths:hpp_stubs.core
     -Wbextern=steering_methods:hpp_stubs.core
     -Wbextern=path_validations:hpp_stubs.core
     -Wbextern=_problem:hpp_stubs.core
     )
+  INSTALL(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/${IDL}-idl.hh
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp/corbaserver)
 ENDFOREACH()
 # Enable generation of dynamic type codes (in file commonDynSK.cc)
 GENERATE_IDL_CPP (hpp/common ${CMAKE_SOURCE_DIR}/idl/hpp ENABLE_Wba
@@ -54,42 +58,71 @@ GENERATE_IDL_PYTHON (common ${CMAKE_SOURCE_DIR}/idl/hpp
     ARGUMENTS
     -Wbmodules=hpp_idl
   )
+INSTALL(
+  FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/common-idl.hh
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp)
 
 MAKE_DIRECTORY(${CMAKE_BINARY_DIR}/src/hpp_idl)
 MAKE_DIRECTORY(${CMAKE_BINARY_DIR}/src/hpp/core_idl)
-FOREACH(IDL distances paths steering_methods path_validations _problem)
+FOREACH(IDL distances paths steering_methods path_validations _problem configuration_shooters _constraints)
   GENERATE_IDL_CPP (hpp/core_idl/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/core_idl
     ARGUMENTS
     -Wbguard_prefix=hpp_core_idl
     HEADER_SUFFIX -idl.hh)
+  GENERATE_IDL_CPP_IMPL (hpp/core_idl/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/core_idl
+    ARGUMENTS
+    -Wbguard_prefix=hpp_core_idl
+    -Wbinc_prefix=hpp/core_idl
+    HH_SUFFIX -idl.hh)
   GENERATE_IDL_PYTHON (${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/core_idl
       ENABLE_DOCSTRING
       STUBS hpp_stubs.core
       ARGUMENTS
       -Wbmodules=hpp_idl
+      -Wbextern=constraints:hpp_stubs.constraints
       -Wbextern=common:hpp_stubs
     )
+  INSTALL(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/core_idl/${IDL}-idl.hh
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/core_idl/${IDL}.hh
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/core_idl/${IDL}-fwd.hh
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp/core_idl)
 ENDFOREACH()
 
-FOREACH(IDL ${IDL_SOURCES})
-  INSTALL(
-    FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/${IDL}-idl.hh
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp/corbaserver)
-  INSTALL(FILES ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver/${IDL}.idl
-    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/idl/hpp/corbaserver)
+MAKE_DIRECTORY(${CMAKE_BINARY_DIR}/src/hpp/constraints_idl)
+FOREACH(IDL constraints)
+  GENERATE_IDL_CPP (hpp/constraints_idl/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/constraints_idl
+    ARGUMENTS
+    -Wbguard_prefix=hpp_constraints_idl
+    HEADER_SUFFIX -idl.hh)
+  GENERATE_IDL_CPP_IMPL (hpp/constraints_idl/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/constraints_idl
+    ARGUMENTS
+    -Wbguard_prefix=hpp_constraints_idl
+    -Wbinc_prefix=hpp/constraints_idl
+    HH_SUFFIX -idl.hh)
+  GENERATE_IDL_PYTHON (${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/constraints_idl
+      ENABLE_DOCSTRING
+      STUBS hpp_stubs.constraints
+      ARGUMENTS
+      -Wbmodules=hpp_idl
+      -Wbextern=common:hpp_stubs
+    )
+  INSTALL(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/constraints_idl/${IDL}-idl.hh
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/constraints_idl/${IDL}.hh
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/constraints_idl/${IDL}-fwd.hh
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp/constraints_idl)
 ENDFOREACH()
-INSTALL(
-  FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/common-idl.hh
-  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp)
-INSTALL(FILES ${CMAKE_SOURCE_DIR}/idl/hpp/common.idl
-  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/idl/hpp)
+
+INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/idl/hpp
+  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/idl)
 
 INSTALL(
   DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/hpp_idl ${CMAKE_CURRENT_BINARY_DIR}/hpp_stubs
   DESTINATION ${PYTHON_SITELIB}
   )
 
-ADD_CUSTOM_TARGET(generate_idl_cpp DEPENDS ${ALL_IDL_CPP_STUBS})
+ADD_CUSTOM_TARGET(generate_idl_cpp DEPENDS ${ALL_IDL_CPP_STUBS} ${ALL_IDL_CPP_IMPL_STUBS})
 ADD_CUSTOM_TARGET(generate_idl_python DEPENDS ${ALL_IDL_PYTHON_STUBS})
 
 IF (NOT CLIENT_ONLY)
@@ -108,7 +141,9 @@ IF (NOT CLIENT_ONLY)
     tools.cc
     tools.hh
     conversions.cc
+
     ${ALL_IDL_CPP_STUBS}
+    ${ALL_IDL_CPP_IMPL_STUBS}
     )
 
   PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-core)

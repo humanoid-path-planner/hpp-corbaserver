@@ -1,0 +1,47 @@
+
+// Copyright (C) 2019 by Joseph Mirabel, LAAS-CNRS.
+//
+// This file is part of the hpp-corbaserver.
+//
+// This software is provided "as is" without warranty of any kind,
+// either expressed or implied, including but not limited to the
+// implied warranties of fitness for a particular purpose.
+//
+// See the COPYING file for more information.
+
+#ifndef HPP_CORE_CONFIGURATION_SHOOTERS_IDL
+#define HPP_CORE_CONFIGURATION_SHOOTERS_IDL
+#include <hpp/common.idl>
+
+module hpp
+{
+  module core_idl {
+
+  interface ConfigurationShooter
+  {
+    floatSeq shoot () raises (Error);
+  }; // interface ConfigurationShooter
+
+  module configuration_shooter {
+    interface Gaussian : ConfigurationShooter
+    {
+      void setCenter (in floatSeq c) raises (Error);
+      //-> center
+      floatSeq getCenter () raises (Error);
+      //-> center
+
+      // void sigma (const value_type& factor);
+      floatSeq getSigmas () raises (Error);
+      //-> sigmas
+      void setSigmas (in floatSeq s) raises (Error);
+      //-> sigmas
+    }; // interface WeighedConfigurationShooter
+  }; //-> configurationShooter
+
+
+  }; // module core
+}; // module hpp
+//* #include <hpp/core/configuration-shooter.hh>
+//* #include <hpp/core/configuration-shooter/gaussian.hh>
+
+#endif // HPP_CORE_CONFIGURATION_SHOOTERS_IDL

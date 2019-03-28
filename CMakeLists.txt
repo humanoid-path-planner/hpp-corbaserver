@@ -26,6 +26,8 @@ INCLUDE(cmake/idl.cmake)
 INCLUDE(cmake/python.cmake)
 INCLUDE(cmake/test.cmake)
 
+INCLUDE(cmake-modules/omniidl.cmake)
+
 SET(PROJECT_NAME hpp-corbaserver)
 SET(PROJECT_DESCRIPTION "Corba server for Humanoid Path Planner applications")
 
@@ -40,9 +42,11 @@ IF (NOT CLIENT_ONLY)
     include/hpp/corbaserver/fwd.hh
     include/hpp/corbaserver/object-map.hh
     include/hpp/corbaserver/problem-solver-map.hh
+    include/hpp/corbaserver/servant-base.hh
     include/hpp/corbaserver/server.hh
     include/hpp/corbaserver/server-plugin.hh
     include/hpp/corbaserver/conversions.hh
+
     ${${PROJECT_NAME}_HEADERS}
     )
 ENDIF (NOT CLIENT_ONLY)
@@ -68,6 +72,13 @@ PKG_CONFIG_APPEND_LIBS(${PROJECT_NAME})
 SET(PKG_CONFIG_EXTRA "${PKG_CONFIG_EXTRA}\ncmake_plugin=${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake/${PROJECT_NAME}-plugin.cmake")
 INSTALL(FILES cmake-modules/hpp-corbaserver-plugin.cmake
   DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/cmake/
+  PERMISSIONS OWNER_READ GROUP_READ WORLD_READ OWNER_WRITE)
+# install omniidl backend
+INSTALL(FILES
+  cmake-modules/omniidl/cxx_impl/__init__.py
+  cmake-modules/omniidl/cxx_impl/main.py
+  cmake-modules/omniidl/cxx_impl/template.py
+  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/omniidl/cxx_impl
   PERMISSIONS OWNER_READ GROUP_READ WORLD_READ OWNER_WRITE)
 
 SETUP_HPP_PROJECT_FINALIZE()

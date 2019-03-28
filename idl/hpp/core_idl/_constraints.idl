@@ -1,0 +1,70 @@
+// Copyright (C) 2019 by Joseph Mirabel, LAAS-CNRS.
+//
+// This file is part of the hpp-corbaserver.
+//
+// This software is provided "as is" without warranty of any kind,
+// either expressed or implied, including but not limited to the
+// implied warranties of fitness for a particular purpose.
+//
+// See the COPYING file for more information.
+
+#ifndef HPP_CORE_CONSTRAINTS_IDL
+#define HPP_CORE_CONSTRAINTS_IDL
+#include <hpp/common.idl>
+
+#include <hpp/constraints_idl/constraints.idl>
+
+module hpp
+{
+  module constraints_idl {
+    interface Implicit;
+  };
+
+  module core_idl {
+
+  interface Constraint
+  {
+    boolean apply (in floatSeq configin, out floatSeq configOut) raises (Error);
+    //* hpp::core::vector_t q = hpp::corbaServer::floatSeqToVector (configin);
+    //* bool ret = get()->apply(q);
+    //* configOut = hpp::corbaServer::vectorToFloatSeq (q);
+    //* return ret;
+
+    string name () raises (Error);
+    string str () raises (Error);
+    //boolean isSatisfied (in floatSeq config, out floatSeq err) raises (Error);
+  }; // interface Constraint
+
+  interface ConfigProjector : Constraint
+  {
+    void setRightHandSideFromConfig             (in floatSeq config) raises (Error);
+    //-> rightHandSideFromConfig
+    void setRightHandSideOfConstraintFromConfig (in constraints_idl::Implicit nm, in floatSeq config) raises (Error);
+    //-> rightHandSideFromConfig
+    void setRightHandSide             (in floatSeq param) raises (Error);
+    //-> rightHandSide
+    void setRightHandSideOfConstraint (in constraints_idl::Implicit nm, in floatSeq rhs) raises (Error);
+    //-> rightHandSide
+    floatSeq getRightHandSide () raises (Error);
+    //-> rightHandSide
+    void setRightHandSideAt (in value_type s) raises (Error);
+    //-> rightHandSideAt
+  }; // interface ConfigProjector
+
+  interface ConstraintSet : Constraint
+  {
+    // The return type should be ConfigProjector. At the moment, this causes a bug
+    // because because the implementation does not know this inherits from Constraint.
+    // The CORBA object below IS a ConfigProjector
+    Constraint getConfigProjector () raises (Error);
+    //-> configProjector
+  }; // interface ConstraintSet
+
+  }; // module core
+}; // module hpp
+//* #include <hpp/core/constraint.hh>
+//* #include <hpp/core/constraint-set.hh>
+//* #include <hpp/core/config-projector.hh>
+//* #include <hpp/constraints_idl/constraints.hh>
+
+#endif // HPP_CORE_CONSTRAINTS_IDL
