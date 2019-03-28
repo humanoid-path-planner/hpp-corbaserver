@@ -13,6 +13,7 @@
 #include <hpp/common.idl>
 
 #include <hpp/core_idl/paths.idl>
+#include <hpp/core_idl/_constraints.idl>
 
 module hpp
 {
@@ -22,11 +23,20 @@ module hpp
   {
     Path call (in floatSeq q1, in floatSeq q2) raises (Error);
     //-> operator()
+
+    void setConstraints (in ConstraintSet constraints) raises (Error);
+    //-> constraints
+
+    // The return type should be ConstraintSet. At the moment, this causes a bug
+    // because because the implementation does not know this inherits from Constraint
+    Constraint getConstraints () raises (Error);
+    //-> constraints
   }; // interface SteeringMethod
 
   }; // module core
 }; // module hpp
 //* #include <hpp/core/steering-method.hh>
 //* #include <hpp/core_idl/paths.hh>
+//* #include <hpp/core_idl/_constraints.hh>
 
 #endif // HPP_CORE_STEERING_METHODS_IDL

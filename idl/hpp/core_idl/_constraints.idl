@@ -16,31 +16,55 @@
 
 module hpp
 {
+  module constraints_idl {
+    interface Implicit;
+  };
+
   module core_idl {
 
   interface Constraint
   {
-    bool apply (inout floatSeq config) raises (Error);
+    boolean apply (in floatSeq configin, out floatSeq configOut) raises (Error);
+    //* hpp::core::vector_t q = hpp::corbaServer::floatSeqToVector (configin);
+    //* bool ret = get()->apply(q);
+    //* configOut = hpp::corbaServer::vectorToFloatSeq (q);
+    //* return ret;
+
     string name () raises (Error);
-    boolean isSatisfied (in floatSeq config, out floatSeq error) raises (Error);
-  }; // interface SteeringMethod
+    string str () raises (Error);
+    //boolean isSatisfied (in floatSeq config, out floatSeq err) raises (Error);
+  }; // interface Constraint
 
-  interface ConfigProjector
+  interface ConfigProjector : Constraint
   {
-    void setRightHandSideFromConfig (in floatSeq config);
-    void setRightHandSideFromConfig (in constraints_idl::Implicit nm, in floatSeq config)
-    void setRightHandSide (in floatSeq param);
-    void setRightHandSide (in constraints_idl::Implicit nm, in floatSeq rhs);
-    floatSeq rightHandSide () const;
-    void rightHandSideAt (in value_type s);
-  }; // interface SteeringMethod
+    void setRightHandSideFromConfig             (in floatSeq config) raises (Error);
+    //-> rightHandSideFromConfig
+    void setRightHandSideOfConstraintFromConfig (in constraints_idl::Implicit nm, in floatSeq config) raises (Error);
+    //-> rightHandSideFromConfig
+    void setRightHandSide             (in floatSeq param) raises (Error);
+    //-> rightHandSide
+    void setRightHandSideOfConstraint (in constraints_idl::Implicit nm, in floatSeq rhs) raises (Error);
+    //-> rightHandSide
+    floatSeq getRightHandSide () raises (Error);
+    //-> rightHandSide
+    void setRightHandSideAt (in value_type s) raises (Error);
+    //-> rightHandSideAt
+  }; // interface ConfigProjector
 
-  interface ConstraintSet
+  interface ConstraintSet : Constraint
   {
-    ConfigProjector configProjector () raises (Error);
-  }; // interface SteeringMethod
+    // The return type should be ConfigProjector. At the moment, this causes a bug
+    // because because the implementation does not know this inherits from Constraint.
+    // The CORBA object below IS a ConfigProjector
+    Constraint getConfigProjector () raises (Error);
+    //-> configProjector
+  }; // interface ConstraintSet
 
   }; // module core
 }; // module hpp
+//* #include <hpp/core/constraint.hh>
+//* #include <hpp/core/constraint-set.hh>
+//* #include <hpp/core/config-projector.hh>
+//* #include <hpp/constraints_idl/constraints.hh>
 
 #endif // HPP_CORE_CONSTRAINTS_IDL

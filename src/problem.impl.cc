@@ -2657,7 +2657,8 @@ namespace hpp
       {
         core::PathVectorPtr_t path;
         try {
-          path = reference_to_servant<core_impl::PathVector> (server_->parent(), _path)->getT();
+          core::PathPtr_t p = reference_to_servant_base<core::Path> (server_->parent(), _path)->get();
+          path = HPP_DYNAMIC_PTR_CAST (core::PathVector, p);
         } catch (const Error& e) {
           // TODO in this case, we should define a distance from the CORBA type.
           // This would allow to implement a distance class in Python.
