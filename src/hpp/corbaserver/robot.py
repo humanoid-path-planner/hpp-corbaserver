@@ -298,25 +298,14 @@ class Robot (object):
         return self.hppcorba.robot.getJacobianCenterOfMass ()
     ##\}
 
-## Humanoid robot
-#
-#  Method loadModel builds a humanoid robot.
-class HumanoidRobot (Robot):
-
-    def __init__ (self, robotName = None, rootJointType = None, load = True, client = None, hppcorbaClient = None):
-        Robot.__init__ (self, robotName, rootJointType, load, client)
-
-    def loadModel (self, robotName, rootJointType):
-        self.hppcorba.robot.loadHumanoidModel (robotName, rootJointType,
-                                          self.packageName, self.urdfName,
-                                          self.urdfSuffix, self.srdfSuffix)
-        self.rebuildRanks()
-
+## This class provides tools to create static stability constraints
+class StaticStabilityConstraintsFactory:
     def _getCOM (self, com):
+        from numpy import array
         if com == "":
-            return self.getCenterOfMass ()
+            return array(self.getCenterOfMass ())
         else:
-            return self.hpp.corba.robot.getPartialCom (com)
+            return array(self.hppcorba.robot.getPartialCom (com))
 
     ## Create static stability constraints where the robot slides on the ground,
     ## and store them into ProblemSolver
@@ -355,12 +344,12 @@ class HumanoidRobot (Robot):
         # Pose of the left foot
         result.append (prefix + "pose-left-foot")
         problem.createTransformationConstraint2 (result[-1],
-            "", leftAnkle, (0,0,0,0,0,0,1), Ml.toTuple(), (False,False,True,True,True,False))
+            "", leftAnkle, Ml.toTuple(), (0,0,0,0,0,0,1), (False,False,True,True,True,False))
 
         # Complement left foot
         result.append (prefix + "pose-left-foot-complement")
         problem.createTransformationConstraint2 (result[-1],
-            "", leftAnkle, (0,0,0,0,0,0,1), Ml.toTuple(), (True,True,False,False,False,True))
+            "", leftAnkle, Ml.toTuple(), (0,0,0,0,0,0,1), (True,True,False,False,False,True))
         problem.setConstantRightHandSide (result[-1], False)
 
         return result
@@ -392,17 +381,17 @@ class HumanoidRobot (Robot):
         # COM wrt left ankle frame
         xloc = Ml.inverse().transform(x)
         result.append (prefix + "relative-com")
-        problem.createRelativeComConstraint (result[-1], comName, leftAnkle, xloc, (True,)*3)
+        problem.createRelativeComConstraint (result[-1], comName, leftAnkle, xloc.tolist(), (True,)*3)
 
         # Pose of the left foot
         result.append (prefix + "pose-left-foot")
         problem.createTransformationConstraint2 (result[-1],
-            "", leftAnkle, (0,0,0,0,0,0,1), Ml.toTuple(), (True,True,True,True,True,True))
+            "", leftAnkle, Ml.toTuple(), (0,0,0,0,0,0,1), (True,True,True,True,True,True))
 
         # Pose of the right foot
         result.append (prefix + "pose-right-foot")
         problem.createTransformationConstraint2 (result[-1],
-            "", rightAnkle, (0,0,0,0,0,0,1), Mr.toTuple(), (True,True,True,True,True,True))
+            "", rightAnkle, Mr.toTuple(), (0,0,0,0,0,0,1), (True,True,True,True,True,True))
 
         return result
 
@@ -429,13 +418,13 @@ class HumanoidRobot (Robot):
         Ml = Transform(_tfs[0])
         Mr = Transform(_tfs[1])
         robot.setCurrentConfig (q0)
-        x = _getCOM (robot, comName)
+        x = self._getCOM (robot, comName)
         result = []
 
         # COM between feet
         result.append (prefix + "com-between-feet")
         problem.createComBetweenFeet (result[-1], comName, leftAnkle, rightAnkle,
-            (0,0,0), (0,0,0), "", x, (True,)*4)
+            (0,0,0), (0,0,0), "", x.tolist(), (True,)*4)
 
         if sliding:
           mask = ( False, False, True, True, True, False )
@@ -445,14 +434,27 @@ class HumanoidRobot (Robot):
         # Pose of the right foot
         result.append (prefix + "pose-right-foot")
         problem.createTransformationConstraint2 (result[-1],
-            "", rightAnkle, (0,0,0,0,0,0,1), Mr.toTuple(), mask)
+            "", rightAnkle, Mr.toTuple(), (0,0,0,0,0,0,1), mask)
 
         # Pose of the left foot
         result.append (prefix + "pose-left-foot")
         problem.createTransformationConstraint2 (result[-1],
-            "", leftAnkle, (0,0,0,0,0,0,1), Ml.toTuple(), mask)
+            "", leftAnkle, Ml.toTuple(), (0,0,0,0,0,0,1), mask)
 
         return result;
+
+## Humanoid robot
+#
+#  Method loadModel builds a humanoid robot.
+class HumanoidRobot (Robot, StaticStabilityConstraintsFactory):
+    def __init__ (self, robotName = None, rootJointType = None, load = True, client = None, hppcorbaClient = None):
+        Robot.__init__ (self, robotName, rootJointType, load, client)
+
+    def loadModel (self, robotName, rootJointType):
+        self.hppcorba.robot.loadHumanoidModel (robotName, rootJointType,
+                                          self.packageName, self.urdfName,
+                                          self.urdfSuffix, self.srdfSuffix)
+        self.rebuildRanks()
 
 class RobotXML (Robot):
     def __init__ (self, robotName, rootJointType, urdfString, srdfString = "",
