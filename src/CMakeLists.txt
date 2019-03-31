@@ -43,6 +43,8 @@ FOREACH(IDL ${IDL_SOURCES})
     -Wbextern=paths:hpp_stubs.core
     -Wbextern=steering_methods:hpp_stubs.core
     -Wbextern=path_validations:hpp_stubs.core
+    -Wbextern=_constraints:hpp_stubs.core
+    -Wbextern=configuration_shooters:hpp_stubs.core
     -Wbextern=_problem:hpp_stubs.core
     )
   INSTALL(
