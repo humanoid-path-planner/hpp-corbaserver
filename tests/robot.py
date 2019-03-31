@@ -3,6 +3,11 @@ import unittest
 from subprocess import Popen
 from time import sleep
 
+# Check imports
+import hpp_idl.hpp.constraints_idl
+import hpp_idl.hpp.core_idl
+import hpp_idl.hpp.corbaserver
+
 from hpp.corbaserver import Client
 from hpp.corbaserver.robot import Robot
 
