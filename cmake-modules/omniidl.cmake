@@ -33,7 +33,13 @@ MACRO(GENERATE_IDL_CPP_IMPL FILENAME DIRECTORY)
     LIST(APPEND IDL_COMPILED_FILES ${FILENAME}${_omni_${suffix}})
   ENDFOREACH()
 
-  SET(_omniidl_args -p${CMAKE_SOURCE_DIR}/cmake-modules/omniidl -bcxx_impl -k
+  IF(DEFINED HPP_CORBASERVER_DATAROOTDIR
+      AND EXISTS ${HPP_CORBASERVER_DATAROOTDIR}/hpp-corbaserver/omniidl/cxx_impl)
+    SET(OMNIIDL_CXX_IMPL_BE ${HPP_CORBASERVER_DATAROOTDIR}/hpp-corbaserver/omniidl)
+  ELSE()
+    SET(OMNIIDL_CXX_IMPL_BE ${CMAKE_SOURCE_DIR}/cmake-modules/omniidl)
+  ENDIF()
+  SET(_omniidl_args -p${OMNIIDL_CXX_IMPL_BE} -bcxx_impl -k
     -Wbh=${_omni_HH_SUFFIX} -Wbhh=${_omni_HPP_SUFFIX} -Wbi=${_omni_HXX_SUFFIX} -Wbc=${_omni_CC_SUFFIX}
     ${_OMNIIDL_INCLUDE_FLAG} ${_omni_ARGUMENTS})
 
