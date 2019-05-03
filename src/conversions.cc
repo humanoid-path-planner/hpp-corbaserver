@@ -29,6 +29,9 @@ namespace hpp {
     void toTransform3f (const Transform_ in, Transform3f& out)
     {
       Transform3f::Quaternion Q (in [6], in [3], in [4], in [5]);
+      const value_type eps = 1e-4;
+      if (std::fabs (Q.squaredNorm()-1) > eps)
+        throw Error ("Quaternion is not normalized.");
       out.translation() << in [0], in [1], in [2];
       out.rotation() = Q.matrix();
     }

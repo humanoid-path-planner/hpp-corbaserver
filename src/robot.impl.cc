@@ -437,6 +437,8 @@ namespace hpp
           if (f.isRootFrame()) {
             name = CORBA::string_dup("");
           } else {
+            // TODO if f.parentFrame is not of type JOINT or FIXED_JOINT
+            // we should continue to loop on the parent.
             const std::string str = f.parentFrame().name();
             name = CORBA::string_dup(str.c_str());
           }
