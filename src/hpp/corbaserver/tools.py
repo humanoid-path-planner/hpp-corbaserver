@@ -1,3 +1,4 @@
+import sys
 from omniORB import CORBA
 import CosNaming, hpp_idl.hpp as _hpp
 
@@ -6,12 +7,14 @@ from .client import CorbaError, _getIIOPurl
 def loadServerPlugin (context, plugin, url = None):
     client = Tools (url)
     return client.loadServerPlugin (context, plugin)
-loadServerPlugin.__doc__ = _hpp.Tools.loadServerPlugin__doc__
+if sys.version_info.major > 2:
+    loadServerPlugin.__doc__ = _hpp.Tools.loadServerPlugin__doc__
 
 def createContext (context, url = None):
     client = Tools (url)
     return client.createContext (context, plugin)
-createContext.__doc__ = _hpp.Tools.createContext__doc__
+if sys.version_info.major > 2:
+    createContext.__doc__ = _hpp.Tools.createContext__doc__
 
 def Tools(url = None):
     import sys
@@ -55,4 +58,5 @@ def Tools(url = None):
 
     return client
 
-Tools.__doc__ = _hpp.Tools__doc__
+if sys.version_info.major > 2:
+    Tools.__doc__ = _hpp.Tools__doc__
