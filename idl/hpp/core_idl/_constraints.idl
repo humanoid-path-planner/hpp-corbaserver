@@ -32,7 +32,7 @@ module hpp
 
     string name () raises (Error);
     string str () raises (Error);
-    //boolean isSatisfied (in floatSeq config, out floatSeq err) raises (Error);
+    boolean isSatisfied (in floatSeq config) raises (Error);
   }; // interface Constraint
 
   interface ConfigProjector : Constraint
