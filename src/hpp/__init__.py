@@ -15,5 +15,5 @@
 # hpp-corbaserver.  If not, see
 # <http://www.gnu.org/licenses/>.
 
-from quaternion import Quaternion
-from transform import Transform
+from .quaternion import Quaternion
+from .transform import Transform
