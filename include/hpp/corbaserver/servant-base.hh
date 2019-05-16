@@ -368,6 +368,31 @@ namespace hpp
       return servant;
     }
 
+    template <typename OutType, typename InnerType>
+    struct vectorToSeqServant
+    {
+      Server* s;
+
+      vectorToSeqServant (Server* _s) : s (_s) {}
+
+      template <typename InContainer>
+      inline OutType* operator() (const InContainer& input)
+      {
+        std::size_t len = std::distance (input.begin(), input.end());
+        OutType* seq = new OutType ();
+        seq->length ((CORBA::ULong) len);
+
+        std::size_t i = 0;
+        typename InContainer::const_iterator it = input.begin();
+        while (it != input.end()) {
+          (*seq)[i] = makeServantDownCast<InnerType> (s, *it);
+          ++it;
+          ++i;
+        }
+        return seq;
+      }
+    };
+
     /// \}
   } // end of namespace corbaServer.
 } // end of namespace hpp.

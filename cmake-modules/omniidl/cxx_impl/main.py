@@ -210,7 +210,18 @@ class Builder(idlvisitor.AstVisitor):
                 return "return", ""
             elif type.type().name() == "floatSeq":
                 return "return hpp::corbaServer::vectorToFloatSeq", ""
-            print "typedef", type.type().name()
+            else:
+                unaliased = type.deref()
+                if unaliased.sequence():
+                    innerType = types.Type (unaliased.type().seqType())
+                    if innerType.objref():
+                        return "return hpp::corbaServer::vectorToSeqServant<{outType},{innerType}>(server_)"\
+                                .format (innerType=hpp_servant_name(id.Name(innerType.type().scopedName())),
+                                        outType=id.Name(type.type().scopedName()).fullyQualify(cxx=1)), ""
+                    else:
+                        print "Unhandled sequence of", innerType.type().name()
+                else:
+                    print "Unhandled type", type.type().name()
             return "", ""
         if type.objref():
             store = "{type} __return__".format(type=self.toCppNamespace(id.Name(type.type().scopedName()).suffix("Ptr_t")).fullyQualify(cxx=1))
@@ -308,8 +319,8 @@ class BuildInterfaceImplementations(Builder):
                 storage = ptr_t
         else:
             baseScopedName = id.Name (node.inherits()[0].scopedName())
-            impl_base_name = impl_tplname(baseScopedName)
             key = hpp_servant_name (baseScopedName)
+            impl_base_name = hpp_servant_name (baseScopedName.suffix('Servant'))
             if self.storages.has_key(key):
                 st = self.storages[key]
                 storage = st.sc.simple() + "< "+ptr_t+" >"
