@@ -35,6 +35,11 @@ module hpp
     floatSeq call (in value_type t, out boolean success) raises (Error);
     //-> operator()
 
+    floatSeq at (in value_type t, out boolean success) raises (Error);
+    //* vector_t res (get()->outputSize());
+    //* success = get()->at (t, res);
+    //* return vectorToFloatSeq (res);
+
     floatSeq derivative (in value_type t, in short order) raises (Error);
     //* vector_t res (get()->outputDerivativeSize());
     //* get()->derivative (res, t, order);
