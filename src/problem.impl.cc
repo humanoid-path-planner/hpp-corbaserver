@@ -72,6 +72,7 @@
 #include "hpp/core_idl/paths.hh"
 #include "hpp/core_idl/steering_methods.hh"
 #include "hpp/core_idl/path_validations.hh"
+#include "hpp/core_idl/path_planners.hh"
 #include "hpp/core_idl/_problem.hh"
 #include "problem.impl.hh"
 #include "tools.hh"
@@ -2690,12 +2691,24 @@ namespace hpp
       hpp::core_idl::PathValidation_ptr Problem::getPathValidation () throw (Error)
       {
         core::ProblemSolverPtr_t ps = problemSolver();
-        DevicePtr_t robot = getRobotOrThrow (ps);
         core::PathValidationPtr_t pv = problem (ps, true)->pathValidation();
 
         hpp::core_idl::PathValidation_var d =
           makeServantDownCast <core_impl::PathValidation> (server_->parent(),
               core_impl::PathValidation::Storage (pv));
+        return d._retn();
+      }
+
+      // ---------------------------------------------------------------
+
+      hpp::core_idl::PathPlanner_ptr Problem::getPathPlanner () throw (Error)
+      {
+        core::ProblemSolverPtr_t ps = problemSolver();
+        core::PathPlannerPtr_t pv = ps->pathPlanner();
+
+        hpp::core_idl::PathPlanner_var d =
+          makeServantDownCast <core_impl::PathPlanner> (server_->parent(),
+              core_impl::PathPlanner::Storage (pv));
         return d._retn();
       }
 

@@ -1,0 +1,46 @@
+// Copyright (C) 2019 by Joseph Mirabel, LAAS-CNRS.
+//
+// This file is part of the hpp-corbaserver.
+//
+// This software is provided "as is" without warranty of any kind,
+// either expressed or implied, including but not limited to the
+// implied warranties of fitness for a particular purpose.
+//
+// See the COPYING file for more information.
+
+#ifndef HPP_CORE_PATH_PLANNERS_IDL
+#define HPP_CORE_PATH_PLANNERS_IDL
+#include <hpp/common.idl>
+
+#include <hpp/core_idl/paths.idl>
+
+module hpp
+{
+  module core_idl {
+
+    interface PathPlanner
+    {
+      PathVector solve () raises (Error);
+
+      void startSolve () raises (Error);
+
+      void tryConnectInitAndGoals () raises (Error);
+
+      void oneStep () raises (Error);
+
+      PathVector finishSolve (in PathVector path) raises (Error);
+
+      void interrupt () raises (Error);
+
+      void maxIterations (in size_type n) raises (Error);
+
+      void timeOut(in value_type seconds) raises (Error);
+    }; // interface SteeringMethod
+
+  }; // module core
+}; // module hpp
+
+//* #include <hpp/core/path-planner.hh>
+//* #include <hpp/core_idl/paths.hh>
+
+#endif // HPP_CORE_PATH_PLANNERS_IDL
