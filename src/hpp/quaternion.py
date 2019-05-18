@@ -435,3 +435,14 @@ class Quaternion (object):
           self.array[0:3] = axis*np.sqrt(1.-w2)
           self.array[3] = np.sqrt(w2)
           return self.normalize()
+
+    def fromAngleAxis(self,axis,angle,degree=False):
+        """
+        Build a quaternion from an axis of rotation and an angle.
+        The angle is in radians by default and in degree if degree is set to True.
+        The axis is normalized.
+        """
+        if degree:
+            angle = angle * np.pi / 180.
+        self.array[0:3] = np.sin(angle/2) * np.asarray(axis) / linalg.norm(axis)
+        self.array[3] = np.cos(angle/2)
