@@ -43,6 +43,7 @@ FOREACH(IDL ${IDL_SOURCES})
     -Wbextern=paths:hpp_stubs.core
     -Wbextern=steering_methods:hpp_stubs.core
     -Wbextern=path_validations:hpp_stubs.core
+    -Wbextern=path_planners:hpp_stubs.core
     -Wbextern=_constraints:hpp_stubs.core
     -Wbextern=configuration_shooters:hpp_stubs.core
     -Wbextern=_problem:hpp_stubs.core
@@ -66,7 +67,7 @@ INSTALL(
 
 MAKE_DIRECTORY(${CMAKE_BINARY_DIR}/src/hpp_idl)
 MAKE_DIRECTORY(${CMAKE_BINARY_DIR}/src/hpp/core_idl)
-FOREACH(IDL distances paths steering_methods path_validations _problem configuration_shooters _constraints)
+FOREACH(IDL distances paths steering_methods path_validations _problem configuration_shooters _constraints path_planners)
   GENERATE_IDL_CPP (hpp/core_idl/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/core_idl
     ARGUMENTS
     -Wbguard_prefix=hpp_core_idl

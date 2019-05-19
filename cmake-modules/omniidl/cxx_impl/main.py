@@ -154,6 +154,15 @@ def run(tree):
                close_namespaces         = closens,
                )
 
+def get_base_class (node, retDepth=False):
+    base = node
+    depth = 0
+    while base.inherits():
+        depth += 1
+        base = base.inherits()[0]
+    if retDepth: return base, depth
+    else: return base
+
 class Builder(idlvisitor.AstVisitor):
     def __init__ (self):
         self._modules = {}
@@ -190,8 +199,9 @@ class Builder(idlvisitor.AstVisitor):
             return name, ""
         if _type.objref():
             if _out: raise makeError("out objects is currently not supported", param.file(), param.line())
-            conv = "{type} {tmp} = reference_to_servant<{servanttype}>(server_, {name})->getT();" \
-                    .format(type=self.toCppNamespace(id.Name(_type.type().scopedName()).suffix("Ptr_t")).fullyQualify(cxx=1),
+            conv = "{typeptr} {tmp} = reference_to_servant_base<{type}>(server_, {name})->get();" \
+                    .format(type   =self.toCppNamespace(id.Name(_type.type().scopedName())                ).fullyQualify(cxx=1),
+                            typeptr=self.toCppNamespace(id.Name(_type.type().scopedName()).suffix("Ptr_t")).fullyQualify(cxx=1),
                             servanttype=hpp_servant_name(id.Name(_type.type().scopedName())),
                             tmp=tmp, name=name)
             return tmp, conv
@@ -210,12 +220,33 @@ class Builder(idlvisitor.AstVisitor):
                 return "return", ""
             elif type.type().name() == "floatSeq":
                 return "return hpp::corbaServer::vectorToFloatSeq", ""
-            print "typedef", type.type().name()
+            else:
+                unaliased = type.deref()
+                if unaliased.sequence():
+                    innerType = types.Type (unaliased.type().seqType())
+                    if innerType.objref():
+                        if isinstance (innerType.type().decl(), idlast.Forward):
+                            base = get_base_class (innerType.type().decl().fullDecl())
+                        else:
+                            base = get_base_class (innerType.type().decl())
+                        return "return hpp::corbaServer::vectorToSeqServant<{outType},{innerBaseType},{innerType}>(server_)"\
+                                .format(innerBaseType=hpp_servant_name(id.Name(base.scopedName())),
+                                        innerType=hpp_servant_name(id.Name(innerType.type().scopedName())),
+                                        outType=id.Name(type.type().scopedName()).fullyQualify(cxx=1)), ""
+                    else:
+                        print "Unhandled sequence of", innerType.type().name()
+                else:
+                    print "Unhandled type", type.type().name()
             return "", ""
         if type.objref():
+            if isinstance (type.type().decl(), idlast.Forward):
+                base = get_base_class (type.type().decl().fullDecl())
+            else:
+                base = get_base_class (type.type().decl())
             store = "{type} __return__".format(type=self.toCppNamespace(id.Name(type.type().scopedName()).suffix("Ptr_t")).fullyQualify(cxx=1))
-            conv  = "return makeServantDownCast<{type}>(server_, __return__)._retn();" \
-                    .format(type=hpp_servant_name(id.Name(type.type().scopedName())))
+            conv  = "return makeServantDownCast<{basetype},{type}>(server_, __return__)._retn();" \
+                    .format(type=hpp_servant_name(id.Name(type.type().scopedName())),
+                            basetype=hpp_servant_name(id.Name(base.scopedName())))
             return store, conv
         print type.type(), type.kind()
         return "", ""
@@ -308,8 +339,8 @@ class BuildInterfaceImplementations(Builder):
                 storage = ptr_t
         else:
             baseScopedName = id.Name (node.inherits()[0].scopedName())
-            impl_base_name = impl_tplname(baseScopedName)
             key = hpp_servant_name (baseScopedName)
+            impl_base_name = hpp_servant_name (baseScopedName.suffix('Servant'))
             if self.storages.has_key(key):
                 st = self.storages[key]
                 storage = st.sc.simple() + "< "+ptr_t+" >"
@@ -515,11 +546,7 @@ class BuildInterfaceObjectDowncasts(Builder):
         servantScope = hpp_servant_scope (idlScopedName)
         scopedName = hpp_servant_name(idlScopedName)
 
-        base = node
-        depth = 0
-        while base.inherits():
-            depth += 1
-            base = base.inherits()[0]
+        base, depth = get_base_class (node, retDepth=True)
         baseScopedName = hpp_servant_name(id.Name(base.scopedName()), servantScope)
         
         if depth == 0:

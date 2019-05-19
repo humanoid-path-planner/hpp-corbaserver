@@ -58,9 +58,15 @@ module hpp
     floatSeq rightHandSideAt (in value_type s) raises (Error);
   }; // interface Implicit
 
+  interface LockedJoint : Implicit
+  {
+    string jointName () raises (Error);
+  }; // interface LockedJoint
+
   }; // module core
 }; // module hpp
 //* #include <hpp/constraints/differentiable-function.hh>
 //* #include <hpp/constraints/implicit.hh>
+//* #include <hpp/constraints/locked-joint.hh>
 
 #endif // HPP_CORE_PATHS_IDL

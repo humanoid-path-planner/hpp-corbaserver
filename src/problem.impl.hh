@@ -375,6 +375,8 @@ namespace hpp
 
         hpp::core_idl::PathValidation_ptr getPathValidation () throw (Error);
 
+        hpp::core_idl::PathPlanner_ptr getPathPlanner () throw (Error);
+
         hpp::core_idl::Problem_ptr getProblem () throw (Error);
 
         hpp::constraints_idl::Implicit_ptr getConstraint (const char* name) throw (Error);

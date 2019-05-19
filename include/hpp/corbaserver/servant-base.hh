@@ -349,9 +349,33 @@ namespace hpp
 
     /// Create and activate a omniORB servant with class downcasting.
     /// \tparam ServantBaseType the top classes of the hierarchy.
+    template <typename ServantBaseType, typename ReturnType>
+    typename ReturnType::Object_var makeServantDownCast (Server* server, const typename ServantBaseType::Storage& t)
+    {
+      typedef typename ServantBaseType::Object_var BaseObject_var;
+      typedef typename      ReturnType::Object_var Object_var;
+      BaseObject_var servant;
+      assert (CORBA::Object_Helper::is_nil(servant.in()));
+
+      typedef std::vector< ServantFactoryBase<ServantBaseType>* > vector_t;
+      typedef typename vector_t::iterator iterator;
+
+      vector_t& vec = objectDowncasts<ServantBaseType>();
+      for (iterator _obj = vec.begin(); _obj != vec.end(); ++_obj) {
+        servant = (*_obj)->servant(server, t);
+        if (!CORBA::Object_Helper::is_nil(servant.in())) {
+          // Cast to child type.
+          return Object_var (ReturnType::Object::_narrow (servant._retn()));
+        }
+      }
+      return Object_var();
+    }
+
     template <typename ServantBaseType>
     typename ServantBaseType::Object_var makeServantDownCast (Server* server, const typename ServantBaseType::Storage& t)
     {
+      //TODO
+      //return makeServantDownCast <ServantBaseType, ServantBaseType> (server, t);
       typedef typename ServantBaseType::Object_var Object_var;
       Object_var servant;
       assert (CORBA::Object_Helper::is_nil(servant.in()));
@@ -367,6 +391,31 @@ namespace hpp
 
       return servant;
     }
+
+    template <typename OutType, typename InnerBaseType, typename InnerType = InnerBaseType>
+    struct vectorToSeqServant
+    {
+      Server* s;
+
+      vectorToSeqServant (Server* _s) : s (_s) {}
+
+      template <typename InContainer>
+      inline OutType* operator() (const InContainer& input)
+      {
+        std::size_t len = std::distance (input.begin(), input.end());
+        OutType* seq = new OutType ();
+        seq->length ((CORBA::ULong) len);
+
+        std::size_t i = 0;
+        typename InContainer::const_iterator it = input.begin();
+        while (it != input.end()) {
+          (*seq)[i] = makeServantDownCast<InnerBaseType, InnerType> (s, *it)._retn();
+          ++it;
+          ++i;
+        }
+        return seq;
+      }
+    };
 
     /// \}
   } // end of namespace corbaServer.
