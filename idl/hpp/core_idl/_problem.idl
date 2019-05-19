@@ -19,9 +19,20 @@ module hpp
   interface SteeringMethod;
   interface PathValidation;
   interface ConfigurationShooter;
+  interface Constraint;
 
   interface Problem
   {
+    void setInitConfig (in floatSeq init) raises (Error);
+    //* ConfigurationPtr_t q (floatSeqToConfigPtr(getT()->robot(), init, true));
+    //* getT()->initConfig (q);
+    floatSeq getInitConfig () raises (Error);
+    //-> initConfig
+    void resetGoalConfigs () raises (Error);
+
+    Constraint getConstraints () raises (Error);
+    //-> constraints
+
     Distance getDistance () raises (Error);
     //-> distance
     void setDistance (in Distance d) raises (Error);
