@@ -106,10 +106,18 @@ unused_usage_string =  """\
 # so we can produce a friendly error message later.
 AST_unsupported_nodes = [ "Native" ]
 
-config.state._config['HPP Suffix'] = ".hpp"
-config.state._config['HXX Suffix'] = ".hxx"
-config.state._config['CC Suffix']  = ".cc"
-config.state._config['Include Prefix']  = ""
+try:
+    # omniidl 4.1.6
+    config.state._config['HPP Suffix'] = ".hpp"
+    config.state._config['HXX Suffix'] = ".hxx"
+    config.state._config['CC Suffix']  = ".cc"
+    config.state._config['Include Prefix']  = ""
+except AttributeError: #'dict' object has no attribute '_config'
+    # omniidl 4.2.2
+    config.state['HPP Suffix'] = ".hpp"
+    config.state['HXX Suffix'] = ".hxx"
+    config.state['CC Suffix']  = ".cc"
+    config.state['Include Prefix']  = ""
 
 def process_args(args):
     for arg in args:
@@ -214,6 +222,7 @@ def run(tree, backend_args):
         hpp_stream = output.Stream(output.createFile(hpp_filename), 2)
         hxx_stream = output.Stream(output.createFile(hxx_filename), 2)
         cc_stream  = output.Stream(output.createFile( cc_filename), 2)
+        main.self = main
         main.__init__(hpp_stream, hxx_stream, cc_stream,
                 idl_filename,
                 prefix, hh_filename, hpp_filename, hxx_filename)
@@ -224,7 +233,7 @@ def run(tree, backend_args):
         hxx_stream.close()
         cc_stream .close()
 
-    except AttributeError, e:
+    except AttributeError as e:
         name = e.args[0]
         unsupported_visitors = map(lambda x:"visit" + x,
                                    AST_unsupported_nodes[:])
@@ -237,7 +246,7 @@ def run(tree, backend_args):
             
         raise
 
-    except SystemExit, e:
+    except SystemExit as e:
         # fatalError function throws SystemExit exception
         # delete all possibly partial output files
         for file in output.listAllCreatedFiles():
