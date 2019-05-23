@@ -28,15 +28,11 @@
 
 """Produce interface implementations for HPP"""
 
-import string
+from __future__ import print_function
 
 from omniidl import idlast, idlvisitor
 from omniidl_be.cxx import ast, cxx, util, id, types, output, config
 from cxx_impl import template
-
-import main
-
-self = main
 
 def __init__(hpp_stream, hxx_stream, cc_stream, idl_filename, prefix, hh_filename, hpp_filename, hxx_filename):
     self.hpp_stream   = hpp_stream
@@ -70,7 +66,7 @@ def hpp_scope(name, suffix=""):
 # Given an IDL name convert it into the corresponding hpp class name
 def hpp_name(name, suffix=""):
     scope = [ n.replace('_idl', '') for n in name.scope() ] + [ name.simple(cxx=0), ]
-    return string.join (scope, "::")
+    return "::".join (scope)
 
 # Given an IDL name convert it into the corresponding hpp servant class id.Name
 def hpp_servant_scope(name):
@@ -101,8 +97,8 @@ def namespaces (name, environment=None):
         scope = scope.scope()[len(env):]
     else:
         scope = scope.scope()
-    open_ns = string.join ([ "namespace {name} {{".format (name=n) for n in scope ], "\n\n")
-    closens = string.join ([ "}} // namespace {name}".format (name=n) for n in scope ], "\n\n")
+    open_ns = "\n\n".join ([ "namespace {name} {{".format (name=n) for n in scope ])
+    closens = "\n\n".join ([ "}} // namespace {name}".format (name=n) for n in scope ])
     return open_ns, closens
 
 # Main code entrypoint
@@ -195,7 +191,7 @@ class Builder(idlvisitor.AstVisitor):
             elif _type.type().name() == "floatSeq":
                 if _out: raise makeError("out floatSeq is currently not supported", param.file(), param.line())
                 return tmp, "hpp::core::vector_t {} = hpp::corbaServer::floatSeqToVector ({});".format (tmp,name)
-            print "typedef", _type.type().name()
+            print ("typedef", _type.type().name())
             return name, ""
         if _type.objref():
             if _out: raise makeError("out objects is currently not supported", param.file(), param.line())
@@ -205,7 +201,7 @@ class Builder(idlvisitor.AstVisitor):
                             servanttype=hpp_servant_name(id.Name(_type.type().scopedName())),
                             tmp=tmp, name=name)
             return tmp, conv
-        print _type.type(), _type.kind()
+        print (_type.type(), _type.kind())
         return name, ""
 
     def retConversion(self, type):
@@ -234,9 +230,9 @@ class Builder(idlvisitor.AstVisitor):
                                         innerType=hpp_servant_name(id.Name(innerType.type().scopedName())),
                                         outType=id.Name(type.type().scopedName()).fullyQualify(cxx=1)), ""
                     else:
-                        print "Unhandled sequence of", innerType.type().name()
+                        print ("Unhandled sequence of", innerType.type().name())
                 else:
-                    print "Unhandled type", type.type().name()
+                    print ("Unhandled type", type.type().name())
             return "", ""
         if type.objref():
             if isinstance (type.type().decl(), idlast.Forward):
@@ -248,7 +244,7 @@ class Builder(idlvisitor.AstVisitor):
                     .format(type=hpp_servant_name(id.Name(type.type().scopedName())),
                             basetype=hpp_servant_name(id.Name(base.scopedName())))
             return store, conv
-        print type.type(), type.kind()
+        print (type.type(), type.kind())
         return "", ""
 
     # modules can contain interfaces
@@ -304,10 +300,10 @@ class BuildInterfaceImplementations(Builder):
         st.out (template.storage_decl,
                 storage_class_name       = storage.sc.simple(),
                 hpp_base_class           = storage.class_sc.simple(),
-                storage_attributes       = string.join([ t.fullyQualify() + " " + n for t,n in storage.members ], "\n"),
-                storage_constr_attr_decl = string.join([ t.fullyQualify() + " _" + n for t,n in storage.members ], ", ") + ", ",
-                storage_constr_attr_defs = ", " + string.join([ n + " (_" + n + ")" for t,n in storage.members ], ", "),
-                storage_attr_call        = string.join([ n for t,n in storage.members ], ", ") + ", ",
+                storage_attributes       = "\n".join([ t.fullyQualify() + " " + n for t,n in storage.members ]),
+                storage_constr_attr_decl = ", ".join([ t.fullyQualify() + " _" + n for t,n in storage.members ]) + ", ",
+                storage_constr_attr_defs = ", " + ", ".join([ n + " (_" + n + ")" for t,n in storage.members ]),
+                storage_attr_call        = ", ".join([ n for t,n in storage.members ]) + ", ",
                 )
         storage.decl = str(st)
 
@@ -330,7 +326,7 @@ class BuildInterfaceImplementations(Builder):
         if is_base_class:
             key = hpp_servant_name (scopedName)
             impl_base_name = "ServantBase"
-            if self.storages.has_key(key):
+            if key in self.storages:
                 st = self.storages[key]
                 # declare storage
                 self.interface_declarations.out(st.decl)
@@ -341,7 +337,7 @@ class BuildInterfaceImplementations(Builder):
             baseScopedName = id.Name (node.inherits()[0].scopedName())
             key = hpp_servant_name (baseScopedName)
             impl_base_name = hpp_servant_name (baseScopedName.suffix('Servant'))
-            if self.storages.has_key(key):
+            if key in self.storages:
                 st = self.storages[key]
                 storage = st.sc.simple() + "< "+ptr_t+" >"
                 self.storages[fqname] = st
@@ -451,8 +447,8 @@ class BuildInterfaceImplementations(Builder):
                 return_type = types.Type(c.returnType()).op(types.RET)
 
                 opname = id.mapID(c.identifier())
-                arguments = string.join(params, ", ")
-                argumentsCall = string.join(paramNames, ", ")
+                arguments = ", ".join(params)
+                argumentsCall = ", ".join(paramNames)
                 args = opname + "(" + arguments + ")"
 
                 declarations.out (template.operation_decl_code,
@@ -465,15 +461,15 @@ class BuildInterfaceImplementations(Builder):
                             return_type = return_type,
                             impl_tpl_name = impl_tpl_name,
                             opname = opname,
-                            implementation = string.join(comments_impl, ""),
+                            implementation = "".join(comments_impl),
                             arg_defs = arguments,)
-                elif template.predefined_operations_impl_code.has_key (opname):
+                elif opname in template.predefined_operations_impl_code:
                     #assert not c.parameters(), "Interface operation str should not have arguments"
                     implementations.out (template.predefined_operations_impl_code[opname],
                             return_type = return_type,
                             impl_tpl_name = impl_tpl_name,
                             opname = opname,
-                            conversions = string.join(conversions, "\n  "),
+                            conversions = "\n  ".join(conversions),
                             arg_defs = arguments,
                             store_return = store_return,
                             do_return = do_return,
@@ -484,7 +480,7 @@ class BuildInterfaceImplementations(Builder):
                             impl_tpl_name = impl_tpl_name,
                             opname = opname,
                             hpp_opname = hpp_opname if hpp_opname is not None else opname,
-                            conversions = string.join(conversions, "\n  "),
+                            conversions = "\n  ".join(conversions),
                             arg_defs = arguments,
                             store_return = store_return,
                             do_return = do_return,
