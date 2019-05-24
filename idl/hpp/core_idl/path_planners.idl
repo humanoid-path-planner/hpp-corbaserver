@@ -28,6 +28,8 @@ module hpp
 
       void oneStep () raises (Error);
 
+      PathVector computePath () raises (Error);
+
       PathVector finishSolve (in PathVector path) raises (Error);
 
       void interrupt () raises (Error);

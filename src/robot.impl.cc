@@ -962,8 +962,9 @@ namespace hpp
 	try {
           core::ProblemPtr_t p = problemSolver()->problem();
           if (p) {
-            ConfigurationPtr_t q = p->configurationShooter()->shoot();
-            return vectorToFloatSeq(*q);
+            Configuration_t q;
+            p->configurationShooter()->shoot(q);
+            return vectorToFloatSeq(q);
           } else {
             throw Error ("No problem in the ProblemSolver");
           }

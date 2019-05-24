@@ -191,6 +191,9 @@ class Builder(idlvisitor.AstVisitor):
             elif _type.type().name() == "floatSeq":
                 if _out: raise makeError("out floatSeq is currently not supported", param.file(), param.line())
                 return tmp, "hpp::core::vector_t {} = hpp::corbaServer::floatSeqToVector ({});".format (tmp,name)
+            elif _type.type().name() == "Transform_":
+                if _out: raise makeError("out Transform_ is currently not supported", param.file(), param.line())
+                return tmp, "hpp::core::Transform3f {} = hpp::corbaServer::toTransform3f ({});".format (tmp,name)
             print ("typedef", _type.type().name())
             return name, ""
         if _type.objref():
@@ -205,6 +208,11 @@ class Builder(idlvisitor.AstVisitor):
         return name, ""
 
     def retConversion(self, type):
+        """
+        Returns two values:
+        - storing: will be used as "${storing} (${hpp_method_call})."
+        - converting: will be copied as such after the line above.
+        """
         if type.void():
             return "", ""
         if type.char() or type.floating() or type.boolean() or type.integer():
@@ -216,6 +224,8 @@ class Builder(idlvisitor.AstVisitor):
                 return "return", ""
             elif type.type().name() == "floatSeq":
                 return "return hpp::corbaServer::vectorToFloatSeq", ""
+            elif type.type().name() == "Transform_":
+                return "return hpp::corbaServer::toHppTransform", ""
             else:
                 unaliased = type.deref()
                 if unaliased.sequence():
