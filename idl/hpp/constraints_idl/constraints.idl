@@ -51,9 +51,9 @@ module hpp
     floatSeq getRightHandSide () raises (Error);
     //-> rightHandSide
 
-    size_type rhsSize () raises (Error);
+    size_type rightHandSideSize () raises (Error);
 
-    boolean constantRightHandSide () raises (Error);
+    size_type parameterSize () raises (Error);
 
     floatSeq rightHandSideAt (in value_type s) raises (Error);
   }; // interface Implicit
