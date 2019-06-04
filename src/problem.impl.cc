@@ -1414,7 +1414,7 @@ namespace hpp
 	try {
           ImplicitPtr_t nc
             (problemSolver ()->numericalConstraints.get (constraintName));
-	  return nc->constantRightHandSide ();
+	  return nc->parameterSize () == 0;
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
