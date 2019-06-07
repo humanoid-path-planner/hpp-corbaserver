@@ -109,11 +109,6 @@ module hpp
     /// Get all joint names including anchor joints
     Names_t getAllJointNames () raises (Error);
 
-    /// Get child joint names excluding anchor joints
-    /// This method does not work on anchor joint
-    /// \deprecated Use getParentJointName instead
-    Names_t getChildJointNames (in string jointName) raises (Error);
-
     /// Get the parent joint of a joint
     /// \input jointName any joint (anchor or movable).
     /// \return the parent joint (can be an anchor joint)
@@ -131,7 +126,7 @@ module hpp
     /// \param jointName name of the joint,
     /// \param config Configuration of the joint.
     ///
-    /// Size of config should fit hpp::model::Joint::configSize.
+    /// Size of config should fit hpp::pinocchio::Joint::configSize.
     ///
     /// Modify the part of the robot current configuration
     /// correponding to the joint and recompute forward kinematics
@@ -261,13 +256,13 @@ module hpp
     /// Set dimension of the extra configuration space
     ///
     /// \param dimension dimension
-    /// \sa hpp::model::ExtraConfigSpace
+    /// \sa hpp::pinocchio::ExtraConfigSpace
     void setDimensionExtraConfigSpace (in unsigned long dimension)
       raises (Error);
 
     /// Get the dimension of the extra configuration space
     ///
-    /// \sa hpp::model::ExtraConfigSpace
+    /// \sa hpp::pinocchio::ExtraConfigSpace
     unsigned long getDimensionExtraConfigSpace ()
       raises (Error);
 

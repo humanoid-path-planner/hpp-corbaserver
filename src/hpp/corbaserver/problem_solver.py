@@ -397,10 +397,6 @@ class ProblemSolver (object):
         return self.hppcorba.problem.addNumericalConstraints \
             (name, names, priorities)
 
-    ## \deprecated Use addNumericalConstraints instead.
-    def setNumericalConstraints (self, name, names, priorities = None):
-        return self.addNumericalConstraints (name, names, priorities)
-
     ## Add locked joint in ConfigProjector
     #
     #  \param name name of the config projector created if any,
@@ -408,10 +404,6 @@ class ProblemSolver (object):
     #         method createLockedJoint.
     def addLockedJointConstraints (self, name, names):
         return self.hppcorba.problem.addLockedJointConstraints (name, names)
-
-    ## \deprecated Use addLockedJointConstraints instead.
-    def setLockedJointConstraints (self, name, names):
-        return self.addLockedJointConstraints (name, names)
 
     ## Set right hand side of constraints in config projector
     #  \param rhs right hand side of constraints. Contains only right hand side
@@ -516,20 +508,6 @@ class ProblemSolver (object):
     # \param See hpp::core::ConfigProjector::LineSearchType for possible values.
     def setDefaultLineSearchType (self, type):
         return self.hppcorba.problem.setDefaultLineSearchType (type)
-
-    ## Set the maximal number of iterations in projection
-    def getMaxIterations (self):
-        from warnings import warn
-        warn ("method getMaxIterations is deprecated: use getMaxIterProjection"+
-              " instead")
-	return self.hppcorba.problem.getMaxIterProjection ()
-
-    ## Set the maximal number of iterations in projection
-    def setMaxIterations (self, iterations):
-        from warnings import warn
-        warn ("method setMaxIterations is deprecated: use setMaxIterProjection"+
-              " instead")
-	return self.hppcorba.problem.setMaxIterProjection (iterations)
 
     ## Get the maximal number of iterations in projection
     def getMaxIterPathPlanning (self):
