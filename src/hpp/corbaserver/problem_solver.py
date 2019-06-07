@@ -332,6 +332,9 @@ class ProblemSolver (object):
     def addPartialCom (self, comName, jointNames):
         return self.hppcorba.robot.addPartialCom (comName, jointNames);
 
+    def getPartialCom (self, comName):
+        return self.hppcorba.robot.getPartialCom (comName);
+
     ## Create position constraint between two joints
     #
     #  \param constraintName name of the constraint created,
