@@ -1,3 +1,7 @@
+
+New in 4.6.1
+* Remove deprecated methods
+
 New in 4.6.0
 * Make omniidl backend compliant with omniidl 4.1.2 and 4.2.2
 * Install CMake macro to generate Omniorb servants.
