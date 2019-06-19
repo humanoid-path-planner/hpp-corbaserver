@@ -1186,17 +1186,17 @@ namespace hpp
       {
 	bool success = false;
         DevicePtr_t robot = getRobotOrThrow(problemSolver());
-	ConfigurationPtr_t config = floatSeqToConfigPtr (robot, input, true);
 	try {
+          ConfigurationPtr_t config = floatSeqToConfigPtr (robot, input, true);
 	  success = problemSolver()->constraints ()->apply (*config);
 	  if (hpp::core::ConfigProjectorPtr_t configProjector =
 	      problemSolver()->constraints ()->configProjector ()) {
 	    residualError = configProjector->residualError ();
 	  }
-	} catch (const std::exception& exc) {
+          output = vectorToFloatSeq (*config);
+        } catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
-	output = vectorToFloatSeq (*config);
 	return success;
       }
 
