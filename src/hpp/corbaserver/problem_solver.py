@@ -586,6 +586,11 @@ class ProblemSolver (object):
         return self.hppcorba.problem.selectPathValidation (pathValidationType,
                                                          tolerance)
 
+    ## Add path validation object
+    #  \param configValidationType name of the config validation method
+    def addConfigValidation (self, configValidationType):
+        return self.hppcorba.problem.addConfigValidation (configValidationType)
+
     ## Select configuration shooter type
     #  \param Name of the configuration shooter type
     def selectConfigurationShooter (self, type):
