@@ -53,9 +53,9 @@ module hpp
 
   interface ConstraintSet : Constraint
   {
-    // The return type should be ConfigProjector. At the moment, this causes a bug
-    // because because the implementation does not know this inherits from Constraint.
-    // The CORBA object below IS a ConfigProjector
+    /// The return type should be ConfigProjector. At the moment, this causes a bug
+    /// because because the implementation does not know this inherits from Constraint.
+    /// The CORBA object below \b is a ConfigProjector
     Constraint getConfigProjector () raises (Error);
     //-> configProjector
   }; // interface ConstraintSet

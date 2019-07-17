@@ -31,8 +31,8 @@ module hpp
     /// \param urdfSuffix suffix for urdf file,
     ///
     /// The ros url are built as follows:
-    /// "package://${packageName}/urdf/${modelName}${urdfSuffix}.urdf"
-    /// "package://${packageName}/srdf/${modelName}${srdfSuffix}.srdf"
+    /// - \c package://${packageName}/urdf/${modelName}${urdfSuffix}.urdf
+    /// - \c package://${packageName}/srdf/${modelName}${srdfSuffix}.srdf
     ///
     void loadRobotModel (in string robotName, in string rootJointType,
 			 in string packageName, in string modelName,
@@ -49,8 +49,8 @@ module hpp
     /// \param urdfSuffix suffix for urdf file,
     ///
     /// The ros url are built as follows:
-    /// "package://${packageName}/urdf/${modelName}${urdfSuffix}.urdf"
-    /// "package://${packageName}/srdf/${modelName}${srdfSuffix}.srdf"
+    /// - \c package://${packageName}/urdf/${modelName}${urdfSuffix}.urdf
+    /// - \c package://${packageName}/srdf/${modelName}${srdfSuffix}.srdf
     ///
     void loadHumanoidModel (in string robotName, in string rootJointType,
 			    in string packageName, in string modelName,
