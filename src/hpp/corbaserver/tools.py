@@ -33,7 +33,7 @@ def Tools(url = None):
 
     try:
       obj = rootContext.resolve (name)
-    except CosNaming.NamingContext.NotFound, ex:
+    except CosNaming.NamingContext.NotFound as ex:
       raise CorbaError (
         'failed to find the service ``{0}\'\''.format (serviceName))
 

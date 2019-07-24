@@ -20,7 +20,7 @@ import csv
 from hpp import Quaternion
 
 # Test construction from SO3 matrix
-for _ in xrange (1000):
+for _ in range (1000):
     q1 = Quaternion (np.random.sample (4)).normalize ()
     mat = q1.toRotationMatrix ()
     q2 = Quaternion (mat)
@@ -33,7 +33,7 @@ with open ('./test/add-quaternions.csv', 'r') as f:
     iline=0
     for line in r:
         iline+=1
-        data = map (float, line)
+        data = list(map (float, line))
         q1 = Quaternion (data [0:4])
         q2 = Quaternion (data [4:8])
         q3 = Quaternion (data [8:12])
@@ -47,7 +47,7 @@ with open ('./test/mul-quaternions.csv', 'r') as f:
     iline=0
     for line in r:
         iline+=1
-        data = map (float, line)
+        data = list(map (float, line))
         q1 = Quaternion (data [0:4])
         q2 = Quaternion (data [4:8])
         q3 = Quaternion (data [8:12])
@@ -61,7 +61,7 @@ with open ('./test/sub-quaternions.csv', 'r') as f:
     iline=0
     for line in r:
         iline+=1
-        data = map (float, line)
+        data = list(map (float, line))
         q1 = Quaternion (data [0:4])
         q2 = Quaternion (data [4:8])
         q3 = Quaternion (data [8:12])
@@ -75,7 +75,7 @@ with open ('./test/div-quaternions.csv', 'r') as f:
     iline=0
     for line in r:
         iline+=1
-        data = map (float, line)
+        data = list(map (float, line))
         q1 = Quaternion (data [0:4])
         q2 = Quaternion (data [4:8])
         q3 = Quaternion (data [8:12])
@@ -89,7 +89,7 @@ with open ('./test/transform-quaternions.csv', 'r') as f:
     iline=0
     for line in r:
         iline+=1
-        data = map (float, line)
+        data = list(map (float, line))
         q = Quaternion (data [0:4])
         u = np.array (data [4:7])
         v = np.array (data [7:10])

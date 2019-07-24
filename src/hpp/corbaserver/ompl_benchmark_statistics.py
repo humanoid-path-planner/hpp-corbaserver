@@ -36,6 +36,7 @@
 
 # Author: Mark Moll, Ioan Sucan, Luis G. Torres
 
+from __future__ import print_function
 from sys import argv, exit
 from os.path import basename, splitext, exists
 import os
@@ -335,7 +336,7 @@ def plotAttribute(cur, planners, attribute, typename):
         colsum = np.sum(measurements, axis=1)
         rows = np.where(colsum != 0)[0]
         heights = np.zeros((1,measurements.shape[1]))
-        ind = range(measurements.shape[1])
+        ind = list(range(measurements.shape[1]))
         legend_labels = []
         for i in rows:
             plt.bar(ind, measurements[i], width, bottom=heights[0],
@@ -352,7 +353,7 @@ def plotAttribute(cur, planners, attribute, typename):
     elif typename == 'BOOLEAN':
         width = .5
         measurementsPercentage = [sum(m) * 100. / len(m) for m in measurements]
-        ind = range(len(measurements))
+        ind = list(range(len(measurements)))
         plt.bar(ind, measurementsPercentage, width)
         xtickNames = plt.xticks([x + width / 2. for x in ind], labels, rotation=30)
         ax.set_ylabel(attribute.replace('_',' ') + ' (%)')
@@ -400,7 +401,7 @@ each planner."""
             for r in runids:
                 # Select data for given run
                 cur.execute('SELECT time, %s FROM progress WHERE runid = %s ORDER BY time' % (attribute,r))
-                (time, data) = zip(*(cur.fetchall()))
+                (time, data) = list(zip(*(cur.fetchall())))
                 timeTable.append(time)
                 dataTable.append(data)
             # It's conceivable that the sampling process may have

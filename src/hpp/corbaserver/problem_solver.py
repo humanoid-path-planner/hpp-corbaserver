@@ -28,13 +28,18 @@ def newProblem (client = None, name = None):
         client.problem.resetProblem()
 
 def _convertToCorbaAny (value):
+    from sys import version_info
+    if sys.version_info.major > 2:
+        integers = (int,)
+    else:
+        integers = (long,int,)
     import CORBA
     t = type(value)
     if t is float:
         return CORBA.Any(CORBA.TC_double, value)
     elif isinstance(value, bool):
         return CORBA.Any(CORBA.TC_boolean, value)
-    elif isinstance(value, (long, int)):
+    elif isinstance(value, integers):
         return CORBA.Any(CORBA.TC_longlong, value)
     elif isinstance(value, str):
         return CORBA.Any(CORBA.TC_string, value)

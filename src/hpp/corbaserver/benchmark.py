@@ -16,6 +16,7 @@
 # hpp-corbaserver.  If not, see
 # <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function
 import numpy as np
 import sys
 
@@ -48,7 +49,10 @@ class _BenchmarkIterator (object):
     def __iter__(self):
         return self
 
-    def next(self): # Python 3: def __next__(self)
+    def next(self): # Python 2 iteration
+        return self.__next__ ()
+
+    def __next__(self): # Python 3 iteration
         if self.start:
             self.newCase = True
             self.start = False
@@ -167,7 +171,7 @@ class Benchmark (object):
 
     def __init__ (self, client, robot, problemSolver):
         ## A list of seed to initialize the random generator.
-        self.seedRange = range (1)
+        self.seedRange = list(range(1))
         ## A list of cases for which benchmarking will be done.
         self.cases = [None]
         ## Number of times one case is repeated (for one seed).
@@ -196,9 +200,9 @@ class Benchmark (object):
             self.client.problem.setRandomSeed (self.seedRange[iter.seedI])
             try:
                 if iter.newCase:
-                    print "======================================================="
-                    print "Case ", self.getCase (iter)
-                    print "======================================================="
+                    print("=======================================================")
+                    print("Case ", self.getCase (iter))
+                    print("=======================================================")
                     self.results['user'].append (initCase (self, self.getCase(iter), iter))
                 self.results['time'].append (self.client.problem.solve ())
                 self.results['pathLength'].append (self.client.problem.pathLength (self.client.problem.numberPaths()-1))
@@ -207,39 +211,39 @@ class Benchmark (object):
                 # write current data to restart at the same point
                 self.current = iter
                 self.writeResume ()
-                print err
-                print "\nOops, something went wrong.\nTo resume at the benchmark just before the crash, use method thisobject.tryResumeAndDelete () before calling method do()\n"
+                print(err)
+                print("\nOops, something went wrong.\nTo resume at the benchmark just before the crash, use method thisobject.tryResumeAndDelete () before calling method do()\n")
                 raise
 
-            print "Solved", iter, "in", self.results['time'][-1]
+            print("Solved", iter, "in", self.results['time'][-1])
         i = 0
         nb = self.iterPerCase * len(self.seedRange)
         for c in self.cases:
             t = np.array (self.results['time'][i:i+nb]).dot (self.toSeconds)
             pl = np.array (self.results['pathLength'][i:i+nb])
             nodes = np.array (self.results['states'])
-            print "====================================================="
-            print "Case", c
-            print "Mean time (s):", np.mean(t)
-            print "Std dev time (s):",  np.std(t)
-            print "Mean number of nodes:", np.mean(nodes)
-            print "Std dev nb nodes:",  np.std(nodes)
-            print "Average length:", np.mean(pl)
-            print "std dev length:", np.std(pl)
-            print "====================================================="
+            print("=====================================================")
+            print("Case", c)
+            print("Mean time (s):", np.mean(t))
+            print("Std dev time (s):",  np.std(t))
+            print("Mean number of nodes:", np.mean(nodes))
+            print("Std dev nb nodes:",  np.std(nodes))
+            print("Average length:", np.mean(pl))
+            print("std dev length:", np.std(pl))
+            print("=====================================================")
             i += nb
         t = np.array (self.results['time']).dot (self.toSeconds)
         nodes = np.array (self.results['states'])
         pl = np.array (self.results['pathLength'])
-        print "====================================================="
-        print "All cases together"
-        print "Mean time (s):", np.mean(t)
-        print "Std dev time (s):",  np.std(t)
-        print "Mean number of nodes:", np.mean(nodes)
-        print "Std dev nb nodes:",  np.std(nodes)
-        print "Average length:", np.mean(pl)
-        print "std dev length:", np.std(pl)
-        print "====================================================="
+        print("=====================================================")
+        print("All cases together")
+        print("Mean time (s):", np.mean(t))
+        print("Std dev time (s):",  np.std(t))
+        print("Mean number of nodes:", np.mean(nodes))
+        print("Std dev nb nodes:",  np.std(nodes))
+        print("Average length:", np.mean(pl))
+        print("std dev length:", np.std(pl))
+        print("=====================================================")
         return t, pl
 
     def getCase (self, iter):
@@ -269,7 +273,7 @@ class Benchmark (object):
         else: fname = filename
         import os
         if os.path.isfile (fname):
-            print "Retrieving datas from file", fname
+            print("Retrieving datas from file", fname)
             self.resumeFrom (fname)
             os.remove (fname)
 
@@ -278,16 +282,16 @@ class Benchmark (object):
         with open (fname, 'r') as f:
             cases = pk.load(f)
             if not cases == self.cases:
-                print "Cases are different.\nValue in file is :", cases, "\nValue in this instance was:\n", self.cases
+                print("Cases are different.\nValue in file is :", cases, "\nValue in this instance was:\n", self.cases)
             self.cases = cases
 
             seedRange = pk.load(f)
             if not seedRange == self.seedRange:
-                print "Seed range is different.\nValue in file is :", seedRange, "\nValue in this instance was:\n", self.seedRange
+                print("Seed range is different.\nValue in file is :", seedRange, "\nValue in this instance was:\n", self.seedRange)
 
             iterPerCase = pk.load(f)
             if not iterPerCase == self.iterPerCase:
-                print "Number of iteration per case is different.\nValue in file is :", iterPerCase, "\nValue in this instance was:\n", self.iterPerCase
+                print("Number of iteration per case is different.\nValue in file is :", iterPerCase, "\nValue in this instance was:\n", self.iterPerCase)
             self.iterPerCase = iterPerCase
 
             self.current = pk.load(f)
@@ -431,7 +435,7 @@ class Benchmark (object):
 
     def __str__(self):
         res = ""
-        for i in xrange(len(self.results['time'])):
+        for i in range(len(self.results['time'])):
             res += "Time (s): " + str(np.array (self.results['time'][i]).dot (self.toSeconds)) \
                     + "\nNumber of nodes: " + str(self.results['states'][i]) \
                     + "\nLength: " + str(self.results['pathLength'][i]) + '\n'
