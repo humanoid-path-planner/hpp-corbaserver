@@ -28,13 +28,18 @@ def newProblem (client = None, name = None):
         client.problem.resetProblem()
 
 def _convertToCorbaAny (value):
+    from sys import version_info
+    if sys.version_info.major > 2:
+        integers = (int,)
+    else:
+        integers = (long,int,)
     import CORBA
     t = type(value)
     if t is float:
         return CORBA.Any(CORBA.TC_double, value)
     elif isinstance(value, bool):
         return CORBA.Any(CORBA.TC_boolean, value)
-    elif isinstance(value, (long, int)):
+    elif isinstance(value, integers):
         return CORBA.Any(CORBA.TC_longlong, value)
     elif isinstance(value, str):
         return CORBA.Any(CORBA.TC_string, value)
@@ -139,24 +144,24 @@ class ProblemSolver (object):
     # \{
 
     ## Set initial configuration of specified problem.
-    #	\param dofArray Array of degrees of freedom
-    #	\throw Error.
+    #  \param dofArray Array of degrees of freedom
+    #  \throw Error.
     def setInitialConfig (self, dofArray):
         return self.hppcorba.problem.setInitialConfig (dofArray)
 
     ## Get initial configuration of specified problem.
-    #	\return Array of degrees of freedom
+    #  \return Array of degrees of freedom
     def getInitialConfig (self):
         return self.hppcorba.problem.getInitialConfig ()
 
     ## Add goal configuration to specified problem.
-    #	\param dofArray Array of degrees of freedom
-    #	\throw Error.
+    #  \param dofArray Array of degrees of freedom
+    #  \throw Error.
     def addGoalConfig (self, dofArray):
         return self.hppcorba.problem.addGoalConfig (dofArray)
 
     ## Get goal configurations of specified problem.
-    #	\return Array of degrees of freedom
+    #  \return Array of degrees of freedom
     def getGoalConfigs (self):
         return self.hppcorba.problem.getGoalConfigs ()
 
@@ -514,11 +519,11 @@ class ProblemSolver (object):
 
     ## Get the maximal number of iterations in projection
     def getMaxIterPathPlanning (self):
-	return self.hppcorba.problem.getMaxIterPathPlanning ()
+        return self.hppcorba.problem.getMaxIterPathPlanning ()
 
     ## Set the maximal number of iterations in projection
     def setMaxIterPathPlanning (self, iterations):
-	return self.hppcorba.problem.setMaxIterPathPlanning (iterations)
+        return self.hppcorba.problem.setMaxIterPathPlanning (iterations)
 
     ## Get time out in path planning (in seconds)
     def getTimeOutPathPlanning (self):
@@ -530,11 +535,11 @@ class ProblemSolver (object):
 
     ## Get the maximal number of iterations in projection
     def getMaxIterProjection (self):
-	return self.hppcorba.problem.getMaxIterProjection ()
+        return self.hppcorba.problem.getMaxIterProjection ()
 
     ## Set the maximal number of iterations in projection
     def setMaxIterProjection (self, iterations):
-	return self.hppcorba.problem.setMaxIterProjection (iterations)
+        return self.hppcorba.problem.setMaxIterProjection (iterations)
     ## \}
 
     ## \name Collision Checking
@@ -758,25 +763,25 @@ class ProblemSolver (object):
 
     ## Return nearest neighbour of given input configuration.
     # \param connectedComponentId is the index of a connected component in the roadmap.
-    #	   	     If connectedComponentId is negative, function goes through all
-    #		     connected components looking for the nearest node (configuration).
+    #        If connectedComponentId is negative, function goes through all
+    #        connected components looking for the nearest node (configuration).
     # \param distance returns the one-dimensional distance between \param config and
-    #              computed nearest node (configuration). 
+    #        computed nearest node (configuration). 
     # \sa numberConnectedComponents
     def getNearestConfig (self, randomConfig, connectedComponentId = -1):
-	return self.hppcorba.problem.getNearestConfig (randomConfig, connectedComponentId)
+        return self.hppcorba.problem.getNearestConfig (randomConfig, connectedComponentId)
 
     ## Add a configuration to the roadmap.
     # \param config to be added to the roadmap.
     def addConfigToRoadmap (self, config):
-	return self.hppcorba.problem.addConfigToRoadmap(config)
+        return self.hppcorba.problem.addConfigToRoadmap(config)
 
     ## Add an edge to roadmap. If
     # \param config1, config2 the ends of the path,
     # \param pathId the index if the path in the vector of path,
     # \param bothEdges if FALSE, only add config1 to config2, otherwise, If TRUE. add edges config1->config2 AND config2->config1.
     def addEdgeToRoadmap (self, config1, config2, pathId, bothEdges):
-	return self.hppcorba.problem.addEdgeToRoadmap (config1, config2, pathId, bothEdges)
+        return self.hppcorba.problem.addEdgeToRoadmap (config1, config2, pathId, bothEdges)
 
     ## Clear the roadmap
     def clearRoadmap (self):

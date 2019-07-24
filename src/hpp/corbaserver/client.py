@@ -39,7 +39,7 @@ class Client:
 
     try:
       obj = self.rootContext.resolve (name)
-    except CosNaming.NamingContext.NotFound, ex:
+    except CosNaming.NamingContext.NotFound as ex:
       raise CorbaError (
         'failed to find the service ``{0}\'\''.format (fullServiceName))
 
@@ -77,7 +77,7 @@ class Client:
       raise CorbaError ('failed to narrow the root context')
 
   def _makeClients (self, serviceId, clients, context):
-    for serviceName, class_ in clients.iteritems():
+    for serviceName, class_ in clients.items():
       self._makeClient (serviceId, serviceName, class_, context)
 
 def _getIIOPurl ():

@@ -150,7 +150,7 @@ class Robot (object):
         for j in self.jointNames:
             b = self.getJointBounds (j)
             r = self.rankInConfiguration [j]
-            for m, M, i in zip (b [::2], b [1::2], xrange (100000)):
+            for m, M, i in zip (b [::2], b [1::2], range (100000)):
                 if q [r+i] == m or q [r+i] == M:
                     saturated.append ((j, i, q [r+i]))
         return saturated
