@@ -29,7 +29,7 @@ def newProblem (client = None, name = None):
 
 def _convertToCorbaAny (value):
     from sys import version_info
-    if sys.version_info.major > 2:
+    if version_info.major > 2:
         integers = (int,)
     else:
         integers = (long,int,)
