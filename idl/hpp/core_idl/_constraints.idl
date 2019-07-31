@@ -49,6 +49,16 @@ module hpp
     //-> rightHandSide
     void setRightHandSideAt (in value_type s) raises (Error);
     //-> rightHandSideAt
+    boolean isConstraintSatisfied (in constraints_idl::Implicit nm,
+                                   in floatSeq arg, out floatSeq err,
+                                   out boolean constraintFound) raises (Error);
+    //* hpp::core::vector_t _arg = hpp::corbaServer::floatSeqToVector (arg);
+    //* hpp::constraints::ImplicitPtr_t _nm = reference_to_servant_base<hpp::constraints::Implicit>(server_, nm)->get();
+    //* vector_t errorOut (_nm->function ().outputSpace ()->nv ());
+    //* bool res = getT ()->solver ().isConstraintSatisfied
+    //*    (_nm, _arg,errorOut, constraintFound);
+    //* err = hpp::corbaServer::vectorToFloatSeq (errorOut);
+    //* return res;
   }; // interface ConfigProjector
 
   interface ConstraintSet : Constraint
@@ -66,5 +76,6 @@ module hpp
 //* #include <hpp/core/constraint-set.hh>
 //* #include <hpp/core/config-projector.hh>
 //* #include <hpp/constraints_idl/constraints.hh>
+//* #include <hpp/constraints/solver/by-substitution.hh>
 
 #endif // HPP_CORE_CONSTRAINTS_IDL
