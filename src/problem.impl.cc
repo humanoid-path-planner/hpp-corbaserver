@@ -11,6 +11,8 @@
 #include <iostream>
 #include <sstream>
 
+#include <pinocchio/fwd.hpp>
+
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <boost/assign/list_of.hpp>
 #include <boost/algorithm/string.hpp>

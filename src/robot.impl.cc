@@ -10,6 +10,8 @@
 
 #include <iostream>
 
+#include <pinocchio/fwd.hpp>
+
 #include <hpp/fcl/BVH/BVH_model.h>
 #include <hpp/fcl/shape/geometric_shapes.h>
 
