@@ -2721,9 +2721,10 @@ namespace hpp
         core::ProblemSolverPtr_t ps = problemSolver();
         core::ProblemPtr_t pb = problem (ps, true);
 
-        return makeServant <hpp::core_idl::Problem_ptr> (server_->parent(),
-            new core_impl::Problem (server_->parent(),
-              core_impl::Problem::Storage (pb)));
+        hpp::core_idl::Problem_var pb_idl =
+          makeServantDownCast <core_impl::Problem> (server_->parent(),
+              core_impl::Problem::Storage (pb));
+        return pb_idl._retn();
       }
 
       // ---------------------------------------------------------------
