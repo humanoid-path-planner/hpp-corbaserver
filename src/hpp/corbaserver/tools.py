@@ -12,7 +12,7 @@ if sys.version_info.major > 2:
 
 def createContext (context, url = None):
     client = Tools (url)
-    return client.createContext (context, plugin)
+    return client.createContext (context)
 if sys.version_info.major > 2:
     createContext.__doc__ = _hpp.Tools.createContext__doc__
 
