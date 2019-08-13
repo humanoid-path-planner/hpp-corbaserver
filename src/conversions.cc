@@ -63,14 +63,19 @@ namespace hpp {
 
     floatSeq* vectorToFloatSeq (core::vectorIn_t input)
     {
-      ULong size = (ULong) input.size ();
       floatSeq* q_ptr = new floatSeq ();
-      q_ptr->length (size);
+      vectorToFloatSeq (input, *q_ptr);
+      return q_ptr;
+    }
+
+    void vectorToFloatSeq (core::vectorIn_t input, floatSeq& output)
+    {
+      ULong size = (ULong) input.size ();
+      output.length (size);
 
       for (std::size_t i=0; i<size; ++i) {
-        (*q_ptr) [(ULong)i] = input [i];
+        output [(ULong)i] = input [i];
       }
-      return q_ptr;
     }
 
     floatSeqSeq* matrixToFloatSeqSeq (core::matrixIn_t input)
