@@ -132,10 +132,7 @@ namespace hpp
       char* Robot::getRobotName () throw (hpp::Error)
       {
         DevicePtr_t robot = getRobotOrThrow(problemSolver());
-        const std::string& str = robot->name();
-        char* name = new char[str.length ()+1];
-        strcpy (name, str.c_str ());
-        return name;
+        return c_str (robot->name());
       }
 
       // --------------------------------------------------------------------
@@ -414,10 +411,7 @@ namespace hpp
 	  Names_t *jointNames = new Names_t (size, size, nameList);
 	  for (std::size_t i = 0; i < size; ++i) {
 	    const JointPtr_t joint = j->childJoint (i);
-	    std::string name = joint->name ();
-	    nameList [i] =
-	      (char*) malloc (sizeof(char)*(name.length ()+1));
-	    strcpy (nameList [i], name.c_str ());
+	    nameList [i] = c_str (joint->name());
 	  }
 	  return jointNames;
 	} catch (const std::exception& exc) {
@@ -441,8 +435,7 @@ namespace hpp
           } else {
             // TODO if f.parentFrame is not of type JOINT or FIXED_JOINT
             // we should continue to loop on the parent.
-            const std::string str = f.parentFrame().name();
-            name = CORBA::string_dup(str.c_str());
+            name = c_str (f.parentFrame().name());
           }
           return name;
 	} catch (const std::exception& exc) {
@@ -529,7 +522,7 @@ namespace hpp
 	  JointPtr_t joint = frame.joint();
           if (!joint)
             return CORBA::string_dup("anchor");
-          return CORBA::string_dup(joint->jointModel().shortname().c_str());
+          return c_str(joint->jointModel().shortname());
         } catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -1047,9 +1040,7 @@ namespace hpp
 	    innerObjectSeq = new Names_t(size, size, nameList);
 	    for (size_type i=0; i < body->nbInnerObjects(); i++) {
 	      CollisionObjectConstPtr_t object = body->innerObjectAt(i);
-	      std::string geomName = object->name();
-	      nameList[i] = (char*)malloc(sizeof(char)*(geomName.length()+1));
-	      strcpy(nameList[i], geomName.c_str());
+	      nameList[i] = c_str (object->name ());
 	    }
 	  } else {
 	    innerObjectSeq = new Names_t (0);
@@ -1090,9 +1081,7 @@ namespace hpp
 	    outerObjectSeq = new Names_t(size, size, nameList);
             for (size_type i=0; i < body->nbOuterObjects(); i++) {
 	      CollisionObjectConstPtr_t object = body->outerObjectAt(i);
-	      std::string geomName = object->name();
-	      nameList[i] = (char*)malloc(sizeof(char)*(geomName.length()+1));
-	      strcpy(nameList[i], geomName.c_str());
+              nameList[i] = c_str (object->name ());
 	    }
 	  } else {
 	    outerObjectSeq = new Names_t (0);
