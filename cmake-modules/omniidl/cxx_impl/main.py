@@ -179,23 +179,37 @@ class Builder(idlvisitor.AstVisitor):
 
     # type conversions
     def argConversion(self, name, _type, _in, _out, param):
+        assert _in or _out
         tmp = "_" + name
-        if _type.char() or _type.floating() or _type.boolean() or _type.integer():
-            return name, ""
+        in_conv_str = None
+        out_conv_str = None
+
+        if _type.is_basic_data_types():
+            return name, "", out_conv_str
         if _type.string():
-            if _out: raise makeError("out string is currently not supported", param.file(), param.line())
-            return tmp, "std::string {} ({});".format (tmp,name)
+            if _in:
+                in_conv_str = "std::string {} ({});".format (tmp,name)
+            else  :
+                in_conv_str =  "std::string {};".format (tmp)
+            if _out:
+                out_conv_str = "{} = hpp::corbaServer::c_str ({});".format (name, tmp)
+            return tmp, in_conv_str, out_conv_str
         if _type.typedef():
             if _type.type().name() in ("size_t", "size_type", "value_type"):
-                return name, ""
+                return name, "", out_conv_str
             elif _type.type().name() == "floatSeq":
-                if _out: raise makeError("out floatSeq is currently not supported", param.file(), param.line())
-                return tmp, "hpp::core::vector_t {} = hpp::corbaServer::floatSeqToVector ({});".format (tmp,name)
+                if _in:
+                    in_conv_str  = "hpp::core::vector_t {} = hpp::corbaServer::floatSeqToVector ({});".format (tmp,name)
+                else: # !_in => _out
+                    in_conv_str  = "hpp::core::vector_t {};".format (tmp,name)
+                if _out:
+                    out_conv_str = "hpp::corbaServer::vectorToFloatSeq ({}, {});".format (tmp,name)
+                return tmp, in_conv_str, out_conv_str
             elif _type.type().name() == "Transform_":
                 if _out: raise makeError("out Transform_ is currently not supported", param.file(), param.line())
-                return tmp, "hpp::core::Transform3f {} = hpp::corbaServer::toTransform3f ({});".format (tmp,name)
+                return tmp, "hpp::core::Transform3f {} = hpp::corbaServer::toTransform3f ({});".format (tmp,name), out_conv_str
             print ("typedef", _type.type().name())
-            return name, ""
+            return name, "", out_conv_str
         if _type.objref():
             if _out: raise makeError("out objects is currently not supported", param.file(), param.line())
             conv = "{typeptr} {tmp} = reference_to_servant_base<{type}>(server_, {name})->get();" \
@@ -203,31 +217,31 @@ class Builder(idlvisitor.AstVisitor):
                             typeptr=self.toCppNamespace(id.Name(_type.type().scopedName()).suffix("Ptr_t")).fullyQualify(cxx=1),
                             servanttype=hpp_servant_name(id.Name(_type.type().scopedName())),
                             tmp=tmp, name=name)
-            return tmp, conv
+            return tmp, conv, out_conv_str
         print (_type.type(), _type.kind())
-        return name, ""
+        return name, "", out_conv_str
 
-    def retConversion(self, type):
+    def retConversion(self, _type):
         """
         Returns two values:
         - storing: will be used as "${storing} (${hpp_method_call})."
         - converting: will be copied as such after the line above.
         """
-        if type.void():
+        if _type.void():
             return "", ""
-        if type.char() or type.floating() or type.boolean() or type.integer():
-            return "return", ""
-        if type.string():
-            return "return ::hpp::corbaServer::c_str", ""
-        if type.typedef():
-            if type.type().name() in ("size_t", "size_type", "value_type"):
-                return "return", ""
-            elif type.type().name() == "floatSeq":
-                return "return hpp::corbaServer::vectorToFloatSeq", ""
-            elif type.type().name() == "Transform_":
-                return "return hpp::corbaServer::toHppTransform", ""
+        if _type.is_basic_data_types():
+            return "{} __return__".format(_type.op(types.RET)), "return __return__;"
+        if _type.string():
+            return "char* __return__ = ::hpp::corbaServer::c_str", "return __return__;"
+        if _type.typedef():
+            if _type.type().name() in ("size_t", "size_type", "value_type"):
+                return "{} __return__".format(_type.op(types.RET)), "return __return__;"
+            elif _type.type().name() == "floatSeq":
+                return "{} __return__ = hpp::corbaServer::vectorToFloatSeq".format(_type.op(types.RET)), "return __return__;"
+            elif _type.type().name() == "Transform_":
+                return "hpp::core::Transform3f __return__", "return hpp::corbaServer::toHppTransform (__return__);"
             else:
-                unaliased = type.deref()
+                unaliased = _type.deref()
                 if unaliased.sequence():
                     innerType = types.Type (unaliased.type().seqType())
                     if innerType.objref():
@@ -235,26 +249,26 @@ class Builder(idlvisitor.AstVisitor):
                             base = get_base_class (innerType.type().decl().fullDecl())
                         else:
                             base = get_base_class (innerType.type().decl())
-                        return "return hpp::corbaServer::vectorToSeqServant<{outType},{innerBaseType},{innerType}>(server_)"\
+                        return "{outType}* __return__ = hpp::corbaServer::vectorToSeqServant<{outType},{innerBaseType},{innerType}>(server_)"\
                                 .format(innerBaseType=hpp_servant_name(id.Name(base.scopedName())),
                                         innerType=hpp_servant_name(id.Name(innerType.type().scopedName())),
-                                        outType=id.Name(type.type().scopedName()).fullyQualify(cxx=1)), ""
+                                        outType=id.Name(_type.type().scopedName()).fullyQualify(cxx=1)), "return __return__;"
                     else:
                         print ("Unhandled sequence of", innerType.type().name())
                 else:
-                    print ("Unhandled type", type.type().name())
+                    print ("Unhandled type", _type.type().name())
             return "", ""
-        if type.objref():
-            if isinstance (type.type().decl(), idlast.Forward):
-                base = get_base_class (type.type().decl().fullDecl())
+        if _type.objref():
+            if isinstance (_type.type().decl(), idlast.Forward):
+                base = get_base_class (_type.type().decl().fullDecl())
             else:
-                base = get_base_class (type.type().decl())
-            store = "{type} __return__".format(type=self.toCppNamespace(id.Name(type.type().scopedName()).suffix("Ptr_t")).fullyQualify(cxx=1))
+                base = get_base_class (_type.type().decl())
+            store = "{type} __return__".format(type=self.toCppNamespace(id.Name(_type.type().scopedName()).suffix("Ptr_t")).fullyQualify(cxx=1))
             conv  = "return makeServantDownCast<{basetype},{type}>(server_, __return__)._retn();" \
-                    .format(type=hpp_servant_name(id.Name(type.type().scopedName())),
+                    .format(type=hpp_servant_name(id.Name(_type.type().scopedName())),
                             basetype=hpp_servant_name(id.Name(base.scopedName())))
             return store, conv
-        print (type.type(), type.kind())
+        print (_type.type(), _type.kind())
         return "", ""
 
     # modules can contain interfaces
@@ -401,14 +415,15 @@ class BuildInterfaceImplementations(Builder):
                                 opname = attribname,
                                 arg_defs = inType + " _" + attribname)
 
-                        tmpVar, conv = self.argConversion ("_" + attribname, attrType, True, False, c)
+                        tmpVar, in_conv, out_conv = self.argConversion ("_" + attribname, attrType, True, False, c)
                         implementations.out (template.operation_impl_code,
                                 return_type = "void",
                                 impl_tpl_name = impl_tpl_name,
                                 opname = attribname,
                                 hpp_opname = hpp_opname if hpp_opname else attribname,
                                 arg_defs = inType + " _" + attribname,
-                                conversions = conv if conv else "",
+                                in_conversions = in_conv if in_conv else "",
+                                out_conversions = out_conv if out_conv else "",
                                 store_return = "",
                                 do_return = "",
                                 arg_calls = tmpVar)
@@ -425,23 +440,27 @@ class BuildInterfaceImplementations(Builder):
                             opname = attribname,
                             hpp_opname = hpp_opname if hpp_opname else attribname,
                             arg_defs = "",
-                            conversions = "",
+                            in_conversions = "",
+                            out_conversions = "",
                             store_return = store_return,
                             do_return = do_return,
                             arg_calls = "")
             elif isinstance(c, idlast.Operation):
                 params = []
                 paramNames = []
-                conversions = []
+                in_conversions = []
+                out_conversions = []
                 for p in c.parameters():
                     paramType = types.Type(p.paramType())
                     cxx_type = paramType.op(types.direction(p), use_out = 0)
                     
                     argname = id.mapID(p.identifier())
                     if not comments_impl:
-                        tmpVar, conv = self.argConversion (argname, paramType, p.is_in(), p.is_out(), p)
-                        if conv:
-                            conversions.append(conv)
+                        tmpVar, in_conv, out_conv = self.argConversion (argname, paramType, p.is_in(), p.is_out(), p)
+                        if in_conv:
+                            in_conversions.append(in_conv)
+                        if out_conv:
+                            out_conversions.append(out_conv)
                     else:
                         tmpVar = argname
 
@@ -479,7 +498,7 @@ class BuildInterfaceImplementations(Builder):
                             return_type = return_type,
                             impl_tpl_name = impl_tpl_name,
                             opname = opname,
-                            conversions = "\n  ".join(conversions),
+                            conversions = "\n  ".join(in_conversions),
                             arg_defs = arguments,
                             store_return = store_return,
                             do_return = do_return,
@@ -490,7 +509,8 @@ class BuildInterfaceImplementations(Builder):
                             impl_tpl_name = impl_tpl_name,
                             opname = opname,
                             hpp_opname = hpp_opname if hpp_opname is not None else opname,
-                            conversions = "\n  ".join(conversions),
+                            in_conversions = "\n  ".join(in_conversions),
+                            out_conversions = "\n  ".join(out_conversions),
                             arg_defs = arguments,
                             store_return = store_return,
                             do_return = do_return,
