@@ -346,7 +346,6 @@ namespace hpp
         _CASE_PS_MAP ("SteeringMethod"      , steeringMethods)
         _CASE_PS_MAP ("Distance"            , distances)
         _CASE_PS_MAP ("NumericalConstraint" , numericalConstraints)
-        _CASE_PS_MAP ("LockedJoint"         , lockedJoints)
         _CASE_PS_MAP ("CenterOfMass"        , centerOfMassComputations)
         _CASE_SET_RET ("Problem", server_->problemSolverMap()->keys <Ret_t> ())
         _CASE_SET_RET ("Parameter", problem(problemSolver())->parameters.getKeys <Ret_t> ())
@@ -758,7 +757,8 @@ namespace hpp
                    << joint->configurationSpace ()->nq ());
           LiegroupElement lge (config, joint->configurationSpace ());
           LockedJointPtr_t lockedJoint (LockedJoint::create (joint, lge));
-          problemSolver()->lockedJoints.add (lockedJointName, lockedJoint);
+          problemSolver()->numericalConstraints.add
+            (lockedJointName, lockedJoint);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -778,7 +778,8 @@ namespace hpp
 
           LockedJointPtr_t lockedJoint
             (LockedJoint::create (robot, index, config));
-          problemSolver()->lockedJoints.add (lockedDofName, lockedJoint);
+          problemSolver()->numericalConstraints.add
+            (lockedDofName, lockedJoint);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -1293,7 +1294,6 @@ namespace hpp
       {
         try {
           problemSolver()->numericalConstraints.clear();
-          problemSolver()->lockedJoints.clear();
         } catch (const std::exception& exc) {
           throw hpp::Error (exc.what ());
         }
@@ -1478,13 +1478,8 @@ namespace hpp
             configProjector->rightHandSideFromConfig (nc, q);
             return;
           }
-          if (problemSolver ()->lockedJoints.has (constraintName)) {
-            LockedJointPtr_t lj
-              (problemSolver ()->lockedJoints.get (constraintName));
-            configProjector->rightHandSideFromConfig (lj, q);
-            return;
-          }
-          std::string msg ("Config projector does not contain any constraint or locked joint with name ");
+          std::string msg ("Config projector does not contain any numerical"
+                           " constraint with name ");
           msg += constraintName;
           throw std::runtime_error (msg.c_str ());
         } catch (const std::exception& exc) {
@@ -1512,13 +1507,8 @@ namespace hpp
             configProjector->rightHandSide (nc, rightHandSide);
             return;
           }
-          if (problemSolver ()->lockedJoints.has (constraintName)) {
-            LockedJointPtr_t lj
-              (problemSolver ()->lockedJoints.get (constraintName));
-            configProjector->rightHandSide (lj, rightHandSide);
-            return;
-          }
-          std::string msg ("Config projector does not contain any constraint or locked joint with name ");
+          std::string msg ("Config projector does not contain any numerical"
+                           " constraint with name ");
           msg += constraintName;
           throw std::runtime_error (msg.c_str ());
         } catch (const std::exception& exc) {
@@ -1592,7 +1582,7 @@ namespace hpp
 	try {
 	  for (CORBA::ULong i=0; i<lockedJointNames.length (); ++i) {
 	    std::string name (lockedJointNames [i]);
-            problemSolver()->addLockedJointToConfigProjector
+            problemSolver()->addNumericalConstraintToConfigProjector
               (configProjName, name);
 	    problemSolver()->robot ()->controlComputation
 	      (pinocchio::COMPUTE_ALL);
