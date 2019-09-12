@@ -138,8 +138,9 @@ template <typename _Base, typename _Storage>
 {
   try {
     // automatically generated code.
-    @conversions@
+    @in_conversions@
     @store_return@ (getT()->@hpp_opname@ (@arg_calls@));
+    @out_conversions@
     @do_return@
   } catch (const std::exception& e) {
     throw ::hpp::Error (e.what());

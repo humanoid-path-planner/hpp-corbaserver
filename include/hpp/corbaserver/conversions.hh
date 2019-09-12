@@ -36,6 +36,8 @@ namespace hpp {
 
     floatSeq* vectorToFloatSeq (core::vectorIn_t input);
 
+    void vectorToFloatSeq (core::vectorIn_t input, floatSeq& output);
+
     inline floatSeq* vectorToFloatSeq (core::ConfigurationPtr_t input)
     {
       return vectorToFloatSeq (*input);

@@ -24,11 +24,7 @@ module hpp
 
   interface Constraint
   {
-    boolean apply (in floatSeq configin, out floatSeq configOut) raises (Error);
-    //* hpp::core::vector_t q = hpp::corbaServer::floatSeqToVector (configin);
-    //* bool ret = get()->apply(q);
-    //* configOut = hpp::corbaServer::vectorToFloatSeq (q);
-    //* return ret;
+    boolean apply (inout floatSeq config) raises (Error);
 
     string name () raises (Error);
     string str () raises (Error);
