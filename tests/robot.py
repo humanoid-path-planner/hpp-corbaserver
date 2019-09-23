@@ -17,6 +17,9 @@ class Test(unittest.TestCase):
     def setUpClass(cls):
         cls.omni_names = Popen(['omniNames', '-start'], stdout=sys.stdout)
         sleep(1)
+        # In case omniORB.cfg is not present (which is the case by default with robotpkg)
+        # we have to explain to the client how to contact the server
+        # ref https://github.com/humanoid-path-planner/hpp-corbaserver/issues/90
         cls.server = Popen(["../src/hppcorbaserver"], stdout=sys.stdout, env={'ORBInitRef': 'NameService=corbaname::localhost'})
         sleep(1)
         cls.server.poll()
