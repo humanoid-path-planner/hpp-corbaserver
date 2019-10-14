@@ -96,6 +96,21 @@ namespace hpp {
       return indexes;
     }
 
+    template <typename InputIt> inline boolSeq* toBoolSeq (InputIt begin, InputIt end)
+    {
+      std::size_t len = std::distance (begin, end);
+      boolSeq* indexes = new boolSeq ();
+      indexes->length ((CORBA::ULong) len);
+
+      std::size_t i = 0;
+      while (begin != end) {
+        (*indexes)[i] = *begin;
+        ++begin;
+        ++i;
+      }
+      return indexes;
+    }
+
     template <typename OutputType> inline OutputType toStrings (const Names_t& names)
     {
       OutputType ret;

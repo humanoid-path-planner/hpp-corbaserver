@@ -80,6 +80,7 @@ FOREACH(IDL distances paths steering_methods path_validations _problem configura
       ARGUMENTS
       -Wbmodules=hpp_idl
       -Wbextern=constraints:hpp_stubs.constraints
+      -Wbextern=robots:hpp_stubs.pinocchio
       -Wbextern=common:hpp_stubs
     )
   INSTALL(FILES
@@ -112,6 +113,31 @@ FOREACH(IDL constraints)
     ${CMAKE_CURRENT_BINARY_DIR}/hpp/constraints_idl/${IDL}.hh
     ${CMAKE_CURRENT_BINARY_DIR}/hpp/constraints_idl/${IDL}-fwd.hh
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp/constraints_idl)
+ENDFOREACH()
+
+MAKE_DIRECTORY(${CMAKE_BINARY_DIR}/src/hpp/pinocchio_idl)
+FOREACH(IDL robots)
+  GENERATE_IDL_CPP (hpp/pinocchio_idl/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/pinocchio_idl
+    ARGUMENTS
+    -Wbguard_prefix=hpp_pinocchio_idl
+    HEADER_SUFFIX -idl.hh)
+  GENERATE_IDL_CPP_IMPL (hpp/pinocchio_idl/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/pinocchio_idl
+    ARGUMENTS
+    -Wbguard_prefix=hpp_pinocchio_idl
+    -Wbinc_prefix=hpp/pinocchio_idl
+    HH_SUFFIX -idl.hh)
+  GENERATE_IDL_PYTHON (${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/pinocchio_idl
+      ENABLE_DOCSTRING
+      STUBS hpp_stubs.pinocchio
+      ARGUMENTS
+      -Wbmodules=hpp_idl
+      -Wbextern=common:hpp_stubs
+    )
+  INSTALL(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/pinocchio_idl/${IDL}-idl.hh
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/pinocchio_idl/${IDL}.hh
+    ${CMAKE_CURRENT_BINARY_DIR}/hpp/pinocchio_idl/${IDL}-fwd.hh
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp/pinocchio_idl)
 ENDFOREACH()
 
 INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/idl/hpp

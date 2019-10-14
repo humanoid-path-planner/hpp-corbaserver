@@ -14,6 +14,10 @@
 
 module hpp
 {
+  module pinocchio_idl {
+  interface Device;
+  }; // module pinocchio
+
   module core_idl {
   interface Distance;
   interface SteeringMethod;
@@ -23,6 +27,8 @@ module hpp
 
   interface Problem
   {
+    pinocchio_idl::Device robot () raises (Error);
+
     void setInitConfig (in floatSeq init) raises (Error);
     //* ConfigurationPtr_t q (floatSeqToConfigPtr(getT()->robot(), init, true));
     //* getT()->initConfig (q);
@@ -55,11 +61,13 @@ module hpp
 }; // module hpp
 
 //* #include <hpp/core/problem.hh>
+//* #include <hpp/pinocchio_idl/robots.hh>
 //* #include <hpp/core_idl/distances.hh>
 //* #include <hpp/core_idl/steering_methods.hh>
 //* #include <hpp/core_idl/path_validations.hh>
 //* #include <hpp/core_idl/configuration_shooters.hh>
 
+#include <hpp/pinocchio_idl/robots.idl>
 #include <hpp/core_idl/distances.idl>
 #include <hpp/core_idl/steering_methods.idl>
 #include <hpp/core_idl/path_validations.idl>

@@ -1,0 +1,66 @@
+// Copyright (C) 2019 by Joseph Mirabel, LAAS-CNRS.
+//
+// This file is part of the hpp-corbaserver.
+//
+// This software is provided "as is" without warranty of any kind,
+// either expressed or implied, including but not limited to the
+// implied warranties of fitness for a particular purpose.
+//
+// See the COPYING file for more information.
+
+#ifndef HPP_PINOCCHIO_ROBOTS_IDL
+#define HPP_PINOCCHIO_ROBOTS_IDL
+#include <hpp/common.idl>
+
+module hpp
+{
+  module pinocchio_idl {
+
+  interface Device
+  {
+      string name () raises (Error);
+
+      void integrate(in floatSeq config_in, in floatSeq velocity, out floatSeq result) raises (Error);
+      //* hpp::pinocchio::DevicePtr_t d = getT();
+      //* hpp::pinocchio::Configuration_t res (d->configSize());
+      //* hpp::pinocchio::integrate<false, hpp::pinocchio::DefaultLieGroupMap> (d,
+      //*   floatSeqToVector(config_in, d->configSize()),
+      //*   floatSeqToVector(velocity , d->numberDof()),
+      //*   res);
+      //* result = vectorToFloatSeq (res);
+
+      void difference(in floatSeq q1, in floatSeq q2, out floatSeq result) raises (Error);
+      //* hpp::pinocchio::DevicePtr_t d = getT();
+      //* hpp::pinocchio::Configuration_t res (d->numberDof());
+      //* hpp::pinocchio::difference<hpp::pinocchio::DefaultLieGroupMap> (d,
+      //*   floatSeqToVector(q1, d->configSize()),
+      //*   floatSeqToVector(q2, d->configSize()),
+      //*   res);
+      //* result = vectorToFloatSeq (res);
+
+      void interpolate(in floatSeq q1, in floatSeq q2, in float u, out floatSeq result) raises (Error);
+      //* hpp::pinocchio::DevicePtr_t d = getT();
+      //* hpp::pinocchio::Configuration_t res (d->configSize());
+      //* hpp::pinocchio::interpolate<hpp::pinocchio::DefaultLieGroupMap> (d,
+      //*   floatSeqToVector(q1, d->configSize()),
+      //*   floatSeqToVector(q2, d->configSize()),
+      //*   u,
+      //*   res);
+      //* result = vectorToFloatSeq (res);
+
+      void saturate(in floatSeq qin, out floatSeq qout, out boolSeq saturation) raises (Error);
+      //* hpp::pinocchio::DevicePtr_t d = getT();
+      //* hpp::pinocchio::Configuration_t q (floatSeqToVector(qin));
+      //* hpp::pinocchio::ArrayXb sat (d->numberDof());
+      //* hpp::pinocchio::saturate (d, q, sat);
+      //* qout = vectorToFloatSeq (q);
+      //* saturation = toBoolSeq(sat.data(), sat.data()+sat.size());
+  };
+
+  }; // module pinocchio_idl
+}; // module hpp
+//* #include <hpp/pinocchio/device.hh>
+//* #include <hpp/pinocchio/configuration.hh>
+//* #include <hpp/pinocchio/liegroup.hh>
+
+#endif // HPP_CORE_PATHS_IDL
