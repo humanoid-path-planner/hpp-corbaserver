@@ -12,6 +12,7 @@
 #ifndef HPP_CORBASERVER_ROBOT_SERVER_IDL
 #define HPP_CORBASERVER_ROBOT_SERVER_IDL
 #include <hpp/common.idl>
+#include <hpp/pinocchio_idl/robots.idl>
 
 module hpp
 {
@@ -408,6 +409,8 @@ module hpp
 
     /// Get the name of the current robot.
     string getRobotName () raises (Error);
+
+    pinocchio_idl::CenterOfMassComputation getCenterOfMassComputation (in string name) raises (Error);
 
     /// \}
 

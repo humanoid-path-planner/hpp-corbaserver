@@ -45,6 +45,8 @@
 #include "robot.impl.hh"
 #include "tools.hh"
 
+#include "hpp/pinocchio_idl/robots.hh"
+
 namespace hpp
 {
   namespace corbaServer
@@ -1538,6 +1540,19 @@ namespace hpp
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
+      }
+
+      hpp::pinocchio_idl::CenterOfMassComputation_ptr Robot::getCenterOfMassComputation
+        (const char* name) throw (Error)
+      {
+        const std::string cn (name);
+        core::ProblemSolverPtr_t ps = problemSolver();
+        if (!ps->centerOfMassComputations.has(cn))
+          throw Error (("CenterOfMassComputation " + cn + " not found").c_str());
+
+        hpp::pinocchio_idl::CenterOfMassComputation_var d = makeServantDownCast <pinocchio_impl::CenterOfMassComputation>
+          (server_->parent(), ps->centerOfMassComputations.get(cn));
+        return d._retn();
       }
 
       floatSeq* Robot::getRobotAABB()

@@ -266,6 +266,8 @@ namespace hpp
         virtual hpp::floatSeq* getVelocityPartialCom (const char* comName)
           throw (hpp::Error);
 
+        hpp::pinocchio_idl::CenterOfMassComputation_ptr getCenterOfMassComputation (const char* name) throw (Error);
+
         virtual floatSeq* getRobotAABB() throw (hpp::Error);
 
       private:

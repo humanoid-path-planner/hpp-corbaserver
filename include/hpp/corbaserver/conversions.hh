@@ -104,7 +104,7 @@ namespace hpp {
 
       std::size_t i = 0;
       while (begin != end) {
-        (*indexes)[i] = *begin;
+        (*indexes)[(CORBA::ULong)i] = *begin;
         ++begin;
         ++i;
       }

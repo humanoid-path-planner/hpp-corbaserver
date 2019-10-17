@@ -15,6 +15,13 @@
 module hpp
 {
   module pinocchio_idl {
+  interface CenterOfMassComputation
+  {
+    void compute () raises (Error);
+    floatSeq    com      () raises (Error);
+    value_type  mass     () raises (Error);
+    floatSeqSeq jacobian () raises (Error);
+  };
 
   interface Device
   {
@@ -62,5 +69,6 @@ module hpp
 //* #include <hpp/pinocchio/device.hh>
 //* #include <hpp/pinocchio/configuration.hh>
 //* #include <hpp/pinocchio/liegroup.hh>
+//* #include <hpp/pinocchio/center-of-mass-computation.hh>
 
 #endif // HPP_CORE_PATHS_IDL
