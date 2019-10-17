@@ -208,6 +208,15 @@ class Builder(idlvisitor.AstVisitor):
             elif _type.type().name() == "Transform_":
                 if _out: raise makeError("out Transform_ is currently not supported", param.file(), param.line())
                 return tmp, "hpp::core::Transform3f {} = hpp::corbaServer::toTransform3f ({});".format (tmp,name), out_conv_str
+            elif _type.type().name() == "Names_t":
+                in_conv_str  = "typedef std::vector<std::string> strings_t;"
+                if _in:
+                    in_conv_str  += "strings_t {} = hpp::corbaServer::toStrings<strings_t> ({});".format (tmp,name)
+                else:
+                    in_conv_str  += "strings_t {};".format (tmp,name)
+                if _out:
+                    out_conv_str  = "hpp::corbaServer::toNames_t ({var}.begin(), {var}.end());".format (var=tmp)
+                return tmp, in_conv_str, out_conv_str;
             print ("typedef", _type.type().name())
             return name, "", out_conv_str
         if _type.objref():
@@ -238,6 +247,8 @@ class Builder(idlvisitor.AstVisitor):
                 return "{} __return__".format(_type.op(types.RET)), "return __return__;"
             elif _type.type().name() == "floatSeq":
                 return "{} __return__ = hpp::corbaServer::vectorToFloatSeq".format(_type.op(types.RET)), "return __return__;"
+            elif _type.type().name() == "floatSeqSeq":
+                return "{} __return__ = hpp::corbaServer::matrixToFloatSeqSeq".format(_type.op(types.RET)), "return __return__;"
             elif _type.type().name() == "Transform_":
                 return "hpp::core::Transform3f __return__", "return hpp::corbaServer::toHppTransform (__return__);"
             else:
