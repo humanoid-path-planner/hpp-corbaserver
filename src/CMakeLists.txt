@@ -35,6 +35,7 @@ FOREACH(IDL ${IDL_SOURCES})
     ARGUMENTS
     -Wbmodules=hpp_idl
     -Wbextern=common:hpp_stubs
+    -Wbextern=robots:hpp_stubs.pinocchio
     -Wbextern=constraints:hpp_stubs.constraints
     -Wbextern=distances:hpp_stubs.core
     -Wbextern=paths:hpp_stubs.core
