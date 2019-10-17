@@ -55,6 +55,8 @@ module hpp
     //*
     //* return makeServant<hpp::core_idl::PathVector_ptr>
     //*   (server_, new PathVector (server_, pv));
+
+    Path reverse () raises (Error);
   }; // interface Path
 
   interface PathVector : Path {
