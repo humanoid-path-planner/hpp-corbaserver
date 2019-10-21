@@ -184,8 +184,6 @@ class Builder(idlvisitor.AstVisitor):
         in_conv_str = None
         out_conv_str = None
 
-        if _type.is_basic_data_types():
-            return name, "", out_conv_str
         if _type.string():
             if _in:
                 in_conv_str = "std::string {} ({});".format (tmp,name)
@@ -194,7 +192,7 @@ class Builder(idlvisitor.AstVisitor):
             if _out:
                 out_conv_str = "{} = hpp::corbaServer::c_str ({});".format (name, tmp)
             return tmp, in_conv_str, out_conv_str
-        if _type.typedef():
+        elif _type.typedef():
             if _type.type().name() in ("size_t", "size_type", "value_type"):
                 return name, "", out_conv_str
             elif _type.type().name() == "floatSeq":
@@ -219,7 +217,9 @@ class Builder(idlvisitor.AstVisitor):
                 return tmp, in_conv_str, out_conv_str;
             print ("typedef", _type.type().name())
             return name, "", out_conv_str
-        if _type.objref():
+        elif _type.is_basic_data_types():
+            return name, "", out_conv_str
+        elif _type.objref():
             if _out: raise makeError("out objects is currently not supported", param.file(), param.line())
             conv = "{typeptr} {tmp} = reference_to_servant_base<{type}>(server_, {name})->get();" \
                     .format(type   =self.toCppNamespace(id.Name(_type.type().scopedName())                ).fullyQualify(cxx=1),
