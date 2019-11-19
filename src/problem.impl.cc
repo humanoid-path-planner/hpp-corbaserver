@@ -1029,7 +1029,8 @@ namespace hpp
           StaticStabilityPtr_t f = StaticStability::create
             (name, robot, contacts, com);
           problemSolver()->addNumericalConstraint (name,
-              Implicit::create (f, core::EqualToZero::create())
+              Implicit::create (f,
+                constraints::ComparisonTypes_t(1, constraints::EqualToZero))
               );
         } catch (const std::exception& exc) {
           throw hpp::Error (exc.what ());
