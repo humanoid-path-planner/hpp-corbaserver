@@ -140,21 +140,17 @@ namespace hpp
       // --------------------------------------------------------------------
 
       void Robot::loadRobotModel(const char* robotName,
-				 const char* rootJointType,
-				 const char* packageName,
-				 const char* modelName,
-				 const char* urdfSuffix,
-				 const char* srdfSuffix) throw (hpp::Error)
+                                 const char* rootJointType,
+                                 const char* urdfName,
+                                 const char* srdfName) throw (hpp::Error)
       {
 	try {
 	  pinocchio::DevicePtr_t device
             (problemSolver ()->createRobot (robotName));
-	  hpp::pinocchio::urdf::loadRobotModel (device,
-					    std::string (rootJointType),
-					    std::string (packageName),
-					    std::string (modelName),
-					    std::string (urdfSuffix),
-					    std::string (srdfSuffix));
+	  hpp::pinocchio::urdf::loadModel (device, 0, "",
+                                           std::string (rootJointType),
+                                           std::string (urdfName),
+                                           std::string (srdfName));
 	  // Add device to the planner
 	  problemSolver()->robot (device);
 	  problemSolver()->robot ()->controlComputation
@@ -168,21 +164,17 @@ namespace hpp
       // --------------------------------------------------------------------
 
       void Robot::loadHumanoidModel(const char* robotName,
-				     const char* rootJointType,
-				     const char* packageName,
-				     const char* modelName,
-				     const char* urdfSuffix,
-				     const char* srdfSuffix) throw (hpp::Error)
+                                    const char* rootJointType,
+                                    const char* urdfName,
+                                    const char* srdfName) throw (hpp::Error)
       {
 	try {
 	  pinocchio::HumanoidRobotPtr_t robot
 	    (pinocchio::HumanoidRobot::create (robotName));
-	  hpp::pinocchio::urdf::loadRobotModel (robot,
-					        std::string (rootJointType),
-					        std::string (packageName),
-					        std::string (modelName),
-					        std::string (urdfSuffix),
-					        std::string (srdfSuffix));
+	  hpp::pinocchio::urdf::loadModel (robot, 0, "",
+                                           std::string (rootJointType),
+                                           std::string (urdfName),
+                                           std::string (srdfName));
           hpp::pinocchio::urdf::setupHumanoidRobot (robot);
           // Add robot to the planner
 	  problemSolver()->robot (robot);

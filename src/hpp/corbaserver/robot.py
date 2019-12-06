@@ -61,14 +61,36 @@ class Robot (object):
             self.rankInVelocity [j] = rankInVelocity
             rankInVelocity += self.hppcorba.robot.getJointNumberDof (j)
 
+    ## Return urdf and srdf filenames
+    #
+    def urdfSrdfFilenames (self):
+        # if packageName, urdfName, urdfSuffix, srdfSuffix are members of the
+        # class, build urdf and srdf filenames
+        if hasattr (self, 'packageName') and hasattr (self,  'urdfName') and \
+           hasattr (self, 'urdfSuffix') and hasattr (self,  'srdfSuffix') :
+            urdfFilename = self.urdfPath ()
+            srdfFilename = self.srdfPath ()
+        elif hasattr (self, 'urdfFilename') and hasattr (self, 'srdfFilename') :
+            urdfFilename = self.urdfFilename
+            srdfFilename = self.srdfFilename
+        else :
+            raise RuntimeError (\
+            """instance should have one of the following sets of members
+            - (packageName, urdfName, urdfSuffix, srdfSuffix),
+            - (urdfFilename, srdfFilename)""")
+        return urdfFilename, srdfFilename
+
     def loadModel (self, robotName, rootJointType):
-        self.hppcorba.robot.loadRobotModel (robotName, rootJointType,
-                                          self.packageName, self.urdfName,
-                                          self.urdfSuffix, self.srdfSuffix)
+        urdfFilename, srdfFilename = self.urdfSrdfFilenames ()
+        self.hppcorba.robot.loadRobotModel \
+            (robotName, rootJointType, urdfFilename, srdfFilename)
         self.rebuildRanks()
 
     def urdfPath (self):
         return "package://" + self.packageName + '/urdf/' + self.urdfName + self.urdfSuffix + '.urdf'
+
+    def srdfPath (self):
+        return "package://" + self.packageName + '/srdf/' + self.urdfName + self.srdfSuffix + '.srdf'
 
     ## \name Degrees of freedom
     #  \{
@@ -441,9 +463,9 @@ class HumanoidRobot (Robot, StaticStabilityConstraintsFactory):
         Robot.__init__ (self, robotName, rootJointType, load, client)
 
     def loadModel (self, robotName, rootJointType):
-        self.hppcorba.robot.loadHumanoidModel (robotName, rootJointType,
-                                          self.packageName, self.urdfName,
-                                          self.urdfSuffix, self.srdfSuffix)
+        urdfFilename, srdfFilename = self.urdfSrdfFilenames ()
+        self.hppcorba.robot.loadHumanoidModel \
+            (robotName, rootJointType, urdfFilename, srdfFilename)
         self.rebuildRanks()
 
 class RobotXML (Robot):

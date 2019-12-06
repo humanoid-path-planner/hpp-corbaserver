@@ -63,17 +63,13 @@ namespace hpp
 
 	virtual void loadRobotModel (const char* robotName,
 				     const char* rootJointType,
-				     const char* packageName,
-				     const char* modelName,
-				     const char* urdfSuffix,
-				     const char* srdfSuffix) throw (hpp::Error);
+				     const char* urdfName,
+				     const char* srdfName) throw (hpp::Error);
 
 	virtual void loadHumanoidModel (const char* robotName,
 					 const char* rootJointType,
-					 const char* packageName,
-					 const char* modelName,
-					 const char* urdfSuffix,
-					 const char* srdfSuffix)
+					 const char* urdfName,
+					 const char* srdfName)
 	  throw (hpp::Error);
 
 	virtual void loadRobotModelFromString (
