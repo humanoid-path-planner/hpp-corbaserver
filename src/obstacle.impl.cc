@@ -44,20 +44,30 @@ namespace hpp
         return server_->problemSolver();
       }
 
-      void Obstacle::loadObstacleModel (const char* package,
-					const char* file,
+      void Obstacle::loadObstacleModel (const char* filename,
 					const char* prefix)
 	throw (hpp::Error)
       {
 	try {
-          std::string pkg (package);
           DevicePtr_t device (Device::create (prefix));
-          if (pkg.empty())
-            hpp::pinocchio::urdf::loadModelFromString (
-                device, 0, "", "anchor", file, "");
-          else
-            hpp::pinocchio::urdf::loadUrdfModel (
-                device, "anchor", pkg, file);
+          hpp::pinocchio::urdf::loadModel (device, 0, "", "anchor", filename,
+                                           "");
+          device->controlComputation(hpp::pinocchio::JOINT_POSITION);
+
+          problemSolver()->addObstacle (device, true, true);
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      void Obstacle::loadObstacleModelFromString (const char* urdfString,
+                                                  const char* prefix)
+	throw (hpp::Error)
+      {
+	try {
+          DevicePtr_t device (Device::create (prefix));
+          hpp::pinocchio::urdf::loadModelFromString
+            (device, 0, "", "anchor", urdfString, "");
           device->controlComputation(hpp::pinocchio::JOINT_POSITION);
 
           problemSolver()->addObstacle (device, true, true);

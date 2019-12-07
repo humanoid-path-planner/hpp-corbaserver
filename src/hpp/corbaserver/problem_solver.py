@@ -16,6 +16,8 @@
 # hpp-corbaserver.  If not, see
 # <http://www.gnu.org/licenses/>.
 
+import warnings
+
 def newProblem (client = None, name = None):
     if client is None:
         from hpp.corbaserver import Client
@@ -174,20 +176,31 @@ class ProblemSolver (object):
     # \{
 
     ## Load obstacle from urdf file
-    #  \param package Name of the package containing the model,
-    #  \param filename name of the urdf file in the package
-    #         (without suffix .urdf)
+    #  \param filename name of the urdf file possibly including "package://"
     #  \param prefix prefix added to object names in case the same file is
     #         loaded several times
     #
-    #  The ros url is built as follows:
-    #  "package://${package}/urdf/${filename}.urdf"
-    #
     #  The kinematic structure of the urdf file is ignored. Only the geometric
     #  objects are loaded as obstacles.
-    def loadObstacleFromUrdf (self, package, filename, prefix):
-        return self.hppcorba.obstacle.loadObstacleModel (package, filename,
-                                                       prefix)
+    def loadObstacleFromUrdf (self, *args):
+        if len (args) == 3:
+            # deprecated
+            warnings.warn (\
+                """this method now takes as arguments
+                     - a urdf filename possibly including "package://",
+                     - a prefix
+                """)
+
+            package, filename, prefix = args
+            urdfFilename = "package://" + package + "/urdf/" + filename + \
+                           ".urdf"
+
+        elif len (args) == 2:
+            urdfFilename, prefix = args
+        else:
+            raise RuntimeError ("This method takes 2 arguments")
+
+        return self.hppcorba.obstacle.loadObstacleModel (urdfFilename, prefix)
 
     ## Remove an obstacle from outer objects of a joint body
     #
@@ -766,7 +779,7 @@ class ProblemSolver (object):
     #        If connectedComponentId is negative, function goes through all
     #        connected components looking for the nearest node (configuration).
     # \param distance returns the one-dimensional distance between \param config and
-    #        computed nearest node (configuration). 
+    #        computed nearest node (configuration).
     # \sa numberConnectedComponents
     def getNearestConfig (self, randomConfig, connectedComponentId = -1):
         return self.hppcorba.problem.getNearestConfig (randomConfig, connectedComponentId)

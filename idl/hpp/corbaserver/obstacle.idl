@@ -22,19 +22,25 @@ module hpp
     /// Load obstacle from urdf file
     ///
     /// \param package Name of the package containing the model.
-    /// \param file If package is empty, this is the XML string to parse
-    ///             otherwise, this is the filename of the urdf file in the package
-    ///        (without suffix .urdf)
+    /// \param filename name of the urdf file, it may contain "package://" 
     /// \param prefix prefix added to object names in case the same file is
     ///        loaded several times
     ///
-    /// The ros url is built as follows:
-    /// "package://${package}/urdf/${filename}.urdf"
+    /// The kinematic structure of the urdf file is ignored. Only the geometric
+    /// objects are loaded as obstacles.
+    void loadObstacleModel (in string filename, in string prefix)
+      raises (Error);
+
+    /// Load obstacle from urdf file
+    ///
+    /// \param package Name of the package containing the model.
+    /// \param urdfString XML string to parse
+    /// \param prefix prefix added to object names in case the same file is
+    ///        loaded several times
     ///
     /// The kinematic structure of the urdf file is ignored. Only the geometric
     /// objects are loaded as obstacles.
-    void loadObstacleModel (in string package, in string file,
-			    in string prefix)
+    void loadObstacleModelFromString (in string urdfString, in string prefix)
       raises (Error);
 
     /// \brief Remove an obstacle from outer objects of a joint body

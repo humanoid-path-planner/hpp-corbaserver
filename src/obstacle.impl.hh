@@ -13,7 +13,7 @@
 # include <map>
 # include <string>
 
-#include <hpp/fcl/math/vec_3f.h>
+#include <hpp/fcl/data_types.h>
 
 # include <hpp/core/problem-solver.hh>
 # include <hpp/corbaserver/fwd.hh>
@@ -37,10 +37,12 @@ namespace hpp
           server_ = server;
         }
 
-	virtual void loadObstacleModel (const char* package,
-					const char* filename,
-					const char* prefix)
+	virtual void loadObstacleModel (const char* filename,
+                                                  const char* prefix)
 	  throw (hpp::Error);
+
+        virtual void loadObstacleModelFromString
+        (const char* urdfString, const char* prefix) throw (hpp::Error);
 
 	virtual void removeObstacleFromJoint
 	(const char* objectName, const char* jointName, Boolean collision,

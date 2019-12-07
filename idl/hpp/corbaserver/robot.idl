@@ -27,17 +27,13 @@ module hpp
     /// \param robotName Name of the robot that is constructed,
     /// \param rootJointType type of root joint among "anchor", "freeflyer",
     /// "planar",
-    /// \param packageName Name of the ROS package containing the model,
-    /// \param modelName Name of the package containing the model
-    /// \param urdfSuffix suffix for urdf file,
-    ///
-    /// The ros url are built as follows:
-    /// - \c package://${packageName}/urdf/${modelName}${urdfSuffix}.urdf
-    /// - \c package://${packageName}/srdf/${modelName}${srdfSuffix}.srdf
+    /// \param urdfName name of the urdf file. It may contain
+    ///        "file://", or "package://" prefixes.
+    /// \param srdfName name of the srdf file. It may contain
+    ///        "file://", or "package://" prefixes.
     ///
     void loadRobotModel (in string robotName, in string rootJointType,
-			 in string packageName, in string modelName,
-			 in string urdfSuffix, in string srdfSuffix)
+			 in string urdfName, in string srdfName)
       raises (Error);
 
     ///  Load humanoid robot model
@@ -45,17 +41,13 @@ module hpp
     /// \param robotName Name of the robot that is constructed,
     /// \param rootJointType type of root joint among "anchor", "freeflyer",
     /// "planar",
-    /// \param packageName Name of the ROS package containing the model,
-    /// \param modelName Name of the package containing the model
-    /// \param urdfSuffix suffix for urdf file,
-    ///
-    /// The ros url are built as follows:
-    /// - \c package://${packageName}/urdf/${modelName}${urdfSuffix}.urdf
-    /// - \c package://${packageName}/srdf/${modelName}${srdfSuffix}.srdf
+    /// \param urdfName name of the urdf file. It may contain
+    ///        "file://", or "package://" prefixes.
+    /// \param srdfName name of the srdf file. It may contain
+    ///        "file://", or "package://" prefixes.
     ///
     void loadHumanoidModel (in string robotName, in string rootJointType,
-			    in string packageName, in string modelName,
-			    in string urdfSuffix, in string srdfSuffix)
+			    in string urdfName, in string srdfName)
       raises (Error);
 
     ///  Load robot model
