@@ -22,9 +22,14 @@
 
 # include <stdexcept>
 
+# include <hpp/util/exception.hh>
+
 # include <hpp/corbaserver/config.hh>
 # include <hpp/corbaserver/fwd.hh>
 # include <hpp/corbaserver/problem-solver-map.hh>
+
+# include <hpp/corbaserver/server.hh>
+# include <hpp/corba/template/server.hh>
 
 #define HPP_CORBASERVER_DEFINE_PLUGIN(PluginClassName)                         \
     extern "C" {                                                               \
@@ -46,6 +51,8 @@ namespace hpp {
          const std::string& contextKind) = 0;
 
       virtual std::string name() const = 0;
+
+      virtual ::CORBA::Object_ptr servant (const std::string& name) const = 0;
 
       Server* parent ()
       {
@@ -74,6 +81,28 @@ namespace hpp {
 
       Server* parent_;
       ProblemSolverMapPtr_t problemSolverMap_;
+
+      template <typename T> void initializeTplServer (corba::Server<T>*& server,
+         const std::string& contextId,
+         const std::string& contextKind,
+         const std::string& objectId,
+         const std::string& objectKind)
+      {
+        server = new corba::Server <T> (0, NULL);
+        server->initRootPOA(parent()->multiThread());
+        server->implementation ().setServer (this);
+
+        int ret = parent()->nameService()
+          ? server->startCorbaServer(contextId, contextKind, objectId, objectKind)
+          : server->startCorbaServer();
+
+        if (ret != 0) {
+          throw std::runtime_error ("Failed to start corba "
+              + contextId + '.' + contextKind + '/'
+              + objectId + '.' + objectKind
+              + " server.");
+        }
+      }
     }; // class ServerPlugin
   } // namespace corbaserver
 } // namespace hpp
