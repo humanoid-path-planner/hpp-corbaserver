@@ -75,6 +75,19 @@ namespace hpp
           }
         }
 
+        CORBA::Object_ptr getServer (const char* contextName,
+            const char* pluginName, const char* objectName) throw (Error)
+        {
+          try {
+            std::string c (contextName);
+            std::string p (pluginName);
+            std::string o (objectName);
+            return server_->getServer (c, p, o);
+          } catch (const std::exception& e) {
+            throw hpp::Error (e.what ());
+          }
+        }
+
         virtual void deleteServant (const char* id) throw (Error)
         {
           try {

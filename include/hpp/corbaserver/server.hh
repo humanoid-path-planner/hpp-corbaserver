@@ -129,6 +129,10 @@ namespace hpp
 
       bool createContext (const std::string& contextName);
 
+      CORBA::Object_ptr getServer (const std::string& contextName,
+          const std::string& pluginName,
+          const std::string& objectName);
+
       /// Load a plugin if not already loaded.
       /// \return true if the plugin is correctly loaded, false otherwise (which
       ///         includes the case where the plugin was already loaded).
