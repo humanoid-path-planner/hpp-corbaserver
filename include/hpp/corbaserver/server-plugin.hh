@@ -90,7 +90,6 @@ namespace hpp {
       {
         server = new corba::Server <T> (0, NULL);
         server->initRootPOA(parent()->multiThread());
-        server->implementation ().setServer (this);
 
         int ret = parent()->nameService()
           ? server->startCorbaServer(contextId, contextKind, objectId, objectKind)

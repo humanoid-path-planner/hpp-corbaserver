@@ -85,9 +85,13 @@ namespace hpp {
         const std::string& contextId,
         const std::string& contextKind)
     {
-      initializeTplServer(obstacleImpl_, contextId, contextKind, "basic", "obstacle");
-      initializeTplServer(problemImpl_ , contextId, contextKind, "basic", "problem");
-      initializeTplServer(robotImpl_   , contextId, contextKind, "basic", "robot");
+      initializeTplServer(obstacleImpl_, contextId, contextKind, name(), "obstacle");
+      initializeTplServer(problemImpl_ , contextId, contextKind, name(), "problem");
+      initializeTplServer(robotImpl_   , contextId, contextKind, name(), "robot");
+
+      obstacleImpl_->implementation ().setServer (this);
+      problemImpl_ ->implementation ().setServer (this);
+      robotImpl_   ->implementation ().setServer (this);
     }
 
     ::CORBA::Object_ptr BasicServer::servant(const std::string& name) const
