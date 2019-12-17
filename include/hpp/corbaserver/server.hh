@@ -17,6 +17,8 @@
 # include <hpp/corbaserver/config.hh>
 # include <hpp/corbaserver/problem-solver-map.hh>
 
+# include <hpp/corba/template/server.hh>
+
 namespace hpp
 {
   namespace corbaServer
@@ -85,12 +87,12 @@ namespace hpp
 
       PortableServer::POA_var poa ()
       {
-        return poa_;
+        return tools_->poa();
       }
 
       CORBA::ORB_var orb()
       {
-        return orb_;
+        return tools_->orb();
       }
 
       /// \brief Initialize CORBA server to process requests from clients
@@ -106,6 +108,11 @@ namespace hpp
       const bool& multiThread () const
       {
         return multiThread_;
+      }
+
+      const bool& nameService () const
+      {
+        return nameService_;
       }
 
       /// \brief If ORB work is pending, process it
@@ -146,22 +153,15 @@ namespace hpp
       /// \{
       /// Initialize ORB and CORBA servers.
 
-      /// \param argc, argv parameter to feed ORB initialization.
-      /// \param multiThread whether the server may process request using
-      ///        multithred policy.
-      void initORBandServers (int argc, const char* argv[], bool multiThread);
-
       void parseArguments (int argc, const char* argv[]);
 
       /// \}
 
-      CORBA::ORB_var orb_;
-      PortableServer::POA_var poa_;
-      Tools* tools_;
+      corba::Server<Tools>* tools_;
 
       std::string mainContextId_;
 
-      bool multiThread_;
+      bool multiThread_, nameService_;
 
       /// pointer to core::ProblemSolver Object.
       ///
