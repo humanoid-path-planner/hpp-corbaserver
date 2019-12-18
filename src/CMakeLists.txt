@@ -28,6 +28,7 @@ INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src)
 
 FOREACH(IDL ${IDL_SOURCES})
   GENERATE_IDL_CPP (hpp/corbaserver/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver
+    -Wbguard_prefix=hpp_corbaserver_idl
     HEADER_SUFFIX -idl.hh)
   GENERATE_IDL_PYTHON (${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver
     ENABLE_DOCSTRING

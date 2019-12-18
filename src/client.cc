@@ -29,49 +29,74 @@ namespace hpp
     using CORBA::PolicyList;
     using omniORB::fatalException;
 
-    Client::Client(int argc, char *argv[])
+    ClientBase::ClientBase(int argc, char *argv[])
     {
       orb_ = CORBA::ORB_init (argc, argv);
     }
 
-    void Client::connect (const char* iiop, const char* context)
+    ClientBase::~ClientBase()
     {
-      // Get a reference to the Naming Service
-      CORBA::Object_var rootContextObj = orb_->string_to_object(iiop);
+    }
+
+    bool ClientBase::createFromDirectLink (const std::string& iiop)
+    {
+      std::string url = iiop + "/hpp-corbaserver";
+
+      CORBA::Object_var obj = orb_->string_to_object(url.c_str());
+      tools_ = hpp::Tools::_narrow (obj.in ());
+      return CORBA::is_nil(tools_);
+    }
+
+    bool ClientBase::createFromNameService (const std::string& iiop)
+    {
+      std::string url = iiop + "/NameService";
+
+      CORBA::Object_var obj = orb_->string_to_object(url.c_str());
       CosNaming::NamingContext_var nc =
-        CosNaming::NamingContext::_narrow(rootContextObj.in());
+        CosNaming::NamingContext::_narrow(obj.in());
+      if (CORBA::is_nil(nc)) return false;
 
       // Bind robotObj with name Robot to the hppContext:
       CosNaming::Name objectName;
-      objectName.length(2);
-      objectName[0].id   = (const char*) "hpp"; // string copied
-      objectName[0].kind = (const char*) context; // string copied
-      objectName[1].id   = (const char*) "basic";   // string copied
-      objectName[1].kind = (const char*) "robot"; // string copied
+      objectName.length(1);
+      objectName[0].id   = (const char*) "hpp";   // string copied
+      objectName[0].kind = (const char*) "tools"; // string copied
 
       // Invoke the root context to retrieve the object reference
-      CORBA::Object_var managerObj = nc->resolve(objectName);
+      obj = nc->resolve(objectName);
       // Narrow the previous object to obtain the correct type
-      robot_ = hpp::corbaserver::Robot::_narrow (managerObj.in ());
+      tools_ = hpp::Tools::_narrow (obj.in ());
 
-      // Bind obstacleObj with name Obstacle to the hppContext:
-      objectName[1].id   = (const char*) "basic"; // string copied
-      objectName[1].kind = (const char*) "problem";   // string copied
-
-      managerObj = nc->resolve(objectName);
-      // Narrow the previous object to obtain the correct type
-      problem_ = hpp::corbaserver::Problem::_narrow(managerObj.in());
-
-      // Bind problemObj with name Problem to the hppContext:
-      objectName[1].id   = (const char*) "basic"; // string copied
-      objectName[1].kind = (const char*) "obstacle";   // string copied
-
-      managerObj = nc->resolve(objectName);
-      // Narrow the previous object to obtain the correct type
-      obstacle_ = hpp::corbaserver::Obstacle::_narrow(managerObj.in());
+      return CORBA::is_nil(tools_);
     }
 
-    /// \brief Shutdown CORBA server
+    void ClientBase::connect (const std::string& iiop)
+    {
+      bool ok = createFromDirectLink(iiop);
+      if (!ok) ok = createFromNameService(iiop);
+      if (!ok) throw std::runtime_error ("Could not connect to hpp server at " + iiop);
+    }
+
+    Client::Client(int argc, char *argv[])
+      : ClientBase (argc, argv)
+    {}
+
+    void Client::connect (const char* iiop, const char* context)
+    {
+      ClientBase::connect (iiop);
+
+      CORBA::Object_var obj;
+
+      obj = tools()->getServer (context, "", "robot");
+      robot_ = hpp::corbaserver::Robot::_narrow(obj.in());
+
+      obj = tools()->getServer (context, "", "problem");
+      problem_ = hpp::corbaserver::Problem::_narrow(obj.in());
+
+      obj = tools()->getServer (context, "", "obstacle");
+      obstacle_ = hpp::corbaserver::Obstacle::_narrow(obj.in());
+    }
+
     Client::~Client()
     {
     }

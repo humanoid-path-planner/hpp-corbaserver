@@ -12,7 +12,9 @@
 # define HPP_CORBASERVER_CLIENT_HH
 
 # include <omniORB4/CORBA.h>
+# include <string>
 
+# include <hpp/corbaserver/tools-idl.hh>
 # include <hpp/corbaserver/robot-idl.hh>
 # include <hpp/corbaserver/problem-idl.hh>
 # include <hpp/corbaserver/obstacle-idl.hh>
@@ -23,16 +25,39 @@ namespace hpp
 {
   namespace corbaServer
   {
-    class HPP_CORBASERVER_DLLAPI Client
+    class HPP_CORBASERVER_DLLAPI ClientBase
+    {
+    public:
+      ClientBase (int argc, char* argv[]);
+
+      virtual ~ClientBase ();
+
+      /// Connect to hpp object.
+      /// \param iiop address to the server (either the NameService or hpp directly).
+      void connect (const std::string& iiop = "corbaloc:iiop:");
+
+      hpp::Tools_var& tools () {
+        return tools_;
+      }
+
+    private:
+      bool createFromDirectLink(const std::string& iiop);
+      bool createFromNameService(const std::string& iiop);
+
+      hpp::Tools_var tools_;
+      CORBA::ORB_var orb_;
+    };
+
+    class HPP_CORBASERVER_DLLAPI Client : public ClientBase
     {
     public:
       Client (int argc, char* argv[]);
 
       ~Client ();
 
-      /// \param iiop address of the namesever
+      /// \copydoc ClientBase::connect
       /// \param context the hpp context name (passed to the server)
-      void connect (const char* iiop = "corbaloc:rir:/NameService",
+      void connect (const char* iiop = "corbaloc:iiop:",
           const char* context = "corbaserver");
 
       hpp::corbaserver::Robot_var& robot () {
@@ -48,6 +73,8 @@ namespace hpp
       }
 
     private:
+      void createClientsFromTools ();
+
       hpp::corbaserver::Robot_var robot_;
       hpp::corbaserver::Problem_var problem_;
       hpp::corbaserver::Obstacle_var obstacle_;
