@@ -44,7 +44,7 @@ namespace hpp
 
       CORBA::Object_var obj = orb_->string_to_object(url.c_str());
       tools_ = hpp::Tools::_narrow (obj.in ());
-      return CORBA::is_nil(tools_);
+      return !CORBA::is_nil(tools_);
     }
 
     bool ClientBase::createFromNameService (const std::string& iiop)
@@ -52,6 +52,7 @@ namespace hpp
       std::string url = iiop + "/NameService";
 
       CORBA::Object_var obj = orb_->string_to_object(url.c_str());
+      if (CORBA::is_nil(obj)) return false;
       CosNaming::NamingContext_var nc =
         CosNaming::NamingContext::_narrow(obj.in());
       if (CORBA::is_nil(nc)) return false;

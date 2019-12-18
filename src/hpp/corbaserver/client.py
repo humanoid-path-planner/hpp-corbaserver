@@ -94,12 +94,17 @@ class Client:
     self.orb = CORBA.ORB_init (sys.argv, CORBA.ORB_ID)
 
     if url is not None:
-        try:
-            self.initWithDirectLink (url)
-        except CorbaError:
-            pass
-        if self._tools is None:
+        if url.endswith("/NameService"):
             self.initWithNameService (url)
+        elif url.endswith("/hpp-corbaserver"):
+            self.initWithNameService (url)
+        else:
+            try:
+                self.initWithDirectLink (url + "/hpp-corbaserver")
+            except CorbaError:
+                pass
+            if self._tools is None:
+                self.initWithNameService (url + "/NameService")
     else:
         urlNameService = _getIIOPurl(service="NameService", host=host,
                 port = port if port else 2809)
