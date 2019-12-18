@@ -50,6 +50,8 @@ namespace hpp {
         void startCorbaServer (const std::string& contextId,
             const std::string& contextKind);
 
+        ::CORBA::Object_ptr servant (const std::string& name) const;
+
         std::string name() const;
 
       private:
@@ -79,35 +81,26 @@ namespace hpp {
     }
 
     /// Start corba server
-    void BasicServer::startCorbaServer(const std::string& contextId,
+    void BasicServer::startCorbaServer(
+        const std::string& contextId,
         const std::string& contextKind)
     {
-      bool mThd = parent()->multiThread();
-      obstacleImpl_ = new corba::Server <impl::Obstacle> (0, NULL, mThd, "child");
-      problemImpl_  = new corba::Server <impl::Problem > (0, NULL, mThd, "child");
-      robotImpl_    = new corba::Server <impl::Robot   > (0, NULL, mThd, "child");
+      initializeTplServer(obstacleImpl_, contextId, contextKind, name(), "obstacle");
+      initializeTplServer(problemImpl_ , contextId, contextKind, name(), "problem");
+      initializeTplServer(robotImpl_   , contextId, contextKind, name(), "robot");
 
       obstacleImpl_->implementation ().setServer (this);
       problemImpl_ ->implementation ().setServer (this);
       robotImpl_   ->implementation ().setServer (this);
-
-      if (obstacleImpl_->startCorbaServer(contextId, contextKind,
-            "basic", "obstacle") != 0) {
-        HPP_THROW_EXCEPTION (hpp::Exception,
-            "Failed to start corba graph server.");
-      }
-      if (robotImpl_->startCorbaServer(contextId, contextKind,
-            "basic", "robot") != 0) {
-        HPP_THROW_EXCEPTION (hpp::Exception,
-            "Failed to start corba robot server.");
-      }
-      if (problemImpl_->startCorbaServer(contextId, contextKind,
-            "basic", "problem") != 0) {
-        HPP_THROW_EXCEPTION (hpp::Exception,
-            "Failed to start corba problem server.");
-      }
     }
 
+    ::CORBA::Object_ptr BasicServer::servant(const std::string& name) const
+    {
+      if (name == "obstacle") return obstacleImpl_->implementation()._this();
+      if (name == "problem" ) return problemImpl_ ->implementation()._this();
+      if (name == "robot"   ) return robotImpl_   ->implementation()._this();
+      throw std::invalid_argument ("No servant " + name);
+    }
   } // namespace corbaserver
 } // namespace hpp
 

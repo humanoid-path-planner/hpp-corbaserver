@@ -31,6 +31,9 @@ module hpp
     /// whichever ProblemSolver in this map.
     boolean createContext (in string context_) raises (Error);
 
+    /// Get a server object
+    Object getServer (in string context_, in string pluginName, in string objectname) raises (Error);
+
     /// Delete a servant
     /// It throws an exception if the object could not be deleted.
     void deleteServant (in string id) raises (Error);
