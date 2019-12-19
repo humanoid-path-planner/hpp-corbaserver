@@ -26,7 +26,7 @@ def Tools(url = None):
         """
         delete a servant from an object (and not an IOR as with deleteServant)
         """
-        return all( [ client.deleteServant(orb.object_to_string(o)) for o in args ] )
+        return all( [ client.deleteServant(_tc.orb.object_to_string(o)) for o in args ] )
 
     client.deleteServantFromObject = deleteServantFromObject
 
