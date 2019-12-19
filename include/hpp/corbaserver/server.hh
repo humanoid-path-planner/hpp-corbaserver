@@ -87,7 +87,7 @@ namespace hpp
 
       PortableServer::POA_var poa ()
       {
-        return tools_->poa();
+        return tools_->main_poa();
       }
 
       CORBA::ORB_var orb()
