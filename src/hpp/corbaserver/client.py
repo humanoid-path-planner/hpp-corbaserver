@@ -69,7 +69,12 @@ class Client:
 
   def initWithDirectLink (self, url):
     obj = self.orb.string_to_object (url)
-    client = obj._narrow (hpp_idl.hpp.Tools)
+    try:
+        client = obj._narrow (hpp_idl.hpp.Tools)
+    except CORBA.Exception as e:
+        self._tools = None
+        raise CorbaError ( 'Failed to narrow client at ' + url +
+                ' into hpp_idl.hpp.Tools: ' + str(e))
 
     if client is None:
       # This happens when stubs from client and server are not synchronized.

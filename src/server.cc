@@ -121,10 +121,9 @@ namespace hpp
 
       const char* options[][2] = { { "endPoint", ":::13331" }, { 0, 0 } };
       tools_ = new corba::Server<Tools> (argc, argv, "", options);
-      if (nameService_)
-        tools_->initRootPOA(multiThread_);
-      else
+      if (!nameService_)
         tools_->initOmniINSPOA("hpp-corbaserver");
+      tools_->initRootPOA(multiThread_);
       tools_->implementation().setServer(this);
     }
 
@@ -137,10 +136,9 @@ namespace hpp
       parseArguments (argc, argv);
 
       tools_ = new corba::Server<Tools> (argc, argv);
-      if (nameService_)
-        tools_->initRootPOA(multiThread_);
-      else
+      if (!nameService_)
         tools_->initOmniINSPOA("hpp-corbaserver");
+      tools_->initRootPOA(multiThread_);
       tools_->implementation().setServer(this);
     }
 
