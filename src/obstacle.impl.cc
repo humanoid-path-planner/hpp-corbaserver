@@ -14,11 +14,13 @@
 
 #include <pinocchio/multibody/geometry.hpp>
 #include <pinocchio/algorithm/geometry.hpp>
+#include <pinocchio/parsers/utils.hpp>
 
 #include <hpp/util/debug.hh>
 #include <hpp/util/exception-factory.hh>
 
 #include <hpp/fcl/BVH/BVH_model.h>
+#include <hpp/fcl/mesh_loader/loader.h>
 #include <hpp/fcl/shape/geometric_shapes.h>
 
 #include <hpp/pinocchio/device.hh>
@@ -69,6 +71,21 @@ namespace hpp
           device->controlComputation(hpp::pinocchio::JOINT_POSITION);
 
           problemSolver()->addObstacle (device, true, true);
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      void Obstacle::loadPolyhedron (const char* name, const char* resourcename)
+      {
+	try {
+          fcl::MeshLoader loader (fcl::BV_OBBRSS);
+          std::string filename (
+              ::pinocchio::retrieveResourcePath(resourcename,
+                ::pinocchio::rosPaths()));
+          fcl::CollisionGeometryPtr_t geom = loader.load(filename, fcl::Vec3f::Ones());
+          fcl::CollisionObject object (geom);
+          problemSolver()->addObstacle (name, object, true, true);
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}

@@ -31,6 +31,13 @@ module hpp
     void loadObstacleModel (in string filename, in string prefix)
       raises (Error);
 
+    /// \brief Load a polyhedron as an obstacle from a file
+    /// \param obstacleName name of the polyhedron.
+    /// \param filename name of the file.
+    /// \throw Error.
+    void loadPolyhedron (in string obstacleName, in string filename)
+      raises (Error);
+
     /// Load obstacle from urdf file
     ///
     /// \param package Name of the package containing the model.
