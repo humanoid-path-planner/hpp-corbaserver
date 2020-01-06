@@ -115,6 +115,7 @@ namespace hpp
     Server::Server(core::ProblemSolverPtr_t problemSolver, int argc,
 		   const char *argv[], bool inMultiThread) :
       multiThread_ (inMultiThread),
+      nameService_ (false),
       problemSolverMap_ (new ProblemSolverMap (problemSolver))
     {
       parseArguments (argc, argv);
