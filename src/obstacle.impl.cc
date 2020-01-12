@@ -141,28 +141,7 @@ namespace hpp
 
       CollisionObjectPtr_t Obstacle::getObstacleByName (const char* name)
       {
-	ObjectStdVector_t collisionObstacles (problemSolver()->collisionObstacles ());
-	for (ObjectStdVector_t::iterator it = collisionObstacles.begin ();
-	     it != collisionObstacles.end (); it++) {
-	  CollisionObjectPtr_t object = *it;
-	  if (object->name () == name) {
-	    hppDout (info, "found \""
-		     << object->name () << "\" in the obstacle list.");
-	    return object;
-	  }
-	}
-	ObjectStdVector_t distanceObstacles
-	  (problemSolver()->distanceObstacles ());
-	for (ObjectStdVector_t::iterator it = distanceObstacles.begin ();
-	     it != distanceObstacles.end (); it++) {
-	  CollisionObjectPtr_t object = *it;
-	  if (object->name () == name) {
-	    hppDout (info, "found \""
-		     << object->name () << "\" in the obstacle list.");
-	    return object;
-	  }
-	}
-	return CollisionObjectPtr_t ();
+        return problemSolver()->obstacle(name);
       }
 
       void Obstacle::moveObstacle
