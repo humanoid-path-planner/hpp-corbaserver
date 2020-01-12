@@ -30,6 +30,8 @@ namespace hpp {
 
     Transform3f toTransform3f (const Transform_ in);
 
+    std::vector<Transform3f> toTransform3f (const TransformSeq in);
+
     void toHppTransform (const Transform3f& in, Transform_ out);
 
     Transform__slice* toHppTransform (const Transform3f& in);

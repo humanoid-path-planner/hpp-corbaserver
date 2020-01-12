@@ -43,6 +43,14 @@ namespace hpp {
       return out;
     }
 
+    std::vector<Transform3f> toTransform3f (const TransformSeq in)
+    {
+      std::vector<Transform3f> out (in.length());
+      for (std::size_t i = 0; i < out.size(); ++i)
+        toTransform3f (in[(ULong)i], out[i]);
+      return out;
+    }
+
     void toHppTransform (const Transform3f& in, Transform_ out)
     {
       Transform3f::Quaternion q (in.rotation());
