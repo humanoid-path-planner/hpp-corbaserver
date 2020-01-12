@@ -436,8 +436,6 @@ namespace hpp
       ( new ::hpp::corbaServer::ServantFactory<BaseServantType, ServantType> (depth)); \
     }                                                                          \
   };                                                                           \
-  extern "C" {                                                                 \
-    __InitializerClass_##ServantType __instance_##ServantType;                 \
-  }
+  HPP_CORBASERVER_DLLLOCAL __InitializerClass_##ServantType __instance_##ServantType;
 
 #endif // HPP_CORBASERVER_SERVANT_BASE_HH
