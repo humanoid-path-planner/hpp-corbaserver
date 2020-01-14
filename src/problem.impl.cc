@@ -2677,6 +2677,20 @@ namespace hpp
         return d._retn();
       }
 
+      // ---------------------------------------------------------------
+
+      void Problem::setRobot (hpp::pinocchio_idl::Device_ptr _robot)
+      {
+        pinocchio::DevicePtr_t robot;
+        try {
+          robot = reference_to_servant_base<pinocchio::Device> (server_->parent(), _robot)->get();
+        } catch (const Error& e) {
+          throw;
+        }
+        if (!robot) throw Error ("Could not get the robot");
+        problemSolver()->robot (robot);
+      }
+
     } // namespace impl
   } // namespace corbaServer
 } // namespace hpp

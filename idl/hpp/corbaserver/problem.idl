@@ -732,6 +732,8 @@ module hpp
     core_idl::Problem getProblem () raises (Error);
 
     constraints_idl::Implicit getConstraint (in string constraintName) raises (Error);
+
+    void setRobot (in pinocchio_idl::Device robot) raises (Error);
     /// \}
   };
   }; // interface Problem
