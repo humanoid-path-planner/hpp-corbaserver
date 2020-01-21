@@ -55,6 +55,14 @@ module hpp
     //*    (_nm, _arg,errorOut, constraintFound);
     //* err = hpp::corbaServer::vectorToFloatSeq (errorOut);
     //* return res;
+
+    boolean add (in constraints_idl::Implicit numconstraint, in unsigned long priority);
+
+    void setLastIsOptional (in boolean optional);
+    //-> lastIsOptional
+
+    boolean getLastIsOptional ();
+    //-> lastIsOptional
   }; // interface ConfigProjector
 
   interface ConstraintSet : Constraint
