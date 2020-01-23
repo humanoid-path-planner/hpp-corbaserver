@@ -125,6 +125,11 @@ namespace hpp
       if (!nameService_)
         tools_->initOmniINSPOA("hpp-corbaserver");
       tools_->initRootPOA(multiThread_);
+      if (&tools_->implementation () == 0x0) {
+        throw std::runtime_error ("Failed to initialize CORBA server."
+                                  " Are you sure another instance of the server"
+                                  " is not already running?");
+      }
       tools_->implementation().setServer(this);
     }
 
