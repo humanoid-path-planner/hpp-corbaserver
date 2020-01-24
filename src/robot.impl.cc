@@ -122,7 +122,6 @@ namespace hpp
       // --------------------------------------------------------------------
 
       void Robot::createRobot(const char* inRobotName)
-	throw (hpp::Error)
       {
 	std::string robotName (inRobotName);
         DevicePtr_t robot (problemSolver()->createRobot (robotName));
@@ -131,7 +130,7 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      char* Robot::getRobotName () throw (hpp::Error)
+      char* Robot::getRobotName ()
       {
         DevicePtr_t robot = getRobotOrThrow(problemSolver());
         return c_str (robot->name());
@@ -142,7 +141,7 @@ namespace hpp
       void Robot::loadRobotModel(const char* robotName,
                                  const char* rootJointType,
                                  const char* urdfName,
-                                 const char* srdfName) throw (hpp::Error)
+                                 const char* srdfName)
       {
 	try {
 	  pinocchio::DevicePtr_t device
@@ -166,7 +165,7 @@ namespace hpp
       void Robot::loadHumanoidModel(const char* robotName,
                                     const char* rootJointType,
                                     const char* urdfName,
-                                    const char* srdfName) throw (hpp::Error)
+                                    const char* srdfName)
       {
 	try {
 	  pinocchio::HumanoidRobotPtr_t robot
@@ -192,7 +191,7 @@ namespace hpp
           const char* robotName,
           const char* rootJointType,
           const char* urdfString,
-          const char* srdfString) throw (hpp::Error)
+          const char* srdfString)
       {
 	try {
 	  pinocchio::DevicePtr_t device (problemSolver ()->createRobot
@@ -218,7 +217,7 @@ namespace hpp
           const char* robotName,
           const char* rootJointType,
           const char* urdfString,
-          const char* srdfString) throw (hpp::Error)
+          const char* srdfString)
       {
 	try {
 	  pinocchio::HumanoidRobotPtr_t robot
@@ -241,7 +240,7 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      Long Robot::getConfigSize () throw (hpp::Error)
+      Long Robot::getConfigSize ()
       {
 	try {
 	  return (Long) getRobotOrThrow(problemSolver())->configSize ();
@@ -253,7 +252,7 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      Long Robot::getNumberDof () throw (hpp::Error)
+      Long Robot::getNumberDof ()
       {
 	try {
           return (Long) getRobotOrThrow(problemSolver())->numberDof ();
@@ -279,7 +278,6 @@ namespace hpp
           const char* jointName,
           const char* jointType,
           const Transform_ pos)
-	throw (hpp::Error)
       {
         using namespace pinocchio;
         DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -341,7 +339,7 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      Names_t* Robot::getJointNames () throw (hpp::Error)
+      Names_t* Robot::getJointNames ()
       {
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -354,7 +352,7 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      Names_t* Robot::getJointTypes () throw (hpp::Error)
+      Names_t* Robot::getJointTypes ()
       {
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -370,7 +368,7 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      Names_t* Robot::getAllJointNames () throw (hpp::Error)
+      Names_t* Robot::getAllJointNames ()
       {
 	try {
 	  DevicePtr_t robot = problemSolver()->robot ();
@@ -393,7 +391,6 @@ namespace hpp
       // --------------------------------------------------------------------
 
       Names_t* Robot::getChildJointNames (const char* jointName)
-        throw (hpp::Error)
       {
 	try {
 	  DevicePtr_t robot = problemSolver()->robot ();
@@ -416,7 +413,6 @@ namespace hpp
       // --------------------------------------------------------------------
 
       char* Robot::getParentJointName (const char* jointName)
-        throw (hpp::Error)
       {
 	try {
           DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -438,7 +434,7 @@ namespace hpp
       }
 
       // --------------------------------------------------------------------
-      Transform__slice* Robot::getRootJointPosition () throw (hpp::Error)
+      Transform__slice* Robot::getRootJointPosition ()
       {
 	try {
           DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -452,7 +448,6 @@ namespace hpp
       // --------------------------------------------------------------------
 
       void Robot::setRootJointPosition (const Transform_ position)
-	throw (hpp::Error)
       {
 	try {
           DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -467,7 +462,6 @@ namespace hpp
       // --------------------------------------------------------------------
 
       void Robot::setJointPositionInParentFrame (const char* jointName, const Transform_ position)
-	throw (hpp::Error)
       {
 	try {
           DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -482,7 +476,6 @@ namespace hpp
       // --------------------------------------------------------------------
 
       hpp::floatSeq* Robot::getJointConfig(const char* jointName)
-	throw (hpp::Error)
       {
 	try {
 	  // Get robot in hppPlanner object.
@@ -504,7 +497,7 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      char* Robot::getJointType(const char* jointName) throw (hpp::Error)
+      char* Robot::getJointType(const char* jointName)
       {
 	try {
 	  // Get robot in hppPlanner object.
@@ -525,7 +518,6 @@ namespace hpp
       // --------------------------------------------------------------------
 
       void Robot::setJointConfig(const char* jointName, const hpp::floatSeq& q)
-	throw (hpp::Error)
       {
 	try {
 	  // Get robot in hppPlanner object.
@@ -556,7 +548,6 @@ namespace hpp
 
       floatSeq* Robot::jointIntegrate(const floatSeq& jointCfg,
             const char* jointName, const floatSeq& dq, bool saturate)
-	throw (hpp::Error)
       {
 	try {
 	  // Get robot in hppPlanner object.
@@ -592,7 +583,6 @@ namespace hpp
       // --------------------------------------------------------------------
 
       hpp::floatSeqSeq* Robot::getCurrentTransformation(const char* jointName)
-	throw (hpp::Error)
       {
 	try {
           DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -619,7 +609,6 @@ namespace hpp
       // --------------------------------------------------------------------
 
       Transform__slice* Robot::getJointPosition(const char* jointName)
-	throw (hpp::Error)
       {
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -633,7 +622,6 @@ namespace hpp
       // --------------------------------------------------------------------
 
       TransformSeq* Robot::getJointsPosition (const floatSeq& dofArray, const Names_t& jointNames)
-	throw (hpp::Error)
       {
 	try {
           using hpp::pinocchio::DeviceSync;
@@ -669,7 +657,6 @@ namespace hpp
       // --------------------------------------------------------------------
 
       floatSeq* Robot::getJointVelocity(const char* jointName)
-	throw (hpp::Error)
       {
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -686,7 +673,6 @@ namespace hpp
       // --------------------------------------------------------------------
 
       floatSeq* Robot::getJointVelocityInLocalFrame(const char* jointName)
-	throw (hpp::Error)
       {
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -701,7 +687,6 @@ namespace hpp
       // --------------------------------------------------------------------
 
       Transform__slice* Robot::getJointPositionInParentFrame(const char* jointName)
-	throw (hpp::Error)
       {
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -714,7 +699,7 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      Long Robot::getJointNumberDof (const char* jointName) throw (hpp::Error)
+      Long Robot::getJointNumberDof (const char* jointName)
       {
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -729,7 +714,7 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      Long Robot::getJointConfigSize (const char* jointName) throw (hpp::Error)
+      Long Robot::getJointConfigSize (const char* jointName)
       {
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -745,7 +730,6 @@ namespace hpp
       // --------------------------------------------------------------------
 
       floatSeq* Robot::getJointBounds (const char* jointName)
-	throw (hpp::Error)
       {
 	try  {
 	  // Get robot in ProblemSolver object.
@@ -765,7 +749,6 @@ namespace hpp
 
       void Robot::setJointBounds (const char* jointName,
 				  const floatSeq& jointBounds)
-	throw (hpp::Error)
       {
 	try  {
 	  // Get robot in ProblemSolver object.
@@ -782,7 +765,6 @@ namespace hpp
       // --------------------------------------------------------------------
 
       Transform__slice* Robot::getLinkPosition (const char* linkName)
-	throw (hpp::Error)
       {
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -807,7 +789,6 @@ namespace hpp
       // --------------------------------------------------------------------
 
       TransformSeq* Robot::getLinksPosition (const floatSeq& dofArray, const Names_t& linkNames)
-	throw (hpp::Error)
       {
 	try {
           using hpp::pinocchio::DeviceSync;
@@ -843,7 +824,7 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      Names_t* Robot::getLinkNames (const char* jointName) throw (hpp::Error)
+      Names_t* Robot::getLinkNames (const char* jointName)
       {
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -865,7 +846,6 @@ namespace hpp
       // --------------------------------------------------------------------
 
       void Robot::setDimensionExtraConfigSpace (ULong dimension)
-	throw (hpp::Error)
       {
 	// Get robot in ProblemSolver object.
         try {
@@ -877,7 +857,6 @@ namespace hpp
       }
 
       ULong Robot::getDimensionExtraConfigSpace()
-  throw (hpp::Error)
       {
   // Get robot in ProblemSolver object.
         ULong dim;
@@ -893,7 +872,7 @@ namespace hpp
       // --------------------------------------------------------------------
 
       void Robot::setExtraConfigSpaceBounds
-      (const hpp::floatSeq& bounds) throw (hpp::Error)
+      (const hpp::floatSeq& bounds)
       {
 	using hpp::pinocchio::ExtraConfigSpace;
 	// Get robot in ProblemSolver object.
@@ -930,7 +909,6 @@ namespace hpp
       // --------------------------------------------------------------------
 
       void Robot::setCurrentConfig(const hpp::floatSeq& dofArray)
-	throw (hpp::Error)
       {
 	try {
           DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -946,7 +924,7 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      hpp::floatSeq* Robot::shootRandomConfig () throw (hpp::Error)
+      hpp::floatSeq* Robot::shootRandomConfig ()
       {
 	try {
           core::ProblemPtr_t p = problemSolver()->problem();
@@ -964,7 +942,7 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      hpp::floatSeq* Robot::getCurrentConfig() throw (hpp::Error)
+      hpp::floatSeq* Robot::getCurrentConfig()
       {
 	try {
 	  // Get robot in hppPlanner object.
@@ -979,7 +957,7 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      hpp::floatSeq* Robot::getCurrentVelocity() throw (hpp::Error)
+      hpp::floatSeq* Robot::getCurrentVelocity()
       {
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -994,7 +972,6 @@ namespace hpp
       // --------------------------------------------------------------------
 
       void Robot::setCurrentVelocity(const hpp::floatSeq& qDot)
-	throw (hpp::Error)
       {
 	try {
           DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -1008,7 +985,6 @@ namespace hpp
       // --------------------------------------------------------------------
 
       Names_t* Robot::getJointInnerObjects (const char* jointName)
-	throw (hpp::Error)
       {
 	Names_t *innerObjectSeq = 0x0;
 	JointPtr_t joint;
@@ -1048,7 +1024,6 @@ namespace hpp
       // --------------------------------------------------------------------
 
       Names_t* Robot::getJointOuterObjects (const char* jointName)
-	throw (hpp::Error)
       {
 	Names_t *outerObjectSeq = 0x0;
 	JointPtr_t joint;
@@ -1108,7 +1083,6 @@ namespace hpp
       // --------------------------------------------------------------------
 
       void Robot::getObjectPosition (const char* objectName, Transform_ cfg)
-	throw (hpp::Error)
       {
 	try {
 	  CollisionObjectConstPtr_t object = getObjectByName (objectName);
@@ -1124,7 +1098,6 @@ namespace hpp
 
       void Robot::isConfigValid (const hpp::floatSeq& dofArray,
 				 Boolean& validity, CORBA::String_out report)
-	throw (hpp::Error)
       {
         try {
           DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -1151,7 +1124,6 @@ namespace hpp
 				   Names_t_out outerObjects,
 				   hpp::floatSeqSeq_out innerPoints,
 				   hpp::floatSeqSeq_out outerPoints)
-	throw (hpp::Error)
       {
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -1208,7 +1180,6 @@ namespace hpp
 
       void
       Robot::autocollisionCheck (hpp::boolSeq_out collide)
-	throw (hpp::Error)
       {
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -1235,7 +1206,6 @@ namespace hpp
       Robot::autocollisionPairs (Names_t_out innerObjects,
                                  Names_t_out outerObjects,
                                  boolSeq_out active)
-	throw (hpp::Error)
       {
 	try {
 	  DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -1271,7 +1241,6 @@ namespace hpp
       Robot::setAutoCollision (const char* innerObject,
                                const char* outerObject,
                                bool active)
-	throw (hpp::Error)
       {
 	try {
           core::ProblemSolverPtr_t ps = problemSolver();
@@ -1305,7 +1274,7 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      Double Robot::getMass () throw (hpp::Error)
+      Double Robot::getMass ()
       {
 	try {
 	  return getRobotOrThrow(problemSolver())->mass ();
@@ -1316,7 +1285,7 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      hpp::floatSeq* Robot::getCenterOfMass () throw (hpp::Error)
+      hpp::floatSeq* Robot::getCenterOfMass ()
       {
 	try {
           DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -1334,7 +1303,7 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      hpp::floatSeq* Robot::getCenterOfMassVelocity () throw (hpp::Error)
+      hpp::floatSeq* Robot::getCenterOfMassVelocity ()
       {
 	try {
           DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -1353,7 +1322,7 @@ namespace hpp
 
       // --------------------------------------------------------------------
 
-      hpp::floatSeqSeq* Robot::getJacobianCenterOfMass () throw (hpp::Error)
+      hpp::floatSeqSeq* Robot::getJacobianCenterOfMass ()
       {
 	try {
           DevicePtr_t robot = getRobotOrThrow (problemSolver());
@@ -1373,7 +1342,6 @@ namespace hpp
       // --------------------------------------------------------------------
 
       void Robot::createPolyhedron(const char* polyhedronName)
-	throw (hpp::Error)
       {
         objectMap_.createPolyhedron (polyhedronName);
       }
@@ -1381,7 +1349,6 @@ namespace hpp
       // --------------------------------------------------------------------
 
       void Robot::createBox(const char* name, Double x, Double y, Double z)
-	throw (hpp::Error)
       {
         objectMap_.createBox (name, x, y, z);
       }
@@ -1389,7 +1356,6 @@ namespace hpp
       // --------------------------------------------------------------------
 
       void Robot::createSphere (const char* name, Double radius)
-	throw (hpp::Error)
       {
         objectMap_.createSphere (name, radius);
       }
@@ -1397,7 +1363,6 @@ namespace hpp
       // --------------------------------------------------------------------
 
       void Robot::createCylinder (const char* name, Double radius, Double length)
-	throw (hpp::Error)
       {
         objectMap_.createCylinder (name, radius, length);
       }
@@ -1406,7 +1371,6 @@ namespace hpp
 
       ULong Robot::addPoint(const char* polyhedronName, Double x, Double y,
 			    Double z)
-	throw (hpp::Error)
       {
 	return static_cast<Long> (
             objectMap_.addPoint (polyhedronName, x, y, z));
@@ -1416,7 +1380,6 @@ namespace hpp
 
       ULong Robot::addTriangle(const char* polyhedronName,
 			       ULong pt1, ULong pt2, ULong pt3)
-	throw (hpp::Error)
       {
 	return static_cast<ULong> (
             objectMap_.addTriangle (polyhedronName, pt1, pt2, pt3));
@@ -1427,7 +1390,6 @@ namespace hpp
       void Robot::addObjectToJoint (const char* jointName,
           const char* objectName,
           const Transform_ pos)
-        throw (hpp::Error)
       {
         using namespace pinocchio;
         DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -1467,7 +1429,6 @@ namespace hpp
       }
 
       void Robot::addPartialCom (const char* comName, const Names_t& jointNames)
-        throw (hpp::Error)
       {
         try {
           DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -1486,7 +1447,7 @@ namespace hpp
         }
       }
 
-      hpp::floatSeq* Robot::getPartialCom (const char* comName) throw (hpp::Error)
+      hpp::floatSeq* Robot::getPartialCom (const char* comName)
       {
 	try {
           if (!problemSolver()->centerOfMassComputations.has(comName)) {
@@ -1502,7 +1463,6 @@ namespace hpp
       }
 
       hpp::floatSeq* Robot::getVelocityPartialCom (const char* comName)
-        throw (hpp::Error)
       {
 	try {
           DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -1517,9 +1477,8 @@ namespace hpp
 	  throw hpp::Error (exc.what ());
 	}
       }
-          
 
-      hpp::floatSeqSeq* Robot::getJacobianPartialCom (const char* comName) throw (hpp::Error)
+      hpp::floatSeqSeq* Robot::getJacobianPartialCom (const char* comName)
       {
 	try {
           if (!problemSolver()->centerOfMassComputations.has(comName)) {
@@ -1535,7 +1494,7 @@ namespace hpp
       }
 
       hpp::pinocchio_idl::CenterOfMassComputation_ptr Robot::getCenterOfMassComputation
-        (const char* name) throw (Error)
+        (const char* name)
       {
         const std::string cn (name);
         core::ProblemSolverPtr_t ps = problemSolver();
@@ -1548,7 +1507,6 @@ namespace hpp
       }
 
       floatSeq* Robot::getRobotAABB()
-        throw (hpp::Error)
       {
         DevicePtr_t robot = getRobotOrThrow(problemSolver());
         try {

@@ -41,46 +41,46 @@ namespace hpp
 
           virtual ~PathServant () {}
 
-          size_type outputSize () throw (Error)
+          size_type outputSize ()
           {
             return get()->outputSize();
           }
 
-          size_type outputDerivativeSize () throw (Error)
+          size_type outputDerivativeSize ()
           {
             return get()->outputDerivativeSize();
           }
 
-          value_type length () throw (Error)
+          value_type length ()
           {
             return get()->length ();
           }
 
-          char* str () throw (Error)
+          char* str ()
           {
             std::ostringstream oss; oss << *get();
             std::string res = oss.str();
             return CORBA::string_dup(res.c_str());
           }
 
-          floatSeq* value (value_type t, CORBA::Boolean& success) throw (Error)
+          floatSeq* value (value_type t, CORBA::Boolean& success)
           {
             return vectorToFloatSeq (get()->operator() (t, success));
           }
 
-          floatSeq* derivative (value_type t, CORBA::Short order) throw (Error)
+          floatSeq* derivative (value_type t, CORBA::Short order)
           {
             vector_t res (get()->outputDerivativeSize());
             get()->derivative (res, t, order);
             return vectorToFloatSeq (res);
           }
 
-          hpp::core_idl::Path_ptr extract (value_type tmin, value_type tmax) throw (Error)
+          hpp::core_idl::Path_ptr extract (value_type tmin, value_type tmax)
           {
             return makePathServant (server_, get()->extract(core::interval_t(tmin, tmax)));
           }
 
-          hpp::core_idl::PathVector_ptr asVector () throw (Error);
+          hpp::core_idl::PathVector_ptr asVector ();
       };
 
       typedef PathServant<POA_hpp::core_idl::Path, core::PathPtr_t> Path;
@@ -95,22 +95,22 @@ namespace hpp
 
           PathVectorServant (Server* server, const Storage& s) : Parent (server, s) {}
 
-          std::size_t numberPaths () throw (Error)
+          std::size_t numberPaths ()
           {
             return getT()->numberPaths();
           }
 
-          hpp::core_idl::Path_ptr pathAtRank (std::size_t rank) throw (Error)
+          hpp::core_idl::Path_ptr pathAtRank (std::size_t rank)
           {
             return makePathServant (server_, getT()->pathAtRank(rank));
           }
 
-          void appendPath (hpp::core_idl::Path_ptr path) throw (Error)
+          void appendPath (hpp::core_idl::Path_ptr path)
           {
             getT()->appendPath(reference_to_servant_base<core::Path>(server_, path)->get());
           }
 
-          void concatenate (hpp::core_idl::PathVector_ptr path) throw (Error)
+          void concatenate (hpp::core_idl::PathVector_ptr path)
           {
             getT()->concatenate (reference_to_servant<PathVectorServant>(server_, path)->getT());
           }
@@ -120,7 +120,7 @@ namespace hpp
 
 
       template <typename _Base, typename _Storage>
-      hpp::core_idl::PathVector_ptr PathServant<_Base,_Storage>::asVector () throw (Error)
+      hpp::core_idl::PathVector_ptr PathServant<_Base,_Storage>::asVector ()
       {
         PathPtr_t p = get();
         PathVectorPtr_t pv =

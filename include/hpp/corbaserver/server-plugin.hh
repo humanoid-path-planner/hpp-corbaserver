@@ -59,7 +59,7 @@ namespace hpp {
         return parent_;
       }
 
-      core::ProblemSolverPtr_t problemSolver () const throw (std::logic_error)
+      core::ProblemSolverPtr_t problemSolver () const
       {
         return problemSolverMap_->selected();
       }

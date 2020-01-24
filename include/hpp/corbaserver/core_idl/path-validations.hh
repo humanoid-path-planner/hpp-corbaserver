@@ -44,7 +44,7 @@ namespace hpp
           CORBA::Boolean validate (hpp::core_idl::Path_ptr path,
               CORBA::Boolean reverse,
               hpp::core_idl::Path_out validPart,
-              hpp::core_idl::PathValidationReport_out report) throw (Error)
+              hpp::core_idl::PathValidationReport_out report)
           {
             core::PathPtr_t p (reference_to_servant_base<core::Path>(server_, path)->get());
             core::PathPtr_t vp;

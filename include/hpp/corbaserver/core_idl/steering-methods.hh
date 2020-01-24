@@ -59,7 +59,7 @@ namespace hpp
 
           virtual ~SteeringMethodServant () {}
 
-          hpp::core_idl::Path_ptr call (const floatSeq& q1, const floatSeq& q2) throw (Error)
+          hpp::core_idl::Path_ptr call (const floatSeq& q1, const floatSeq& q2)
           {
             Configuration_t qq1 (floatSeqToConfig(getS().r, q1, true)),
                             qq2 (floatSeqToConfig(getS().r, q2, true));

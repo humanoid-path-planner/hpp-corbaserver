@@ -59,212 +59,171 @@ namespace hpp
         }
 
 	virtual void
-	createRobot (const char* robotName) throw (hpp::Error);
+	createRobot (const char* robotName);
 
 	virtual void loadRobotModel (const char* robotName,
 				     const char* rootJointType,
 				     const char* urdfName,
-				     const char* srdfName) throw (hpp::Error);
+				     const char* srdfName);
 
 	virtual void loadHumanoidModel (const char* robotName,
 					 const char* rootJointType,
 					 const char* urdfName,
-					 const char* srdfName)
-	  throw (hpp::Error);
+					 const char* srdfName);
 
 	virtual void loadRobotModelFromString (
             const char* robotName,
             const char* rootJointType,
             const char* urdfString,
-            const char* srdfString) throw (hpp::Error);
+            const char* srdfString);
 
 	virtual void loadHumanoidModelFromString (
             const char* robotName,
             const char* rootJointType,
             const char* urdfString,
-            const char* srdfString) throw (hpp::Error);
+            const char* srdfString);
 
-	virtual char* getRobotName () throw (hpp::Error);
+	virtual char* getRobotName ();
 
-	virtual Long getConfigSize () throw (hpp::Error);
+	virtual Long getConfigSize ();
 
-	virtual Long getNumberDof () throw (hpp::Error);
+	virtual Long getNumberDof ();
 
 	virtual void appendJoint
 	(const char* parentName, const char* jointName, const char* jointType,
-	 const Transform_ pos)
-	  throw (hpp::Error);
+	 const Transform_ pos);
 
-	virtual Names_t* getJointNames () throw (hpp::Error);
-	virtual Names_t* getJointTypes () throw (hpp::Error);
-	virtual Names_t* getAllJointNames () throw (hpp::Error);
-	virtual Names_t* getChildJointNames (const char* jointName)
-          throw (hpp::Error);
-	virtual char* getParentJointName (const char* jointName)
-          throw (hpp::Error);
-        virtual hpp::floatSeq* getJointConfig(const char* jointName)
-          throw (hpp::Error);
-        virtual void setJointConfig(const char* jointName, const floatSeq& cfg)
-          throw (hpp::Error);
-        virtual char* getJointType(const char* jointName)
-          throw (hpp::Error);
+	virtual Names_t* getJointNames ();
+	virtual Names_t* getJointTypes ();
+	virtual Names_t* getAllJointNames ();
+	virtual Names_t* getChildJointNames (const char* jointName);
+	virtual char* getParentJointName (const char* jointName);
+        virtual hpp::floatSeq* getJointConfig(const char* jointName);
+        virtual void setJointConfig(const char* jointName, const floatSeq& cfg);
+        virtual char* getJointType(const char* jointName);
         virtual floatSeq* jointIntegrate(const floatSeq& jointCfg,
-            const char* jointName, const floatSeq& dq, bool saturate)
-          throw (hpp::Error);
-	virtual hpp::floatSeqSeq* getCurrentTransformation(const char* jointName)
-	  throw (hpp::Error);
-        virtual Transform__slice* getJointPositionInParentFrame(const char* jointName)
-          throw (hpp::Error);
-	virtual Transform__slice* getJointPosition(const char* jointName)
-	  throw (hpp::Error);
-	virtual TransformSeq* getJointsPosition (const floatSeq& q, const Names_t& jointNames)
-	  throw (hpp::Error);
-	virtual floatSeq* getJointVelocity(const char* jointName)
-	  throw (hpp::Error);
-	virtual floatSeq* getJointVelocityInLocalFrame(const char* jointName)
-	  throw (hpp::Error);
+            const char* jointName, const floatSeq& dq, bool saturate);
+	virtual hpp::floatSeqSeq* getCurrentTransformation(const char* jointName);
+        virtual Transform__slice* getJointPositionInParentFrame(const char* jointName);
+	virtual Transform__slice* getJointPosition(const char* jointName);
+	virtual TransformSeq* getJointsPosition (const floatSeq& q, const Names_t& jointNames);
+	virtual floatSeq* getJointVelocity(const char* jointName);
+	virtual floatSeq* getJointVelocityInLocalFrame(const char* jointName);
 
-	virtual Transform__slice* getRootJointPosition () throw (hpp::Error);
+	virtual Transform__slice* getRootJointPosition ();
 
-	virtual void setRootJointPosition (const Transform_ position)
-	  throw (hpp::Error);
+	virtual void setRootJointPosition (const Transform_ position);
 
         virtual void setJointPositionInParentFrame (const char* jointName,
-            const Transform_ position)
-	  throw (hpp::Error);
+            const Transform_ position);
 
-	virtual Long getJointNumberDof (const char* jointName)
-	  throw (hpp::Error);
-	virtual Long getJointConfigSize (const char* jointName)
-	  throw (hpp::Error);
+	virtual Long getJointNumberDof (const char* jointName);
+	virtual Long getJointConfigSize (const char* jointName);
 
-        virtual hpp::floatSeq* getJointBounds (const char* jointName)
-          throw (hpp::Error);
+        virtual hpp::floatSeq* getJointBounds (const char* jointName);
 	virtual void setJointBounds
 	(const char* jointName,
-	 const hpp::floatSeq& jointBound) throw (hpp::Error);
+	 const hpp::floatSeq& jointBound);
 
-	virtual Transform__slice* getLinkPosition (const char* linkName)
-	  throw (hpp::Error);
+	virtual Transform__slice* getLinkPosition (const char* linkName);
 
-	virtual TransformSeq* getLinksPosition (const floatSeq& q, const Names_t& linkName)
-	  throw (hpp::Error);
+	virtual TransformSeq* getLinksPosition (const floatSeq& q, const Names_t& linkName);
 
-	virtual Names_t* getLinkNames(const char* jointName)
-	  throw (hpp::Error);
+	virtual Names_t* getLinkNames(const char* jointName);
 
-	virtual void setDimensionExtraConfigSpace (ULong dimension)
-	  throw (hpp::Error);
+	virtual void setDimensionExtraConfigSpace (ULong dimension);
 
-  virtual ULong getDimensionExtraConfigSpace ()
-    throw (hpp::Error);
+  virtual ULong getDimensionExtraConfigSpace ();
 
 	virtual void setExtraConfigSpaceBounds
-	(const hpp::floatSeq& bounds) throw (hpp::Error);
+	(const hpp::floatSeq& bounds);
 
 	virtual void setCurrentConfig
-	(const hpp::floatSeq& dofArray) throw (hpp::Error);
+	(const hpp::floatSeq& dofArray);
 
-	virtual hpp::floatSeq* shootRandomConfig () throw (hpp::Error);
-	virtual hpp::floatSeq* getCurrentConfig() throw (hpp::Error);
+	virtual hpp::floatSeq* shootRandomConfig ();
+	virtual hpp::floatSeq* getCurrentConfig();
 
 	virtual void setCurrentVelocity
-	(const hpp::floatSeq& qDot) throw (hpp::Error);
-	virtual hpp::floatSeq* getCurrentVelocity() throw (hpp::Error);
+	(const hpp::floatSeq& qDot);
+	virtual hpp::floatSeq* getCurrentVelocity();
 
 	virtual Names_t* getJointInnerObjects
-	(const char* bodyName)
-	  throw (hpp::Error);
+	(const char* bodyName);
 
 	virtual Names_t* getJointOuterObjects
-	(const char* bodyName)
-	  throw (hpp::Error);
+	(const char* bodyName);
 
-	virtual void getObjectPosition (const char* objectName, Transform_ cfg)
-	  throw (hpp::Error);
+	virtual void getObjectPosition (const char* objectName, Transform_ cfg);
 
 	virtual void isConfigValid
 	(const hpp::floatSeq& dofArray, Boolean& validity,
-	 CORBA::String_out report) throw (hpp::Error);
+	 CORBA::String_out report);
 
 	virtual void
 	distancesToCollision (hpp::floatSeq_out distances,
 			      Names_t_out innerObjects,
 			      Names_t_out outerObjects,
 			      hpp::floatSeqSeq_out innerPoints,
-			      hpp::floatSeqSeq_out outerPoints)
-	  throw (hpp::Error);
+			      hpp::floatSeqSeq_out outerPoints);
 
 	virtual void
-	autocollisionCheck (hpp::boolSeq_out collide)
-	  throw (hpp::Error);
+	autocollisionCheck (hpp::boolSeq_out collide);
 
 	virtual void
 	autocollisionPairs (Names_t_out innerObjects,
 			Names_t_out outerObjects,
-                        boolSeq_out active)
-	  throw (hpp::Error);
+                        boolSeq_out active);
 
 	virtual void
 	setAutoCollision (const char* innerObject,
 			  const char* outerObject,
-                          bool active)
-	  throw (hpp::Error);
+                          bool active);
 
-	virtual Double getMass () throw (hpp::Error);
+	virtual Double getMass ();
 
-	virtual hpp::floatSeq* getCenterOfMass () throw (hpp::Error);
+	virtual hpp::floatSeq* getCenterOfMass ();
 
-	virtual hpp::floatSeq* getCenterOfMassVelocity () throw (hpp::Error);
+	virtual hpp::floatSeq* getCenterOfMassVelocity ();
 
-	virtual hpp::floatSeqSeq* getJacobianCenterOfMass () throw (hpp::Error);
+	virtual hpp::floatSeqSeq* getJacobianCenterOfMass ();
 
 	virtual void
 	createPolyhedron
-	(const char* polyhedronName) throw (hpp::Error);
+	(const char* polyhedronName);
 
 	virtual void
-	createBox (const char* name, Double x, Double y, Double z)
-	  throw (hpp::Error);
+	createBox (const char* name, Double x, Double y, Double z);
 
 	virtual void
-	createSphere (const char* name, Double radius)
-	  throw (hpp::Error);
+	createSphere (const char* name, Double radius);
 
 	virtual void
-	createCylinder (const char* name, Double radius, Double length)
-	  throw (hpp::Error);
+	createCylinder (const char* name, Double radius, Double length);
 
 	virtual ULong
-	addPoint (const char* polyhedronName, Double x, Double y, Double z)
-	  throw (hpp::Error);
+	addPoint (const char* polyhedronName, Double x, Double y, Double z);
 
 	virtual ULong
 	addTriangle
-	(const char* polyhedronName, ULong pt1, ULong pt2, ULong pt3)
-	  throw (hpp::Error);
+	(const char* polyhedronName, ULong pt1, ULong pt2, ULong pt3);
 
 	virtual void
 	addObjectToJoint (const char* jointName,
-            const char* objectName, const Transform_ config)
-	  throw (hpp::Error);
+            const char* objectName, const Transform_ config);
 
         virtual void
-        addPartialCom (const char* comName, const Names_t& jointNames)
-          throw (hpp::Error);
+        addPartialCom (const char* comName, const Names_t& jointNames);
 
-        virtual hpp::floatSeq* getPartialCom (const char* comName)
-          throw (hpp::Error);
+        virtual hpp::floatSeq* getPartialCom (const char* comName);
 
-        virtual hpp::floatSeqSeq* getJacobianPartialCom (const char* comName)
-          throw (hpp::Error);
+        virtual hpp::floatSeqSeq* getJacobianPartialCom (const char* comName);
 
-        virtual hpp::floatSeq* getVelocityPartialCom (const char* comName)
-          throw (hpp::Error);
+        virtual hpp::floatSeq* getVelocityPartialCom (const char* comName);
 
-        hpp::pinocchio_idl::CenterOfMassComputation_ptr getCenterOfMassComputation (const char* name) throw (Error);
+        hpp::pinocchio_idl::CenterOfMassComputation_ptr getCenterOfMassComputation (const char* name);
 
-        virtual floatSeq* getRobotAABB() throw (hpp::Error);
+        virtual floatSeq* getRobotAABB();
 
       private:
 	CollisionObjectConstPtr_t getObjectByName (const char* name);

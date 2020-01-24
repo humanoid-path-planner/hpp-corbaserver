@@ -45,341 +45,295 @@ namespace hpp
           server_ = server;
         }
 
-        virtual Names_t* getAvailable (const char* what) throw (hpp::Error);
+        virtual Names_t* getAvailable (const char* what);
 
-        virtual Names_t* getSelected (const char* what) throw (hpp::Error);
+        virtual Names_t* getSelected (const char* what);
 
-        virtual void setParameter (const char* name, const Any& value)
-          throw (Error);
+        virtual void setParameter (const char* name, const Any& value);
 
-        virtual Any* getParameter (const char* name) throw (Error);
+        virtual Any* getParameter (const char* name);
 
-        virtual char* getParameterDoc (const char* name) throw (Error);
+        virtual char* getParameterDoc (const char* name);
 
-        virtual bool selectProblem (const char* problemName) throw (hpp::Error);
+        virtual bool selectProblem (const char* problemName);
 
-        virtual void resetProblem () throw (hpp::Error);
+        virtual void resetProblem ();
 
-        virtual bool loadPlugin (const char* pluginName) throw (hpp::Error);
+        virtual bool loadPlugin (const char* pluginName);
 
         virtual void movePathToProblem (ULong pathId, const char* problemName,
-            const Names_t& jointNames) throw (hpp::Error);
+            const Names_t& jointNames);
 
-        virtual void setMaxNumThreads (UShort n) throw (Error);
+        virtual void setMaxNumThreads (UShort n);
 
-        virtual UShort getMaxNumThreads () throw (Error);
+        virtual UShort getMaxNumThreads ();
 
 	virtual void
-	setRandomSeed (const Long seed) throw (hpp::Error) {
+	setRandomSeed (const Long seed) {
           srand ((int) seed);
         }
 
 	virtual void
-	setInitialConfig (const hpp::floatSeq& dofArray) throw (hpp::Error);
+	setInitialConfig (const hpp::floatSeq& dofArray);
 
 	virtual hpp::floatSeq*
-	getInitialConfig () throw (hpp::Error);
+	getInitialConfig ();
 
 	virtual void
-	addGoalConfig (const hpp::floatSeq& dofArray) throw (hpp::Error);
+	addGoalConfig (const hpp::floatSeq& dofArray);
 
-	virtual hpp::floatSeqSeq*	getGoalConfigs () throw (hpp::Error);
+	virtual hpp::floatSeqSeq*	getGoalConfigs ();
 
 	virtual void
-	resetGoalConfigs ()  throw (hpp::Error);
+	resetGoalConfigs () ;
 
 	virtual void createOrientationConstraint
 	(const char* constraintName, const char* joint1Name,
-	 const char* joint2Name, const Double* p, const hpp::boolSeq& mask)
-	  throw (hpp::Error);
+	 const char* joint2Name, const Double* p, const hpp::boolSeq& mask);
 
 	virtual void createTransformationConstraint
 	(const char* constraintName, const char* joint1Name,
-	 const char* joint2Name, const Transform_ p, const hpp::boolSeq& mask)
-	  throw (hpp::Error);
+	 const char* joint2Name, const Transform_ p, const hpp::boolSeq& mask);
 
 	virtual void createTransformationConstraint2
 	(const char* constraintName, const char* joint1Name,
 	 const char* joint2Name, const Transform_ frame1,
-         const Transform_ frame2, const hpp::boolSeq& mask)
-	  throw (hpp::Error);
+         const Transform_ frame2, const hpp::boolSeq& mask);
 
 	virtual void createTransformationSE3Constraint
 	(const char* constraintName, const char* joint1Name,
 	 const char* joint2Name, const Transform_ frame1,
-         const Transform_ frame2, const hpp::boolSeq& mask)
-	  throw (hpp::Error);
+         const Transform_ frame2, const hpp::boolSeq& mask);
 
         virtual void createLockedJoint (const char* lockedJointName,
                                         const char* jointName,
-                                        const hpp::floatSeq& value)
-          throw (hpp::Error);
+                                        const hpp::floatSeq& value);
 
         virtual void createLockedExtraDof (const char* lockedDofName,
                                            ULong index,
-                                           const hpp::floatSeq& value)
-          throw (hpp::Error);
+                                           const hpp::floatSeq& value);
 
-        virtual void createManipulability (const char* name, const char* function)
-          throw (hpp::Error);
+        virtual void createManipulability (const char* name, const char* function);
 
         void createRelativeComConstraint (const char* constraintName,
             const char* comn, const char* jointName, const floatSeq& point,
-            const hpp::boolSeq& mask)
-          throw (hpp::Error);
+            const hpp::boolSeq& mask);
 
         void createComBeetweenFeet (const char* constraintName, const char* comn,
             const char* jointLName, const char* jointRName,
             const floatSeq& pointL, const floatSeq& pointR,
             const char* jointRefName, const floatSeq& pRef,
-            const hpp::boolSeq& mask)
-          throw (hpp::Error);
+            const hpp::boolSeq& mask);
 
 	virtual void createConvexShapeContactConstraint
         (const char* constraintName, const Names_t& floorJoints,
          const Names_t& objectJoints,
          const hpp::floatSeqSeq& points, const hpp::intSeqSeq& objTriangles,
-         const hpp::intSeqSeq& floorTriangles)
-	  throw (hpp::Error);
+         const hpp::intSeqSeq& floorTriangles);
 
         void createStaticStabilityConstraint (
             const char* constraintName, const hpp::Names_t& jointNames,
             const hpp::floatSeqSeq& points, const hpp::floatSeqSeq& normals,
-            const char* comRootJointName)
-          throw (hpp::Error);
+            const char* comRootJointName);
 
 	virtual void createPositionConstraint (const char* constraintName,
 					       const char* joint1Name,
 					       const char* joint2Name,
 					       const hpp::floatSeq& point1,
 					       const hpp::floatSeq& point2,
-					       const hpp::boolSeq& mask)
-	  throw (hpp::Error);
+					       const hpp::boolSeq& mask);
 
 	virtual void createConfigurationConstraint (const char* constraintName,
                                                const hpp::floatSeq& goal,
-					       const hpp::floatSeq& weights)
-	  throw (hpp::Error);
+					       const hpp::floatSeq& weights);
 
 	virtual void createDistanceBetweenJointConstraint
 	(const char* constraintName, const char* joint1Name,
-	 const char* joint2Name, Double distance) throw (Error);
+	 const char* joint2Name, Double distance);
 
 	virtual void createDistanceBetweenJointAndObjects
 	(const char* constraintName, const char* joint1Name,
-	 const hpp::Names_t& objects, Double distance) throw (Error);
+	 const hpp::Names_t& objects, Double distance);
 
         virtual void createIdentityConstraint
         (const char* constraintName, const Names_t& inJoints,
-         const hpp::Names_t& outJoints) throw (Error);
+         const hpp::Names_t& outJoints);
 
 	virtual bool applyConstraints (const hpp::floatSeq& input,
 				       hpp::floatSeq_out output,
-				       Double& residualError)
-	  throw (hpp::Error);
+				       Double& residualError);
 
 	virtual bool optimize (const hpp::floatSeq& input,
                                hpp::floatSeq_out output,
-                               hpp::floatSeq_out residualError)
-	  throw (hpp::Error);
+                               hpp::floatSeq_out residualError);
 
 	virtual void computeValueAndJacobian
 	(const hpp::floatSeq& config, hpp::floatSeq_out value,
-	 hpp::floatSeqSeq_out jacobian) throw (hpp::Error);
+	 hpp::floatSeqSeq_out jacobian);
 
 	virtual bool generateValidConfig (ULong maxIter,
 				       hpp::floatSeq_out output,
-				       Double& residualError)
-	  throw (hpp::Error);
+				       Double& residualError);
 
         virtual void addPassiveDofs (const char* constraintName,
-                                    const hpp::Names_t& dofName)
-          throw (hpp::Error);
+                                    const hpp::Names_t& dofName);
 
         virtual void getConstraintDimensions (const char* constraintName,
             ULong& inputSize , ULong& inputDerivativeSize,
-            ULong& outputSize, ULong& outputDerivativeSize)
-          throw (hpp::Error);
+            ULong& outputSize, ULong& outputDerivativeSize);
 
         virtual void setConstantRightHandSide (const char* constraintName,
-					       CORBA::Boolean constant)
-          throw (hpp::Error);
+					       CORBA::Boolean constant);
 
-        virtual bool getConstantRightHandSide (const char* constraintName)
-          throw (hpp::Error);
+        virtual bool getConstantRightHandSide (const char* constraintName);
 
-        virtual floatSeq* getRightHandSide ()
-          throw (hpp::Error);
+        virtual floatSeq* getRightHandSide ();
 
-        virtual void setRightHandSide (const hpp::floatSeq& rhs)
-          throw (hpp::Error);
+        virtual void setRightHandSide (const hpp::floatSeq& rhs);
 
-        virtual void setRightHandSideFromConfig (const hpp::floatSeq& config)
-          throw (hpp::Error);
+        virtual void setRightHandSideFromConfig (const hpp::floatSeq& config);
 
         virtual void setRightHandSideByName (const char* constraintName,
-                                             const hpp::floatSeq& rhs)
-          throw (hpp::Error);
+                                             const hpp::floatSeq& rhs);
 
         virtual void setRightHandSideFromConfigByName (const char* constraintName,
-                                                       const hpp::floatSeq& config)
-          throw (hpp::Error);
+                                                       const hpp::floatSeq& config);
 
-	virtual void resetConstraints () throw (hpp::Error);
-	virtual void resetConstraintMap () throw (hpp::Error);
+	virtual void resetConstraints ();
+	virtual void resetConstraintMap ();
 	virtual void addNumericalConstraints
 	(const char* constraintName, const hpp::Names_t& constraintNames,
-         const hpp::intSeq& priorities)
-	  throw (Error);
+         const hpp::intSeq& priorities);
 	virtual void setNumericalConstraintsLastPriorityOptional
-          (const bool optional)
-	  throw (Error);
+          (const bool optional);
 
         virtual void addLockedJointConstraints
-        (const char* configProjName,const hpp::Names_t& lockedJointNames)
-          throw (Error);
+        (const char* configProjName,const hpp::Names_t& lockedJointNames);
 
-        virtual char* displayConstraints ()
-          throw (Error);
+        virtual char* displayConstraints ();
 
-        virtual void filterCollisionPairs () throw (hpp::Error);
-	virtual Double getErrorThreshold () throw (Error);
-	virtual void setErrorThreshold (Double threshold) throw (Error);
-        virtual void setDefaultLineSearchType (const char* type) throw (Error);
-	virtual ULong getMaxIterProjection () throw (Error);
-	virtual void setMaxIterProjection (ULong iterations) throw (Error);
-	virtual ULong getMaxIterPathPlanning () throw (Error);
-	virtual void setMaxIterPathPlanning (ULong iterations) throw (Error);
-    virtual void setTimeOutPathPlanning (double timeOut) throw (Error);
-    virtual double getTimeOutPathPlanning () throw (Error);
+        virtual void filterCollisionPairs ();
+	virtual Double getErrorThreshold ();
+	virtual void setErrorThreshold (Double threshold);
+        virtual void setDefaultLineSearchType (const char* type);
+	virtual ULong getMaxIterProjection ();
+	virtual void setMaxIterProjection (ULong iterations);
+	virtual ULong getMaxIterPathPlanning ();
+	virtual void setMaxIterPathPlanning (ULong iterations);
+    virtual void setTimeOutPathPlanning (double timeOut);
+    virtual double getTimeOutPathPlanning ();
 
 
-	virtual void addPathOptimizer (const char* pathOptimizerType)
-	  throw (Error);
+	virtual void addPathOptimizer (const char* pathOptimizerType);
 
-	virtual void clearPathOptimizers () throw (Error);
+	virtual void clearPathOptimizers ();
 
-	virtual void addConfigValidation (const char* configValidationType)
-	  throw (Error);
+	virtual void addConfigValidation (const char* configValidationType);
 
-	virtual void clearConfigValidations () throw (Error);
+	virtual void clearConfigValidations ();
 
 	virtual void selectPathValidation (const char* pathValidationType,
-					   Double tolerance) throw (Error);
+					   Double tolerance);
 
         virtual void selectPathProjector (const char* pathProjectorType,
-                                          Double tolerance) throw (Error);
+                                          Double tolerance);
 
-	virtual void selectPathPlanner (const char* pathPlannerType)
-	  throw (Error);
+	virtual void selectPathPlanner (const char* pathPlannerType);
 
-    virtual void selectDistance (const char* distanceType)
-      throw (Error);
+    virtual void selectDistance (const char* distanceType);
 
-    virtual void selectSteeringMethod (const char* steeringMethodType)
-      throw (Error);
+    virtual void selectSteeringMethod (const char* steeringMethodType);
 
-    virtual void selectConfigurationShooter (const char* configurationShooterType)
-      throw (Error);
+    virtual void selectConfigurationShooter (const char* configurationShooterType);
 
-	virtual bool prepareSolveStepByStep () throw (hpp::Error);
-	virtual bool executeOneStep () throw (hpp::Error);
-	virtual void finishSolveStepByStep () throw (hpp::Error);
+	virtual bool prepareSolveStepByStep ();
+	virtual bool executeOneStep ();
+	virtual void finishSolveStepByStep ();
 
-	virtual hpp::intSeq* solve () throw (hpp::Error);
+	virtual hpp::intSeq* solve ();
 
 	virtual bool directPath (const hpp::floatSeq& startConfig,
 				 const hpp::floatSeq& endConfig,
 				 CORBA::Boolean validate,
 				 ULong& pathId,
-				 CORBA::String_out report)
-	  throw (hpp::Error);
+				 CORBA::String_out report);
 
-        virtual bool reversePath(ULong pathId, ULong& reversedPathId) throw (hpp::Error);
+        virtual bool reversePath(ULong pathId, ULong& reversedPathId);
 
-	virtual void addConfigToRoadmap (const hpp::floatSeq& config) throw (hpp::Error);
+	virtual void addConfigToRoadmap (const hpp::floatSeq& config);
 
 	virtual void addEdgeToRoadmap (const hpp::floatSeq& config1,
 				       const hpp::floatSeq& config2,
-				       ULong pathId, bool bothEdges)
-	  throw (hpp::Error);
+				       ULong pathId, bool bothEdges);
 
 	virtual void appendDirectPath (ULong pathId,
 				       const hpp::floatSeq& config,
-                                       Boolean validate)
-	  throw (hpp::Error);
+                                       Boolean validate);
 
-        virtual void concatenatePath (ULong startId, ULong endId)
-          throw (hpp::Error);
+        virtual void concatenatePath (ULong startId, ULong endId);
 
-        virtual void extractPath (ULong pathId, Double start, Double end)
-        throw (hpp::Error);
+        virtual void extractPath (ULong pathId, Double start, Double end);
 
-        virtual void erasePath (ULong pathId)
-          throw (hpp::Error);
+        virtual void erasePath (ULong pathId);
 
-	virtual bool projectPath (ULong pathId)
-	  throw (hpp::Error);
+	virtual bool projectPath (ULong pathId);
 
-	virtual void interruptPathPlanning () throw (hpp::Error);
+	virtual void interruptPathPlanning ();
 
-	virtual Long numberPaths () throw (hpp::Error);
+	virtual Long numberPaths ();
 
-	virtual hpp::intSeq* optimizePath (ULong pathId) throw (hpp::Error);
+	virtual hpp::intSeq* optimizePath (ULong pathId);
 
-	virtual Double pathLength (ULong pathId) throw (hpp::Error);
+	virtual Double pathLength (ULong pathId);
 
 	virtual hpp::floatSeq* configAtParam (ULong pathId,
-					      Double atDistance)
-	  throw (hpp::Error);
+					      Double atDistance);
 
 	virtual hpp::floatSeq* derivativeAtParam (ULong pathId,
 						  ULong order,
-						  Double atDistance)
-	  throw (hpp::Error);
+						  Double atDistance);
 
-	virtual hpp::floatSeqSeq* getWaypoints (ULong inPathId, floatSeq_out times)
-	  throw (hpp::Error);
-	virtual hpp::floatSeqSeq* nodes () throw (hpp::Error);
-	virtual Long numberEdges () throw (hpp::Error);
+	virtual hpp::floatSeqSeq* getWaypoints (ULong inPathId, floatSeq_out times);
+	virtual hpp::floatSeqSeq* nodes ();
+	virtual Long numberEdges ();
 	virtual void edge (ULong edgeId, hpp::floatSeq_out q1,
-			   hpp::floatSeq_out q2) throw (hpp::Error);
-    virtual Long connectedComponentOfEdge (ULong edgeId) throw (hpp::Error);
-    virtual hpp::floatSeq* node (ULong nodeId) throw (hpp::Error);
-    virtual Long connectedComponentOfNode (ULong nodeId) throw (hpp::Error);
-    virtual Long numberNodes () throw (hpp::Error);
-	virtual Long numberConnectedComponents () throw (hpp::Error);
+			   hpp::floatSeq_out q2);
+    virtual Long connectedComponentOfEdge (ULong edgeId);
+    virtual hpp::floatSeq* node (ULong nodeId);
+    virtual Long connectedComponentOfNode (ULong nodeId);
+    virtual Long numberNodes ();
+	virtual Long numberConnectedComponents ();
 	virtual hpp::floatSeqSeq*
-	nodesConnectedComponent (ULong connectedComponentId) throw (hpp::Error);
+	nodesConnectedComponent (ULong connectedComponentId);
 	
 	virtual hpp::floatSeq*
 	getNearestConfig (const hpp::floatSeq& config, const Long connectedComponentId, 
-			  hpp::core::value_type& distance) throw (hpp::Error);
+			  hpp::core::value_type& distance);
 	
-	virtual void clearRoadmap () throw (hpp::Error);
+	virtual void clearRoadmap ();
 	virtual void resetRoadmap ();
-        virtual void saveRoadmap (const char* filename) throw (hpp::Error);
-        virtual void readRoadmap (const char* filename) throw (hpp::Error);
+        virtual void saveRoadmap (const char* filename);
+        virtual void readRoadmap (const char* filename);
 
-        virtual void scCreateScalarMultiply (const char* outName, Double scalar, const char* inName) throw (hpp::Error);
+        virtual void scCreateScalarMultiply (const char* outName, Double scalar, const char* inName);
 
-        hpp::core_idl::Distance_ptr getDistance () throw (hpp::Error);
+        hpp::core_idl::Distance_ptr getDistance ();
 
-        void setDistance (hpp::core_idl::Distance_ptr distance) throw (hpp::Error);
+        void setDistance (hpp::core_idl::Distance_ptr distance);
 
-        hpp::core_idl::Path_ptr getPath (ULong pathId) throw (Error);
+        hpp::core_idl::Path_ptr getPath (ULong pathId);
 
-        ULong addPath (hpp::core_idl::PathVector_ptr _path) throw (Error);
+        ULong addPath (hpp::core_idl::PathVector_ptr _path);
 
-        hpp::core_idl::SteeringMethod_ptr getSteeringMethod () throw (Error);
+        hpp::core_idl::SteeringMethod_ptr getSteeringMethod ();
 
-        hpp::core_idl::PathValidation_ptr getPathValidation () throw (Error);
+        hpp::core_idl::PathValidation_ptr getPathValidation ();
 
-        hpp::core_idl::PathPlanner_ptr getPathPlanner () throw (Error);
+        hpp::core_idl::PathPlanner_ptr getPathPlanner ();
 
-        hpp::core_idl::Problem_ptr getProblem () throw (Error);
+        hpp::core_idl::Problem_ptr getProblem ();
 
-        hpp::constraints_idl::Implicit_ptr getConstraint (const char* name) throw (Error);
+        hpp::constraints_idl::Implicit_ptr getConstraint (const char* name);
 
       private:
         /// Return the selected problem solver

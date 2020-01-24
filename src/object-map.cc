@@ -19,7 +19,6 @@
 namespace hpp {
   namespace corbaServer {
       void ObjectMap::createPolyhedron(const std::string name)
-	throw (hpp::Error)
       {
 	// Check that polyhedron does not already exist.
 	if (nameExists<BothGeomType, ThrowIfItExists> (name)) return;
@@ -29,7 +28,6 @@ namespace hpp {
       // --------------------------------------------------------------------
 
       void ObjectMap::createBox(const std::string name, value_type x, value_type y, value_type z)
-	throw (hpp::Error)
       {
 	// Check that object does not already exist.
         if (nameExists<BothGeomType, ThrowIfItExists> (name)) return;
@@ -39,7 +37,6 @@ namespace hpp {
       // --------------------------------------------------------------------
 
       void ObjectMap::createSphere (const std::string name, value_type radius)
-	throw (hpp::Error)
       {
         if (nameExists<BothGeomType, ThrowIfItExists> (name)) return;
 	shapeMap_ [name] = BasicShapePtr_t (new fcl::Sphere (radius));
@@ -48,7 +45,6 @@ namespace hpp {
       // --------------------------------------------------------------------
 
       void ObjectMap::createCylinder (const std::string name, value_type radius, value_type length)
-	throw (hpp::Error)
       {
         if (nameExists<BothGeomType, ThrowIfItExists> (name)) return;
 	shapeMap_ [name] = BasicShapePtr_t (new fcl::Cylinder (radius, length));
@@ -57,7 +53,6 @@ namespace hpp {
       // --------------------------------------------------------------------
 
       std::size_t ObjectMap::addPoint(const std::string name, value_type x, value_type y, value_type z)
-	throw (hpp::Error)
       {
 	// Check that polyhedron exists.
         if (!nameExists<Polyhedron, ThrowIfItDoesNotExist> (name)) return 0;
@@ -70,7 +65,6 @@ namespace hpp {
 
       std::size_t ObjectMap::addTriangle(const std::string name,
 			       std::size_t pt1, std::size_t pt2, std::size_t pt3)
-	throw (hpp::Error)
       {
 	// Check that polyhedron exists.
         if (!nameExists<Polyhedron, ThrowIfItDoesNotExist> (name)) return 0;
@@ -81,7 +75,7 @@ namespace hpp {
 
       // --------------------------------------------------------------------
 
-      CollisionGeometryPtr_t ObjectMap::geometry (const std::string name) throw (Error)
+      CollisionGeometryPtr_t ObjectMap::geometry (const std::string name)
       {
 	CollisionGeometryPtr_t geometry;
 	// Check that polyhedron exists.
@@ -107,7 +101,7 @@ namespace hpp {
       // --------------------------------------------------------------------
 
       template <ObjectMap::GeomType geomType, ObjectMap::ThrowType throwType>
-      bool ObjectMap::nameExists (const std::string& name) const throw (hpp::Error)
+      bool ObjectMap::nameExists (const std::string& name) const
       {
         bool exists = false;
         switch (geomType) {

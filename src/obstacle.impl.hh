@@ -38,60 +38,48 @@ namespace hpp
         }
 
 	virtual void loadObstacleModel (const char* filename,
-                                                  const char* prefix)
-	  throw (hpp::Error);
+                                                  const char* prefix);
 
         virtual void loadObstacleModelFromString
-        (const char* urdfString, const char* prefix) throw (hpp::Error);
+        (const char* urdfString, const char* prefix);
 
 	virtual void removeObstacleFromJoint
 	(const char* objectName, const char* jointName, Boolean collision,
-	 Boolean distance) throw (hpp::Error);
+	 Boolean distance);
 
-        virtual void cutObstacle (const char* objectName, const floatSeq& aabb)
-        throw (Error);
+        virtual void cutObstacle (const char* objectName, const floatSeq& aabb);
 
 	virtual	void
 	addObstacle (const char* polyhedronName, Boolean collision,
-		     Boolean distance)
-	  throw (hpp::Error);
+		     Boolean distance);
 
 	virtual void
-	moveObstacle (const char* polyName, const Transform_ cfg)
-	  throw (hpp::Error);
+	moveObstacle (const char* polyName, const Transform_ cfg);
 
 	virtual void getObstaclePosition (const char* objectName,
-					  Transform_ cfg)
-	  throw (hpp::Error);
+					  Transform_ cfg);
 
-	virtual Names_t* getObstacleNames (bool collision, bool distance)
-	  throw (hpp::Error);
+	virtual Names_t* getObstacleNames (bool collision, bool distance);
 
 	virtual void
-	createPolyhedron (const char* polyhedronName)
-	  throw (hpp::Error);
+	createPolyhedron (const char* polyhedronName);
 
 	virtual void createBox
-	(const char* boxName, Double x, Double y, Double z)
-	  throw(hpp::Error);
+	(const char* boxName, Double x, Double y, Double z);
 
 	virtual void
-	createSphere (const char* name, Double radius)
-	  throw (hpp::Error);
+	createSphere (const char* name, Double radius);
 
 	virtual void
-	createCylinder (const char* name, Double radius, Double length)
-	  throw (hpp::Error);
+	createCylinder (const char* name, Double radius, Double length);
 
 	virtual ULong
 	addPoint
-	(const char* polyhedronName, Double x, Double y, Double z)
-	  throw(hpp::Error);
+	(const char* polyhedronName, Double x, Double y, Double z);
 
 	virtual ULong
 	addTriangle
-	(const char* polyhedronName, ULong pt1, ULong pt2, ULong pt3)
-	  throw(hpp::Error);
+	(const char* polyhedronName, ULong pt1, ULong pt2, ULong pt3);
 
 
       private:

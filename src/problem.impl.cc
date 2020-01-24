@@ -288,7 +288,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::setMaxNumThreads (UShort n) throw (hpp::Error)
+      void Problem::setMaxNumThreads (UShort n)
       {
         try {
           DevicePtr_t robot = getRobotOrThrow (problemSolver());
@@ -300,7 +300,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      UShort Problem::getMaxNumThreads () throw (hpp::Error)
+      UShort Problem::getMaxNumThreads ()
       {
         try {
           DevicePtr_t robot = getRobotOrThrow (problemSolver());
@@ -330,7 +330,7 @@ namespace hpp
 #define _CASE_PS_MAP(name, map)                                                \
       _CASE_SET_RET (name, problemSolver()->map.getKeys <Ret_t> ())
 
-      Names_t* Problem::getAvailable (const char* what) throw (hpp::Error)
+      Names_t* Problem::getAvailable (const char* what)
       {
         std::string w (what);
         typedef std::list <std::string> Ret_t;
@@ -364,7 +364,7 @@ namespace hpp
 #define _CASE_PUSH_TO(name, val)                                               \
       _CASE(name, ret.push_back(val), types.push_back(name))
 
-      Names_t* Problem::getSelected (const char* what) throw (hpp::Error)
+      Names_t* Problem::getSelected (const char* what)
       {
         std::string w (what);
         typedef std::vector <std::string> Ret_t;
@@ -401,7 +401,6 @@ namespace hpp
       // ---------------------------------------------------------------
 
       void Problem::setParameter (const char* name, const CORBA::Any& value)
-        throw (Error)
       {
         if (problemSolver()->problem() != NULL) {
           try {
@@ -417,7 +416,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      CORBA::Any* Problem::getParameter (const char* name) throw (Error)
+      CORBA::Any* Problem::getParameter (const char* name)
       {
         try {
           if (problemSolver()->problem() != NULL) {
@@ -434,7 +433,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      char* Problem::getParameterDoc (const char* name) throw (Error)
+      char* Problem::getParameterDoc (const char* name)
       {
         if (problemSolver()->problem() != NULL) {
           try {
@@ -458,7 +457,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      bool Problem::selectProblem (const char* name) throw (hpp::Error)
+      bool Problem::selectProblem (const char* name)
       {
         std::string psName (name);
         ProblemSolverMapPtr_t psMap (server_->problemSolverMap());
@@ -470,7 +469,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::resetProblem () throw (hpp::Error)
+      void Problem::resetProblem ()
       {
         ProblemSolverMapPtr_t psMap (server_->problemSolverMap());
         psMap->replaceSelected (core::ProblemSolver::create ());
@@ -478,7 +477,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      bool Problem::loadPlugin (const char* pluginName) throw (hpp::Error)
+      bool Problem::loadPlugin (const char* pluginName)
       {
         try {
           core::ProblemSolverPtr_t ps = problemSolver();
@@ -492,7 +491,7 @@ namespace hpp
       // ---------------------------------------------------------------
 
       void Problem::movePathToProblem (ULong pathId, const char* name,
-          const Names_t& jointNames) throw (hpp::Error)
+          const Names_t& jointNames)
       {
         ProblemSolverMapPtr_t psMap (server_->problemSolverMap());
         if (!psMap->has (std::string(name))) throw Error ("No ProblemSolver of this name");
@@ -540,7 +539,6 @@ namespace hpp
       // ---------------------------------------------------------------
 
       void Problem::setInitialConfig (const hpp::floatSeq& dofArray)
-	throw (hpp::Error)
       {
 	try {
           DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -554,7 +552,6 @@ namespace hpp
       // ---------------------------------------------------------------
 
       hpp::floatSeq* Problem::getInitialConfig()
-	throw(hpp::Error)
       {
 	hpp::floatSeq *dofArray;
 
@@ -580,7 +577,6 @@ namespace hpp
       // ---------------------------------------------------------------
 
       void Problem::addGoalConfig (const hpp::floatSeq& dofArray)
-	throw (hpp::Error)
       {
 	try {
           DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -593,7 +589,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      hpp::floatSeqSeq* Problem::getGoalConfigs () throw(hpp::Error)
+      hpp::floatSeqSeq* Problem::getGoalConfigs ()
       {
 	try {
 	  hpp::floatSeqSeq *configSequence;
@@ -621,7 +617,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::resetGoalConfigs () throw (hpp::Error)
+      void Problem::resetGoalConfigs ()
       {
 	problemSolver()->resetGoalConfigs ();
       }
@@ -643,7 +639,6 @@ namespace hpp
       void Problem::createOrientationConstraint
       (const char* constraintName, const char* joint1Name,
        const char* joint2Name, const Double* p, const hpp::boolSeq& mask)
-	throw (hpp::Error)
       {
         try {
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
@@ -669,7 +664,6 @@ namespace hpp
       void Problem::createTransformationConstraint
       (const char* constraintName, const char* joint1Name,
        const char* joint2Name, const Transform_ p, const hpp::boolSeq& mask)
-	throw (hpp::Error)
       {
         try {
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
@@ -695,7 +689,6 @@ namespace hpp
       (const char* constraintName, const char* joint1Name,
        const char* joint2Name, const Transform_ frame1, const Transform_ frame2,
        const hpp::boolSeq& mask)
-	throw (hpp::Error)
       {
         try {
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
@@ -720,7 +713,6 @@ namespace hpp
       (const char* constraintName, const char* joint1Name,
        const char* joint2Name, const Transform_ frame1, const Transform_ frame2,
        const hpp::boolSeq& mask)
-	throw (hpp::Error)
       {
         try {
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
@@ -744,7 +736,6 @@ namespace hpp
       void Problem::createLockedJoint
       (const char* lockedJointName, const char* jointName,
        const hpp::floatSeq& value)
-	throw (hpp::Error)
       {
 	try {
 	  // Get robot in hppPlanner object.
@@ -769,7 +760,6 @@ namespace hpp
       void Problem::createLockedExtraDof
       (const char* lockedDofName, const CORBA::ULong index,
        const hpp::floatSeq& value)
-	throw (hpp::Error)
       {
 	try {
 	  // Get robot in hppPlanner object.
@@ -788,7 +778,7 @@ namespace hpp
       // ---------------------------------------------------------------
 
       void Problem::createManipulability (const char* _name,
-          const char* _function) throw (hpp::Error)
+          const char* _function)
       {
 	try {
           core::ProblemSolverPtr_t ps = problemSolver();
@@ -813,7 +803,6 @@ namespace hpp
       void Problem::createRelativeComConstraint (const char* constraintName,
           const char* comName, const char* jointName, const floatSeq& p,
           const hpp::boolSeq& mask)
-        throw (hpp::Error)
       {
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
 	JointPtr_t joint;
@@ -850,7 +839,6 @@ namespace hpp
       (const char* constraintName, const char* comName, const char* jointLName,
        const char* jointRName, const floatSeq& pL, const floatSeq& pR,
        const char* jointRefName, const floatSeq& pRef, const hpp::boolSeq& mask)
-	throw (hpp::Error)
       {
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
 	JointPtr_t jointL, jointR, jointRef;
@@ -902,7 +890,6 @@ namespace hpp
          const Names_t& objectJoints,
          const hpp::floatSeqSeq& points, const hpp::intSeqSeq& objTriangles,
          const hpp::intSeqSeq& floorTriangles)
-        throw (hpp::Error)
       {
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
         try {
@@ -986,7 +973,6 @@ namespace hpp
       (const char* constraintName, const hpp::Names_t& jointNames,
        const hpp::floatSeqSeq& points, const hpp::floatSeqSeq& normals,
        const char* comRootJointName)
-        throw (hpp::Error)
       {
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
         DevicePtr_t robot = problemSolver()->robot();
@@ -1040,7 +1026,6 @@ namespace hpp
       void Problem::createStaticStabilityConstraint
       (const char*, const hpp::Names_t&, const hpp::floatSeqSeq&,
        const hpp::floatSeqSeq&, const char*)
-        throw (hpp::Error)
       {
 	throw hpp::Error ("Not implemented");
       }
@@ -1052,7 +1037,6 @@ namespace hpp
       (const char* constraintName, const char* joint1Name,
        const char* joint2Name, const hpp::floatSeq& point1,
        const hpp::floatSeq& point2, const hpp::boolSeq& mask)
-	throw (hpp::Error)
       {
         try {
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
@@ -1077,7 +1061,7 @@ namespace hpp
 
       void Problem::createConfigurationConstraint (const char* constraintName,
           const hpp::floatSeq& goal,
-          const hpp::floatSeq& weights) throw (hpp::Error)
+          const hpp::floatSeq& weights)
       {
         try {
         DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -1098,7 +1082,7 @@ namespace hpp
 
       void Problem::createDistanceBetweenJointConstraint
       (const char* constraintName, const char* joint1Name,
-       const char* joint2Name, Double) throw (Error)
+       const char* joint2Name, Double)
       {
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
 	try {
@@ -1120,7 +1104,7 @@ namespace hpp
 
       void Problem::createDistanceBetweenJointAndObjects
       (const char* constraintName, const char* joint1Name,
-       const hpp::Names_t& objects, Double) throw (Error)
+       const hpp::Names_t& objects, Double)
       {
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
 	try {
@@ -1144,7 +1128,7 @@ namespace hpp
       // ---------------------------------------------------------------
 
       void Problem::createIdentityConstraint (const char* constraintName,
-          const Names_t& inJoints, const hpp::Names_t& outJoints) throw (Error)
+          const Names_t& inJoints, const hpp::Names_t& outJoints)
       {
         try {
           using namespace constraints;
@@ -1186,7 +1170,6 @@ namespace hpp
       bool Problem::applyConstraints (const hpp::floatSeq& input,
 				      hpp::floatSeq_out output,
 				      double& residualError)
-	throw (hpp::Error)
       {
 	bool success = false;
         DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -1209,7 +1192,6 @@ namespace hpp
       bool Problem::optimize (const hpp::floatSeq& input,
           hpp::floatSeq_out output,
           hpp::floatSeq_out residualError)
-        throw (hpp::Error)
       {
         bool success = false;
         DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -1238,7 +1220,7 @@ namespace hpp
 
       void Problem::computeValueAndJacobian
       (const hpp::floatSeq& config, hpp::floatSeq_out value,
-       hpp::floatSeqSeq_out jacobian) throw (hpp::Error)
+       hpp::floatSeqSeq_out jacobian)
       {
         DevicePtr_t robot = getRobotOrThrow(problemSolver());
 	try {
@@ -1258,7 +1240,6 @@ namespace hpp
       bool Problem::generateValidConfig (ULong maxIter,
 				      hpp::floatSeq_out output,
 				      double& residualError)
-	throw (hpp::Error)
       {
         core::ProblemSolverPtr_t ps = problemSolver();
         DevicePtr_t robot = getRobotOrThrow(ps);
@@ -1291,7 +1272,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::resetConstraintMap () throw (hpp::Error)
+      void Problem::resetConstraintMap ()
       {
         try {
           problemSolver()->numericalConstraints.clear();
@@ -1302,7 +1283,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::resetConstraints ()	throw (hpp::Error)
+      void Problem::resetConstraints ()	
       {
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
 	try {
@@ -1316,7 +1297,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::filterCollisionPairs () throw (hpp::Error)
+      void Problem::filterCollisionPairs ()
       {
         try {
           problemSolver()->filterCollisionPairs ();
@@ -1329,7 +1310,6 @@ namespace hpp
 
       void Problem::addPassiveDofs (const char* passiveDofsName,
           const hpp::Names_t& dofNames)
-        throw (hpp::Error)
       {
         DevicePtr_t robot = problemSolver()->robot ();
         if (!robot) throw hpp::Error ("No robot loaded");
@@ -1373,7 +1353,6 @@ namespace hpp
       void Problem::getConstraintDimensions (const char* constraintName,
             ULong& inputSize , ULong& inputDerivativeSize,
             ULong& outputSize, ULong& outputDerivativeSize)
-        throw (hpp::Error)
       {
         try {
           std::string n (constraintName);
@@ -1394,7 +1373,6 @@ namespace hpp
 
       void Problem::setConstantRightHandSide (const char* constraintName,
 					      CORBA::Boolean constant)
-	throw (hpp::Error)
       {
 	try {
 	  if (constant) {
@@ -1412,7 +1390,6 @@ namespace hpp
       // ---------------------------------------------------------------
 
       bool Problem::getConstantRightHandSide (const char* constraintName)
-	throw (hpp::Error)
       {
 	try {
           ImplicitPtr_t nc
@@ -1426,7 +1403,6 @@ namespace hpp
       // ---------------------------------------------------------------
 
       void Problem::setRightHandSide (const hpp::floatSeq& rhs)
-          throw (hpp::Error)
       {
         try {
           hpp::core::ConfigProjectorPtr_t configProjector
@@ -1444,7 +1420,6 @@ namespace hpp
       // ---------------------------------------------------------------
 
       void Problem::setRightHandSideFromConfig (const hpp::floatSeq& config)
-          throw (hpp::Error)
       {
         try {
           hpp::core::ConfigProjectorPtr_t configProjector
@@ -1463,7 +1438,6 @@ namespace hpp
 
       void Problem::setRightHandSideFromConfigByName (const char* constraintName,
                                                       const hpp::floatSeq& config)
-        throw (hpp::Error)
       {
         try {
           hpp::core::ConfigProjectorPtr_t configProjector
@@ -1492,7 +1466,6 @@ namespace hpp
 
       void Problem::setRightHandSideByName (const char* constraintName,
                                             const hpp::floatSeq& rhs)
-        throw (hpp::Error)
       {
         try {
           hpp::core::ConfigProjectorPtr_t configProjector
@@ -1520,7 +1493,6 @@ namespace hpp
       // ---------------------------------------------------------------
 
       hpp::floatSeq* Problem::getRightHandSide ()
-        throw (hpp::Error)
       {
         try {
           hpp::core::ConfigProjectorPtr_t configProjector
@@ -1539,7 +1511,6 @@ namespace hpp
       void Problem::addNumericalConstraints
       (const char* configProjName, const Names_t& constraintNames,
        const hpp::intSeq& priorities)
-	throw (Error)
       {
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
 	try {
@@ -1559,7 +1530,6 @@ namespace hpp
       // ---------------------------------------------------------------
 
       void Problem::setNumericalConstraintsLastPriorityOptional (const bool optional)
-	throw (Error)
       {
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
         if (!problemSolver()->constraints())
@@ -1577,7 +1547,6 @@ namespace hpp
 
       void Problem::addLockedJointConstraints
       (const char* configProjName,const hpp::Names_t& lockedJointNames)
-        throw (Error)
       {
         if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
 	try {
@@ -1595,7 +1564,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      char* Problem::displayConstraints () throw (Error)
+      char* Problem::displayConstraints ()
       {
         try {
           std::ostringstream oss;
@@ -1609,7 +1578,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      Double Problem::getErrorThreshold () throw (Error)
+      Double Problem::getErrorThreshold ()
       {
 	return problemSolver()->errorThreshold ();
       }
@@ -1627,7 +1596,7 @@ namespace hpp
         map["ErrorNormBased"] = core::ConfigProjector::ErrorNormBased;
         return map;
       }
-      void Problem::setDefaultLineSearchType (const char* type) throw (Error)
+      void Problem::setDefaultLineSearchType (const char* type)
       {
         static const LineSearchTypeMap_t map = makeLineSearchTypeMap();
         std::string t (type);
@@ -1646,43 +1615,43 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::setErrorThreshold (Double threshold) throw (Error)
+      void Problem::setErrorThreshold (Double threshold)
       {
 	problemSolver()->errorThreshold (threshold);
       }
 
       // ---------------------------------------------------------------
-      void Problem::setMaxIterProjection (ULong iterations) throw (Error)
+      void Problem::setMaxIterProjection (ULong iterations)
       {
 	problemSolver()->maxIterProjection ((size_type)iterations);
       }
 
       // ---------------------------------------------------------------
-      ULong Problem::getMaxIterProjection () throw (Error)
+      ULong Problem::getMaxIterProjection ()
       {
 	return (ULong) problemSolver()->maxIterProjection ();
       }
 
       // ---------------------------------------------------------------
-      void Problem::setMaxIterPathPlanning (ULong iterations) throw (Error)
+      void Problem::setMaxIterPathPlanning (ULong iterations)
       {
 	problemSolver()->maxIterPathPlanning ((size_type)iterations);
       }
 
       // ---------------------------------------------------------------
-      ULong Problem::getMaxIterPathPlanning () throw (Error)
+      ULong Problem::getMaxIterPathPlanning ()
       {
 	return (ULong) problemSolver()->maxIterPathPlanning ();
       }
 
       // ---------------------------------------------------------------
-      void Problem::setTimeOutPathPlanning (double timeOut) throw (Error)
+      void Problem::setTimeOutPathPlanning (double timeOut)
       {
   problemSolver()->setTimeOutPathPlanning (timeOut);
       }
 
       // ---------------------------------------------------------------
-      double Problem::getTimeOutPathPlanning () throw (Error)
+      double Problem::getTimeOutPathPlanning ()
       {
   return problemSolver()->getTimeOutPathPlanning();
       }
@@ -1691,7 +1660,6 @@ namespace hpp
 
 
       void Problem::selectPathPlanner (const char* pathPlannerType)
-	throw (Error)
       {
 	try {
 	  problemSolver()->pathPlannerType (std::string (pathPlannerType));
@@ -1703,7 +1671,6 @@ namespace hpp
       // ---------------------------------------------------------------
 
       void Problem::selectConfigurationShooter (const char* configurationShooterType)
-    throw (Error)
       {
     try {
       problemSolver()->configurationShooterType (std::string (configurationShooterType));
@@ -1715,7 +1682,6 @@ namespace hpp
       // ---------------------------------------------------------------
 
       void Problem::selectDistance (const char* distanceType)
-    throw (Error)
       {
     try {
       problemSolver()->distanceType(std::string (distanceType));
@@ -1727,7 +1693,6 @@ namespace hpp
       // ---------------------------------------------------------------
 
       void Problem::selectSteeringMethod (const char* steeringMethodType)
-    throw (Error)
       {
     try {
       problemSolver()->steeringMethodType (std::string (steeringMethodType));
@@ -1738,7 +1703,6 @@ namespace hpp
 
       // ---------------------------------------------------------------
       void Problem::addPathOptimizer (const char* pathOptimizerType)
-	throw (Error)
       {
 	try {
 	  problemSolver()->addPathOptimizer (std::string (pathOptimizerType));
@@ -1749,7 +1713,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::clearPathOptimizers () throw (Error)
+      void Problem::clearPathOptimizers ()
       {
 	try {
 	  problemSolver()->clearPathOptimizers ();
@@ -1760,7 +1724,6 @@ namespace hpp
 
       // ---------------------------------------------------------------
       void Problem::addConfigValidation (const char* configValidationType)
-	throw (Error)
       {
 	try {
 	  problemSolver()->addConfigValidation (std::string (configValidationType));
@@ -1771,7 +1734,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::clearConfigValidations () throw (Error)
+      void Problem::clearConfigValidations ()
       {
 	try {
 	  problemSolver()->clearConfigValidations ();
@@ -1783,7 +1746,7 @@ namespace hpp
       // ---------------------------------------------------------------
 
       void Problem::selectPathValidation (const char* pathValidationType,
-					  Double tolerance) throw (Error)
+					  Double tolerance)
       {
 	try {
 	  problemSolver()->pathValidationType (std::string (pathValidationType),
@@ -1796,7 +1759,7 @@ namespace hpp
       // ---------------------------------------------------------------
 
       void Problem::selectPathProjector (const char* pathProjectorType,
-                                         Double tolerance) throw (Error)
+                                         Double tolerance)
       {
         try {
           problemSolver()->pathProjectorType (std::string (pathProjectorType),
@@ -1808,7 +1771,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      bool Problem::prepareSolveStepByStep () throw (hpp::Error)
+      bool Problem::prepareSolveStepByStep ()
       {
 	try {
 	  return problemSolver()->prepareSolveStepByStep ();
@@ -1820,7 +1783,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      bool Problem::executeOneStep () throw (hpp::Error)
+      bool Problem::executeOneStep ()
       {
 	try {
 	  return problemSolver()->executeOneStep ();
@@ -1832,7 +1795,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::finishSolveStepByStep () throw (hpp::Error)
+      void Problem::finishSolveStepByStep ()
       {
 	try {
          problemSolver()->finishSolveStepByStep();
@@ -1843,7 +1806,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      hpp::intSeq* Problem::solve () throw (hpp::Error)
+      hpp::intSeq* Problem::solve ()
       {
 	try {
           boost::posix_time::ptime start =
@@ -1869,7 +1832,6 @@ namespace hpp
 				const hpp::floatSeq& endConfig,
 				CORBA::Boolean validate, ULong& pathId,
 				CORBA::String_out report)
-	throw (hpp::Error)
       {
 	ConfigurationPtr_t start;
 	ConfigurationPtr_t end;
@@ -1896,7 +1858,6 @@ namespace hpp
       // ---------------------------------------------------------------
 
       bool Problem::reversePath (ULong pathId, ULong& reversedPathId)
-	throw (hpp::Error)
       {
 	try {
           if ( pathId >= problemSolver()->paths ().size ()) {
@@ -1920,7 +1881,6 @@ namespace hpp
       // ---------------------------------------------------------------
 
       void  Problem::addConfigToRoadmap (const hpp::floatSeq& config)
-	throw (hpp::Error)
       {
         try {
           DevicePtr_t robot = getRobotOrThrow(problemSolver());
@@ -1937,7 +1897,6 @@ namespace hpp
       void Problem::addEdgeToRoadmap (const hpp::floatSeq& config1,
 				      const hpp::floatSeq& config2,
 				      ULong pathId, bool bothEdges)
-	throw (hpp::Error)
       {
         try {
 	  if (pathId >= problemSolver()->paths ().size ()) {
@@ -1966,7 +1925,6 @@ namespace hpp
       void Problem::appendDirectPath (ULong pathId,
 				      const hpp::floatSeq& config,
                                       Boolean validate)
-	throw (hpp::Error)
       {
 	try {
 	  if (pathId >= problemSolver()->paths ().size ()) {
@@ -2010,7 +1968,6 @@ namespace hpp
       // ---------------------------------------------------------------
 
       void Problem::concatenatePath (ULong startId, ULong endId)
-	throw (hpp::Error)
       {
 	try {
           if ( startId >= problemSolver()->paths ().size ()
@@ -2030,7 +1987,6 @@ namespace hpp
       // ---------------------------------------------------------------
 
       void Problem::extractPath (ULong pathId, Double start, Double end)
-      throw (hpp::Error)
       {
         try {
           if ( pathId >= problemSolver()->paths ().size ()) {
@@ -2060,7 +2016,6 @@ namespace hpp
       // ---------------------------------------------------------------
 
       void Problem::erasePath (ULong pathId)
-	throw (hpp::Error)
       {
 	try {
           if (pathId >= problemSolver()->paths ().size ()) {
@@ -2077,7 +2032,6 @@ namespace hpp
       // ---------------------------------------------------------------
 
       bool Problem::projectPath (ULong pathId)
-	throw (hpp::Error)
       {
 	try {
 	  if (pathId >= problemSolver()->paths ().size ()) {
@@ -2106,14 +2060,14 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::interruptPathPlanning() throw (hpp::Error)
+      void Problem::interruptPathPlanning()
       {
 	problemSolver()->interrupt ();
       }
 
       // ---------------------------------------------------------------
 
-      Long Problem::numberPaths () throw (hpp::Error)
+      Long Problem::numberPaths ()
       {
 	try {
 	  return (Long) problemSolver()->paths ().size ();
@@ -2124,7 +2078,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      hpp::intSeq* Problem::optimizePath(ULong pathId) throw (hpp::Error)
+      hpp::intSeq* Problem::optimizePath(ULong pathId)
       {
 	try {
 	  if (pathId >= problemSolver()->paths ().size ()) {
@@ -2158,7 +2112,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      Double Problem::pathLength (ULong pathId) throw (hpp::Error)
+      Double Problem::pathLength (ULong pathId)
       {
 	try {
 	  if (pathId >= problemSolver()->paths ().size ()) {
@@ -2177,7 +2131,6 @@ namespace hpp
 
       hpp::floatSeq* Problem::configAtParam (ULong pathId,
 					     Double atDistance)
-	throw (hpp::Error)
       {
 	try {
 	  if (pathId >= problemSolver()->paths ().size ()) {
@@ -2212,7 +2165,6 @@ namespace hpp
       hpp::floatSeq* Problem::derivativeAtParam (ULong pathId,
 						 ULong order,
 					         Double atDistance)
-	throw (hpp::Error)
       {
 	try {
 	  if (pathId >= problemSolver()->paths ().size ()) {
@@ -2234,7 +2186,6 @@ namespace hpp
 
       hpp::floatSeqSeq* Problem::getWaypoints (ULong pathId,
                                                hpp::floatSeq_out times)
-	throw (hpp::Error)
       {
 	try {
 	  if (pathId >= problemSolver()->paths ().size ()) {
@@ -2264,7 +2215,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      hpp::floatSeqSeq* Problem::nodes () throw (hpp::Error)
+      hpp::floatSeqSeq* Problem::nodes ()
       {
 	hpp::floatSeqSeq* res;
 	try {
@@ -2294,7 +2245,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      Long Problem::numberEdges () throw (hpp::Error)
+      Long Problem::numberEdges ()
       {
 	return (Long)problemSolver()->roadmap ()->edges ().size ();
       }
@@ -2303,7 +2254,7 @@ namespace hpp
 
 
       void Problem::edge (ULong edgeId, hpp::floatSeq_out q1,
-			  hpp::floatSeq_out q2) throw (hpp::Error)
+			  hpp::floatSeq_out q2)
       {
 	try {
 	  const Edges_t & edges
@@ -2335,7 +2286,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      Long Problem::numberNodes () throw (hpp::Error)
+      Long Problem::numberNodes ()
       {
         try {
           if (problemSolver()->roadmap ()) {
@@ -2350,7 +2301,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      hpp::floatSeq* Problem::node (ULong nodeId) throw (hpp::Error)
+      hpp::floatSeq* Problem::node (ULong nodeId)
       {
       try {
         const Nodes_t & nodes (problemSolver()->roadmap()->nodes());
@@ -2382,7 +2333,6 @@ namespace hpp
       // -----------------------------------------------------------------
 
       Long Problem::connectedComponentOfEdge (ULong edgeId)
-        throw (hpp::Error)
         {
           try {
             const Edges_t & edges (problemSolver()->roadmap()->edges());
@@ -2408,7 +2358,6 @@ namespace hpp
       // -----------------------------------------------------------------
 
       Long Problem::connectedComponentOfNode (ULong nodeId)
-        throw (hpp::Error)
         {
           try {
             const Nodes_t & nodes (problemSolver()->roadmap()->nodes());
@@ -2433,7 +2382,7 @@ namespace hpp
 
       // -----------------------------------------------------------------
 
-      Long Problem::numberConnectedComponents () throw (hpp::Error)
+      Long Problem::numberConnectedComponents ()
       {
 	return
 	  (Long) problemSolver()->roadmap ()->connectedComponents ().size ();
@@ -2443,7 +2392,6 @@ namespace hpp
 
       hpp::floatSeqSeq*
       Problem::nodesConnectedComponent (ULong connectedComponentId)
-	throw (hpp::Error)
       {
 	hpp::floatSeqSeq* res;
 	try {
@@ -2482,7 +2430,7 @@ namespace hpp
 
       hpp::floatSeq*
       Problem::getNearestConfig (const hpp::floatSeq& config, const Long connectedComponentId,
-      				 hpp::core::value_type& distance) throw (hpp::Error)
+      				 hpp::core::value_type& distance)
       {
 	hpp::floatSeq* res;
 	try {
@@ -2516,7 +2464,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::clearRoadmap () throw (hpp::Error)
+      void Problem::clearRoadmap ()
       {
 	try {
 	  problemSolver()->roadmap ()->clear ();
@@ -2537,7 +2485,6 @@ namespace hpp
       }
 
       void Problem::saveRoadmap (const char* filename)
-        throw (hpp::Error)
       {
         try {
           std::ofstream ofs (filename, std::ofstream::out);
@@ -2550,7 +2497,6 @@ namespace hpp
       }
 
       void Problem::readRoadmap (const char* filename)
-        throw (hpp::Error)
       {
         try {
           hpp::core::ProblemSolverPtr_t p = problemSolver();
@@ -2574,7 +2520,6 @@ namespace hpp
 
       void Problem::scCreateScalarMultiply
       (const char* outName, Double scalar, const char* inName)
-        throw (hpp::Error)
       {
         if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
         try {
@@ -2600,7 +2545,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      hpp::core_idl::Distance_ptr Problem::getDistance () throw (hpp::Error)
+      hpp::core_idl::Distance_ptr Problem::getDistance ()
       {
         core::ProblemSolverPtr_t ps = problemSolver();
         DevicePtr_t robot = getRobotOrThrow (ps);
@@ -2614,7 +2559,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      void Problem::setDistance (hpp::core_idl::Distance_ptr distance) throw (hpp::Error)
+      void Problem::setDistance (hpp::core_idl::Distance_ptr distance)
       {
         core::DistancePtr_t d;
         try {
@@ -2632,7 +2577,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      hpp::core_idl::Path_ptr Problem::getPath (ULong pathId) throw (Error)
+      hpp::core_idl::Path_ptr Problem::getPath (ULong pathId)
       {
         core::ProblemSolverPtr_t ps = problemSolver();
         if (pathId >= ps->paths ().size ()) {
@@ -2647,7 +2592,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      ULong Problem::addPath (hpp::core_idl::PathVector_ptr _path) throw (Error)
+      ULong Problem::addPath (hpp::core_idl::PathVector_ptr _path)
       {
         core::PathVectorPtr_t path;
         try {
@@ -2666,7 +2611,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      hpp::core_idl::SteeringMethod_ptr Problem::getSteeringMethod () throw (Error)
+      hpp::core_idl::SteeringMethod_ptr Problem::getSteeringMethod ()
       {
         core::ProblemSolverPtr_t ps = problemSolver();
         DevicePtr_t robot = getRobotOrThrow (ps);
@@ -2681,7 +2626,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      hpp::core_idl::PathValidation_ptr Problem::getPathValidation () throw (Error)
+      hpp::core_idl::PathValidation_ptr Problem::getPathValidation ()
       {
         core::ProblemSolverPtr_t ps = problemSolver();
         core::PathValidationPtr_t pv = problem (ps, true)->pathValidation();
@@ -2694,7 +2639,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      hpp::core_idl::PathPlanner_ptr Problem::getPathPlanner () throw (Error)
+      hpp::core_idl::PathPlanner_ptr Problem::getPathPlanner ()
       {
         core::ProblemSolverPtr_t ps = problemSolver();
         core::PathPlannerPtr_t pv = ps->pathPlanner();
@@ -2707,7 +2652,7 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
-      hpp::core_idl::Problem_ptr Problem::getProblem () throw (Error)
+      hpp::core_idl::Problem_ptr Problem::getProblem ()
       {
         core::ProblemSolverPtr_t ps = problemSolver();
         core::ProblemPtr_t pb = problem (ps, true);
@@ -2721,7 +2666,6 @@ namespace hpp
       // ---------------------------------------------------------------
 
       hpp::constraints_idl::Implicit_ptr Problem::getConstraint (const char* name)
-        throw (Error)
       {
         const std::string fn (name);
         core::ProblemSolverPtr_t ps = problemSolver();

@@ -57,7 +57,7 @@ namespace hpp
 
           virtual ~DistanceServant () {}
 
-          CORBA::Double value (const floatSeq& q1, const floatSeq& q2) throw (Error)
+          CORBA::Double value (const floatSeq& q1, const floatSeq& q2)
           {
             Configuration_t qq1 (floatSeqToConfig(getS().r, q1, true)),
                             qq2 (floatSeqToConfig(getS().r, q2, true));
@@ -79,12 +79,12 @@ namespace hpp
 
           ~WeighedDistanceServant () {}
 
-          floatSeq* getWeights () throw (Error)
+          floatSeq* getWeights ()
           {
             return vectorToFloatSeq (getT()->weights());
           }
 
-          void setWeights (const floatSeq& weights) throw (Error)
+          void setWeights (const floatSeq& weights)
           {
             try {
               return getT()->weights(floatSeqToVector(weights));

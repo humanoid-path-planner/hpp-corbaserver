@@ -55,7 +55,7 @@ namespace hpp
           server_ = server;
         }
 
-        virtual CORBA::Boolean loadServerPlugin (const char* context, const char* pluginName) throw (Error)
+        virtual CORBA::Boolean loadServerPlugin (const char* context, const char* pluginName)
         {
           try {
             std::string c (context), pn (pluginName);
@@ -65,7 +65,7 @@ namespace hpp
           }
         }
 
-        virtual CORBA::Boolean createContext (const char* context) throw (Error)
+        virtual CORBA::Boolean createContext (const char* context)
         {
           try {
             std::string c (context);
@@ -76,7 +76,7 @@ namespace hpp
         }
 
         CORBA::Object_ptr getServer (const char* contextName,
-            const char* pluginName, const char* objectName) throw (Error)
+            const char* pluginName, const char* objectName)
         {
           try {
             std::string c (contextName);
@@ -88,7 +88,7 @@ namespace hpp
           }
         }
 
-        virtual void deleteServant (const char* id) throw (Error)
+        virtual void deleteServant (const char* id)
         {
           try {
             CORBA::Object_ptr obj = server_->orb()->string_to_object (id);

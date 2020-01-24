@@ -37,7 +37,7 @@ namespace hpp {
 
       virtual std::string name() const = 0;
 
-      core::ProblemSolverPtr_t problemSolver () const throw (std::logic_error)
+      core::ProblemSolverPtr_t problemSolver () const
       {
         return problemSolverMap_->selected();
       }

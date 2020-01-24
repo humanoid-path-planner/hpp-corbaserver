@@ -46,7 +46,6 @@ namespace hpp
 
       void Obstacle::loadObstacleModel (const char* filename,
 					const char* prefix)
-	throw (hpp::Error)
       {
 	try {
           DevicePtr_t device (Device::create (prefix));
@@ -62,7 +61,6 @@ namespace hpp
 
       void Obstacle::loadObstacleModelFromString (const char* urdfString,
                                                   const char* prefix)
-	throw (hpp::Error)
       {
 	try {
           DevicePtr_t device (Device::create (prefix));
@@ -78,7 +76,7 @@ namespace hpp
 
       void Obstacle::removeObstacleFromJoint
       (const char* objectName, const char* jointName, Boolean collision,
-       Boolean distance) throw (hpp::Error)
+       Boolean distance)
       {
 	using pinocchio::JointPtr_t;
 	using pinocchio::ObjectVector_t;
@@ -100,7 +98,6 @@ namespace hpp
       }
 
       void Obstacle::cutObstacle (const char* objectName, const floatSeq& aabb)
-        throw (Error)
       {
         try {
           vector_t _aabb = floatSeqToVector(aabb, 6);
@@ -114,7 +111,6 @@ namespace hpp
       void
       Obstacle::addObstacle(const char* objectName, Boolean collision,
 			    Boolean distance)
-	throw (hpp::Error)
       {
         DevicePtr_t robot = getRobotOrThrow(problemSolver());
 
@@ -154,7 +150,6 @@ namespace hpp
 
       void Obstacle::moveObstacle
       (const char* objectName, const Transform_ cfg)
-	throw(hpp::Error)
       {
 	CollisionObjectPtr_t object = getObstacleByName (objectName);
 	if (object) {
@@ -166,7 +161,6 @@ namespace hpp
 
       void Obstacle::getObstaclePosition (const char* objectName,
 					  Transform_ cfg)
-	  throw (hpp::Error)
       {
 	CollisionObjectPtr_t object = getObstacleByName (objectName);
 	if (object) {
@@ -187,7 +181,6 @@ namespace hpp
       }
 
       Names_t* Obstacle::getObstacleNames (bool collision, bool distance)
-	throw (hpp::Error)
       {
 	std::list <std::string> obstacles =
 	  problemSolver()->obstacleNames (collision, distance);
@@ -195,33 +188,29 @@ namespace hpp
       }
 
       void Obstacle::createPolyhedron
-      (const char* polyhedronName) throw (hpp::Error)
+      (const char* polyhedronName)
       {
         objectMap_.createPolyhedron (polyhedronName);
       }
 
       void Obstacle::createBox
       (const char* boxName, Double x, Double y, Double z)
-	throw (hpp::Error)
       {
         objectMap_.createBox (boxName, x, y, z);
       }
 
       void Obstacle::createSphere (const char* name, Double radius)
-	throw (hpp::Error)
       {
         objectMap_.createSphere (name, radius);
       }
 
       void Obstacle::createCylinder (const char* name, Double radius, Double length)
-	throw (hpp::Error)
       {
         objectMap_.createCylinder (name, radius, length);
       }
 
       ULong Obstacle::addPoint
       (const char* polyhedronName, Double x, Double y, Double z)
-	throw (hpp::Error)
       {
 	return static_cast<ULong> (
             objectMap_.addPoint (polyhedronName, x, y, z));
@@ -229,7 +218,6 @@ namespace hpp
 
       ULong Obstacle::addTriangle
       (const char* polyhedronName, ULong pt1, ULong pt2, ULong pt3)
-	throw (hpp::Error)
       {
 	return static_cast<ULong> (
             objectMap_.addTriangle (polyhedronName, pt1, pt2, pt3));

@@ -29,15 +29,15 @@ namespace hpp {
     class ObjectMap
     {
       public:
-        void createBox (const std::string boxName, value_type x, value_type y, value_type z) throw (Error);
-        void createSphere (const std::string name, value_type radius) throw (Error);
-        void createCylinder (const std::string name, value_type radius, value_type length) throw (Error);
+        void createBox (const std::string boxName, value_type x, value_type y, value_type z);
+        void createSphere (const std::string name, value_type radius);
+        void createCylinder (const std::string name, value_type radius, value_type length);
 
-        void createPolyhedron (const std::string polyhedronName) throw (hpp::Error);
-        std::size_t addPoint (const std::string polyhedronName, value_type x, value_type y, value_type z) throw (hpp::Error);
-        std::size_t addTriangle (const std::string polyhedronName, std::size_t pt1, std::size_t pt2, std::size_t pt3) throw (hpp::Error);
+        void createPolyhedron (const std::string polyhedronName);
+        std::size_t addPoint (const std::string polyhedronName, value_type x, value_type y, value_type z);
+        std::size_t addTriangle (const std::string polyhedronName, std::size_t pt1, std::size_t pt2, std::size_t pt3);
 
-        CollisionGeometryPtr_t geometry (const std::string name) /*const*/ throw (Error);
+        CollisionGeometryPtr_t geometry (const std::string name) /*const*/;
 
       protected:
         struct PolyhedronData {
@@ -60,7 +60,7 @@ namespace hpp {
         };
 
         template <GeomType geomType, ThrowType throwType>
-        bool nameExists (const std::string& name) const throw (hpp::Error);
+        bool nameExists (const std::string& name) const;
 
         /// Map of basic shapes
         ShapeMap_t shapeMap_;

@@ -41,7 +41,7 @@ namespace hpp
 
           virtual ~ProblemServant () {}
 
-          hpp::core_idl::Distance_ptr getDistance () throw (hpp::Error)
+          hpp::core_idl::Distance_ptr getDistance ()
           {
             core::DistancePtr_t distance = get()->distance();
             DevicePtr_t robot = get()->robot();
@@ -51,7 +51,7 @@ namespace hpp
             return d._retn();
           }
 
-          void setDistance (hpp::core_idl::Distance_ptr distance) throw (hpp::Error)
+          void setDistance (hpp::core_idl::Distance_ptr distance)
           {
             core::DistancePtr_t d;
             try {
@@ -65,7 +65,7 @@ namespace hpp
             get()->distance (d);
           }
 
-          hpp::core_idl::SteeringMethod_ptr getSteeringMethod () throw (hpp::Error)
+          hpp::core_idl::SteeringMethod_ptr getSteeringMethod ()
           {
             core::SteeringMethodPtr_t steeringMethod = get()->steeringMethod();
             DevicePtr_t robot = get()->robot();
@@ -75,7 +75,7 @@ namespace hpp
             return d._retn();
           }
 
-          void setSteeringMethod (hpp::core_idl::SteeringMethod_ptr steeringMethod) throw (hpp::Error)
+          void setSteeringMethod (hpp::core_idl::SteeringMethod_ptr steeringMethod)
           {
             core::SteeringMethodPtr_t d;
             try {
@@ -89,7 +89,7 @@ namespace hpp
             get()->steeringMethod (d);
           }
 
-          hpp::core_idl::PathValidation_ptr getPathValidation () throw (hpp::Error)
+          hpp::core_idl::PathValidation_ptr getPathValidation ()
           {
             core::PathValidationPtr_t pathValidation = get()->pathValidation();
 
@@ -98,7 +98,7 @@ namespace hpp
             return d._retn();
           }
 
-          void setPathValidation (hpp::core_idl::PathValidation_ptr pathValidation) throw (hpp::Error)
+          void setPathValidation (hpp::core_idl::PathValidation_ptr pathValidation)
           {
             core::PathValidationPtr_t d;
             try {

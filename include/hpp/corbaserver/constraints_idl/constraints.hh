@@ -37,42 +37,42 @@ namespace hpp
 
           virtual ~DifferentiableFunctionServant () {}
 
-          floatSeq* value (const floatSeq& arg) throw (Error)
+          floatSeq* value (const floatSeq& arg)
           {
             return vectorToFloatSeq (
                 (*get()) (floatSeqToVector(arg, get()->inputSize())).vector()
                 );
           }
 
-          floatSeqSeq* jacobian (const floatSeq& arg) throw (Error)
+          floatSeqSeq* jacobian (const floatSeq& arg)
           {
             matrix_t J (get()->outputDerivativeSize(), get()->inputDerivativeSize());
             get()->jacobian (J, floatSeqToVector(arg));
             return matrixToFloatSeqSeq (J);
           }
 
-          size_type inputSize () throw (Error)
+          size_type inputSize ()
           {
             return get()->inputSize();
           }
-          size_type inputDerivativeSize () throw (Error)
+          size_type inputDerivativeSize ()
           {
             return get()->inputDerivativeSize();
           }
-          size_type  outputSize () throw (Error)
+          size_type  outputSize ()
           {
             return get()->outputSize ();
           }
-          size_type  outputDerivativeSize () throw (Error)
+          size_type  outputDerivativeSize ()
           {
             return get()->outputDerivativeSize ();
           }
-          char* name () throw (Error)
+          char* name ()
           {
             return c_str(get()->name ());
           }
 
-          char* str () throw (Error)
+          char* str ()
           {
             std::ostringstream oss; oss << *get();
             std::string res = oss.str();
@@ -93,40 +93,40 @@ namespace hpp
 
           virtual ~ImplicitServant () {}
 
-          hpp::constraints_idl::DifferentiableFunction_ptr function () throw (Error)
+          hpp::constraints_idl::DifferentiableFunction_ptr function ()
           {
             hpp::constraints_idl::DifferentiableFunction_var f =
               makeServantDownCast<DifferentiableFunction> (server_, get()->functionPtr());
             return f._retn();
           }
 
-          void setRightHandSideFromConfig (const floatSeq& config) throw (Error)
+          void setRightHandSideFromConfig (const floatSeq& config)
           {
             get()->rightHandSideFromConfig (
                 floatSeqToVector(config, get()->function().inputSize()));
           }
 
-          void setRightHandSide (const floatSeq& rhs) throw (Error)
+          void setRightHandSide (const floatSeq& rhs)
           {
             get()->rightHandSide (floatSeqToVector(rhs, get()->rhsSize()));
           }
 
-          floatSeq* getRightHandSide () throw (Error)
+          floatSeq* getRightHandSide ()
           {
             return vectorToFloatSeq (get()->rightHandSide());
           }
 
-          hpp::size_type rhsSize () throw (Error)
+          hpp::size_type rhsSize ()
           {
             return get()->rhsSize();
           }
 
-          CORBA::Boolean constantRightHandSide () throw (Error)
+          CORBA::Boolean constantRightHandSide ()
           {
             return get()->constantRightHandSide();
           }
 
-          floatSeq* rightHandSideAt (value_type s) throw (Error)
+          floatSeq* rightHandSideAt (value_type s)
           {
             return vectorToFloatSeq (get()->rightHandSideAt(s));
           }
