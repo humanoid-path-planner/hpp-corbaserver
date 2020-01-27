@@ -335,6 +335,8 @@ namespace hpp
 
         hpp::constraints_idl::Implicit_ptr getConstraint (const char* name);
 
+        void setRobot (hpp::pinocchio_idl::Device_ptr robot);
+
       private:
         /// Return the selected problem solver
         core::ProblemSolverPtr_t problemSolver ();

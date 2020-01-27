@@ -43,6 +43,8 @@ namespace hpp
         virtual void loadObstacleModelFromString
         (const char* urdfString, const char* prefix);
 
+        virtual void loadPolyhedron (const char* name, const char* filename);
+
 	virtual void removeObstacleFromJoint
 	(const char* objectName, const char* jointName, Boolean collision,
 	 Boolean distance);

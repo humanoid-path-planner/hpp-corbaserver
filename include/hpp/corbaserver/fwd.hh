@@ -20,7 +20,7 @@ namespace hpp
   namespace fcl {
     template <typename T> class BVHModel;
     class CollisionGeometry;
-    class RSS;
+    class OBBRSS;
     class ShapeBase;
     class Triangle;
   }
@@ -72,7 +72,7 @@ namespace hpp
     typedef core::SteeringMethod SteeringMethod_t;
     typedef core::SteeringMethodPtr_t SteeringMethodPtr_t;
     typedef pinocchio::Transform3f Transform3f;
-    typedef fcl::BVHModel < fcl::RSS > Polyhedron_t;
+    typedef fcl::BVHModel < fcl::OBBRSS > Polyhedron_t;
     typedef boost::shared_ptr <Polyhedron_t> PolyhedronPtr_t;
     typedef fcl::ShapeBase BasicShape_t;
     typedef boost::shared_ptr <BasicShape_t> BasicShapePtr_t;

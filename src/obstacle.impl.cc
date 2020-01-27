@@ -14,11 +14,13 @@
 
 #include <pinocchio/multibody/geometry.hpp>
 #include <pinocchio/algorithm/geometry.hpp>
+#include <pinocchio/parsers/utils.hpp>
 
 #include <hpp/util/debug.hh>
 #include <hpp/util/exception-factory.hh>
 
 #include <hpp/fcl/BVH/BVH_model.h>
+#include <hpp/fcl/mesh_loader/loader.h>
 #include <hpp/fcl/shape/geometric_shapes.h>
 
 #include <hpp/pinocchio/device.hh>
@@ -74,6 +76,21 @@ namespace hpp
 	}
       }
 
+      void Obstacle::loadPolyhedron (const char* name, const char* resourcename)
+      {
+	try {
+          fcl::MeshLoader loader (fcl::BV_OBBRSS);
+          std::string filename (
+              ::pinocchio::retrieveResourcePath(resourcename,
+                ::pinocchio::rosPaths()));
+          fcl::CollisionGeometryPtr_t geom = loader.load(filename, fcl::Vec3f::Ones());
+          fcl::CollisionObject object (geom);
+          problemSolver()->addObstacle (name, object, true, true);
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
       void Obstacle::removeObstacleFromJoint
       (const char* objectName, const char* jointName, Boolean collision,
        Boolean distance)
@@ -124,28 +141,7 @@ namespace hpp
 
       CollisionObjectPtr_t Obstacle::getObstacleByName (const char* name)
       {
-	ObjectStdVector_t collisionObstacles (problemSolver()->collisionObstacles ());
-	for (ObjectStdVector_t::iterator it = collisionObstacles.begin ();
-	     it != collisionObstacles.end (); it++) {
-	  CollisionObjectPtr_t object = *it;
-	  if (object->name () == name) {
-	    hppDout (info, "found \""
-		     << object->name () << "\" in the obstacle list.");
-	    return object;
-	  }
-	}
-	ObjectStdVector_t distanceObstacles
-	  (problemSolver()->distanceObstacles ());
-	for (ObjectStdVector_t::iterator it = distanceObstacles.begin ();
-	     it != distanceObstacles.end (); it++) {
-	  CollisionObjectPtr_t object = *it;
-	  if (object->name () == name) {
-	    hppDout (info, "found \""
-		     << object->name () << "\" in the obstacle list.");
-	    return object;
-	  }
-	}
-	return CollisionObjectPtr_t ();
+        return problemSolver()->obstacle(name);
       }
 
       void Obstacle::moveObstacle

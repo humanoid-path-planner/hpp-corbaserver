@@ -188,6 +188,7 @@ IF (NOT CLIENT_ONLY)
   PKG_CONFIG_USE_DEPENDENCY(hppcorbaserver hpp-core)
   PKG_CONFIG_USE_DEPENDENCY(hppcorbaserver hpp-pinocchio)
   PKG_CONFIG_USE_DEPENDENCY(hppcorbaserver hpp-constraints)
+  PKG_CONFIG_USE_DEPENDENCY(hppcorbaserver omniORB4)
 
   INSTALL (TARGETS hppcorbaserver DESTINATION bin)
 ELSE (NOT CLIENT_ONLY)

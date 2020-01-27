@@ -203,9 +203,20 @@ class Builder(idlvisitor.AstVisitor):
                 if _out:
                     out_conv_str = "hpp::corbaServer::vectorToFloatSeq ({}, {});".format (tmp,name)
                 return tmp, in_conv_str, out_conv_str
+            elif _type.type().name() == "floatSeqSeq":
+                if _in:
+                    in_conv_str  = "hpp::core::matrix_t {} = hpp::corbaServer::floatSeqSeqToMatrix ({});".format (tmp,name)
+                else: # !_in => _out
+                    in_conv_str  = "hpp::core::matrix_t {};".format (tmp,name)
+                if _out:
+                    out_conv_str = "hpp::corbaServer::matrixToFloatSeqSeq ({}, {});".format (tmp,name)
+                return tmp, in_conv_str, out_conv_str
             elif _type.type().name() == "Transform_":
                 if _out: raise makeError("out Transform_ is currently not supported", param.file(), param.line())
                 return tmp, "hpp::core::Transform3f {} = hpp::corbaServer::toTransform3f ({});".format (tmp,name), out_conv_str
+            elif _type.type().name() == "TransformSeq":
+                if _out: raise makeError("out TransformSeq is currently not supported", param.file(), param.line())
+                return tmp, "std::vector<hpp::core::Transform3f> {} = hpp::corbaServer::toTransform3f ({});".format (tmp,name), out_conv_str
             elif _type.type().name() == "Names_t":
                 in_conv_str  = "typedef std::vector<std::string> strings_t;"
                 if _in:
