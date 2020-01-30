@@ -27,6 +27,8 @@ module hpp
 
   interface Problem
   {
+    HPP_EXPOSE_MEMORY_DEALLOCATION
+
     pinocchio_idl::Device robot () raises (Error);
 
     void setInitConfig (in floatSeq init) raises (Error);
