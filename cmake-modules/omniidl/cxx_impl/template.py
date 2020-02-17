@@ -173,6 +173,17 @@ template <typename _Base, typename _Storage>
     throw ::hpp::Error (e.what());
   }
 }""",
+        "deleteThis":  """
+template <typename _Base, typename _Storage>
+void @impl_tpl_name@<_Base, _Storage>::deleteThis ()
+{
+  try {
+    // automatically generated code.
+    _ServantBase::deleteThis();
+  } catch (const std::exception& e) {
+    throw ::hpp::Error (e.what());
+  }
+}""",
 }
 
 definition_object_downcast = """\

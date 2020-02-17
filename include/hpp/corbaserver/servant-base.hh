@@ -113,7 +113,7 @@ namespace hpp
           TWkPtr_t wk ((StorageElementWkPtr_t) s);
           if (wk.expired()) {
             // Object expired. Remove the servant and throw.
-            deleteThis();
+            objectExpired();
           }
           return wk.lock();
         }
@@ -123,7 +123,7 @@ namespace hpp
           StorageElementWkPtr_t wk ((StorageElementWkPtr_t) s);
           if (wk.expired()) {
             // Object expired. Remove the servant and throw.
-            deleteThis();
+            objectExpired();
           }
           return wk.lock();
         }
@@ -146,6 +146,21 @@ namespace hpp
           return p_;
         }
 
+        void deleteThis ()
+        {
+          persistantStorage(false);
+
+          // Object expired. Try to remove the server.
+          PortableServer::Servant servant = dynamic_cast<PortableServer::Servant>(this);
+          if (servant == NULL)
+            throw Error ("The object was deleted. I could not delete the servant.");
+          this->server_->removeServant (servant);
+          // Deactivate object
+          PortableServer::ObjectId_var objectId
+            = this->server_->poa()->servant_to_id(servant);
+          this->server_->poa()->deactivate_object(objectId.in());
+        }
+
       protected:
         ServantBase (Server* server, const Storage& _s)
           : AbstractServantBase<T> (server), s(_s)
@@ -156,7 +171,7 @@ namespace hpp
         Storage s;
 
       private:
-        void deleteThis () const
+        void objectExpired () const
         {
           // Object expired. Try to remove the server.
           PortableServer::Servant servant = dynamic_cast<PortableServer::Servant>(const_cast<ServantBase*>(this));

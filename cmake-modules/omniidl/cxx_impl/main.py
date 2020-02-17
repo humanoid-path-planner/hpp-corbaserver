@@ -368,7 +368,9 @@ class BuildInterfaceImplementations(Builder):
         fqname = scopedName.fullyQualify(cxx = 0)
 
         is_base_class = not bool(node.inherits())
-        ptr_t = self.toCppNamespace (scopedName.suffix("Ptr_t")).fullyQualify(cxx=1)
+        #ptr_t = self.toCppNamespace (scopedName.suffix("Ptr_t")).fullyQualify(cxx=1)
+        wkptr_t = "boost::weak_ptr<{}>".format(
+                self.toCppNamespace (scopedName).fullyQualify(cxx=1))
         if is_base_class:
             key = hpp_servant_name (scopedName)
             impl_base_name = "ServantBase"
@@ -376,19 +378,19 @@ class BuildInterfaceImplementations(Builder):
                 st = self.storages[key]
                 # declare storage
                 self.interface_declarations.out(st.decl)
-                storage = st.sc.simple() + "< "+ptr_t+" >"
+                storage = st.sc.simple() + "< "+wkptr_t+" >"
             else:
-                storage = ptr_t
+                storage = wkptr_t
         else:
             baseScopedName = id.Name (node.inherits()[0].scopedName())
             key = hpp_servant_name (baseScopedName)
             impl_base_name = hpp_servant_name (baseScopedName.suffix('Servant'))
             if key in self.storages:
                 st = self.storages[key]
-                storage = st.sc.simple() + "< "+ptr_t+" >"
+                storage = st.sc.simple() + "< "+wkptr_t+" >"
                 self.storages[fqname] = st
             else:
-                storage = ptr_t
+                storage = wkptr_t
         
         # build methods corresponding to attributes, operations etc.
         # attributes[] and operations[] will contain lists of function

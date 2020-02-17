@@ -20,6 +20,8 @@ module hpp
 
   interface Path
   {
+    HPP_EXPOSE_MEMORY_DEALLOCATION
+
     size_type outputSize () raises (Error);
 
     size_type outputDerivativeSize () raises (Error);

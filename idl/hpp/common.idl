@@ -11,6 +11,8 @@
 #ifndef HPP_COMMON_IDL
 #define HPP_COMMON_IDL
 
+#define HPP_EXPOSE_MEMORY_DEALLOCATION void deleteThis() raises (Error);
+
 module hpp
 {
   typedef double value_type;
