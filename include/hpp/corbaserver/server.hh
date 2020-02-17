@@ -163,6 +163,7 @@ namespace hpp
 
       corba::Server<Tools>* tools_;
 
+      std::string ORBendPoint;
       std::string mainContextId_;
 
       bool multiThread_, nameService_;

@@ -43,6 +43,13 @@ namespace hpp
                   << "  --single-thread" << '\n'
                   << "  --multi-thread"  << std::endl;
       }
+
+      std::string endPoint (const std::string& host, const int port)
+      {
+        std::ostringstream oss;
+        oss << "::" << host << ':' << port;
+        return oss.str();
+      }
     } // end of anonymous namespace.
 
     class Tools : public virtual POA_hpp::Tools
@@ -120,7 +127,7 @@ namespace hpp
     {
       parseArguments (argc, argv);
 
-      const char* options[][2] = { { "endPoint", ":::13331" }, { 0, 0 } };
+      const char* options[][2] = { { "endPoint", ORBendPoint.c_str() }, { 0, 0 } };
       tools_ = new corba::Server<Tools> (argc, argv, "", options);
       if (!nameService_)
         tools_->initOmniINSPOA("hpp-corbaserver");
@@ -136,7 +143,8 @@ namespace hpp
     {
       parseArguments (argc, argv);
 
-      tools_ = new corba::Server<Tools> (argc, argv);
+      const char* options[][2] = { { "endPoint", ORBendPoint.c_str() }, { 0, 0 } };
+      tools_ = new corba::Server<Tools> (argc, argv, "", options);
       if (!nameService_)
         tools_->initOmniINSPOA("hpp-corbaserver");
       tools_->initRootPOA(multiThread_);
@@ -150,6 +158,11 @@ namespace hpp
     void Server::parseArguments (int argc, const char* argv[])
     {
       mainContextId_ = "corbaserver";
+
+      std::string host = "";
+      int port = 13331;
+      bool endPointSet = false;
+      ORBendPoint = endPoint (host, port);
 
       for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--name") == 0) {
@@ -170,8 +183,21 @@ namespace hpp
         } else if (strcmp(argv[i], "--use-name-service") == 0) {
           std::cout << "Using name service." << std::endl;
           nameService_ = true;
+        } else if (strcmp(argv[i], "--host") == 0) {
+          host = argv[++i];
+          ORBendPoint = endPoint (host, port);
+          endPointSet = true;
+        } else if (strcmp(argv[i], "--port") == 0) {
+          port = atoi(argv[++i]);
+          ORBendPoint = endPoint (host, port);
+          endPointSet = true;
+        } else if (strcmp(argv[i], "-ORBendPoint") == 0) {
+          ORBendPoint = argv[++i];
+          endPointSet = true;
         }
       }
+      if (endPointSet)
+        std::cout << "End point: " << ORBendPoint << std::endl;
     }
 
     void Server::startCorbaServer()
