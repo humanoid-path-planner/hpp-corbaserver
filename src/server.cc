@@ -159,7 +159,7 @@ namespace hpp
     {
       mainContextId_ = "corbaserver";
 
-      std::string host = "";
+      std::string host = "localhost";
       int port = 13331;
       bool endPointSet = false;
       ORBendPoint = endPoint (host, port);
