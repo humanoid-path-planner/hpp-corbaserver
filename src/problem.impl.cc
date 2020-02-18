@@ -1816,10 +1816,10 @@ namespace hpp
             boost::posix_time::microsec_clock::universal_time () - start;
           hpp::intSeq *ret = new hpp::intSeq;
           ret->length (4);
-          (*ret)[0] = time.hours ();
-          (*ret)[1] = time.minutes ();
-          (*ret)[2] = time.seconds ();
-          (*ret)[3] = (long) ((int) time.fractional_seconds () / 1000);
+          (*ret)[0] = static_cast<CORBA::Long>(time.hours ());
+          (*ret)[1] = static_cast<CORBA::Long>(time.minutes ());
+          (*ret)[2] = static_cast<CORBA::Long>(time.seconds ());
+          (*ret)[3] = static_cast<CORBA::Long>(time.fractional_seconds () / 1000);
           return ret;
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -2100,10 +2100,10 @@ namespace hpp
 
           hpp::intSeq *ret = new hpp::intSeq;
           ret->length (4);
-          (*ret)[0] = time.hours ();
-          (*ret)[1] = time.minutes ();
-          (*ret)[2] = time.seconds ();
-          (*ret)[3] = (long) ((int) time.fractional_seconds () / 1000);
+          (*ret)[0] = static_cast<CORBA::Long>(time.hours ());
+          (*ret)[1] = static_cast<CORBA::Long>(time.minutes ());
+          (*ret)[2] = static_cast<CORBA::Long>(time.seconds ());
+          (*ret)[3] = static_cast<CORBA::Long>(time.fractional_seconds () / 1000);
           return ret;
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
