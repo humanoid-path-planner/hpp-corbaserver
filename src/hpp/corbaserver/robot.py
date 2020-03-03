@@ -66,7 +66,9 @@ class Robot (object):
     def urdfSrdfFilenames (self):
         # if packageName, urdfName, urdfSuffix, srdfSuffix are members of the
         # class, build urdf and srdf filenames
-        if hasattr (self, 'packageName') and hasattr (self,  'urdfName') and \
+        if self.urdfSrdfString():
+            return self.urdfString, self.srdfString
+        elif hasattr (self, 'packageName') and hasattr (self,  'urdfName') and \
            hasattr (self, 'urdfSuffix') and hasattr (self,  'srdfSuffix') :
             urdfFilename = self.urdfPath ()
             srdfFilename = self.srdfPath ()
@@ -80,10 +82,17 @@ class Robot (object):
             - (urdfFilename, srdfFilename)""")
         return urdfFilename, srdfFilename
 
+    def urdfSrdfString (self):
+        return hasattr (self, 'urdfString') and hasattr (self, 'srdfString')
+
     def loadModel (self, robotName, rootJointType):
         urdfFilename, srdfFilename = self.urdfSrdfFilenames ()
-        self.hppcorba.robot.loadRobotModel \
-            (robotName, rootJointType, urdfFilename, srdfFilename)
+        if self.urdfSrdfString():
+            self.hppcorba.robot.loadRobotModelFromString \
+                (robotName, rootJointType, urdfFilename, srdfFilename)
+        else:
+            self.hppcorba.robot.loadRobotModel \
+                (robotName, rootJointType, urdfFilename, srdfFilename)
         self.rebuildRanks()
 
     def urdfPath (self):
@@ -474,7 +483,7 @@ class RobotXML (Robot):
         self.load = load
         self.urdfString = urdfString
         self.srdfString = srdfString
-        Robot.__init__ (self, robotName, rootJointType, load, client)
+        Robot.__init__ (self, robotName, rootJointType, load, client, hppcorbaClient)
     def loadModel (self, robotName, rootJointType):
         if self.load:
             self.hppcorba.robot.loadRobotModelFromString (
