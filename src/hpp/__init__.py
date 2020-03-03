@@ -17,3 +17,17 @@
 
 from .quaternion import Quaternion
 from .transform import Transform
+
+def retrieveRosResource(path):
+    import os
+    ros_package_paths = os.environ["ROS_PACKAGE_PATH"].split(':')
+
+    if path.startswith("package://"):
+        relpath = path[len("package://"):]
+        for dir in ros_package_paths:
+            abspath = os.path.join(dir,relpath)
+            if os.path.exists(abspath):
+                return abspath
+        return IOError ("Could not find resource " + path)
+    else:
+        return path
