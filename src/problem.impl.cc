@@ -511,15 +511,17 @@ namespace hpp
         } else {
           segments_t cInts, vInts;
           for (CORBA::ULong i = 0; i < jointNames.length (); ++i) {
-            JointPtr_t joint = problemSolver()->robot ()->getJointByName
-              (std::string(jointNames[i]));
-            if (joint == NULL) {
-              std::ostringstream oss;
-              oss << "Joint " << jointNames[i] << "not found.";
-              throw hpp::Error (oss.str ().c_str ());
+            const Frame frame = problemSolver()->robot()->getFrameByName(std::string(jointNames[i]));
+            if (!frame.isFixed()){
+              JointPtr_t joint = frame.joint();
+              if (joint == NULL) {
+                std::ostringstream oss;
+                oss << "Joint " << jointNames[i] << "not found.";
+                throw hpp::Error (oss.str ().c_str ());
+              }
+              cInts.push_back(segment_t(joint->rankInConfiguration(), joint->configSize()));
+              vInts.push_back(segment_t(joint->rankInVelocity     (), joint->numberDof ()));
             }
-            cInts.push_back(segment_t(joint->rankInConfiguration(), joint->configSize()));
-            vInts.push_back(segment_t(joint->rankInVelocity     (), joint->numberDof ()));
           }
 
           Eigen::BlockIndex::sort (cInts);
