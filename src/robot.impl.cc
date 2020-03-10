@@ -636,10 +636,10 @@ namespace hpp
           std::string n;
           for (CORBA::ULong i = 0; i < jointNames.length (); ++i) {
             n = jointNames[i];
-            if (!model.existFrame (n, JOINT_FRAME)) {
-              HPP_THROW(Error, "Robot has no joint with name " << n);
+            if (!model.existFrame (n)) {
+              HPP_THROW(Error, "Robot has no frame with name " << n);
             }
-            FrameIndex joint = model.getFrameId(n, JOINT_FRAME);
+            FrameIndex joint = model.getFrameId(n);
             if (model.frames.size() <= (std::size_t)joint)
               HPP_THROW(Error, "Frame index of joint " << n << " out of bounds: " << joint);
 
