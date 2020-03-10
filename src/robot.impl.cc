@@ -377,12 +377,9 @@ namespace hpp
 	  // Compute number of real urdf joints
           const Model& model = robot->model();
           std::vector<std::string> jns;
-          for(std::size_t i = 0; i < model.frames.size(); ++i) {
-            if(    model.frames[i].type == ::pinocchio::JOINT
-                || model.frames[i].type == ::pinocchio::FIXED_JOINT)
-              jns.push_back(model.frames[i].name);
-          }
-	  return toNames_t (jns.begin(), jns.end());
+          for(std::size_t i = 0; i < model.frames.size(); ++i)
+            jns.push_back(model.frames[i].name);
+          return toNames_t (jns.begin(), jns.end());
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
