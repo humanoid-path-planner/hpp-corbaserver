@@ -141,7 +141,11 @@ namespace hpp
 
       CollisionObjectPtr_t Obstacle::getObstacleByName (const char* name)
       {
-        return problemSolver()->obstacle(name);
+        try {
+          return problemSolver()->obstacle(name);
+        } catch (const std::invalid_argument&) {
+          HPP_THROW(Error, "Object " << name << " not found");
+        }
       }
 
       void Obstacle::moveObstacle
