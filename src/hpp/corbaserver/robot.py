@@ -45,13 +45,15 @@ class Robot (object):
                 self.rebuildRanks()
 
     ## Rebuild inner variables rankInConfiguration and rankInVelocity
+    #
+    #  compute the kinematic tree.
     def rebuildRanks (self):
         try:
-            self.jointNames = self.hppcorba.robot.getJointNames ()
+            self.jointNames = self.getJointNames ()
         except:
             # No robot yet
             return
-        self.allJointNames = self.hppcorba.robot.getAllJointNames ()
+        self.allJointNames = self.getAllJointNames ()
         self.rankInConfiguration = dict ()
         self.rankInVelocity = dict ()
         rankInConfiguration = rankInVelocity = 0
@@ -60,6 +62,35 @@ class Robot (object):
             rankInConfiguration += self.hppcorba.robot.getJointConfigSize (j)
             self.rankInVelocity [j] = rankInVelocity
             rankInVelocity += self.hppcorba.robot.getJointNumberDof (j)
+        self.childFrames = None
+
+    def _computeKinematicChain(self):
+        # compute the tree of frames
+        self.childFrames = {'universe' : list()}
+        for j in self.getAllJointNames():
+            self.childFrames[j] = list()
+            parent = self.getParentFrame(j)
+            if self.childFrames.has_key(parent):
+                self.childFrames[parent].append(j)
+            else:
+                self.childFrames[parent] = [j]
+        # Compute parent dictionary, remove anchor joints
+        self.parentJoint = dict()
+        for joint in self.jointNames:
+            j = joint
+            found = False
+            while not found:
+                parent = self.getParentFrame(j)
+                if self.getJointConfigSize(parent) > 0 or parent == 'universe':
+                    found = True
+                j = parent
+            self.parentJoint[joint] = parent
+        # Compute kinematic chain without anchor joints
+        self.childJoints = {'universe' : list()}
+        for j in self.jointNames:
+            self.childJoints[j] = list()
+            parent = self.parentJoint[j]
+            self.childJoints[parent].append(j)
 
     ## Return urdf and srdf filenames
     #
@@ -129,6 +160,43 @@ class Robot (object):
     ## Get joint names in the same order as in the configuration.
     def getAllJointNames (self):
         return self.hppcorba.robot.getAllJointNames ()
+
+    ## Get parent frame of a frame
+    #  \param frameName name of the frame
+    def getParentFrame(self, frameName):
+        return self.hppcorba.robot.getParentJointName(frameName)
+
+    ## Get child frames of a frame
+    #  \param frameName name of the frame
+    def getChildFrames(self, frameName, recursive = False):
+        if not self.childFrames:
+            self._computeKinematicChain()
+        childFrames = self.childFrames[jointName]
+        if recursive:
+            i = 0
+            while i < len(childFrames):
+                childFrames += self.childFrames[childFrames[i]]
+                i+=1
+        return childFrames
+
+    ## Get parent joint of a joint (excluding anchor joints)
+    #  \param jointName name of the joint
+    def getParentJoint(self, jointName):
+        if not self.childFrames:
+            self._computeKinematicChain()
+        return self.parentJoint[jointName]
+
+    ## Get child joints of a joint (excluding anchor joints)
+    def getChildJoints(self, jointName, recursive = False):
+        if not self.childFrames:
+            self._computeKinematicChain()
+        childJoints = self.childJoints[jointName]
+        if recursive:
+            i = 0
+            while i < len(childJoints):
+                childJoints += self.childJoints[childJoints[i]]
+                i+=1
+        return childJoints
 
     ## Get joint position.
     def getJointPosition (self, jointName):
