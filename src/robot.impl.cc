@@ -377,12 +377,9 @@ namespace hpp
 	  // Compute number of real urdf joints
           const Model& model = robot->model();
           std::vector<std::string> jns;
-          for(std::size_t i = 0; i < model.frames.size(); ++i) {
-            if(    model.frames[i].type == ::pinocchio::JOINT
-                || model.frames[i].type == ::pinocchio::FIXED_JOINT)
-              jns.push_back(model.frames[i].name);
-          }
-	  return toNames_t (jns.begin(), jns.end());
+          for(std::size_t i = 0; i < model.frames.size(); ++i)
+            jns.push_back(model.frames[i].name);
+          return toNames_t (jns.begin(), jns.end());
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -639,10 +636,10 @@ namespace hpp
           std::string n;
           for (CORBA::ULong i = 0; i < jointNames.length (); ++i) {
             n = jointNames[i];
-            if (!model.existFrame (n, JOINT_FRAME)) {
-              HPP_THROW(Error, "Robot has no joint with name " << n);
+            if (!model.existFrame (n)) {
+              HPP_THROW(Error, "Robot has no frame with name " << n);
             }
-            FrameIndex joint = model.getFrameId(n, JOINT_FRAME);
+            FrameIndex joint = model.getFrameId(n);
             if (model.frames.size() <= (std::size_t)joint)
               HPP_THROW(Error, "Frame index of joint " << n << " out of bounds: " << joint);
 

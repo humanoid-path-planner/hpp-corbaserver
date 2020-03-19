@@ -34,4 +34,51 @@ that forward corba resquests to the server side:
 
 To embed a CORBA server in an application, see documentation of class hpp::corbaServer::Server.
 
+\page hpp_corbaserver_bind_cpp_objects Bind C++ objects automatically
+
+\par Module hierarchy.
+It should respect the C++ hierarchy. At the moment, the topmost
+module is \c hpp. The other module should either be as in C++ or suffixed with \c _idl.
+Suffixing is usefull to prevent name collisions.
+
+\par IDL comments prefix
+They are used to trigger particular behavior.
+- '// ' is a standard comment (two slashes followed by one space).
+- '//*' replaces the automatic implementation by the code provided. All
+        consecutive lines starting with this prefix will be used.
+
+        You also find them after the hpp module. The code in this context will
+        be put at the beginning of the generated C++ file. This is useful to
+        include C++ headers.
+- '//->' is used to rename a function, a module or an interface (the last may not be implemented yet).
+- '///' is a comment used to generate the documentation (by Python and Doxygen).
+
+\par What to do when the automatic implementation does not work ?
+
+1. The compiler should tell you what function fails.
+2. Understand why this function fails. You can modify the file in the build folder.
+3. When your changes work as expected, copy the code in a *comment block for code*
+   (i.e. comments starts with //*) just after the function declaration.
+   No need to include the try/catch block.
+
+As an example, take function DifferentiableFunction.value, in
+idl/hpp/constraints_idl/constraints.idl.
+The automatic implementation for this function cannot work since LieGroupElement
+cannot be converted (at least, as of now). So you must provide a implementation.
+Have a look at the comment in the file.
+
+\par Use CMake to generate the C++ implementation of your IDL.
+The best is to have a look at src/CMakeLists.txt. Eventually,
+hpp-manipulation-corba/src/CMakeLists.txt may be informative.
+Most of the complexity is hidden behind the CMake macros
+\c GENERATE_IDL_PYTHON, \c GENERATE_IDL_CPP and \c GENERATE_IDL_CPP_IMPL.
+
+If you encounter an error related to a module not found, it may be because you
+forgot an option *-Wbextern=...* in the CMake function GENERATE_IDL_PYTHON
+
+\todo The fact that one must specify what are the external module, for the Python
+client, is very annoying. One workaround could be to generate only one big Python
+file instead of plenty of separated ones. To do this, it should be sufficient to
+pass multiple IDL files to omniidl.
+
 */
