@@ -70,7 +70,7 @@ class Robot (object):
         for j in self.getAllJointNames():
             self.childFrames[j] = list()
             parent = self.getParentFrame(j)
-            if self.childFrames.has_key(parent):
+            if parent in self.childFrames:
                 self.childFrames[parent].append(j)
             else:
                 self.childFrames[parent] = [j]
