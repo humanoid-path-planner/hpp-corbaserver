@@ -49,6 +49,8 @@ namespace hpp
 	(const char* objectName, const char* jointName, Boolean collision,
 	 Boolean distance);
 
+	virtual void removeObstacle (const char* objectName);
+
         virtual void cutObstacle (const char* objectName, const floatSeq& aabb);
 
 	virtual	void

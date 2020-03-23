@@ -50,6 +50,11 @@ module hpp
     void loadObstacleModelFromString (in string urdfString, in string prefix)
       raises (Error);
 
+    /// \brief Remove an obstacle
+    ///
+    /// \param objectName name of the object to remove
+    void removeObstacle (in string objectName) raises (Error);
+
     /// \brief Remove an obstacle from outer objects of a joint body
     ///
     /// \param objectName name of the object to remove,

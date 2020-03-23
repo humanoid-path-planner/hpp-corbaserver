@@ -114,6 +114,15 @@ namespace hpp
 	}
       }
 
+      void Obstacle::removeObstacle (const char* objectName)
+      {
+        try {
+          problemSolver()->removeObstacle (objectName);
+        } catch (std::exception& e) {
+          throw Error (e.what ());
+        }
+      }
+
       void Obstacle::cutObstacle (const char* objectName, const floatSeq& aabb)
       {
         try {
