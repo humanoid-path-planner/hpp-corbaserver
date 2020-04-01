@@ -42,6 +42,7 @@ namespace hpp {
 
     inline floatSeq* vectorToFloatSeq (core::ConfigurationPtr_t input)
     {
+      if (!input) return NULL;
       return vectorToFloatSeq (*input);
     }
 

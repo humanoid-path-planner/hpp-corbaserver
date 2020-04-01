@@ -20,9 +20,6 @@ module hpp
   interface ConfigurationShooter
   {
     floatSeq shoot () raises (Error);
-    //* Configuration_t q;
-    //* get()->shoot();
-    //* return vectorToFloatSeq(q);
   }; // interface ConfigurationShooter
 
   module configuration_shooter {

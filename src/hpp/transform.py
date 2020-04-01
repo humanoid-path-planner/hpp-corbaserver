@@ -33,7 +33,7 @@ class Transform (object):
             if isinstance (args [0], Transform) :
                 self.quaternion = args [0].quaternion
                 self.translation = args [0].translation
-            elif isinstance (args [0], list):
+            elif isinstance (args [0], (list,tuple)):
                 self.translation = np.array (args [0][0:3])
                 self.quaternion = Quaternion (args [0][3:7])
         self.quaternion.normalize ()
