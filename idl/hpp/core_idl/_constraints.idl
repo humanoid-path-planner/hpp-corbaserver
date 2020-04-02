@@ -18,6 +18,7 @@ module hpp
 {
   module constraints_idl {
     interface Implicit;
+    typedef sequence <Implicit> Implicits;
   };
 
   module core_idl {
@@ -55,6 +56,8 @@ module hpp
     //*    (_nm, _arg,errorOut, constraintFound);
     //* err = hpp::corbaServer::vectorToFloatSeq (errorOut);
     //* return res;
+
+    constraints_idl::Implicits numericalConstraints() raises(Error);
 
     boolean add (in constraints_idl::Implicit numconstraint, in unsigned long priority);
 
