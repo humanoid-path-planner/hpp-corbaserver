@@ -272,6 +272,8 @@ class Builder(idlvisitor.AstVisitor):
                 return "{} __return__ = hpp::corbaServer::matrixToFloatSeqSeq".format(_type.op(types.RET)), "return __return__;"
             elif _type.type().name() == "Transform_":
                 return "hpp::core::Transform3f __return__", "return hpp::corbaServer::toHppTransform (__return__);"
+            elif _type.type().name() == "Names_t":
+                return "{} __return__".format(if_cpp11("auto","std::vector<std::string>")), "return hpp::corbaServer::toNames_t (__return__);"
             else:
                 unaliased = _type.deref()
                 if unaliased.sequence():

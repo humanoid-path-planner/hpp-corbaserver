@@ -84,6 +84,11 @@ namespace hpp {
       return ret;
     }
 
+    template <typename Iterable> inline Names_t* toNames_t (const Iterable& iterable)
+    {
+      return toNames_t(iterable.begin(), iterable.end());
+    }
+
     template <typename InputIt> inline intSeq* toIntSeq (InputIt begin, InputIt end)
     {
       std::size_t len = std::distance (begin, end);
