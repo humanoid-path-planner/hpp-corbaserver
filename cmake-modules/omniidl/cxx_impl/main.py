@@ -34,6 +34,12 @@ from omniidl import idlast, idlvisitor
 from omniidl_be.cxx import ast, cxx, util, id, types, output, config
 from cxx_impl import template
 
+def if_cpp11(then, _else):
+    if config.state["C++11"]:
+        return then
+    else:
+        return _else
+
 def __init__(hpp_stream, hxx_stream, cc_stream, idl_filename, prefix, hh_filename, hpp_filename, hxx_filename):
     self.hpp_stream   = hpp_stream
     self.hxx_stream   = hxx_stream

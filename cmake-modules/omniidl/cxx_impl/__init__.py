@@ -34,11 +34,12 @@ from cxx_impl import main
 cpp_args = ["-D__OMNIIDL_CXX_IMPL__"]
 usage_string = """\
   -Wbh=<suffix>     Specify suffix for generated header files using cxx backend
-  -Wbhh=<suffix>     Specify suffix for generated header files using cxx backend
+  -Wbhh=<suffix>    Specify suffix for generated header files using cxx backend
   -Wbi=<suffix>     Specify suffix for generated templated definition files
   -Wbc=<suffix>     Specify suffix for generated definition files
   -Wbinc_prefix=<p> Specify the path prefix for include directives
   -Wbguard_prefix   Prefix for include guards in generated headers
+  -Wc++11           Enable C++ 11 features
 
 Extra features added to IDL language:
 
@@ -112,12 +113,14 @@ try:
     config.state._config['HXX Suffix'] = ".hxx"
     config.state._config['CC Suffix']  = ".cc"
     config.state._config['Include Prefix']  = ""
+    config.state._config['C++11']  = False
 except AttributeError: #'dict' object has no attribute '_config'
     # omniidl 4.2.2
     config.state['HPP Suffix'] = ".hpp"
     config.state['HXX Suffix'] = ".hxx"
     config.state['CC Suffix']  = ".cc"
     config.state['Include Prefix']  = ""
+    config.state['C++11']  = True
 
 def process_args(args):
     for arg in args:
@@ -182,6 +185,8 @@ def process_args(args):
             config.state['GuardPrefix']       = arg[len('guard_prefix='):]
         elif arg[:len('inc_prefix=')]   == "inc_prefix=":
             config.state['Include Prefix']    = arg[len('inc_prefix='):]
+        elif arg == "c++11":
+            config.state['CC Suffix']         = arg[2:]
         else:
             util.fatalError("Argument \"" + str(arg) + "\" is unknown")
 
