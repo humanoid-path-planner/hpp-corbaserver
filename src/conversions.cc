@@ -185,5 +185,18 @@ namespace hpp {
       }
       return out;
     }
+    std::vector<bool> boolSeqToVector (const hpp::boolSeq& mask,
+                                       unsigned int length)
+    {
+      if (mask.length () != length) {
+        std::stringstream ss; ss << "Mask must be of length " << length;
+        throw hpp::Error (ss.str().c_str());
+      }
+      std::vector<bool> m (length);
+      for (size_t i=0; i<length; i++)
+        m[i] = mask[(CORBA::ULong)i];
+      return m;
+    }
+
   } // namespace corbaServer
 } // namespace hpp

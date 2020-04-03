@@ -68,6 +68,7 @@
 #include <hpp/pinocchio/center-of-mass-computation.hh>
 
 #include "hpp/corbaserver/servant-base.hh"
+#include "hpp/corbaserver/conversions.hh"
 
 #include "hpp/constraints_idl/constraints.hh"
 #include "hpp/core_idl/distances.hh"
@@ -624,18 +625,6 @@ namespace hpp
 	problemSolver()->resetGoalConfigs ();
       }
 
-      std::vector<bool> boolSeqToBoolVector (const hpp::boolSeq& mask, unsigned int length = 3)
-      {
-        if (mask.length () != length) {
-          std::stringstream ss; ss << "Mask must be of length " << length;
-	  throw hpp::Error (ss.str().c_str());
-        }
-        std::vector<bool> m (length);
-	for (size_t i=0; i<length; i++)
-	  m[i] = mask[(CORBA::ULong)i];
-	return m;
-      }
-
       // ---------------------------------------------------------------
 
       void Problem::createOrientationConstraint
@@ -652,7 +641,7 @@ namespace hpp
               problemSolver()->robot(), name,
               joint1Name          , joint2Name,
               Id                  , rotation,
-              boolSeqToBoolVector(mask));
+              boolSeqToVector(mask));
 
         problemSolver()->addNumericalConstraint
           (name, Implicit::create (func));
@@ -676,7 +665,7 @@ namespace hpp
               problemSolver()->robot(), name,
               joint1Name          , joint2Name,
               ref                  , Id,
-              boolSeqToBoolVector(mask, 6));
+              boolSeqToVector(mask, 6));
 
         problemSolver()->addNumericalConstraint
           (name, Implicit::create (func));
@@ -700,7 +689,7 @@ namespace hpp
               problemSolver()->robot(), name,
               joint1Name           , joint2Name,
               toTransform3f(frame1), toTransform3f(frame2),
-              boolSeqToBoolVector(mask, 6));
+              boolSeqToVector(mask, 6));
 
         problemSolver()->addNumericalConstraint
           (name, Implicit::create (func));
@@ -724,7 +713,7 @@ namespace hpp
               problemSolver()->robot(), name,
               joint1Name           , joint2Name,
               toTransform3f(frame1), toTransform3f(frame2),
-              boolSeqToBoolVector(mask, 6));
+              boolSeqToVector(mask, 6));
 
         problemSolver()->addNumericalConstraint
           (name, Implicit::create (func));
@@ -811,7 +800,7 @@ namespace hpp
         CenterOfMassComputationPtr_t comc;
 	vector3_t point = floatSeqToVector3 (p);
 
-	std::vector<bool> m = boolSeqToBoolVector (mask, 3);
+	std::vector<bool> m = boolSeqToVector (mask, 3);
 	try {
           joint = problemSolver()->robot()->getJointByName(jointName);
 	  // Test whether joint1 is world frame
@@ -849,7 +838,7 @@ namespace hpp
 	vector3_t pointR = floatSeqToVector3 (pR);
 	vector3_t pointRef = floatSeqToVector3 (pRef);
 
-	std::vector<bool> m = boolSeqToBoolVector (mask);
+	std::vector<bool> m = boolSeqToVector (mask);
 	try {
           jointL = problemSolver()->robot()->getJointByName(jointLName);
           jointR = problemSolver()->robot()->getJointByName(jointRName);
@@ -1050,7 +1039,7 @@ namespace hpp
               problemSolver()->robot(), name,
               joint1Name          , joint2Name,
               Transform3f (I3, p1), Transform3f (I3, p2),
-              boolSeqToBoolVector(mask));
+              boolSeqToVector(mask));
 
         problemSolver()->addNumericalConstraint
           (name, Implicit::create (func));
