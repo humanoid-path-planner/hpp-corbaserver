@@ -204,18 +204,22 @@ class Builder(idlvisitor.AstVisitor):
             elif _type.type().name() == "floatSeq":
                 if _in:
                     in_conv_str  = "hpp::core::vector_t {} = hpp::corbaServer::floatSeqToVector ({});".format (tmp,name)
+                    if _out:
+                        out_conv_str = "hpp::corbaServer::vectorToFloatSeq ({}, {});".format (tmp,name)
                 else: # !_in => _out
+                    assert _out
                     in_conv_str  = "hpp::core::vector_t {};".format (tmp,name)
-                if _out:
-                    out_conv_str = "hpp::corbaServer::vectorToFloatSeq ({}, {});".format (tmp,name)
+                    out_conv_str = "{} = hpp::corbaServer::vectorToFloatSeq ({});".format (name,tmp)
                 return tmp, in_conv_str, out_conv_str
             elif _type.type().name() == "floatSeqSeq":
                 if _in:
                     in_conv_str  = "hpp::core::matrix_t {} = hpp::corbaServer::floatSeqSeqToMatrix ({});".format (tmp,name)
+                    if _out:
+                        out_conv_str = "hpp::corbaServer::matrixToFloatSeqSeq ({}, {});".format (tmp,name)
                 else: # !_in => _out
                     in_conv_str  = "hpp::core::matrix_t {};".format (tmp,name)
-                if _out:
-                    out_conv_str = "hpp::corbaServer::matrixToFloatSeqSeq ({}, {});".format (tmp,name)
+                    assert _out
+                    out_conv_str = "{} = hpp::corbaServer::matrixToFloatSeqSeq ({});".format (name,tmp)
                 return tmp, in_conv_str, out_conv_str
             elif _type.type().name() == "Transform_":
                 if _out: raise makeError("out Transform_ is currently not supported", param.file(), param.line())
