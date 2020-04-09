@@ -288,10 +288,10 @@ class Builder(idlvisitor.AstVisitor):
                                         innerType=hpp_servant_name(id.Name(innerType.type().scopedName())),
                                         outType=id.Name(_type.type().scopedName()).fullyQualify(cxx=1)), "return __return__;"
                     else:
-                        print ("Unhandled sequence of", innerType.type().name())
+                        print ("Unhandled sequence of", innerType.type())
                 else:
                     print ("Unhandled type", _type.type().name())
-            return "", ""
+            return "ThisTypeCouldNotBeDeduced __return__", "return __return__;"
         if _type.objref():
             if isinstance (_type.type().decl(), idlast.Forward):
                 base = get_base_class (_type.type().decl().fullDecl())
