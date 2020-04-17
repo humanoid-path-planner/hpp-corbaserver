@@ -1,5 +1,5 @@
-# Copyright (c) 2012 CNRS
-# Author: Florent Lamiraux
+# Copyright (c) 2012, 2020 CNRS
+# Author: Florent Lamiraux, Guilhem Saurel
 #
 # This file is part of hpp-corbaserver.
 # hpp-corbaserver is free software: you can redistribute it
@@ -174,20 +174,16 @@ IF (NOT CLIENT_ONLY)
     ${ALL_IDL_CPP_IMPL_STUBS}
     )
 
-  PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-core)
-  PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-pinocchio)
+  TARGET_LINK_LIBRARIES(${LIBRARY_NAME} hpp-core::hpp-core hpp-template-corba::hpp-template-corba)
+  TARGET_INCLUDE_DIRECTORIES(${LIBRARY_NAME} PUBLIC $<INSTALL_INTERFACE:include>)
   PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} omniORB4)
   PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} omniDynamic4)
-  PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} hpp-template-corba)
 
-  INSTALL(TARGETS ${LIBRARY_NAME} DESTINATION lib)
+  INSTALL(TARGETS ${LIBRARY_NAME} EXPORT ${TARGETS_EXPORT_NAME} DESTINATION lib)
 
   # Standalone corba server
   ADD_EXECUTABLE (hppcorbaserver hpp-corbaserver.cc)
   TARGET_LINK_LIBRARIES (hppcorbaserver ${LIBRARY_NAME})
-  PKG_CONFIG_USE_DEPENDENCY(hppcorbaserver hpp-core)
-  PKG_CONFIG_USE_DEPENDENCY(hppcorbaserver hpp-pinocchio)
-  PKG_CONFIG_USE_DEPENDENCY(hppcorbaserver hpp-constraints)
   PKG_CONFIG_USE_DEPENDENCY(hppcorbaserver omniORB4)
 
   INSTALL (TARGETS hppcorbaserver DESTINATION bin)
@@ -205,12 +201,6 @@ ENDIF (NOT CLIENT_ONLY)
 
 ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_cpp)
 ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_python)
-
-IF(WIN32)
-  SET(LINK copy_if_different)
-ELSE(WIN32)
-  SET(LINK create_symlink)
-ENDIF(WIN32)
 
 FOREACH (FILE __init__.py quaternion.py transform.py)
   PYTHON_INSTALL_ON_SITE(
