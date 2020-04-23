@@ -109,6 +109,10 @@ namespace hpp
                                         const char* jointName,
                                         const hpp::floatSeq& value);
 
+        virtual void createLockedJointWithComp
+        (const char* lockedJointName, const char* jointName,
+         const hpp::floatSeq& value, const hpp::ComparisonTypes_t& comp);
+
         virtual void createLockedExtraDof (const char* lockedDofName,
                                            ULong index,
                                            const hpp::floatSeq& value);

@@ -213,6 +213,16 @@ module hpp
                             in string jointName,
                             in floatSeq value) raises (Error);
 
+    /// Create a LockedJoint constraint with given value
+    /// \param lockedJointName key of the constraint in the ProblemSolver map,
+    /// \param jointName name of the joint,
+    /// \param value value of the joint configuration,
+    /// \param comp vector if comparison types
+    void createLockedJointWithComp (in string lockedJointName,
+                                    in string jointName,
+                                    in floatSeq value,
+                                    in ComparisonTypes_t comp) raises (Error);
+
     /// Create a locked extradof
     ///        hpp::manipulation::ProblemSolver map
     /// \param lockedDofName key of the constraint in the Problem Solver map

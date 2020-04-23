@@ -298,9 +298,15 @@ class ProblemSolver (object):
     #  \param lockedJointName key of the constraint in the ProblemSolver map,
     #  \param jointName name of the joint,
     #  \param value value of the joint configuration,
-    def createLockedJoint (self, lockedDofName, jointName, value):
-        return self.hppcorba.problem.createLockedJoint \
-            (lockedDofName, jointName, value)
+    #  \param comp list of comparison types
+    def createLockedJoint (self, lockedDofName, jointName, value,
+                           comp = None):
+        if comp is None:
+            return self.hppcorba.problem.createLockedJoint \
+                (lockedDofName, jointName, value)
+        else:
+            return self.hppcorba.problem.createLockedJointWithComp \
+                (lockedDofName, jointName, value, comp)
 
     ## Create a locked extradof
     #         hpp::manipulation::ProblemSolver map

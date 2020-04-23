@@ -748,6 +748,31 @@ namespace hpp
 
       // ---------------------------------------------------------------
 
+      void Problem::createLockedJointWithComp
+      (const char* lockedJointName, const char* jointName,
+       const hpp::floatSeq& value, const hpp::ComparisonTypes_t& comp)
+      {
+	try {
+	  // Get robot in hppPlanner object.
+          DevicePtr_t robot = getRobotOrThrow (problemSolver());
+	  JointPtr_t joint = robot->getJointByName (jointName);
+	  vector_t config = floatSeqToVector (value, joint->configSize());
+          hppDout (info, "joint->configurationSpace ()->name () = "
+                   << joint->configurationSpace ()->name ());
+          hppDout (info, "joint->configurationSpace ()->nq () = "
+                   << joint->configurationSpace ()->nq ());
+          LiegroupElement lge (config, joint->configurationSpace ());
+          LockedJointPtr_t lockedJoint (LockedJoint::create (joint, lge));
+          lockedJoint->comparisonType(convertComparison(comp));
+          problemSolver()->numericalConstraints.add
+            (lockedJointName, lockedJoint);
+	} catch (const std::exception& exc) {
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      // ---------------------------------------------------------------
+
       void Problem::createLockedExtraDof
       (const char* lockedDofName, const CORBA::ULong index,
        const hpp::floatSeq& value)

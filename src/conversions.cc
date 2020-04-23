@@ -198,5 +198,29 @@ namespace hpp {
       return m;
     }
 
+    constraints::ComparisonTypes_t convertComparison
+    (hpp::ComparisonTypes_t comp)
+    {
+      constraints::ComparisonTypes_t res(comp.length());
+      for (std::size_t i=0; i<comp.length(); ++i){
+        switch (comp[(CORBA::ULong)i]){
+        case Equality:
+          res[i] = constraints::Equality;
+          break;
+        case EqualToZero:
+          res[i] = constraints::EqualToZero;
+          break;
+        case Superior:
+          res[i] = constraints::Superior;
+          break;
+        case Inferior:
+          res[i] = constraints::Inferior;
+          break;
+        default:
+          abort();
+        }
+      }
+      return res;
+    }
   } // namespace corbaServer
 } // namespace hpp
