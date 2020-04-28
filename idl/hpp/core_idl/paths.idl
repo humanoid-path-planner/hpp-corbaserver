@@ -64,6 +64,8 @@ module hpp
   interface PathVector : Path {
     size_t numberPaths () raises (Error);
 
+    size_t rankAtParam (in value_type param, out value_type localParam) raises (Error);
+
     Path pathAtRank (in size_t rank) raises (Error);
 
     void appendPath (in Path p) raises (Error);

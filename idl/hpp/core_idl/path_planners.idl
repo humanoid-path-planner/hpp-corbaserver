@@ -17,6 +17,52 @@
 module hpp
 {
   module core_idl {
+    interface Path;
+
+    interface Roadmap {
+      void clear () raises (Error);
+
+      void addNode (in floatSeq config) raises (Error);
+
+      void addNodeAndEdge (in floatSeq cfgfrom, in floatSeq cfgto, in Path path_) raises (Error);
+      //* core::PathPtr_t path (reference_to_servant_base<core::Path>(server_, path_)->get());
+      //* getT()->addEdge(getT()->addNode(floatSeqToVector(cfgfrom)),
+      //*                 getT()->addNode(floatSeqToVector(cfgto  )), path);
+
+      void addNodeAndEdges (in floatSeq cfgfrom, in floatSeq cfgto, in Path path_) raises (Error);
+      //* core::PathPtr_t path (reference_to_servant_base<core::Path>(server_, path_)->get());
+      //* getT()->addEdges(getT()->addNode(floatSeqToVector(cfgfrom)),
+      //*                  getT()->addNode(floatSeqToVector(cfgto  )), path);
+
+      /// \warning config should be of the correct size and normalized. It
+      /// cannot be checked here because the robot is not accessible.
+      floatSeq nearestNode (in floatSeq config, out value_type distance,
+          in boolean reverse) raises (Error);
+      //* return vectorToFloatSeq(*(getT()->nearestNode(
+      //*   floatSeqToVector(config), distance, reverse)->configuration()));
+
+      floatSeqSeq nearestNodes (in floatSeq config, out size_type k) raises (Error);
+      //* hpp::core::Nodes_t nodes = getT()->nearestNodes(
+      //*   floatSeqToVector(config), k);
+      //* hpp::core::matrix_t configs (nodes.size(), config.length());
+      //* size_type i = 0;
+      //* for (hpp::core::Nodes_t::const_iterator _node = nodes.begin(); _node != nodes.end(); ++_node)
+      //*   configs.row(i++) = *((*_node)->configuration());
+      //* return matrixToFloatSeqSeq(configs);
+
+      size_type getNbNodes () raises (Error);
+      //* return getT()->nodes().size();
+
+      floatSeq getNode (in size_type i) raises (Error);
+      //* return vectorToFloatSeq(*((*boost::next(getT()->nodes().begin(), i))->configuration()));
+
+      size_type getNbEdges () raises (Error);
+      //* return getT()->edges().size();
+
+      Path getEdge (in size_type i) raises (Error);
+      //* return makeServant<hpp::core_idl::Path_ptr> (server_,
+      //*   new Path (server_, (*boost::next(getT()->edges().begin(),i))->path()));
+    }; // interface Roadmap
 
     interface PathPlanner
     {
@@ -37,12 +83,19 @@ module hpp
       void maxIterations (in size_type n) raises (Error);
 
       void timeOut(in value_type seconds) raises (Error);
-    }; // interface SteeringMethod
+
+      Roadmap getRoadmap() raises (Error);
+      //-> roadmap
+    }; // interface PathPlanner
 
   }; // module core
 }; // module hpp
 
+//* #include <boost/utility.hpp>
 //* #include <hpp/core/path-planner.hh>
+//* #include <hpp/core/roadmap.hh>
+//* #include <hpp/core/edge.hh>
+//* #include <hpp/core/node.hh>
 //* #include <hpp/core_idl/paths.hh>
 
 #endif // HPP_CORE_PATH_PLANNERS_IDL
