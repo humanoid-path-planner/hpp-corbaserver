@@ -909,11 +909,7 @@ namespace hpp
       {
 	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
         try {
-          std::string name (constraintName);
-          ConvexShapeContactPtr_t f = ConvexShapeContact::create
-            (name, problemSolver()->robot());
-          problemSolver()->addNumericalConstraint
-	    (name, Implicit::create (f));
+          JointAndShapes_t floorSurfaces, objectSurfaces;
           std::vector <fcl::Vec3f> pts (points.length ());
           for (CORBA::ULong i = 0; i < points.length (); ++i) {
             if (points[i].length () != 3)
@@ -947,7 +943,7 @@ namespace hpp
                   (pts [objTriangles[i][0]])
                   (pts [objTriangles[i][1]])
                   (pts [objTriangles[i][2]]);
-            f->addObject (constraints::ConvexShape (shapePts, joint));
+            objectSurfaces.push_back(JointAndShape_t(joint, shapePts));
           }
 	  if (floorJoints.length () != floorTriangles.length ()) {
 	    std::ostringstream oss;
@@ -975,8 +971,12 @@ namespace hpp
                   (pts [floorTriangles[i][0]])
                   (pts [floorTriangles[i][1]])
                   (pts [floorTriangles[i][2]]);
-            f->addFloor (constraints::ConvexShape (shapePts, joint));
+            floorSurfaces.push_back(JointAndShape_t(joint, shapePts));
           }
+          std::string name (constraintName);
+          ConvexShapeContactPtr_t f = ConvexShapeContact::create
+            (name, problemSolver()->robot(), floorSurfaces, objectSurfaces);
+          problemSolver()->addNumericalConstraint(name, Implicit::create (f));
         } catch (const std::exception& exc) {
           throw hpp::Error (exc.what ());
         }

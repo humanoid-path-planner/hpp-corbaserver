@@ -58,6 +58,12 @@ namespace hpp
     typedef pinocchio::Frame Frame;
     typedef pinocchio::JointPtr_t JointPtr_t;
     typedef pinocchio::JointVector_t JointVector_t;
+    /// Plane polygon represented by its vertices
+    /// Used to model contact surfaces for manipulation applications
+    typedef constraints::Shape_t Shape_t;
+    typedef constraints::JointAndShape_t JointAndShape_t;
+    typedef constraints::JointAndShapes_t JointAndShapes_t;
+
     typedef core::LockedJoint LockedJoint;
     typedef core::LockedJointPtr_t LockedJointPtr_t;
     typedef core::Nodes_t Nodes_t;
