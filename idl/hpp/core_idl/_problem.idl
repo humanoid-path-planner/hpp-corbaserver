@@ -57,6 +57,13 @@ module hpp
     //-> configurationShooter
     void setConfigurationShooter (in ConfigurationShooter d) raises (Error);
     //-> configurationShooter
+
+    void filterCollisionPairs () raises (Error);
+
+    /// \param margins a symmetric matrix of size (nbJoints+1) x (nbJoints+1).
+    ///        Each row/column index corresponds to a joint, 0 being for the
+    ///        static world (so obstacle and fixed robot parts).
+    void setSecurityMargins (in floatSeqSeq margins) raises (Error);
   }; // interface Problem
 
   }; // module core

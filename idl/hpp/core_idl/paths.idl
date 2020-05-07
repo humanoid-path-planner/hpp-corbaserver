@@ -17,6 +17,7 @@ module hpp
   module core_idl {
   typedef unsigned long long size_t;
   interface PathVector;
+  interface ConstraintSet;
 
   interface Path
   {
@@ -31,6 +32,8 @@ module hpp
     floatSeq initial () raises (Error);
 
     floatSeq end () raises (Error);
+
+    ConstraintSet constraints () raises (Error);
 
     string str () raises (Error);
 
@@ -77,5 +80,8 @@ module hpp
 }; // module hpp
 //* #include <hpp/core/path.hh>
 //* #include <hpp/core/path-vector.hh>
+//* #include <hpp/core_idl/_constraints.hh>
+
+#include <hpp/core_idl/_constraints.idl>
 
 #endif // HPP_CORE_PATHS_IDL

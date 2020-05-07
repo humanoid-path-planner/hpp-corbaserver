@@ -63,10 +63,21 @@ module hpp
     string jointName () raises (Error);
   }; // interface LockedJoint
 
+  interface ConfigurationConstraint : DifferentiableFunction
+  {
+    floatSeq getWeights () raises (Error);
+    //-> weights
+    void setWeights (in floatSeq weights) raises (Error);
+    //-> weights
+    floatSeq getGoal () raises (Error);
+    //* return vectorToFloatSeq(getT()->goal().vector());
+  }; // interface ConfigurationConstraint
+
   }; // module core
 }; // module hpp
 //* #include <hpp/constraints/differentiable-function.hh>
 //* #include <hpp/constraints/implicit.hh>
 //* #include <hpp/constraints/locked-joint.hh>
+//* #include <hpp/constraints/configuration-constraint.hh>
 
 #endif // HPP_CORE_PATHS_IDL
