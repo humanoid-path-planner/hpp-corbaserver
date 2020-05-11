@@ -64,6 +64,12 @@ module hpp
       //* hpp::pinocchio::saturate (d, q, sat);
       //* qout = vectorToFloatSeq (q);
       //* saturation = toBoolSeq(sat.data(), sat.data()+sat.size());
+
+      void replaceGeometryByConvexHull(in Names_t geometryNames) raises (Error);
+      //* hpp::pinocchio::DevicePtr_t d = getT();
+      //* hpp::pinocchio::replaceGeometryByConvexHull(d->geomModel(),
+      //*   toStrings<std::vector<std::string> >(geometryNames));
+      //* d->createGeomData();
   };
 
   }; // module pinocchio_idl
