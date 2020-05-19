@@ -625,6 +625,15 @@ namespace hpp
 	problemSolver()->resetGoalConfigs ();
       }
 
+
+      // ---------------------------------------------------------------
+      static int numberOfTrue (const hpp::boolSeq& mask)
+      {
+        std::size_t res=0;
+        for (std::size_t i=0; i<mask.length(); ++i)
+          if (mask [(CORBA::ULong)i]) ++res;
+        return (int)res;
+      }
       // ---------------------------------------------------------------
 
       void Problem::createOrientationConstraint
@@ -644,7 +653,8 @@ namespace hpp
               boolSeqToVector(mask));
 
         problemSolver()->addNumericalConstraint
-          (name, Implicit::create (func));
+          (name, Implicit::create (func, numberOfTrue(mask) *
+                                   constraints::Equality));
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -668,7 +678,8 @@ namespace hpp
               boolSeqToVector(mask, 6));
 
         problemSolver()->addNumericalConstraint
-          (name, Implicit::create (func));
+          (name, Implicit::create (func, numberOfTrue(mask) *
+                                   constraints::Equality));
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -692,7 +703,8 @@ namespace hpp
               boolSeqToVector(mask, 6));
 
         problemSolver()->addNumericalConstraint
-          (name, Implicit::create (func));
+          (name, Implicit::create (func, numberOfTrue(mask) *
+                                   constraints::Equality));
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -716,7 +728,8 @@ namespace hpp
               boolSeqToVector(mask, 6));
 
         problemSolver()->addNumericalConstraint
-          (name, Implicit::create (func));
+          (name, Implicit::create (func, numberOfTrue(mask) *
+                                   constraints::Equality));
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -805,9 +818,9 @@ namespace hpp
             throw Error (("Constraint " + function + " not found").c_str());
           DifferentiableFunctionPtr_t f (ps->numericalConstraints.get(function)->functionPtr());
 
-          ps->addNumericalConstraint (name, Implicit::create (
-                constraints::Manipulability::create (f, robot, name)
-                ));
+          ps->addNumericalConstraint (name, Implicit::create
+            (constraints::Manipulability::create (f, robot, name),
+             1 * constraints::Equality));
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -834,7 +847,8 @@ namespace hpp
             problemSolver()->addNumericalConstraint
               (name, Implicit::create
 	       (RelativeCom::create (name, problemSolver()->robot(),
-				     joint, point, m)));
+				     joint, point, m),
+                numberOfTrue(mask) * constraints::Equality));
           } else {
             if (!problemSolver()->centerOfMassComputations.has(comN))
               throw hpp::Error ("Partial COM not found.");
@@ -842,7 +856,8 @@ namespace hpp
             problemSolver()->addNumericalConstraint
               (name, Implicit::create
 	       (RelativeCom::create (name, problemSolver()->robot(), comc,
-				     joint, point, m)));
+				     joint, point, m),
+                numberOfTrue(mask) * constraints::Equality));
           }
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -874,9 +889,9 @@ namespace hpp
 	    jointRef = problemSolver()->robot()->getJointByName(jointRefName);
           std::string name (constraintName), comN (comName);
 
-          constraints::ComparisonTypes_t comps = boost::assign::list_of
-            (constraints::EqualToZero) (constraints::EqualToZero)
-            (constraints::Superior)    (constraints::Inferior);
+          constraints::ComparisonTypes_t comps
+            (2 * constraints::EqualToZero << constraints::Superior
+             << constraints::Inferior);
 
           if (comN.compare ("") == 0) {
             problemSolver()->addNumericalConstraint
@@ -976,7 +991,8 @@ namespace hpp
           std::string name (constraintName);
           ConvexShapeContactPtr_t f = ConvexShapeContact::create
             (name, problemSolver()->robot(), floorSurfaces, objectSurfaces);
-          problemSolver()->addNumericalConstraint(name, Implicit::create (f));
+          problemSolver()->addNumericalConstraint
+            (name, Implicit::create(f, 5 * constraints::EqualToZero));
         } catch (const std::exception& exc) {
           throw hpp::Error (exc.what ());
         }
@@ -1067,7 +1083,8 @@ namespace hpp
               boolSeqToVector(mask));
 
         problemSolver()->addNumericalConstraint
-          (name, Implicit::create (func));
+          (name, Implicit::create (func, numberOfTrue(mask) *
+                                   constraints::Equality));
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -1087,8 +1104,8 @@ namespace hpp
            (constraints::ConfigurationConstraint::create
             (name, problemSolver()->robot(),
              floatSeqToConfig (robot, goal, true),
-             floatSeqToVector (weights, robot->numberDof()))
-            ));
+             floatSeqToVector (weights, robot->numberDof())),
+            1 * constraints::Equality));
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -1110,7 +1127,8 @@ namespace hpp
 	  problemSolver()->addNumericalConstraint
 	    (name, Implicit::create
 	     (DistanceBetweenBodies::create (name, problemSolver()->robot(),
-					     joint1, joint2)));
+					     joint1, joint2),
+              1 * constraints::Equality));
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
@@ -1135,7 +1153,8 @@ namespace hpp
 	  problemSolver()->addNumericalConstraint
 	    (name, Implicit::create
 	     (DistanceBetweenBodies::create (name, problemSolver()->robot(),
-					     joint1, objectList)));
+					     joint1, objectList),
+              1 * constraints::Equality));
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
