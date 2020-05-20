@@ -654,7 +654,7 @@ namespace hpp
 
         problemSolver()->addNumericalConstraint
           (name, Implicit::create (func, numberOfTrue(mask) *
-                                   constraints::Equality));
+                                   constraints::EqualToZero));
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -679,7 +679,7 @@ namespace hpp
 
         problemSolver()->addNumericalConstraint
           (name, Implicit::create (func, numberOfTrue(mask) *
-                                   constraints::Equality));
+                                   constraints::EqualToZero));
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -704,7 +704,7 @@ namespace hpp
 
         problemSolver()->addNumericalConstraint
           (name, Implicit::create (func, numberOfTrue(mask) *
-                                   constraints::Equality));
+                                   constraints::EqualToZero));
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -729,7 +729,7 @@ namespace hpp
 
         problemSolver()->addNumericalConstraint
           (name, Implicit::create (func, numberOfTrue(mask) *
-                                   constraints::Equality));
+                                   constraints::EqualToZero));
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -820,7 +820,7 @@ namespace hpp
 
           ps->addNumericalConstraint (name, Implicit::create
             (constraints::Manipulability::create (f, robot, name),
-             1 * constraints::Equality));
+             1 * constraints::EqualToZero));
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -848,7 +848,7 @@ namespace hpp
               (name, Implicit::create
 	       (RelativeCom::create (name, problemSolver()->robot(),
 				     joint, point, m),
-                numberOfTrue(mask) * constraints::Equality));
+                numberOfTrue(mask) * constraints::EqualToZero));
           } else {
             if (!problemSolver()->centerOfMassComputations.has(comN))
               throw hpp::Error ("Partial COM not found.");
@@ -857,7 +857,7 @@ namespace hpp
               (name, Implicit::create
 	       (RelativeCom::create (name, problemSolver()->robot(), comc,
 				     joint, point, m),
-                numberOfTrue(mask) * constraints::Equality));
+                numberOfTrue(mask) * constraints::EqualToZero));
           }
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
@@ -1084,7 +1084,7 @@ namespace hpp
 
         problemSolver()->addNumericalConstraint
           (name, Implicit::create (func, numberOfTrue(mask) *
-                                   constraints::Equality));
+                                   constraints::EqualToZero));
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -1105,7 +1105,7 @@ namespace hpp
             (name, problemSolver()->robot(),
              floatSeqToConfig (robot, goal, true),
              floatSeqToVector (weights, robot->numberDof())),
-            1 * constraints::Equality));
+            1 * constraints::EqualToZero));
 	} catch (const std::exception& exc) {
 	  throw hpp::Error (exc.what ());
 	}
@@ -1128,7 +1128,7 @@ namespace hpp
 	    (name, Implicit::create
 	     (DistanceBetweenBodies::create (name, problemSolver()->robot(),
 					     joint1, joint2),
-              1 * constraints::Equality));
+              1 * constraints::EqualToZero));
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
@@ -1154,7 +1154,7 @@ namespace hpp
 	    (name, Implicit::create
 	     (DistanceBetweenBodies::create (name, problemSolver()->robot(),
 					     joint1, objectList),
-              1 * constraints::Equality));
+              1 * constraints::EqualToZero));
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
