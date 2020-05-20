@@ -424,7 +424,8 @@ namespace hpp
         std::size_t i = 0;
         typename InContainer::const_iterator it = input.begin();
         while (it != input.end()) {
-          (*seq)[i] = makeServantDownCast<InnerBaseType, InnerType> (s, *it)._retn();
+          (*seq)[(CORBA::ULong)i] = makeServantDownCast<InnerBaseType,
+                                                   InnerType> (s, *it)._retn();
           ++it;
           ++i;
         }

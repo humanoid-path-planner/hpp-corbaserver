@@ -22,6 +22,8 @@
 #include <hpp/pinocchio/device.hh>
 #include <hpp/pinocchio/configuration.hh>
 
+#include <hpp/constraints/comparison-types.hh>
+
 namespace hpp {
   namespace corbaServer {
     using CORBA::ULong;
