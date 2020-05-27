@@ -24,6 +24,7 @@
 #include <hpp/fcl/shape/geometric_shapes.h>
 
 #include <hpp/pinocchio/configuration.hh>
+#include <hpp/pinocchio/serialization.hh>
 
 #include <hpp/core/config-projector.hh>
 #include <hpp/core/config-validations.hh>
@@ -2523,29 +2524,31 @@ namespace hpp
       {
         try {
           std::ofstream ofs (filename, std::ofstream::out);
-          hpp::core::parser::writeRoadmap (ofs, problemSolver()->problem(),
-              problemSolver()->roadmap());
-          ofs.close ();
+          boost::archive::binary_oarchive oa(ofs);
+          oa << problemSolver()->roadmap();
         } catch (const std::exception& exc) {
           throw hpp::Error (exc.what ());
         }
       }
 
+      struct iarchive :
+        boost::archive::binary_iarchive, hpp::serialization::archive_device_wrapper
+      {
+        iarchive(std::istream& is) : boost::archive::binary_iarchive (is) {}
+      };
+
       void Problem::readRoadmap (const char* filename)
       {
         try {
-          hpp::core::ProblemSolverPtr_t p = problemSolver();
-          hpp::core::parser::readRoadmap (std::string(filename),
-              p->roadmap(), p->problem());
-          // ProblemSolver should be update to use the init and goal nodes of
-          // the roadmap
-          if (p->roadmap()->initNode())
-            p->initConfig(p->roadmap()->initNode()->configuration());
-          const hpp::core::NodeVector_t& goals = p->roadmap()->goalNodes();
-          p->resetGoalConfigs();
-          for (hpp::core::NodeVector_t::const_iterator _goals = goals.begin();
-              _goals != goals.end(); ++_goals)
-            p->addGoalConfig ((*_goals)->configuration());
+          core::ProblemSolverPtr_t ps (problemSolver());
+          DevicePtr_t robot = getRobotOrThrow (ps);
+
+          hpp::core::RoadmapPtr_t roadmap;
+          std::ifstream ifs (filename);
+          iarchive ia (ifs);
+          ia.device = robot;
+          ia >> roadmap;
+          problemSolver()->roadmap(roadmap);
         } catch (const std::exception& exc) {
           throw hpp::Error (exc.what ());
         }
