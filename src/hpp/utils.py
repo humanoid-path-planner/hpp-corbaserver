@@ -8,7 +8,7 @@ import time
 
 class ServerManager:
     """A context to ensure a server is running."""
-    def __init__(self, server):
+    def __init__(self, server='hppcorbaserver'):
         self.server = server
         subprocess.run(['killall', self.server])
 
