@@ -203,7 +203,7 @@ TARGET_INCLUDE_DIRECTORIES(${LIBRARY_NAME} PUBLIC $<INSTALL_INTERFACE:include>)
 ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_cpp)
 ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_python)
 
-FOREACH (FILE __init__.py quaternion.py transform.py)
+FOREACH (FILE __init__.py quaternion.py transform.py utils.py)
   PYTHON_INSTALL_ON_SITE(
     hpp ${FILE}
     )
