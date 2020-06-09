@@ -5,12 +5,20 @@ import os
 import subprocess
 import time
 
+try:
+    from subprocess import DEVNULL, run
+except ImportError:  # Python2 fallback
+    DEVNULL = os.open(os.devnull, os.O_RDWR)
+
+    def run(*args):
+        subprocess.Popen(*args).wait()
+
 
 class ServerManager:
     """A context to ensure a server is running."""
     def __init__(self, server='hppcorbaserver'):
         self.server = server
-        subprocess.run(['killall', self.server])
+        run(['killall', self.server])
 
     def __enter__(self):
         """Run the server in background
@@ -20,8 +28,8 @@ class ServerManager:
         (otherwise they are forwarded to the child process)
         """
         self.process = subprocess.Popen(self.server,
-                                        stdout=subprocess.DEVNULL,
-                                        stderr=subprocess.DEVNULL,
+                                        stdout=DEVNULL,
+                                        stderr=DEVNULL,
                                         preexec_fn=os.setpgrp)
         # give it some time to start
         time.sleep(3)
