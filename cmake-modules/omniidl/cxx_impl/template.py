@@ -143,7 +143,7 @@ template <typename _Base, typename _Storage>
     @out_conversions@
     @do_return@
   } catch (const std::exception& e) {
-    throw ::hpp::Error (e.what());
+    throw @error_type@ (e.what());
   }
 }"""
 
@@ -154,7 +154,7 @@ template <typename _Base, typename _Storage>
   try {
    @implementation@
   } catch (const std::exception& e) {
-    throw ::hpp::Error (e.what());
+    throw @error_type@ (e.what());
   }
 }"""
 
@@ -170,7 +170,7 @@ template <typename _Base, typename _Storage>
     std::string res = oss.str();
     return CORBA::string_dup(res.c_str());
   } catch (const std::exception& e) {
-    throw ::hpp::Error (e.what());
+    throw @error_type@ (e.what());
   }
 }""",
         "deleteThis":  """
@@ -181,7 +181,7 @@ void @impl_tpl_name@<_Base, _Storage>::deleteThis ()
     // automatically generated code.
     _ServantBase::deleteThis();
   } catch (const std::exception& e) {
-    throw ::hpp::Error (e.what());
+    throw @error_type@ (e.what());
   }
 }""",
 }

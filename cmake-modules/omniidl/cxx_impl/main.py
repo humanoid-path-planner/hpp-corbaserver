@@ -178,7 +178,11 @@ class Builder(idlvisitor.AstVisitor):
                 self._modules[m.identifier()] = comment.text()[4:].strip()
 
     def toCppNamespace (self, name):
-        scope = [ self._modules[n] for n in name.scope() ] + [ name.simple(cxx=0), ]
+        def module(n):
+            if n in self._modules: return self._modules[n]
+            if n.endswith("_idl"): return n[:-4]
+            return n
+        scope = [ module(n) for n in name.scope() ] + [ name.simple(cxx=0), ]
         return id.Name (scope)
 
     # type conversions
@@ -508,6 +512,10 @@ class BuildInterfaceImplementations(Builder):
                 store_return, do_return = self.retConversion (types.Type(c.returnType()))
                 return_type = types.Type(c.returnType()).op(types.RET)
 
+                error_type = "::hpp::Error"
+                if len(c.raises()) > 0:
+                    error_type = "::"+"::".join(c.raises()[0].scopedName())
+
                 opname = id.mapID(c.identifier())
                 arguments = ", ".join(params)
                 argumentsCall = ", ".join(paramNames)
@@ -523,6 +531,7 @@ class BuildInterfaceImplementations(Builder):
                             return_type = return_type,
                             impl_tpl_name = impl_tpl_name,
                             opname = opname,
+                            error_type = error_type,
                             implementation = "".join(comments_impl),
                             arg_defs = arguments,)
                 elif opname in template.predefined_operations_impl_code:
@@ -531,6 +540,7 @@ class BuildInterfaceImplementations(Builder):
                             return_type = return_type,
                             impl_tpl_name = impl_tpl_name,
                             opname = opname,
+                            error_type = error_type,
                             conversions = "\n  ".join(in_conversions),
                             arg_defs = arguments,
                             store_return = store_return,
@@ -542,6 +552,7 @@ class BuildInterfaceImplementations(Builder):
                             impl_tpl_name = impl_tpl_name,
                             opname = opname,
                             hpp_opname = hpp_opname if hpp_opname is not None else opname,
+                            error_type = error_type,
                             in_conversions = "\n  ".join(in_conversions),
                             out_conversions = "\n  ".join(out_conversions),
                             arg_defs = arguments,
