@@ -33,42 +33,42 @@ module hpp
       //* hpp::pinocchio::DevicePtr_t d = getT();
       //* hpp::pinocchio::Configuration_t res (d->configSize());
       //* hpp::pinocchio::integrate<false, hpp::pinocchio::DefaultLieGroupMap> (d,
-      //*   floatSeqToVector(config_in, d->configSize()),
-      //*   floatSeqToVector(velocity , d->numberDof()),
+      //*   ::hpp::corbaServer::floatSeqToVector(config_in, d->configSize()),
+      //*   ::hpp::corbaServer::floatSeqToVector(velocity , d->numberDof()),
       //*   res);
-      //* result = vectorToFloatSeq (res);
+      //* result = ::hpp::corbaServer::vectorToFloatSeq (res);
 
       void difference(in floatSeq q1, in floatSeq q2, out floatSeq result) raises (Error);
       //* hpp::pinocchio::DevicePtr_t d = getT();
       //* hpp::pinocchio::Configuration_t res (d->numberDof());
       //* hpp::pinocchio::difference<hpp::pinocchio::DefaultLieGroupMap> (d,
-      //*   floatSeqToVector(q1, d->configSize()),
-      //*   floatSeqToVector(q2, d->configSize()),
+      //*   ::hpp::corbaServer::floatSeqToVector(q1, d->configSize()),
+      //*   ::hpp::corbaServer::floatSeqToVector(q2, d->configSize()),
       //*   res);
-      //* result = vectorToFloatSeq (res);
+      //* result = ::hpp::corbaServer::vectorToFloatSeq (res);
 
       void interpolate(in floatSeq q1, in floatSeq q2, in float u, out floatSeq result) raises (Error);
       //* hpp::pinocchio::DevicePtr_t d = getT();
       //* hpp::pinocchio::Configuration_t res (d->configSize());
       //* hpp::pinocchio::interpolate<hpp::pinocchio::DefaultLieGroupMap> (d,
-      //*   floatSeqToVector(q1, d->configSize()),
-      //*   floatSeqToVector(q2, d->configSize()),
+      //*   ::hpp::corbaServer::floatSeqToVector(q1, d->configSize()),
+      //*   ::hpp::corbaServer::floatSeqToVector(q2, d->configSize()),
       //*   u,
       //*   res);
-      //* result = vectorToFloatSeq (res);
+      //* result = ::hpp::corbaServer::vectorToFloatSeq (res);
 
       void saturate(in floatSeq qin, out floatSeq qout, out boolSeq saturation) raises (Error);
       //* hpp::pinocchio::DevicePtr_t d = getT();
-      //* hpp::pinocchio::Configuration_t q (floatSeqToVector(qin));
+      //* hpp::pinocchio::Configuration_t q (::hpp::corbaServer::floatSeqToVector(qin));
       //* hpp::pinocchio::ArrayXb sat (d->numberDof());
       //* hpp::pinocchio::saturate (d, q, sat);
-      //* qout = vectorToFloatSeq (q);
-      //* saturation = toBoolSeq(sat.data(), sat.data()+sat.size());
+      //* qout = ::hpp::corbaServer::vectorToFloatSeq (q);
+      //* saturation = ::hpp::corbaServer::toBoolSeq(sat.data(), sat.data()+sat.size());
 
       void replaceGeometryByConvexHull(in Names_t geometryNames) raises (Error);
       //* hpp::pinocchio::DevicePtr_t d = getT();
       //* hpp::pinocchio::replaceGeometryByConvexHull(d->geomModel(),
-      //*   toStrings<std::vector<std::string> >(geometryNames));
+      //*   ::hpp::corbaServer::toStrings<std::vector<std::string> >(geometryNames));
       //* d->createGeomData();
   };
 

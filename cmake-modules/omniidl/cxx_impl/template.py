@@ -43,7 +43,7 @@ public:
 
 public:
   // standard constructor
-  @impl_tpl_name@(Server* server, const _Storage& s);
+  @impl_tpl_name@(::hpp::corbaServer::Server* server, const _Storage& s);
   virtual ~@impl_tpl_name@();
 
   // methods corresponding to defined IDL attributes and operations
@@ -60,7 +60,7 @@ base_interface_code = """\
 //
 @open_namespaces@
 template <typename _Base, typename _Storage>
-@impl_tpl_name@<_Base, _Storage>::@impl_tpl_name@(Server* server, const _Storage& s)
+@impl_tpl_name@<_Base, _Storage>::@impl_tpl_name@(::hpp::corbaServer::Server* server, const _Storage& s)
   : @impl_base_name@<@hpp_class@, _Storage> (server, s)
 {
   // add extra constructor code here
@@ -92,7 +92,7 @@ public:
 
 public:
   // standard constructor
-  @impl_tpl_name@(Server* server, const _Storage& s);
+  @impl_tpl_name@(::hpp::corbaServer::Server* server, const _Storage& s);
   virtual ~@impl_tpl_name@();
 
   // methods corresponding to defined IDL attributes and operations
@@ -110,7 +110,7 @@ inherited_interface_code = """\
 //
 @open_namespaces@
 template <typename _Base, typename _Storage>
-@impl_tpl_name@<_Base, _Storage>::@impl_tpl_name@(Server* server, const _Storage& s)
+@impl_tpl_name@<_Base, _Storage>::@impl_tpl_name@(::hpp::corbaServer::Server* server, const _Storage& s)
   : @impl_base_name@<_Base, _Storage> (server, s)
 {
   // add extra constructor code here
@@ -188,10 +188,10 @@ void @impl_tpl_name@<_Base, _Storage>::deleteThis ()
 
 definition_object_downcast = """\
 template <>
-std::vector< ServantFactoryBase<@servant_class@>* >&
-objectDowncasts<@servant_class@> ()
+std::vector< ::hpp::corbaServer::ServantFactoryBase<@servant_class@>* >&
+::hpp::corbaServer::objectDowncasts<@servant_class@> ()
 {
-  static std::vector< ServantFactoryBase<@servant_class@>* > vector;
+  static std::vector< ::hpp::corbaServer::ServantFactoryBase<@servant_class@>* > vector;
   return vector;
 }
 """
@@ -204,10 +204,10 @@ HPP_CORBASERVER_ADD_DOWNCAST_OBJECT(@class_name@, @base_class_name@, @depth@)
 
 storage_decl = """\
 template <typename D>
-class @storage_class_name@ : public AbstractStorage<D, @hpp_base_class@>
+class @storage_class_name@ : public ::hpp::corbaServer::AbstractStorage<D, @hpp_base_class@>
 {
 public:
-  typedef AbstractStorage <D, @hpp_base_class@> parent_t;
+  typedef ::hpp::corbaServer::AbstractStorage <D, @hpp_base_class@> parent_t;
   using parent_t::element;
   using typename parent_t::ptr_t;
 

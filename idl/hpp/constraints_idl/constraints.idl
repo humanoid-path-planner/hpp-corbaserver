@@ -19,14 +19,14 @@ module hpp
   interface DifferentiableFunction
   {
       floatSeq value (in floatSeq arg) raises (Error);
-      //* return vectorToFloatSeq (
-      //*     (*get()) (floatSeqToVector(arg, get()->inputSize())).vector()
+      //* return corbaServer::vectorToFloatSeq (
+      //*     (*get()) (corbaServer::floatSeqToVector(arg, get()->inputSize())).vector()
       //*     );
 
       floatSeqSeq jacobian (in floatSeq arg) raises (Error);
-      //* matrix_t J (get()->outputDerivativeSize(), get()->inputDerivativeSize());
-      //* get()->jacobian (J, floatSeqToVector(arg));
-      //* return matrixToFloatSeqSeq (J);
+      //* constraints::matrix_t J (get()->outputDerivativeSize(), get()->inputDerivativeSize());
+      //* get()->jacobian (J, corbaServer::floatSeqToVector(arg));
+      //* return corbaServer::matrixToFloatSeqSeq (J);
 
       size_type inputSize () raises (Error);
       size_type inputDerivativeSize () raises (Error);
@@ -70,7 +70,7 @@ module hpp
     void setWeights (in floatSeq weights) raises (Error);
     //-> weights
     floatSeq getGoal () raises (Error);
-    //* return vectorToFloatSeq(getT()->goal().vector());
+    //* return corbaServer::vectorToFloatSeq(getT()->goal().vector());
   }; // interface ConfigurationConstraint
 
   }; // module core

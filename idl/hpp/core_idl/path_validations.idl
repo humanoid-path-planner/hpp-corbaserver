@@ -22,9 +22,10 @@ module hpp
   interface PathValidation
   {
     boolean validate (in Path p, in boolean reverse, out Path validPart, out PathValidationReport report) raises (Error);
-    //* core::PathPtr_t _p (reference_to_servant_base<core::Path>(server_, p)->get());
-    //* core::PathPtr_t vp;
-    //* core::PathValidationReportPtr_t pvr;
+    //* using namespace hpp::core;
+    //* PathPtr_t _p (::hpp::corbaServer::reference_to_servant_base<core::Path>(server_, p)->get());
+    //* PathPtr_t vp;
+    //* PathValidationReportPtr_t pvr;
     //*
     //* bool res = get()->validate (_p, reverse, vp, pvr);
     //*
@@ -36,7 +37,7 @@ module hpp
     //*   report = CORBA::string_dup("");
     //* }
     //*
-    //* validPart = makeServant<hpp::core_idl::Path_ptr> (server_, new Path (server_, vp));
+    //* validPart = ::hpp::corbaServer::makeServant<hpp::core_idl::Path_ptr> (server_, new Path (server_, vp));
     //* return res;
   }; // interface SteeringMethod
 
