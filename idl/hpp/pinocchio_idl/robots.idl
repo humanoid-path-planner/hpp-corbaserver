@@ -17,7 +17,7 @@ module hpp
   module pinocchio_idl {
   interface CenterOfMassComputation
   {
-    HPP_EXPOSE_MEMORY_DEALLOCATION
+    HPP_EXPOSE_MEMORY_DEALLOCATION(Error)
 
     void compute () raises (Error);
     floatSeq    com      () raises (Error);

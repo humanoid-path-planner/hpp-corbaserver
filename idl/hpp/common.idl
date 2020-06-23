@@ -11,7 +11,7 @@
 #ifndef HPP_COMMON_IDL
 #define HPP_COMMON_IDL
 
-#define HPP_EXPOSE_MEMORY_DEALLOCATION void deleteThis() raises (hpp::Error);
+#define HPP_EXPOSE_MEMORY_DEALLOCATION(ErrorType) void deleteThis() raises (ErrorType);
 
 module hpp
 {
