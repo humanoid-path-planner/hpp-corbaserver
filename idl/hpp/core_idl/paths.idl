@@ -21,7 +21,7 @@ module hpp
 
   interface Path
   {
-    HPP_EXPOSE_MEMORY_DEALLOCATION
+    HPP_EXPOSE_MEMORY_DEALLOCATION(Error)
 
     size_type outputSize () raises (Error);
 
@@ -41,24 +41,24 @@ module hpp
     //-> operator()
 
     floatSeq at (in value_type t, out boolean success) raises (Error);
-    //* vector_t res (get()->outputSize());
+    //* hpp::core::vector_t res (get()->outputSize());
     //* success = get()->at (t, res);
-    //* return vectorToFloatSeq (res);
+    //* return hpp::corbaServer::vectorToFloatSeq (res);
 
     floatSeq derivative (in value_type t, in short order) raises (Error);
-    //* vector_t res (get()->outputDerivativeSize());
+    //* hpp::core::vector_t res (get()->outputDerivativeSize());
     //* get()->derivative (res, t, order);
-    //* return vectorToFloatSeq (res);
+    //* return hpp::corbaServer::vectorToFloatSeq (res);
 
     Path extract (in value_type tmin, in value_type tmax) raises (Error);
 
     PathVector asVector () raises (Error);
-    //* PathPtr_t p = get();
-    //* PathVectorPtr_t pv =
-    //*   core::PathVector::create (p->outputSize(), p->outputDerivativeSize());
+    //* hpp::core::PathPtr_t p = get();
+    //* hpp::core::PathVectorPtr_t pv =
+    //*   hpp::core::PathVector::create (p->outputSize(), p->outputDerivativeSize());
     //* pv->appendPath (p);
     //*
-    //* return makeServant<hpp::core_idl::PathVector_ptr>
+    //* return hpp::corbaServer::makeServant<hpp::core_idl::PathVector_ptr>
     //*   (server_, new PathVector (server_, pv));
 
     Path reverse () raises (Error);

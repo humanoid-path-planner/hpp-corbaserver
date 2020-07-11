@@ -77,8 +77,6 @@ def hpp_name(name, suffix=""):
 # Given an IDL name convert it into the corresponding hpp servant class id.Name
 def hpp_servant_scope(name):
     scope = [ n.replace('_idl', '_impl') for n in name.scope() ] + [ name.simple(cxx=0), ]
-    if scope[1] != "corbaServer":
-        scope.insert(1, "corbaServer")
     return id.Name (scope)
 
 # Given an IDL name convert it into the corresponding hpp servant class name
@@ -99,12 +97,12 @@ def namespaces (name, environment=None):
     scope = hpp_servant_scope (name)
     if environment:
         env = environment.scope()
-        assert scope.scope()[:len(env)], env
+        assert scope.scope()[:len(env)] == env
         scope = scope.scope()[len(env):]
     else:
         scope = scope.scope()
     open_ns = "\n\n".join ([ "namespace {name} {{".format (name=n) for n in scope ])
-    closens = "\n\n".join ([ "}} // namespace {name}".format (name=n) for n in scope ])
+    closens = "\n\n".join ([ "}} // namespace {name}".format (name=n) for n in reversed(scope) ])
     return open_ns, closens
 
 # Main code entrypoint
@@ -120,7 +118,7 @@ def run(tree):
     biod = BuildInterfaceObjectDowncasts(object_downcasts_methods, add_object_downcasts)
     tree.accept(biod)
 
-    openns, closens = namespaces(bii.environment)
+    openns, closens = "", ""
     guard = id.Name([config.state['Basename']]).guard()
 
     # Create header file.
@@ -180,7 +178,11 @@ class Builder(idlvisitor.AstVisitor):
                 self._modules[m.identifier()] = comment.text()[4:].strip()
 
     def toCppNamespace (self, name):
-        scope = [ self._modules[n] for n in name.scope() ] + [ name.simple(cxx=0), ]
+        def module(n):
+            if n in self._modules: return self._modules[n]
+            if n.endswith("_idl"): return n[:-4]
+            return n
+        scope = [ module(n) for n in name.scope() ] + [ name.simple(cxx=0), ]
         return id.Name (scope)
 
     # type conversions
@@ -242,7 +244,7 @@ class Builder(idlvisitor.AstVisitor):
             return name, "", out_conv_str
         elif _type.objref():
             if _out: raise makeError("out objects is currently not supported", param.file(), param.line())
-            conv = "{typeptr} {tmp} = reference_to_servant_base<{type}>(server_, {name})->get();" \
+            conv = "{typeptr} {tmp} = ::hpp::corbaServer::reference_to_servant_base<{type}>(server_, {name})->get();" \
                     .format(type   =self.toCppNamespace(id.Name(_type.type().scopedName())                ).fullyQualify(cxx=1),
                             typeptr=self.toCppNamespace(id.Name(_type.type().scopedName()).suffix("Ptr_t")).fullyQualify(cxx=1),
                             servanttype=hpp_servant_name(id.Name(_type.type().scopedName())),
@@ -298,7 +300,7 @@ class Builder(idlvisitor.AstVisitor):
             else:
                 base = get_base_class (_type.type().decl())
             store = "{type} __return__".format(type=self.toCppNamespace(id.Name(_type.type().scopedName()).suffix("Ptr_t")).fullyQualify(cxx=1))
-            conv  = "return makeServantDownCast<{basetype},{type}>(server_, __return__)._retn();" \
+            conv  = "return ::hpp::corbaServer::makeServantDownCast<{basetype},{type}>(server_, __return__)._retn();" \
                     .format(type=hpp_servant_name(id.Name(_type.type().scopedName())),
                             basetype=hpp_servant_name(id.Name(base.scopedName())))
             return store, conv
@@ -319,7 +321,6 @@ class BuildInterfaceImplementations(Builder):
         Builder.__init__(self)
         self.interface_declarations    = decl
         self.interface_implementations = impl
-        self.environment = id.Name (["hpp", "corbaServer", ""])
         self.includes = ""
 
         self.storages = {}
@@ -370,7 +371,7 @@ class BuildInterfaceImplementations(Builder):
     # interfaces cannot be further nested
     def visitInterface(self, node):
         scopedName = id.Name(node.scopedName())
-        openns, closens = namespaces(scopedName, self.environment)
+        openns, closens = namespaces(scopedName)
         
         impl_name = scopedName.simple(cxx=1)
         impl_tpl_name = impl_tplname (scopedName)
@@ -385,7 +386,7 @@ class BuildInterfaceImplementations(Builder):
                 self.toCppNamespace (scopedName).fullyQualify(cxx=1))
         if is_base_class:
             key = hpp_servant_name (scopedName)
-            impl_base_name = "ServantBase"
+            impl_base_name = "hpp::corbaServer::ServantBase"
             if key in self.storages:
                 st = self.storages[key]
                 # declare storage
@@ -511,6 +512,10 @@ class BuildInterfaceImplementations(Builder):
                 store_return, do_return = self.retConversion (types.Type(c.returnType()))
                 return_type = types.Type(c.returnType()).op(types.RET)
 
+                error_type = "::hpp::Error"
+                if len(c.raises()) > 0:
+                    error_type = "::"+"::".join(c.raises()[0].scopedName())
+
                 opname = id.mapID(c.identifier())
                 arguments = ", ".join(params)
                 argumentsCall = ", ".join(paramNames)
@@ -526,6 +531,7 @@ class BuildInterfaceImplementations(Builder):
                             return_type = return_type,
                             impl_tpl_name = impl_tpl_name,
                             opname = opname,
+                            error_type = error_type,
                             implementation = "".join(comments_impl),
                             arg_defs = arguments,)
                 elif opname in template.predefined_operations_impl_code:
@@ -534,6 +540,7 @@ class BuildInterfaceImplementations(Builder):
                             return_type = return_type,
                             impl_tpl_name = impl_tpl_name,
                             opname = opname,
+                            error_type = error_type,
                             conversions = "\n  ".join(in_conversions),
                             arg_defs = arguments,
                             store_return = store_return,
@@ -545,6 +552,7 @@ class BuildInterfaceImplementations(Builder):
                             impl_tpl_name = impl_tpl_name,
                             opname = opname,
                             hpp_opname = hpp_opname if hpp_opname is not None else opname,
+                            error_type = error_type,
                             in_conversions = "\n  ".join(in_conversions),
                             out_conversions = "\n  ".join(out_conversions),
                             arg_defs = arguments,
@@ -556,7 +564,7 @@ class BuildInterfaceImplementations(Builder):
                 util.fatalError("Internal error generating interface member")
                 raise AssertionError("No code for interface member: "+repr(c))
 
-        openns, closens = namespaces(scopedName, self.environment)
+        openns, closens = namespaces(scopedName)
 
         # Output the _i class definition definition
         self.interface_declarations.out(
@@ -594,7 +602,6 @@ class BuildInterfaceObjectDowncasts(Builder):
         Builder.__init__(self)
         self.methods = methods
         self.adders  = adders
-        self.environment = id.Name (["hpp", "corbaServer", ""])
 
     # Tree walking code
     def visitAST(self, node):
@@ -615,7 +622,7 @@ class BuildInterfaceObjectDowncasts(Builder):
             self.methods.out (template.definition_object_downcast,
                     servant_class = servantScope.fullyQualify(),)
 
-        openns, closens = namespaces(servantScope, self.environment)
+        openns, closens = namespaces(servantScope)
         self.adders.out (template.definition_add_object_downcast,
                 #class_name = scopedName,
                 #base_class_name = baseScopedName,

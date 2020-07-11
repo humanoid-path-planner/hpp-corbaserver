@@ -53,14 +53,14 @@ namespace hpp
 
 #define SERVANT_BASE_TYPEDEFS(idlObj, hppObj)                                  \
     protected:                                                                 \
-      using AbstractServantBase<hppObj>::server_;                              \
+      using ::hpp::corbaServer::AbstractServantBase<hppObj>::server_;          \
     public:                                                                    \
       typedef _Base    Base;                                                   \
       typedef _Storage Storage;                                                \
       typedef idlObj         Object;                                           \
       typedef idlObj ## _ptr Object_ptr;                                       \
       typedef idlObj ## _var Object_var;                                       \
-      typedef ServantBase<hppObj, _Storage> _ServantBase;                      \
+      typedef ::hpp::corbaServer::ServantBase<hppObj, _Storage> _ServantBase;  \
       using _ServantBase::get;                                                 \
       using _ServantBase::getT;                                                \
       using _ServantBase::getS
@@ -229,6 +229,8 @@ namespace hpp
       return dynamic_cast<S*> (s);
     }
 
+    /// \tparam T the type of the servant object.
+    /// \tparam P the type of the object which is served.
     template <typename T, typename P> AbstractServantBase<T>* reference_to_servant_base (Server* server, const P& p)
     {
       ServantBase_var s = server->poa()->reference_to_servant(p);

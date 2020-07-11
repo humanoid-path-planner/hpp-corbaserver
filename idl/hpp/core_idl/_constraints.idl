@@ -52,8 +52,8 @@ module hpp
                                    in floatSeq arg, out floatSeq err,
                                    out boolean constraintFound) raises (Error);
     //* hpp::core::vector_t _arg = hpp::corbaServer::floatSeqToVector (arg);
-    //* hpp::constraints::ImplicitPtr_t _nm = reference_to_servant_base<hpp::constraints::Implicit>(server_, nm)->get();
-    //* vector_t errorOut (_nm->function ().outputSpace ()->nv ());
+    //* hpp::constraints::ImplicitPtr_t _nm = hpp::corbaServer::reference_to_servant_base<hpp::constraints::Implicit>(server_, nm)->get();
+    //* hpp::core::vector_t errorOut (_nm->function ().outputSpace ()->nv ());
     //* bool res = getT ()->solver ().isConstraintSatisfied
     //*    (_nm, _arg,errorOut, constraintFound);
     //* err = hpp::corbaServer::vectorToFloatSeq (errorOut);
