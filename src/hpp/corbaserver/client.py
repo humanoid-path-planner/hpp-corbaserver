@@ -38,7 +38,7 @@ class Client:
       # This happens when stubs from client and server are not synchronized.
       raise CorbaError ('Service "{}" is not of type {}'.format (
           ".".join([mainContext,serviceId,serviceName]),
-          _class))
+          class_))
     self.__dict__[serviceName] = client
 
   def initWithNameService (self, urlNameService):
