@@ -46,7 +46,6 @@ ENDIF(NOT CLIENT_ONLY)
 set(ALL_IDL_CPP_STUBS "")
 set(ALL_IDL_CPP_IMPL_STUBS "")
 set(ALL_IDL_PYTHON_STUBS "")
-#ADD_SUBDIRECTORY(src)
 
 SET(${PROJECT_NAME}_HEADERS
   include/hpp/corbaserver/client.hh
