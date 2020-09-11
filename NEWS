@@ -1,6 +1,11 @@
-New in 5.0.0
+                                                                -*- outline -*-
+New in 4.10.0
 * Modify the way urdf and srdf files are handled. See porting notes in html documentaion
-
+* Bind Path::rankAtParam and class Roadmap.
+* Add package.xml.
+* Expose Path.constraints.
+* Expose ConfigurationConstraint.
+* Expose setSecurityMargins and filterCollisionPairs.
 New in 4.7.0
 * Bind CenterOfMassComputation. 
 * Bind Path::reverse
