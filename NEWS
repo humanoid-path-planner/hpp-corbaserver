@@ -1,4 +1,5 @@
                                                                 -*- outline -*-
+* Set tolerance for configuration normalization to 1e-8 instead of 1e-4.
 New in 4.10.0
 * Modify the way urdf and srdf files are handled. See porting notes in html documentaion
 * Bind Path::rankAtParam and class Roadmap.
