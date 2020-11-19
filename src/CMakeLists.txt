@@ -174,7 +174,7 @@ IF (NOT CLIENT_ONLY)
     ${ALL_IDL_CPP_IMPL_STUBS}
     )
 
-  TARGET_LINK_LIBRARIES(${LIBRARY_NAME} hpp-core::hpp-core hpp-template-corba::hpp-template-corba)
+  TARGET_LINK_LIBRARIES(${LIBRARY_NAME} PUBLIC hpp-core::hpp-core hpp-template-corba::hpp-template-corba)
   TARGET_INCLUDE_DIRECTORIES(${LIBRARY_NAME} PUBLIC $<INSTALL_INTERFACE:include>)
   PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} omniORB4)
   PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} omniDynamic4)
@@ -183,7 +183,7 @@ IF (NOT CLIENT_ONLY)
 
   # Standalone corba server
   ADD_EXECUTABLE (hppcorbaserver hpp-corbaserver.cc)
-  TARGET_LINK_LIBRARIES (hppcorbaserver ${LIBRARY_NAME})
+  TARGET_LINK_LIBRARIES (hppcorbaserver PUBLIC ${LIBRARY_NAME})
   PKG_CONFIG_USE_DEPENDENCY(hppcorbaserver omniORB4)
 
   INSTALL (TARGETS hppcorbaserver DESTINATION bin)
