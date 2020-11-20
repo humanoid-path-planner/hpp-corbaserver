@@ -615,6 +615,10 @@ class ProblemSolver (object):
     def addConfigValidation (self, configValidationType):
         return self.hppcorba.problem.addConfigValidation (configValidationType)
 
+    ## Clear the vector of config validations
+    def clearConfigValidations(self):
+        return self.hppcorba.problem.clearConfigValidations()
+
     ## Select configuration shooter type
     #  \param Name of the configuration shooter type
     def selectConfigurationShooter (self, type):
