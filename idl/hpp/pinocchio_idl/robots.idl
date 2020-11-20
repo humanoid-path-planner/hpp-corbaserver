@@ -27,6 +27,8 @@ module hpp
 
   interface Device
   {
+      HPP_EXPOSE_MEMORY_DEALLOCATION(Error)
+
       string name () raises (Error);
 
       void integrate(in floatSeq config_in, in floatSeq velocity, out floatSeq result) raises (Error);
@@ -72,9 +74,14 @@ module hpp
       //* d->createGeomData();
   };
 
+  interface CollisionObject {
+    HPP_EXPOSE_MEMORY_DEALLOCATION(Error)
+  }; // interface CollisionObject
+
   }; // module pinocchio_idl
 }; // module hpp
 //* #include <hpp/pinocchio/device.hh>
+//* #include <hpp/pinocchio/collision-object.hh>
 //* #include <hpp/pinocchio/configuration.hh>
 //* #include <hpp/pinocchio/liegroup.hh>
 //* #include <hpp/pinocchio/center-of-mass-computation.hh>

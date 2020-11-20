@@ -16,6 +16,7 @@ module hpp
 {
   module pinocchio_idl {
   interface Device;
+  interface CollisionObject;
   }; // module pinocchio
 
   module core_idl {
@@ -24,6 +25,7 @@ module hpp
   interface PathValidation;
   interface ConfigurationShooter;
   interface Constraint;
+  interface ConstraintSet;
 
   interface Problem
   {
@@ -36,10 +38,18 @@ module hpp
     //* getT()->initConfig (q);
     floatSeq getInitConfig () raises (Error);
     //-> initConfig
+    void addGoalConfig (in floatSeq goal) raises (Error);
+    //* pinocchio::ConfigurationPtr_t q (corbaServer::floatSeqToConfigPtr(getT()->robot(), goal, true));
+    //* getT()->addGoalConfig (q);
     void resetGoalConfigs () raises (Error);
 
     Constraint getConstraints () raises (Error);
     //-> constraints
+    void setConstraints (in Constraint constraints) raises (Error);
+    //* hpp::core::ConstraintPtr_t c = ::hpp::corbaServer::reference_to_servant_base<hpp::core::Constraint>(server_, constraints)->get();
+    //* hpp::core::ConstraintSetPtr_t cs = HPP_DYNAMIC_PTR_CAST(hpp::core::ConstraintSet, c);
+    //* if (!cs) throw hpp::Error("Constraint is not of type ConstraintSet");
+    //* (getT()->constraints (cs));
 
     Distance getDistance () raises (Error);
     //-> distance
@@ -64,6 +74,14 @@ module hpp
     ///        Each row/column index corresponds to a joint, 0 being for the
     ///        static world (so obstacle and fixed robot parts).
     void setSecurityMargins (in floatSeqSeq margins) raises (Error);
+
+    void addObstacle (in pinocchio_idl::CollisionObject _object) raises (Error);
+
+    void setParameter (in string name, in any value) raises (Error);
+    //* getT()->setParameter(name, hpp::corbaServer::toParameter(value));
+
+    any getParameter (in string name) raises (Error);
+    //* return hpp::corbaServer::toCorbaAnyPtr(getT()->getParameter(name));
   }; // interface Problem
 
   }; // module core
