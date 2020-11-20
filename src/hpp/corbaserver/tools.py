@@ -15,11 +15,7 @@ if sys.version_info.major > 2:
 
 def Tools(url = None):
     from .client import Client
-    class _ToolClient(Client):
-        def __init__(self, url = None):
-            self._initOrb (url)
-
-    _tc = _ToolClient(url=url)
+    _tc = Client(url=url, clients={})
     client = _tc._tools
 
     def deleteServantFromObject (*args):
@@ -31,6 +27,33 @@ def Tools(url = None):
     client.deleteServantFromObject = deleteServantFromObject
 
     return client
+
+class _Deleter:
+    def __init__ (self, o, client=None):
+        import CORBA
+        orb = CORBA.ORB_init()
+        self.client = client
+        self.ostr = orb.object_to_string(o)
+    def __del__ (self):
+        if not self.client:
+            from .client import Client
+            self.client = Client(clients={})._tools
+        self.client.deleteServant(self.ostr)
+
+def wrap_delete(o, client=None):
+    """
+    Automatically delete the servant on the server when the Python object is deleted.
+    \param o the CORBA object
+    \param client either an instance of Client or a client to the Tools interface.
+    """
+    from .client import Client
+    if isinstance(client, Client):
+        o.__wrap_delete__ = _Deleter(o,client._tools)
+    elif client is not None:
+        o.__wrap_delete__ = _Deleter(o,client)
+    else:
+        o.__wrap_delete__ = _Deleter(o)
+    return o
 
 if sys.version_info.major > 2:
     Tools.__doc__ = _hpp.Tools__doc__
