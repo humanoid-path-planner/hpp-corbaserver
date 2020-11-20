@@ -187,13 +187,16 @@ void @impl_tpl_name@<_Base, _Storage>::deleteThis ()
 }
 
 definition_object_downcast = """\
+namespace hpp {
+namespace corbaServer {
 template <>
-std::vector< ::hpp::corbaServer::ServantFactoryBase<@servant_class@>* >&
-::hpp::corbaServer::objectDowncasts<@servant_class@> ()
+std::vector< ServantFactoryBase<@servant_class@>* >& objectDowncasts<@servant_class@> ()
 {
-  static std::vector< ::hpp::corbaServer::ServantFactoryBase<@servant_class@>* > vector;
+  static std::vector< ServantFactoryBase<@servant_class@>* > vector;
   return vector;
 }
+} // namespace corbaServer
+} // namespace hpp
 """
 
 definition_add_object_downcast = """\
