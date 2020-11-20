@@ -120,116 +120,9 @@ namespace hpp
     namespace impl
     {
       namespace {
-        using hpp::core::Parameter;
-
         static const matrix3_t   I3   (matrix3_t  ::Identity());
         static const vector3_t   zero (vector3_t  ::Zero());
         static const Transform3f Id   (Transform3f::Identity());
-
-        struct Parameter_CorbaAny {
-          private:
-            template <typename first, typename second>
-              static inline second as (const first& f) { return second (f); }
-
-            struct convertToParam {
-              const CORBA::Any& corbaAny;
-              Parameter& param;
-              bool& done;
-              void operator()(std::pair<vector_t, floatSeq>) {
-                if (done) return;
-                floatSeq* d = new floatSeq();
-                if (corbaAny >>= d) {
-                  param = Parameter (floatSeqToVector (*d));
-                  done = true;
-                } else
-                  delete d;
-              }
-              void operator()(std::pair<matrix_t, floatSeqSeq>) {
-                if (done) return;
-                floatSeqSeq* d = new floatSeqSeq();
-                if (corbaAny >>= d) {
-                  param = Parameter (floatSeqSeqToMatrix (*d));
-                  done = true;
-                } else
-                  delete d;
-              }
-              template <typename T> void operator()(T) {
-                if (done) return;
-                typename T::second_type d;
-                if (corbaAny >>= d) {
-                  param = Parameter (as<typename T::second_type, typename T::first_type>(d));
-                  done = true;
-                }
-              }
-              convertToParam (const CORBA::Any& a, Parameter& p, bool& d) : corbaAny(a), param(p), done(d) {}
-            };
-            /// TODO: This list of CORBA types is not complete.
-            typedef boost::mpl::vector<
-              // There is no operator<<= (CORBA::Any, CORBA::Boolean)
-              std::pair<bool       , CORBA::Boolean>,
-
-              std::pair<size_type  , CORBA::LongLong>,
-              std::pair<size_type  , CORBA::Long>,
-              std::pair<size_type  , CORBA::Short>,
-              std::pair<size_type  , CORBA::ULongLong>,
-              std::pair<size_type  , CORBA::ULong>,
-              std::pair<size_type  , CORBA::UShort>,
-
-              std::pair<value_type , CORBA::Float>,
-              std::pair<value_type , CORBA::Double>,
-
-              std::pair<std::string, const char*>
-
-              // This two do not work because omniidl must be given the option -Wba in order to generate 
-              // a DynSK.cc file containing the conversion to/from Any type.
-              , std::pair<matrix_t   , floatSeqSeq>
-              , std::pair<vector_t   , floatSeq>
-                > Parameter_AnyPairs_t;
-
-          public:
-            static Parameter toParameter (const CORBA::Any& an) {
-              Parameter out;
-              bool done = false;
-              convertToParam ret(an, out, done);
-              boost::mpl::for_each<Parameter_AnyPairs_t> (ret);
-              if (!done) throw hpp::Error ("Could not convert to Parameter");
-              return out;
-            }
-            static CORBA::Any toCorbaAny (const Parameter& p) {
-              CORBA::Any out;
-              switch (p.type()) {
-                case Parameter::BOOL:
-                  out <<= p.boolValue();
-                  break;
-                case Parameter::INT:
-                  out <<= (CORBA::Long)p.intValue();
-                  break;
-                case Parameter::FLOAT:
-                  out <<= p.floatValue();
-                  break;
-                case Parameter::STRING:
-                  out <<= p.stringValue().c_str();
-                  break;
-                case Parameter::VECTOR:
-                  out <<= vectorToFloatSeq(p.vectorValue());
-                  break;
-                case Parameter::MATRIX:
-                  out <<= matrixToFloatSeqSeq(p.matrixValue());
-                  break;
-                default:
-                  throw hpp::Error ("Could not convert to CORBA::Any");
-                  break;
-              }
-              return out;
-            }
-        };
-
-        template <> inline
-          vector_t Parameter_CorbaAny::as<floatSeq, vector_t> (const floatSeq& in)
-          { return floatSeqToVector(in); }
-        template <> inline
-          matrix_t Parameter_CorbaAny::as<floatSeqSeq, matrix_t> (const floatSeqSeq& in)
-          { return floatSeqSeqToMatrix(in); }
 
         typedef hpp::core::segment_t segment_t;
         typedef hpp::core::segments_t segments_t;
@@ -407,7 +300,7 @@ namespace hpp
         if (problemSolver()->problem() != NULL) {
           try {
             problemSolver()->problem()->setParameter (std::string(name),
-                Parameter_CorbaAny::toParameter (value));
+                toParameter (value));
           } catch (const std::exception& e) {
             throw hpp::Error (e.what ());
           }
@@ -421,12 +314,9 @@ namespace hpp
       CORBA::Any* Problem::getParameter (const char* name)
       {
         try {
-          if (problemSolver()->problem() != NULL) {
-              const Parameter& param = problemSolver()->problem()->getParameter (name);
-              CORBA::Any* ap = new CORBA::Any;
-              *ap = Parameter_CorbaAny::toCorbaAny(param);
-              return ap;
-          }
+          core::ProblemPtr_t p (problemSolver()->problem());
+          if (p)
+            return toCorbaAnyPtr(p->getParameter (name));
           throw hpp::Error ("The problem is not initialized.");
         } catch (std::exception& e) {
           throw Error (e.what ());
