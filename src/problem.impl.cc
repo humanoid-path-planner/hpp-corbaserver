@@ -2619,6 +2619,104 @@ namespace hpp
         problemSolver()->robot (robot);
       }
 
+      pinocchio_idl::CollisionObject_ptr Problem::getObstacle(const char* name)
+      {
+        core::ProblemSolverPtr_t ps = problemSolver();
+        pinocchio_idl::CollisionObject_var o = makeServantDownCast<pinocchio_impl::CollisionObject> (
+            server_->parent(),
+            ps->obstacle(name));
+        return o._retn();
+      }
+
+      core_idl::Problem_ptr Problem::createProblem (pinocchio_idl::Device_ptr robot)
+      {
+        core_idl::Problem_var o = makeServantDownCast<core_impl::Problem> (
+            server_->parent(),
+            core::Problem::create(
+              reference_to_servant_base<pinocchio::Device> (server_->parent(), robot)->get()
+              ));
+        return o._retn();
+      }
+
+      core_idl::Roadmap_ptr Problem::createRoadmap(core_idl::Distance_ptr distance, pinocchio_idl::Device_ptr robot)
+      {
+        core_idl::Roadmap_var o = makeServantDownCast<core_impl::Roadmap> (
+            server_->parent(),
+            core::Roadmap::create(
+              reference_to_servant_base<core::Distance> (server_->parent(), distance)->get()
+              ,
+              reference_to_servant_base<pinocchio::Device> (server_->parent(), robot)->get()
+              ));
+        return o._retn();
+      }
+
+      core_idl::PathPlanner_ptr Problem::createPathPlanner (const char* type, core_idl::Problem_ptr problem, core_idl::Roadmap_ptr roadmap)
+      {
+        core::ProblemSolverPtr_t ps = problemSolver();
+        core_idl::PathPlanner_var o = makeServantDownCast<core_impl::PathPlanner> (
+            server_->parent(),
+            (ps->pathPlanners.get(type)) (
+              *(reference_to_servant_base<core::Problem> (server_->parent(), problem)->get())
+              ,
+              reference_to_servant_base<core::Roadmap> (server_->parent(), roadmap)->get()
+              ));
+              //reference_to_servant_base<pinocchio::Device> (server_->parent(), _robot)->get(),
+        return o._retn();
+      }
+      core_idl::PathOptimizer_ptr Problem::createPathOptimizer (const char* type, core_idl::Problem_ptr problem)
+      {
+        core::ProblemSolverPtr_t ps = problemSolver();
+        core_idl::PathOptimizer_var o = makeServantDownCast<core_impl::PathOptimizer> (
+            server_->parent(),
+            (ps->pathOptimizers.get(type)) (
+              *(reference_to_servant_base<core::Problem> (server_->parent(), problem)->get())
+              ));
+        return o._retn();
+      }
+
+      core_idl::PathValidation_ptr Problem::createPathValidation (const char* type, pinocchio_idl::Device_ptr robot, value_type parameter)
+      {
+        core::ProblemSolverPtr_t ps = problemSolver();
+        core_idl::PathValidation_var o = makeServantDownCast<core_impl::PathValidation> (
+            server_->parent(),
+            (ps->pathValidations.get(type)) (
+              reference_to_servant_base<pinocchio::Device> (server_->parent(), robot)->get()
+              ,
+              parameter
+              ));
+        return o._retn();
+      }
+      core_idl::ConfigurationShooter_ptr Problem::createConfigurationShooter (const char* type, core_idl::Problem_ptr problem)
+      {
+        core::ProblemSolverPtr_t ps = problemSolver();
+        core_idl::ConfigurationShooter_var o = makeServantDownCast<core_impl::ConfigurationShooter> (
+            server_->parent(),
+            (ps->configurationShooters.get(type)) (
+              *(reference_to_servant_base<core::Problem> (server_->parent(), problem)->get())
+              ));
+        return o._retn();
+      }
+      core_idl::Distance_ptr Problem::createDistance (const char* type, core_idl::Problem_ptr problem)
+      {
+        core::ProblemSolverPtr_t ps = problemSolver();
+        core_idl::Distance_var o = makeServantDownCast<core_impl::Distance> (
+            server_->parent(),
+            (ps->distances.get(type)) (
+              *(reference_to_servant_base<core::Problem> (server_->parent(), problem)->get())
+              ));
+        return o._retn();
+      }
+      core_idl::SteeringMethod_ptr Problem::createSteeringMethod (const char* type, core_idl::Problem_ptr problem)
+      {
+        core::ProblemSolverPtr_t ps = problemSolver();
+        core_idl::SteeringMethod_var o = makeServantDownCast<core_impl::SteeringMethod> (
+            server_->parent(),
+            (ps->steeringMethods.get(type)) (
+              *(reference_to_servant_base<core::Problem> (server_->parent(), problem)->get())
+              ));
+        return o._retn();
+      }
+
     } // namespace impl
   } // namespace corbaServer
 } // namespace hpp
