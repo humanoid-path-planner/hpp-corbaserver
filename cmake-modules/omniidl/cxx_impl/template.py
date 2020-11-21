@@ -52,6 +52,12 @@ public:
 
 typedef @impl_tpl_name@<@fq_POA_name@,@storage@ > @impl_name@;
 @close_namespaces@
+
+namespace hpp {
+namespace corbaServer {
+template<> struct hpp_traits<@hpp_class@>{ typedef @hpp_class@ Base; };
+} // namespace corbaServer
+} // namespace corbaServer
 """
 
 base_interface_code = """\
@@ -83,7 +89,7 @@ inherited_interface_def = """\
 //
 @open_namespaces@
 template <typename _Base, typename _Storage>
-class @impl_tpl_name@: public @impl_base_name@<_Base, _Storage>, public virtual _Base
+class @impl_tpl_name@: public @impl_base_name@<_Base, _Storage>
 {
 public:
   typedef typename @impl_base_name@<_Base, _Storage>::HppBase HppBase;
@@ -101,6 +107,12 @@ public:
 
 typedef @impl_tpl_name@<@fq_POA_name@,@storage@ > @impl_name@;
 @close_namespaces@
+
+namespace hpp {
+namespace corbaServer {
+template<> struct hpp_traits<@hpp_class@>{ typedef @hpp_base_class@ Base; };
+} // namespace corbaServer
+} // namespace corbaServer
 """
 
 
