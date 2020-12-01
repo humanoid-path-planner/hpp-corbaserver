@@ -724,6 +724,7 @@ module hpp
     /// Read a roadmap from a file
     /// \param filename name of the file from which the roadmap is read.
     void readRoadmap (in string filename) raises (Error);
+    /// \}
 
     core_idl::Distance getDistance () raises (Error);
 
@@ -744,6 +745,22 @@ module hpp
     constraints_idl::Implicit getConstraint (in string constraintName) raises (Error);
 
     void setRobot (in pinocchio_idl::Device robot) raises (Error);
+
+    pinocchio_idl::CollisionObject getObstacle(in string name) raises (Error);
+
+    /// \name Factories
+    /// \{
+    core_idl::Problem createProblem (in pinocchio_idl::Device robot) raises (Error);
+
+    core_idl::Roadmap createRoadmap(in core_idl::Distance distance, in pinocchio_idl::Device robot) raises (Error);
+    core_idl::PathPlanner createPathPlanner (in string type, in core_idl::Problem _problem, in core_idl::Roadmap roadmap) raises (Error);
+    core_idl::PathOptimizer createPathOptimizer (in string type, in core_idl::Problem _problem) raises (Error);
+
+    core_idl::PathValidation createPathValidation (in string type, in pinocchio_idl::Device robot, in value_type parameter) raises (Error);
+    core_idl::ConfigurationShooter createConfigurationShooter (in string type, in core_idl::Problem _problem) raises (Error);
+    core_idl::Distance createDistance (in string type, in core_idl::Problem _problem) raises (Error);
+    core_idl::SteeringMethod createSteeringMethod (in string type, in core_idl::Problem _problem) raises (Error);
+
     /// \}
   };
   }; // interface Problem

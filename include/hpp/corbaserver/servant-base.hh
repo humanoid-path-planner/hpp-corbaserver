@@ -65,6 +65,8 @@ namespace hpp
       using _ServantBase::getT;                                                \
       using _ServantBase::getS
 
+    template <typename T> struct hpp_traits {};
+
     /// Abstract class used to avoid duplication of the servants.
     class AbstractServantKey
     {
@@ -298,6 +300,20 @@ namespace hpp
     static StorageTpl<U> storage_cast(const StorageTpl<V>& o)
     {
       return details::storage_cast_impl<U, V, StorageTpl>::run (o);
+    }
+
+    /// \tparam T the desired HPP type
+    /// \tparam P the type of the object which is served.
+    template <typename T, typename P> auto reference_to_object (Server* server, const P& p)
+    {
+      ServantBase_var s = server->poa()->reference_to_servant(p);
+      if (s.in() == NULL) throw Error ("The servant is not located here");
+      typedef typename hpp_traits<T>::Base TBase;
+      AbstractServantBase<TBase>* asb = dynamic_cast<AbstractServantBase<TBase>*>(s.in());
+      if (asb == NULL) throw Error ("Not an object of the correct type.");
+      auto ret = storage_cast<T>(asb->get());
+      if (!ret) throw Error("Object is not of the correct type.");
+      return ret;
     }
 
     /// Class used to dynamiccally cast HPP classes and create the corresponding

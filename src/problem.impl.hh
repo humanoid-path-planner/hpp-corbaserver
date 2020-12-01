@@ -341,6 +341,19 @@ namespace hpp
 
         void setRobot (hpp::pinocchio_idl::Device_ptr robot);
 
+        pinocchio_idl::CollisionObject_ptr getObstacle(const char* name);
+
+        core_idl::Problem_ptr createProblem (pinocchio_idl::Device_ptr robot);
+
+        core_idl::Roadmap_ptr createRoadmap(core_idl::Distance_ptr distance, pinocchio_idl::Device_ptr robot);
+        core_idl::PathPlanner_ptr createPathPlanner (const char* type, core_idl::Problem_ptr _problem, core_idl::Roadmap_ptr roadmap);
+        core_idl::PathOptimizer_ptr createPathOptimizer (const char* type, core_idl::Problem_ptr _problem);
+
+        core_idl::PathValidation_ptr createPathValidation (const char* type, pinocchio_idl::Device_ptr robot, value_type parameter);
+        core_idl::ConfigurationShooter_ptr createConfigurationShooter (const char* type, core_idl::Problem_ptr _problem);
+        core_idl::Distance_ptr createDistance (const char* type, core_idl::Problem_ptr _problem);
+        core_idl::SteeringMethod_ptr createSteeringMethod (const char* type, core_idl::Problem_ptr _problem);
+
       private:
         /// Return the selected problem solver
         core::ProblemSolverPtr_t problemSolver ();

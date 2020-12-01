@@ -244,7 +244,7 @@ class Builder(idlvisitor.AstVisitor):
             return name, "", out_conv_str
         elif _type.objref():
             if _out: raise makeError("out objects is currently not supported", param.file(), param.line())
-            conv = "{typeptr} {tmp} = ::hpp::corbaServer::reference_to_servant_base<{type}>(server_, {name})->get();" \
+            conv = "{typeptr} {tmp} = ::hpp::corbaServer::reference_to_object<{type}>(server_, {name});" \
                     .format(type   =self.toCppNamespace(id.Name(_type.type().scopedName())                ).fullyQualify(cxx=1),
                             typeptr=self.toCppNamespace(id.Name(_type.type().scopedName()).suffix("Ptr_t")).fullyQualify(cxx=1),
                             servanttype=hpp_servant_name(id.Name(_type.type().scopedName())),
@@ -394,8 +394,10 @@ class BuildInterfaceImplementations(Builder):
                 storage = st.sc.simple() + "< "+wkptr_t+" >"
             else:
                 storage = wkptr_t
+            hpp_base_class = None
         else:
             baseScopedName = id.Name (node.inherits()[0].scopedName())
+            hpp_base_class = self.toCppNamespace (baseScopedName).fullyQualify(cxx=1)
             key = hpp_servant_name (baseScopedName)
             impl_base_name = hpp_servant_name (baseScopedName.suffix('Servant'))
             if key in self.storages:
@@ -404,7 +406,7 @@ class BuildInterfaceImplementations(Builder):
                 self.storages[fqname] = st
             else:
                 storage = wkptr_t
-        
+
         # build methods corresponding to attributes, operations etc.
         # attributes[] and operations[] will contain lists of function
         # signatures eg
@@ -577,6 +579,7 @@ class BuildInterfaceImplementations(Builder):
                 fq_POA_name = "POA_" + cxx_fqname,
 
                 hpp_class = hpp_class,
+                hpp_base_class = hpp_base_class,
                 storage = storage,
                 open_namespaces = openns,
                 close_namespaces = closens,

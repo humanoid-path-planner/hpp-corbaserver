@@ -20,6 +20,7 @@
 # include <hpp/util/exception-factory.hh>
 
 # include <hpp/corbaserver/fwd.hh>
+# include <hpp/core/parameter.hh>
 # include <hpp/common-idl.hh>
 
 namespace hpp {
@@ -132,6 +133,17 @@ namespace hpp {
     /// Convert CORBA comparison types to C++ comparison type.
     constraints::ComparisonTypes_t convertComparison
     (hpp::ComparisonTypes_t comp);
+
+    core::Parameter toParameter (const CORBA::Any& any);
+
+    CORBA::Any toCorbaAny (const core::Parameter& parameter);
+
+    inline CORBA::Any* toCorbaAnyPtr (const core::Parameter& parameter)
+    {
+      CORBA::Any* ap = new CORBA::Any;
+      *ap = toCorbaAny(parameter);
+      return ap;
+    }
 
   } // namespace corbaServer
 } // namespace hpp

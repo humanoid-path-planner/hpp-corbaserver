@@ -27,6 +27,8 @@ module hpp
 
   interface Device
   {
+      HPP_EXPOSE_MEMORY_DEALLOCATION(Error)
+
       string name () raises (Error);
 
       void integrate(in floatSeq config_in, in floatSeq velocity, out floatSeq result) raises (Error);
@@ -70,11 +72,43 @@ module hpp
       //* hpp::pinocchio::replaceGeometryByConvexHull(d->geomModel(),
       //*   ::hpp::corbaServer::toStrings<std::vector<std::string> >(geometryNames));
       //* d->createGeomData();
+
+      floatSeq getCurrentConfiguration () raises (Error);
+      //->currentConfiguration
+
+      boolean setCurrentConfiguration (in floatSeq configuration) raises (Error);
+      //->currentConfiguration
+
+      void computeForwardKinematics() raises (Error);
+
+      void computeFramesForwardKinematics () raises (Error);
+
+      void updateGeometryPlacements () raises (Error);
+
+      frame_index getFrameByName (in string name) raises (Error);
+      //* return getT()->getFrameByName(name).index();
+
+      Transform_ getFramePosition (in frame_index frame_id) raises (Error);
+      //* if (getT()->model().nframes <= (int)frame_id) throw hpp::Error("Index out of range");
+      //* hpp::pinocchio::Frame frame(getT(), frame_id);
+      //* return hpp::corbaServer::toHppTransform(frame.currentTransformation());
+
+      floatSeqSeq getFrameJacobian (in frame_index frame_id) raises (Error);
+      //* if (getT()->model().nframes <= (int)frame_id) throw hpp::Error("Index out of range");
+      //* if (!(getT()->computationFlag() & hpp::pinocchio::JACOBIAN))
+      //*   throw hpp::Error("Invalid computation flags");
+      //* hpp::pinocchio::Frame frame(getT(), frame_id);
+      //* return hpp::corbaServer::matrixToFloatSeqSeq(frame.jacobian());
   };
+
+  interface CollisionObject {
+    HPP_EXPOSE_MEMORY_DEALLOCATION(Error)
+  }; // interface CollisionObject
 
   }; // module pinocchio_idl
 }; // module hpp
 //* #include <hpp/pinocchio/device.hh>
+//* #include <hpp/pinocchio/collision-object.hh>
 //* #include <hpp/pinocchio/configuration.hh>
 //* #include <hpp/pinocchio/liegroup.hh>
 //* #include <hpp/pinocchio/center-of-mass-computation.hh>
