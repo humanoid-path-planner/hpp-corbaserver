@@ -64,6 +64,11 @@ module hpp
       Path getEdge (in size_type i) raises (Error);
       //* return corbaServer::makeServant<hpp::core_idl::Path_ptr> (server_,
       //*   new Path (server_, (*boost::next(getT()->edges().begin(),i))->path()));
+
+      void serialize (in string filename) raises (Error);
+      //* std::ofstream ofs (filename, std::ofstream::out);
+      //* boost::archive::binary_oarchive oa(ofs);
+      //* oa << getT();
     }; // interface Roadmap
 
     interface PathPlanner
@@ -111,6 +116,8 @@ module hpp
 }; // module hpp
 
 //* #include <boost/utility.hpp>
+//* #include <boost/archive/binary_oarchive.hpp>
+//* #include <hpp/pinocchio/serialization.hh>
 //* #include <hpp/core/path-planner.hh>
 //* #include <hpp/core/path-optimizer.hh>
 //* #include <hpp/core/roadmap.hh>

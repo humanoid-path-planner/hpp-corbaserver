@@ -2650,6 +2650,20 @@ namespace hpp
         return o._retn();
       }
 
+      core_idl::Roadmap_ptr Problem::deserializeRoadmap(const char* filename, pinocchio_idl::Device_ptr robot)
+      {
+        hpp::core::RoadmapPtr_t roadmap;
+        std::ifstream ifs (filename);
+        iarchive ia (ifs);
+        ia.device = reference_to_servant_base<pinocchio::Device> (server_->parent(), robot)->get();
+        ia >> roadmap;
+
+        core_idl::Roadmap_var o = makeServantDownCast<core_impl::Roadmap> (
+            server_->parent(),
+            roadmap);
+        return o._retn();
+      }
+
       core_idl::PathPlanner_ptr Problem::createPathPlanner (const char* type, core_idl::Problem_ptr problem, core_idl::Roadmap_ptr roadmap)
       {
         core::ProblemSolverPtr_t ps = problemSolver();

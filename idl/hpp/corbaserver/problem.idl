@@ -753,6 +753,7 @@ module hpp
     core_idl::Problem createProblem (in pinocchio_idl::Device robot) raises (Error);
 
     core_idl::Roadmap createRoadmap(in core_idl::Distance distance, in pinocchio_idl::Device robot) raises (Error);
+    core_idl::Roadmap deserializeRoadmap(in string filename, in pinocchio_idl::Device robot) raises (Error);
     core_idl::PathPlanner createPathPlanner (in string type, in core_idl::Problem _problem, in core_idl::Roadmap roadmap) raises (Error);
     core_idl::PathOptimizer createPathOptimizer (in string type, in core_idl::Problem _problem) raises (Error);
 
