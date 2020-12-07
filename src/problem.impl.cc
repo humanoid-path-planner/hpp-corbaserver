@@ -2421,10 +2421,11 @@ namespace hpp
         }
       }
 
+      template<typename base_archive = boost::archive::binary_iarchive>
       struct iarchive :
-        boost::archive::binary_iarchive, hpp::serialization::archive_device_wrapper
+        base_archive, hpp::serialization::archive_device_wrapper
       {
-        iarchive(std::istream& is) : boost::archive::binary_iarchive (is) {}
+        iarchive(std::istream& is) : base_archive (is) {}
       };
 
       void Problem::readRoadmap (const char* filename)
@@ -2435,7 +2436,7 @@ namespace hpp
 
           hpp::core::RoadmapPtr_t roadmap;
           std::ifstream ifs (filename);
-          iarchive ia (ifs);
+          iarchive<> ia (ifs);
           ia.device = robot;
           ia >> roadmap;
           problemSolver()->roadmap(roadmap);
@@ -2654,9 +2655,18 @@ namespace hpp
       {
         hpp::core::RoadmapPtr_t roadmap;
         std::ifstream ifs (filename);
-        iarchive ia (ifs);
-        ia.device = reference_to_servant_base<pinocchio::Device> (server_->parent(), robot)->get();
-        ia >> roadmap;
+        DevicePtr_t device = reference_to_servant_base<pinocchio::Device> (server_->parent(), robot)->get();
+
+        std::string fn (filename);
+        if (fn.size() >= 4 && fn.compare(fn.size()-4, 4, ".xml") == 0) {
+          iarchive<boost::archive::xml_iarchive> ia (ifs);
+          ia.device = device;
+          ia >> boost::serialization::make_nvp("roadmap", roadmap);
+        } else {
+          iarchive<> ia (ifs);
+          ia.device = device;
+          ia >> roadmap;
+        }
 
         core_idl::Roadmap_var o = makeServantDownCast<core_impl::Roadmap> (
             server_->parent(),

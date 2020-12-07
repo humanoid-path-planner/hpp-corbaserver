@@ -65,11 +65,20 @@ module hpp
       //* return corbaServer::makeServant<hpp::core_idl::Path_ptr> (server_,
       //*   new Path (server_, (*boost::next(getT()->edges().begin(),i))->path()));
 
-      /// Save a roadmap in a file in binary format.
+      /// Save a roadmap in a file.
+      /// \param filename if it ends with '.xml', then the roadmap is stored
+      ///        in XML format, otherwise it is stored in binary format.
       void save(in string filename) raises (Error);
       //* std::ofstream ofs (filename, std::ofstream::out);
-      //* boost::archive::binary_oarchive oa(ofs);
-      //* oa << getT();
+      //* std::string fn (filename);
+      //* if (fn.size() >= 4 && fn.compare(fn.size()-4, 4, ".xml") == 0) {
+      //*   boost::archive::xml_oarchive oa(ofs);
+      //*   auto roadmap = getT();
+      //*   oa << boost::serialization::make_nvp("roadmap", roadmap);
+      //* } else {
+      //*   boost::archive::binary_oarchive oa(ofs);
+      //*   oa << getT();
+      //* }
     }; // interface Roadmap
 
     interface PathPlanner
@@ -118,6 +127,8 @@ module hpp
 
 //* #include <boost/utility.hpp>
 //* #include <boost/archive/binary_oarchive.hpp>
+//* #include <boost/archive/xml_oarchive.hpp>
+//* #include <boost/serialization/nvp.hpp>
 //* #include <hpp/pinocchio/serialization.hh>
 //* #include <hpp/core/path-planner.hh>
 //* #include <hpp/core/path-optimizer.hh>
