@@ -65,7 +65,8 @@ module hpp
       //* return corbaServer::makeServant<hpp::core_idl::Path_ptr> (server_,
       //*   new Path (server_, (*boost::next(getT()->edges().begin(),i))->path()));
 
-      void serialize (in string filename) raises (Error);
+      /// Save a roadmap in a file in binary format.
+      void save(in string filename) raises (Error);
       //* std::ofstream ofs (filename, std::ofstream::out);
       //* boost::archive::binary_oarchive oa(ofs);
       //* oa << getT();

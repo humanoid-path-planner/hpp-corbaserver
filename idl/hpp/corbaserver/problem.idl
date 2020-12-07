@@ -717,12 +717,15 @@ module hpp
     /// must be resized.
     void resetRoadmap () raises (Error);
 
-    /// Save the current roadmap in a file
+    /// Save the roadmap stored in the ProblemSolver instance in a file
     /// \param filename name of the file where the roadmap is saved
+    /// \note the file in binary format.
     void saveRoadmap (in string filename) raises (Error);
 
     /// Read a roadmap from a file
     /// \param filename name of the file from which the roadmap is read.
+    /// The roadmap is stored in the current ProblemSolver instance
+    /// \note the file in binary format.
     void readRoadmap (in string filename) raises (Error);
     /// \}
 
@@ -753,7 +756,15 @@ module hpp
     core_idl::Problem createProblem (in pinocchio_idl::Device robot) raises (Error);
 
     core_idl::Roadmap createRoadmap(in core_idl::Distance distance, in pinocchio_idl::Device robot) raises (Error);
-    core_idl::Roadmap deserializeRoadmap(in string filename, in pinocchio_idl::Device robot) raises (Error);
+    /// Load a roadmap from a file
+    /// \param filename name of the file,
+    /// \param robot the robot for which the roadmap was built before saving in
+    ///        the file.
+    /// \return the roadmap as a CORBA object.
+    /// \note the file in binary format.
+    core_idl::Roadmap loadRoadmap(in string filename,
+				  in pinocchio_idl::Device robot)
+      raises (Error);
     core_idl::PathPlanner createPathPlanner (in string type, in core_idl::Problem _problem, in core_idl::Roadmap roadmap) raises (Error);
     core_idl::PathOptimizer createPathOptimizer (in string type, in core_idl::Problem _problem) raises (Error);
 

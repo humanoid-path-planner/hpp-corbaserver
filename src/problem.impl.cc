@@ -2650,7 +2650,7 @@ namespace hpp
         return o._retn();
       }
 
-      core_idl::Roadmap_ptr Problem::deserializeRoadmap(const char* filename, pinocchio_idl::Device_ptr robot)
+      core_idl::Roadmap_ptr Problem::loadRoadmap(const char* filename, pinocchio_idl::Device_ptr robot)
       {
         hpp::core::RoadmapPtr_t roadmap;
         std::ifstream ifs (filename);
