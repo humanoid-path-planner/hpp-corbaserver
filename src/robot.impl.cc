@@ -45,7 +45,7 @@
 #include "robot.impl.hh"
 #include "tools.hh"
 
-#include "hpp/pinocchio_idl/robots.hh"
+#include "hpp/pinocchio_idl/robots-fwd.hh"
 
 namespace hpp
 {
