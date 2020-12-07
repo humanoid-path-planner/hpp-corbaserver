@@ -1,4 +1,7 @@
 from __future__ import print_function
+import sys
+from xacro import filestack
+import xml
 
 try: # python 2
     _basestr = basestring
