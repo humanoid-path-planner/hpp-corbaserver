@@ -35,10 +35,16 @@ class _Deleter:
         self.client = client
         self.ostr = orb.object_to_string(o)
     def __del__ (self):
-        if not self.client:
-            from .client import Client
-            self.client = Client(clients={})._tools
-        self.client.deleteServant(self.ostr)
+        import CORBA
+        try:
+            if not self.client:
+                from .client import Client
+                self.client = Client(clients={})._tools
+            self.client.deleteServant(self.ostr)
+        except CORBA.TRANSIENT:
+            pass
+        except CORBA.COMM_FAILURE:
+            pass
 
 def wrap_delete(o, client=None):
     """
