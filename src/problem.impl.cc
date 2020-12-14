@@ -45,7 +45,7 @@
 #include <hpp/core/plugin.hh>
 #include <hpp/core/problem-solver.hh>
 #include <hpp/core/steering-method.hh>
-#include <hpp/core/parser/roadmap-factory.hh>
+#include <hpp/core/parser/roadmap.hh>
 
 #include <hpp/constraints/affine-function.hh>
 #include <hpp/constraints/differentiable-function.hh>
@@ -2413,32 +2413,40 @@ namespace hpp
       void Problem::saveRoadmap (const char* filename)
       {
         try {
-          std::ofstream ofs (filename, std::ofstream::out);
-          boost::archive::binary_oarchive oa(ofs);
-          oa << problemSolver()->roadmap();
+          core::ProblemSolverPtr_t ps (problemSolver());
+          DevicePtr_t robot = getRobotOrThrow (ps);
+
+          using namespace core::parser;
+
+          typedef hpp::serialization::archive_tpl<
+            boost::archive::binary_oarchive,
+            hpp::serialization::remove_duplicate::vector_archive>
+              archive_type;
+          core::RoadmapPtr_t roadmap (ps->roadmap());
+          serializeRoadmap<archive_type> (roadmap,
+              std::string(filename),
+              make_nvp(robot->name(), robot.get()));
         } catch (const std::exception& exc) {
           throw hpp::Error (exc.what ());
         }
       }
 
-      template<typename base_archive = boost::archive::binary_iarchive>
-      struct iarchive :
-        base_archive, hpp::serialization::archive_device_wrapper
-      {
-        iarchive(std::istream& is) : base_archive (is) {}
-      };
-
-      void Problem::readRoadmap (const char* filename)
+      void Problem::loadRoadmap (const char* filename)
       {
         try {
           core::ProblemSolverPtr_t ps (problemSolver());
           DevicePtr_t robot = getRobotOrThrow (ps);
 
+          using namespace core::parser;
+
+          typedef hpp::serialization::archive_tpl<
+            boost::archive::binary_iarchive,
+            hpp::serialization::remove_duplicate::vector_archive>
+              archive_type;
           hpp::core::RoadmapPtr_t roadmap;
-          std::ifstream ifs (filename);
-          iarchive<> ia (ifs);
-          ia.device = robot;
-          ia >> roadmap;
+          serializeRoadmap<archive_type> (roadmap,
+              std::string(filename),
+              make_nvp(robot->name(), robot.get()));
           problemSolver()->roadmap(roadmap);
         } catch (const std::exception& exc) {
           throw hpp::Error (exc.what ());
@@ -2711,31 +2719,70 @@ namespace hpp
 	}
       }
 
-      core_idl::Roadmap_ptr Problem::loadRoadmap(const char* filename, pinocchio_idl::Device_ptr robot)
+      core_idl::Roadmap_ptr Problem::readRoadmap(const char* filename, pinocchio_idl::Device_ptr robot)
       {
-	try{
-	hpp::core::RoadmapPtr_t roadmap;
-        std::ifstream ifs (filename);
-        DevicePtr_t device = reference_to_servant_base<pinocchio::Device> (server_->parent(), robot)->get();
+	try {
+          DevicePtr_t device = reference_to_servant_base<pinocchio::Device> (server_->parent(), robot)->get();
 
-        std::string fn (filename);
-        if (fn.size() >= 4 && fn.compare(fn.size()-4, 4, ".xml") == 0) {
-          iarchive<boost::archive::xml_iarchive> ia (ifs);
-          ia.device = device;
-          ia >> boost::serialization::make_nvp("roadmap", roadmap);
-        } else {
-          iarchive<> ia (ifs);
-          ia.device = device;
-          ia >> roadmap;
+          hpp::core::RoadmapPtr_t roadmap;
+          std::string fn (filename);
+          bool xml = (fn.size() >= 4 && fn.compare(fn.size()-4, 4, ".xml") == 0);
+          using namespace core::parser;
+          if (xml) {
+            typedef hpp::serialization::archive_tpl<
+              boost::archive::xml_iarchive,
+              hpp::serialization::remove_duplicate::vector_archive>
+                archive_type;
+            serializeRoadmap<archive_type>(roadmap, fn,
+                make_nvp(device->name(), device.get()));
+          } else {
+            typedef hpp::serialization::archive_tpl<
+              boost::archive::binary_iarchive,
+              hpp::serialization::remove_duplicate::vector_archive>
+                archive_type;
+            serializeRoadmap<archive_type>(roadmap, fn,
+                make_nvp(device->name(), device.get()));
+          }
+
+          core_idl::Roadmap_var o = makeServantDownCast<core_impl::Roadmap> (
+              server_->parent(), roadmap);
+          return o._retn();
         }
-
-        core_idl::Roadmap_var o = makeServantDownCast<core_impl::Roadmap> (
-            server_->parent(),
-            roadmap);
-        return o._retn();
+	catch(const std::exception& exc) {
+	  throw hpp::Error(exc.what());
 	}
-	catch(const std::exception& exc)
-	{
+      }
+
+      core_idl::Roadmap_ptr Problem::writeRoadmap(const char* filename, pinocchio_idl::Device_ptr robot)
+      {
+	try {
+          DevicePtr_t device = reference_to_servant_base<pinocchio::Device> (server_->parent(), robot)->get();
+
+          hpp::core::RoadmapPtr_t roadmap;
+          std::string fn (filename);
+          bool xml = (fn.size() >= 4 && fn.compare(fn.size()-4, 4, ".xml") == 0);
+          using namespace core::parser;
+          if (xml) {
+            typedef hpp::serialization::archive_tpl<
+              boost::archive::xml_oarchive,
+              hpp::serialization::remove_duplicate::vector_archive>
+                archive_type;
+            serializeRoadmap<archive_type>(roadmap, fn,
+                make_nvp(device->name(), device.get()));
+          } else {
+            typedef hpp::serialization::archive_tpl<
+              boost::archive::binary_oarchive,
+              hpp::serialization::remove_duplicate::vector_archive>
+                archive_type;
+            serializeRoadmap<archive_type>(roadmap, fn,
+                make_nvp(device->name(), device.get()));
+          }
+
+          core_idl::Roadmap_var o = makeServantDownCast<core_impl::Roadmap> (
+              server_->parent(), roadmap);
+          return o._retn();
+        }
+	catch(const std::exception& exc) {
 	  throw hpp::Error(exc.what());
 	}
       }

@@ -815,9 +815,9 @@ class ProblemSolver (object):
     def saveRoadmap (self, filename):
         return self.hppcorba.problem.saveRoadmap (filename)
 
-    ## Read a roadmap from a file
+    ## load a roadmap from a file
     #  \param filename name of the file from which the roadmap is read.
-    def readRoadmap (self, filename):
-        return self.hppcorba.problem.readRoadmap (filename)
+    def loadRoadmap (self, filename):
+        return self.hppcorba.problem.loadRoadmap (filename)
 
     ## \}
