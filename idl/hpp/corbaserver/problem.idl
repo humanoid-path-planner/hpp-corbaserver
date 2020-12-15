@@ -774,8 +774,9 @@ module hpp
     /// \param robot the robot for which the roadmap was built before saving in
     ///        the file.
     /// \return the roadmap as a CORBA object.
-    core_idl::Roadmap writeRoadmap(in string filename,
-				  in pinocchio_idl::Device robot)
+    void writeRoadmap(in string filename,
+                      in core_idl::Roadmap roadmap,
+                      in pinocchio_idl::Device robot)
       raises (Error);
 
     core_idl::PathPlanner createPathPlanner (in string type, in core_idl::Problem _problem, in core_idl::Roadmap roadmap) raises (Error);

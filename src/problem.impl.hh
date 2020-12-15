@@ -347,7 +347,7 @@ namespace hpp
 
         core_idl::Roadmap_ptr createRoadmap(core_idl::Distance_ptr distance, pinocchio_idl::Device_ptr robot);
         core_idl::Roadmap_ptr readRoadmap(const char* filename, pinocchio_idl::Device_ptr robot);
-        core_idl::Roadmap_ptr writeRoadmap(const char* filename, pinocchio_idl::Device_ptr robot);
+        void writeRoadmap(const char* filename, core_idl::Roadmap_ptr roadmap, pinocchio_idl::Device_ptr robot);
         core_idl::PathPlanner_ptr createPathPlanner (const char* type, core_idl::Problem_ptr _problem, core_idl::Roadmap_ptr roadmap);
         core_idl::PathOptimizer_ptr createPathOptimizer (const char* type, core_idl::Problem_ptr _problem);
 

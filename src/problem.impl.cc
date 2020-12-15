@@ -2506,7 +2506,7 @@ namespace hpp
       {
         core::DistancePtr_t d;
         try {
-          d = reference_to_servant_base<core::Distance>(server_->parent(), distance)->get();
+          d = reference_to_object<core::Distance>(server_->parent(), distance);
         } catch (const Error& e) {
           // TODO in this case, we should define a distance from the CORBA type.
           // This would allow to implement a distance class in Python.
@@ -2545,7 +2545,7 @@ namespace hpp
       {
         core::PathVectorPtr_t path;
         try {
-          core::PathPtr_t p = reference_to_servant_base<core::Path> (server_->parent(), _path)->get();
+          core::PathPtr_t p = reference_to_object<core::Path> (server_->parent(), _path);
           path = HPP_DYNAMIC_PTR_CAST (core::PathVector, p);
         } catch (const Error& e) {
           // TODO in this case, we should define a distance from the CORBA type.
@@ -2662,7 +2662,7 @@ namespace hpp
       {
         pinocchio::DevicePtr_t robot;
         try {
-          robot = reference_to_servant_base<pinocchio::Device> (server_->parent(), _robot)->get();
+          robot = reference_to_object<pinocchio::Device> (server_->parent(), _robot);
         } catch (const Error& e) {
           throw;
         }
@@ -2691,7 +2691,7 @@ namespace hpp
 	core_idl::Problem_var o = makeServantDownCast<core_impl::Problem> (
             server_->parent(),
             core::Problem::create(
-              reference_to_servant_base<pinocchio::Device> (server_->parent(), robot)->get()
+              reference_to_object<pinocchio::Device> (server_->parent(), robot)
               ));
         return o._retn();
 	}
@@ -2707,9 +2707,9 @@ namespace hpp
 	core_idl::Roadmap_var o = makeServantDownCast<core_impl::Roadmap> (
             server_->parent(),
             core::Roadmap::create(
-              reference_to_servant_base<core::Distance> (server_->parent(), distance)->get()
+              reference_to_object<core::Distance> (server_->parent(), distance)
               ,
-              reference_to_servant_base<pinocchio::Device> (server_->parent(), robot)->get()
+              reference_to_object<pinocchio::Device> (server_->parent(), robot)
               ));
         return o._retn();
 	}
@@ -2722,7 +2722,7 @@ namespace hpp
       core_idl::Roadmap_ptr Problem::readRoadmap(const char* filename, pinocchio_idl::Device_ptr robot)
       {
 	try {
-          DevicePtr_t device = reference_to_servant_base<pinocchio::Device> (server_->parent(), robot)->get();
+          DevicePtr_t device = reference_to_object<pinocchio::Device> (server_->parent(), robot);
 
           hpp::core::RoadmapPtr_t roadmap;
           std::string fn (filename);
@@ -2753,12 +2753,14 @@ namespace hpp
 	}
       }
 
-      core_idl::Roadmap_ptr Problem::writeRoadmap(const char* filename, pinocchio_idl::Device_ptr robot)
+      void Problem::writeRoadmap(const char* filename,
+          core_idl::Roadmap_ptr _roadmap,
+          pinocchio_idl::Device_ptr robot)
       {
 	try {
-          DevicePtr_t device = reference_to_servant_base<pinocchio::Device> (server_->parent(), robot)->get();
+          DevicePtr_t device = reference_to_object<pinocchio::Device> (server_->parent(), robot);
+          core::RoadmapPtr_t roadmap = reference_to_object<core::Roadmap> (server_->parent(), _roadmap);
 
-          hpp::core::RoadmapPtr_t roadmap;
           std::string fn (filename);
           bool xml = (fn.size() >= 4 && fn.compare(fn.size()-4, 4, ".xml") == 0);
           using namespace core::parser;
@@ -2777,10 +2779,6 @@ namespace hpp
             serializeRoadmap<archive_type>(roadmap, fn,
                 make_nvp(device->name(), device.get()));
           }
-
-          core_idl::Roadmap_var o = makeServantDownCast<core_impl::Roadmap> (
-              server_->parent(), roadmap);
-          return o._retn();
         }
 	catch(const std::exception& exc) {
 	  throw hpp::Error(exc.what());
@@ -2794,12 +2792,9 @@ namespace hpp
         core_idl::PathPlanner_var o = makeServantDownCast<core_impl::PathPlanner> (
             server_->parent(),
             (ps->pathPlanners.get(type)) (
-              reference_to_servant_base<core::Problem> (server_->parent(),
-							problem)->get(),
-              reference_to_servant_base<core::Roadmap> (server_->parent(),
-							roadmap)->get()
+              reference_to_object<core::Problem> (server_->parent(), problem),
+              reference_to_object<core::Roadmap> (server_->parent(), roadmap)
               ));
-              //reference_to_servant_base<pinocchio::Device> (server_->parent(), _robot)->get(),
         return o._retn();
 	}
 	catch(const std::exception& exc)
@@ -2814,8 +2809,8 @@ namespace hpp
         core_idl::PathOptimizer_var o = makeServantDownCast
 	  <core_impl::PathOptimizer> (server_->parent(),
 				      (ps->pathOptimizers.get(type))
-				      (reference_to_servant_base<core::Problem>
-				       (server_->parent(), problem)->get()));
+				      (reference_to_object<core::Problem>
+				       (server_->parent(), problem)));
         return o._retn();
 	}
 	catch(const std::exception& exc)
@@ -2831,7 +2826,7 @@ namespace hpp
         core_idl::PathValidation_var o = makeServantDownCast<core_impl::PathValidation> (
             server_->parent(),
             (ps->pathValidations.get(type)) (
-              reference_to_servant_base<pinocchio::Device> (server_->parent(), robot)->get()
+              reference_to_object<pinocchio::Device> (server_->parent(), robot)
               ,
               parameter
               ));
@@ -2849,8 +2844,7 @@ namespace hpp
         core_idl::ConfigurationShooter_var o = makeServantDownCast<core_impl::ConfigurationShooter> (
             server_->parent(),
             (ps->configurationShooters.get(type))
-	    (reference_to_servant_base<core::Problem> (server_->parent(),
-						       problem)->get()));
+	    (reference_to_object<core::Problem> (server_->parent(), problem)));
         return o._retn();
 	}
 	catch(const std::exception& exc)
@@ -2864,8 +2858,7 @@ namespace hpp
 	core::ProblemSolverPtr_t ps = problemSolver();
         core_idl::Distance_var o = makeServantDownCast<core_impl::Distance>
 	  (server_->parent(), (ps->distances.get(type))
-	   (reference_to_servant_base<core::Problem>
-	    (server_->parent(), problem)->get()));
+	   (reference_to_object<core::Problem> (server_->parent(), problem)));
         return o._retn();
 	}
 	catch(const std::exception& exc)
@@ -2880,8 +2873,7 @@ namespace hpp
         core_idl::SteeringMethod_var o = makeServantDownCast
 	  <core_impl::SteeringMethod>
 	  (server_->parent(), (ps->steeringMethods.get(type))
-	   (reference_to_servant_base<core::Problem>(server_->parent(),
-						     problem)->get()));
+	   (reference_to_object<core::Problem>(server_->parent(), problem)));
         return o._retn();
 	}
 	catch(const std::exception& exc)
