@@ -177,7 +177,7 @@ namespace hpp
       /// Corba interface.
       ProblemSolverMapPtr_t problemSolverMap_;
 
-      typedef boost::shared_ptr<ServerPlugin> ServerPluginPtr_t;
+      typedef shared_ptr<ServerPlugin> ServerPluginPtr_t;
       typedef std::map<std::string, ServerPluginPtr_t> ServerPluginMap_t;
       struct Context {
         ServerPluginPtr_t main;

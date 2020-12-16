@@ -32,11 +32,11 @@ namespace hpp
     class Tools;
     class Client;
     class ProblemSolverMap;
-    typedef boost::shared_ptr <ProblemSolverMap> ProblemSolverMapPtr_t;
+    typedef shared_ptr <ProblemSolverMap> ProblemSolverMapPtr_t;
 
     typedef pinocchio::BodyPtr_t BodyPtr_t;
-    typedef fcl::CollisionGeometry CollisionGeometry_t;
-    typedef boost::shared_ptr <CollisionGeometry_t> CollisionGeometryPtr_t;
+    using fcl::CollisionGeometry;
+    using fcl::CollisionGeometryPtr_t;
     typedef pinocchio::CollisionObject CollisionObject_t;
     typedef pinocchio::CollisionObjectPtr_t CollisionObjectPtr_t;
     typedef pinocchio::CollisionObjectConstPtr_t CollisionObjectConstPtr_t;
@@ -79,9 +79,9 @@ namespace hpp
     typedef core::SteeringMethodPtr_t SteeringMethodPtr_t;
     typedef pinocchio::Transform3f Transform3f;
     typedef fcl::BVHModel < fcl::OBBRSS > Polyhedron_t;
-    typedef boost::shared_ptr <Polyhedron_t> PolyhedronPtr_t;
+    typedef fcl::shared_ptr <Polyhedron_t> PolyhedronPtr_t;
     typedef fcl::ShapeBase BasicShape_t;
-    typedef boost::shared_ptr <BasicShape_t> BasicShapePtr_t;
+    typedef fcl::shared_ptr <BasicShape_t> BasicShapePtr_t;
 
     typedef pinocchio::value_type value_type;
     typedef pinocchio::matrix_t matrix_t;

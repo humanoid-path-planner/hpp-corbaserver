@@ -10,11 +10,11 @@
 
 #include <iostream>
 #include <sstream>
+#include <iterator>
 
 #include <pinocchio/fwd.hpp>
 
 #include <boost/date_time/posix_time/posix_time_types.hpp>
-#include <boost/assign/list_of.hpp>
 #include <boost/algorithm/string.hpp>
 
 #include <hpp/util/debug.hh>
@@ -845,10 +845,11 @@ namespace hpp
 	    } else {
 	      joint = problemSolver()->robot ()->getJointByName (jointName);
 	    }
-            std::vector <core::vector3_t> shapePts = boost::assign::list_of
-                  (pts [objTriangles[i][0]])
-                  (pts [objTriangles[i][1]])
-                  (pts [objTriangles[i][2]]);
+            std::vector <core::vector3_t> shapePts {
+              pts [objTriangles[i][0]],
+              pts [objTriangles[i][1]],
+              pts [objTriangles[i][2]]
+            };
             objectSurfaces.push_back(JointAndShape_t(joint, shapePts));
           }
 	  if (floorJoints.length () != floorTriangles.length ()) {
@@ -873,10 +874,11 @@ namespace hpp
 	    } else {
 	      joint = problemSolver()->robot ()->getJointByName (jointName);
 	    }
-            std::vector <core::vector3_t> shapePts = boost::assign::list_of
-                  (pts [floorTriangles[i][0]])
-                  (pts [floorTriangles[i][1]])
-                  (pts [floorTriangles[i][2]]);
+            std::vector <core::vector3_t> shapePts {
+              pts [floorTriangles[i][0]],
+              pts [floorTriangles[i][1]],
+              pts [floorTriangles[i][2]]
+            };
             floorSurfaces.push_back(JointAndShape_t(joint, shapePts));
           }
           std::string name (constraintName);
@@ -1927,7 +1929,7 @@ namespace hpp
             throw std::runtime_error (oss.str ());
           }
           core::PathPtr_t path = initPath->extract(core::interval_t (start,end));
-          PathVectorPtr_t pathVector = boost::dynamic_pointer_cast<core::PathVector>(path);
+          PathVectorPtr_t pathVector = dynamic_pointer_cast<core::PathVector>(path);
           if(pathVector)
             problemSolver()->addPath(pathVector);
           else{
@@ -2234,7 +2236,7 @@ namespace hpp
 
         if (nodes.size() > nodeId)
         {
-            Nodes_t::const_iterator itNode = boost::next(nodes.begin(),nodeId);
+            Nodes_t::const_iterator itNode = std::next(nodes.begin(),nodeId);
             ConfigurationPtr_t conf = (*itNode)->configuration ();
             ULong size = (ULong) conf->size ();
 
@@ -2263,7 +2265,7 @@ namespace hpp
           try {
             const Edges_t & edges (problemSolver()->roadmap()->edges());
             if (edges.size() > edgeId) {
-              Edges_t::const_iterator itEdge = boost::next(edges.begin(),edgeId);
+              Edges_t::const_iterator itEdge = std::next(edges.begin(),edgeId);
 
               const core::ConnectedComponents_t& ccs = problemSolver()->roadmap()
                 ->connectedComponents ();
@@ -2288,7 +2290,7 @@ namespace hpp
           try {
             const Nodes_t & nodes (problemSolver()->roadmap()->nodes());
             if (nodes.size() > nodeId) {
-              Nodes_t::const_iterator itNode = boost::next(nodes.begin(),nodeId);
+              Nodes_t::const_iterator itNode = std::next(nodes.begin(),nodeId);
 
               const core::ConnectedComponents_t& ccs = problemSolver()->roadmap()
                 ->connectedComponents ();

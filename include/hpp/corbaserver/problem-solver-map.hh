@@ -31,9 +31,9 @@ namespace hpp
     class HPP_CORBASERVER_DLLAPI ProblemSolverMap {
       public:
         typedef std::map<std::string, core::ProblemSolverPtr_t> ProblemMap_t;
-        typedef boost::shared_ptr<ProblemMap_t> ProblemMapPtr_t;
+        typedef shared_ptr<ProblemMap_t> ProblemMapPtr_t;
         typedef boost::mutex mutex_t;
-        typedef boost::shared_ptr<mutex_t> mutexPtr_t;
+        typedef shared_ptr<mutex_t> mutexPtr_t;
 
         ProblemSolverMap (core::ProblemSolverPtr_t init,
             const std::string& name = "default");

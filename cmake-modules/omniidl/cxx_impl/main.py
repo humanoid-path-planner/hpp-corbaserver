@@ -382,7 +382,7 @@ class BuildInterfaceImplementations(Builder):
 
         is_base_class = not bool(node.inherits())
         #ptr_t = self.toCppNamespace (scopedName.suffix("Ptr_t")).fullyQualify(cxx=1)
-        wkptr_t = "boost::weak_ptr<{}>".format(
+        wkptr_t = "hpp::weak_ptr<{}>".format(
                 self.toCppNamespace (scopedName).fullyQualify(cxx=1))
         if is_base_class:
             key = hpp_servant_name (scopedName)
