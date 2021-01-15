@@ -2067,7 +2067,7 @@ namespace hpp
 	  }
 	  PathPtr_t path = problemSolver()->paths () [pathId];
 	  bool success;
-	  Configuration_t config = (*path) (atDistance, success);
+	  Configuration_t config = path->eval(atDistance, success);
 	  if (!success) {
 	    throw std::runtime_error ("Failed to apply constraint in path "
 				      "evaluation.");

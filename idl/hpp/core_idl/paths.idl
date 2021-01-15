@@ -38,7 +38,7 @@ module hpp
     string str () raises (Error);
 
     floatSeq call (in value_type t, out boolean success) raises (Error);
-    //-> operator()
+    //-> eval
 
     floatSeq at (in value_type t, out boolean success) raises (Error);
     //* hpp::core::vector_t res (get()->outputSize());
