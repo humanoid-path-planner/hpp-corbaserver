@@ -19,7 +19,6 @@
 
 #include <hpp/util/debug.hh>
 #include <hpp/util/exception-factory.hh>
-#include <hpp/util/portability.hh>
 
 #include <hpp/fcl/shape/geometric_shapes.h>
 
