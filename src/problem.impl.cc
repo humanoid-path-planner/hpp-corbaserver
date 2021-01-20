@@ -15,9 +15,9 @@
 #include <pinocchio/fwd.hpp>
 
 #include <boost/date_time/posix_time/posix_time_types.hpp>
-#include <boost/algorithm/string.hpp>
 
 #include <hpp/util/debug.hh>
+#include <hpp/util/string.hh>
 #include <hpp/util/exception-factory.hh>
 
 #include <hpp/fcl/shape/geometric_shapes.h>
@@ -215,7 +215,7 @@ namespace hpp
 
 #define _NOOP ((void)0)
 #define _CASE(test, op_true, op_false)                                         \
-      if (!ok) { if (boost::iequals(w,test)) {                                 \
+      if (!ok) { if (util::iequal(w,test)) {                                   \
         op_true;                                                               \
         ok = true;                                                             \
       } else { op_false; } }
