@@ -184,8 +184,8 @@ module hpp
      in boolSeq mask) raises (Error);
 
     /// \copydoc hpp::corbaserver::Problem::createTransformationConstraint2
-    /// \note the function outputs an element of SE3
-    void createTransformationSE3Constraint
+    /// \note the function outputs an element of R3xSO3
+    void createTransformationR3xSO3Constraint
     (in string constraintName, in string joint1Name, in string joint2Name,
      in Transform_ frame1, in Transform_ frame2, in boolSeq mask) raises (Error);
 

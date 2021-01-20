@@ -100,7 +100,7 @@ namespace hpp
 	 const char* joint2Name, const Transform_ frame1,
          const Transform_ frame2, const hpp::boolSeq& mask);
 
-	virtual void createTransformationSE3Constraint
+	virtual void createTransformationR3xSO3Constraint
 	(const char* constraintName, const char* joint1Name,
 	 const char* joint2Name, const Transform_ frame1,
          const Transform_ frame2, const hpp::boolSeq& mask);
