@@ -31,6 +31,8 @@ module hpp
 
       string name () raises (Error);
 
+      floatSeq neutralConfiguration () raises (Error);
+
       void integrate(in floatSeq config_in, in floatSeq velocity, out floatSeq result) raises (Error);
       //* hpp::pinocchio::DevicePtr_t d = getT();
       //* hpp::pinocchio::Configuration_t res (d->configSize());
@@ -99,6 +101,8 @@ module hpp
       //*   throw hpp::Error("Invalid computation flags");
       //* hpp::pinocchio::Frame frame(getT(), frame_id);
       //* return hpp::corbaServer::matrixToFloatSeqSeq(frame.jacobian());
+
+      void removeJoints(in Names_t joints, in floatSeq refConfig) raises (Error);
   };
 
   interface CollisionObject {
