@@ -38,6 +38,8 @@ module hpp
     /// It throws an exception if the object could not be deleted.
     void deleteServant (in string id) raises (Error);
 
+    void deleteAllServants () raises (Error);
+
     /// Shutdown the server.
     void shutdown ();
   }; // interface Tools

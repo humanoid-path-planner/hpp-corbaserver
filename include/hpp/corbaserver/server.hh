@@ -151,6 +151,8 @@ namespace hpp
 
       void removeServant (PortableServer::Servant servant);
 
+      void clearServantsMap ();
+
     private:
 
       ///\name CORBA server initialization
