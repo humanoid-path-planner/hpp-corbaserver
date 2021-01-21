@@ -86,7 +86,7 @@ module hpp
       void updateGeometryPlacements () raises (Error);
 
       frame_index getFrameByName (in string name) raises (Error);
-      //* return getT()->getFrameByName(name).index();
+      //* return (frame_index) getT()->getFrameByName(name).index();
 
       Transform_ getFramePosition (in frame_index frame_id) raises (Error);
       //* if (getT()->model().nframes <= (int)frame_id) throw hpp::Error("Index out of range");
