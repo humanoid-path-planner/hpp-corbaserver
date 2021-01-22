@@ -130,9 +130,12 @@ namespace hpp {
         ret.push_back (std::string(names[i]));
       return ret;
     }
+
     /// Convert CORBA comparison types to C++ comparison type.
-    constraints::ComparisonTypes_t convertComparison
-    (hpp::ComparisonTypes_t comp);
+    constraints::ComparisonTypes_t convertComparison (ComparisonTypes_t comp);
+
+    /// Convert C++ comparison type to CORBA comparison types.
+    ComparisonTypes_t* convertComparison (constraints::ComparisonTypes_t comp);
 
     core::Parameter toParameter (const CORBA::Any& any);
 

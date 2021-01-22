@@ -238,6 +238,15 @@ class Builder(idlvisitor.AstVisitor):
                 if _out:
                     out_conv_str  = "hpp::corbaServer::toNames_t ({var}.begin(), {var}.end());".format (var=tmp)
                 return tmp, in_conv_str, out_conv_str;
+            elif _type.type().name() == "ComparisonTypes_t":
+                if _in:
+                    in_conv_str  = "hpp::constraints::ComparisonTypes_t {} = hpp::corbaServer::convertComparison ({});".format (tmp,name)
+                    if _out:
+                        raise ValueError("inout ComparisonTypes_t is not implemented. See floatSeq convertion for an example.")
+                else: # !_in => _out
+                    assert _out
+                    raise ValueError("inout ComparisonTypes_t is not implemented. See floatSeq convertion for an example.")
+                return tmp, in_conv_str, out_conv_str
             print ("typedef", _type.type().name())
             return name, "", out_conv_str
         elif _type.is_basic_data_types():
@@ -276,6 +285,8 @@ class Builder(idlvisitor.AstVisitor):
                 return "hpp::core::Transform3f __return__", "return hpp::corbaServer::toHppTransform (__return__);"
             elif _type.type().name() == "Names_t":
                 return "{} __return__".format(if_cpp11("auto","std::vector<std::string>")), "return hpp::corbaServer::toNames_t (__return__);"
+            elif _type.type().name() == "ComparisonTypes_t":
+                return "hpp::constraints::ComparisonTypes_t __return__", "return hpp::corbaServer::convertComparison (__return__);"
             else:
                 unaliased = _type.deref()
                 if unaliased.sequence():
