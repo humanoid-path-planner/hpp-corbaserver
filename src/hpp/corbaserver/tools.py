@@ -61,5 +61,15 @@ def wrap_delete(o, client=None):
         o.__wrap_delete__ = _Deleter(o)
     return o
 
+def equals(a, b, client=None):
+    """
+    Compare whether the two objects a and b are the same on the server.
+    \param a, b object to compare.
+    \param client either an instance of Client or a client to the Tools interface.
+    """
+    import CORBA
+    orb = CORBA.ORB_init()
+    return a == b or orb.object_to_string(a) == orb.object_to_string(b)
+
 if sys.version_info.major > 2:
     Tools.__doc__ = _hpp.Tools__doc__

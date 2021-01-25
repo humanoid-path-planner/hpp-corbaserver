@@ -227,6 +227,33 @@ namespace hpp {
       return res;
     }
 
+    hpp::ComparisonTypes_t* convertComparison
+    (constraints::ComparisonTypes_t comp)
+    {
+      hpp::ComparisonTypes_t* res_ptr = new hpp::ComparisonTypes_t();
+      hpp::ComparisonTypes_t& res (*res_ptr);
+      res.length((CORBA::ULong)comp.size());
+      for (std::size_t i=0; i<comp.size(); ++i){
+        switch (comp[i]){
+          case constraints::Equality:
+            res[(CORBA::ULong)i] = Equality;
+            break;
+          case constraints::EqualToZero:
+            res[(CORBA::ULong)i] = EqualToZero;
+            break;
+          case constraints::Superior:
+            res[(CORBA::ULong)i] = Superior;
+            break;
+          case constraints::Inferior:
+            res[(CORBA::ULong)i] = Inferior;
+            break;
+          default:
+            throw Error("Unknown comparison type");
+        }
+      }
+      return res_ptr;
+    }
+
     using core::Parameter;
 
     Parameter toParameter (const CORBA::Any& any);

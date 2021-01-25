@@ -110,6 +110,15 @@ namespace hpp
           }
         }
 
+        virtual void deleteAllServants () override
+        {
+          try {
+            server_->clearServantsMap();
+          } catch (const std::exception& e) {
+            throw hpp::Error (e.what ());
+          }
+        }
+
         virtual void shutdown ()
         {
           server_->requestShutdown(false);
@@ -354,6 +363,17 @@ namespace hpp
       if (_it == servantToServantKeyMap_.end()) return;
       servantKeyToServantMap_.erase (_it->second);
       servantToServantKeyMap_.erase (_it);
+    }
+
+    void Server::clearServantsMap ()
+    {
+      PortableServer::POA_var _poa (poa());
+      for (const auto& pair : servantKeyToServantMap_) {
+        PortableServer::ObjectId_var objectId = _poa->servant_to_id (pair.second);
+        _poa->deactivate_object(objectId.in());
+      }
+      servantKeyToServantMap_.clear();
+      servantToServantKeyMap_.clear();
     }
 
   } // end of namespace corbaServer.

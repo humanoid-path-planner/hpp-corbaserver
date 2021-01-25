@@ -56,6 +56,12 @@ module hpp
     size_type parameterSize () raises (Error);
 
     floatSeq rightHandSideAt (in value_type s) raises (Error);
+
+    ComparisonTypes_t getComparisonType () raises (Error);
+    //->comparisonType
+
+    void setComparisonType (in ComparisonTypes_t compType) raises (Error);
+    //->comparisonType
   }; // interface Implicit
 
   interface LockedJoint : Implicit

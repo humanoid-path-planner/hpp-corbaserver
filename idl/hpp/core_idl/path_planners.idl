@@ -56,14 +56,14 @@ module hpp
       //* return getT()->nodes().size();
 
       floatSeq getNode (in size_type i) raises (Error);
-      //* return corbaServer::vectorToFloatSeq(*((*boost::next(getT()->nodes().begin(), i))->configuration()));
+      //* return corbaServer::vectorToFloatSeq(*((*std::next(getT()->nodes().begin(), i))->configuration()));
 
       size_type getNbEdges () raises (Error);
       //* return getT()->edges().size();
 
       Path getEdge (in size_type i) raises (Error);
       //* return corbaServer::makeServant<hpp::core_idl::Path_ptr> (server_,
-      //*   new Path (server_, (*boost::next(getT()->edges().begin(),i))->path()));
+      //*   new Path (server_, (*std::next(getT()->edges().begin(),i))->path()));
     }; // interface Roadmap
 
     interface PathPlanner
@@ -110,10 +110,7 @@ module hpp
   }; // module core
 }; // module hpp
 
-//* #include <boost/utility.hpp>
-//* #include <boost/archive/binary_oarchive.hpp>
-//* #include <boost/archive/xml_oarchive.hpp>
-//* #include <boost/serialization/nvp.hpp>
+//* #include <iterator>
 //* #include <hpp/pinocchio/serialization.hh>
 //* #include <hpp/core/path-planner.hh>
 //* #include <hpp/core/path-optimizer.hh>

@@ -11,8 +11,6 @@
 #ifndef HPP_CORBASERVER_SERVANT_BASE_HH
 # define HPP_CORBASERVER_SERVANT_BASE_HH
 
-# include <boost/type.hpp>
-
 # include <hpp/common-idl.hh>
 # include <hpp/corbaserver/server.hh>
 
@@ -29,17 +27,17 @@ namespace hpp
     /// hpp::corbaServer::core_idl::Distance
     ///
     /// \par Steps for the topmost class of an hierarchy, called ClassA:
-    /// - optionally write a storage class (or use boost::shared_ptr<ClassA>)
+    /// - optionally write a storage class (or use shared_ptr<ClassA>)
     /// - create a `template <typename _Base, typename _Storage> ClassAServant `
     ///   that inherits
     ///   - \c _Base, this will be an IDL class that inherits from IDLClassA.
-    ///   - \c ServantBase<boost::shared_ptr<ClassA>, _Storage >
-    /// - Add `SERVANT_BASE_TYPEDEFS(ClassAServant, boost::shared_ptr<ClassA>);`
+    ///   - \c ServantBase<shared_ptr<ClassA>, _Storage >
+    /// - Add `SERVANT_BASE_TYPEDEFS(ClassAServant, shared_ptr<ClassA>);`
     /// - implement the functions of IDLClassA
     /// - add after your class `typedef ClassAServant<IDLClassA, Storage> ClassA`.
     ///
     /// \par Steps for a derived class of an hierarchy, called ClassB:
-    /// - optionally write a storage class (or use boost::shared_ptr<ClassB>)
+    /// - optionally write a storage class (or use shared_ptr<ClassB>)
     /// - create a ` template <typename _Base, typename _Storage> ClassBServant`
     ///   that inherits
     ///   - \c ClassAServant<_Base, Storage>
@@ -83,8 +81,8 @@ namespace hpp
       public:
         virtual ~AbstractServantBase () {}
 
-        typedef boost::shared_ptr<T> TShPtr_t;
-        typedef boost::weak_ptr  <T> TWkPtr_t;
+        typedef shared_ptr<T> TShPtr_t;
+        typedef weak_ptr  <T> TWkPtr_t;
 
         virtual TShPtr_t get() const = 0;
 
@@ -105,8 +103,8 @@ namespace hpp
         typedef _Storage Storage;
         using typename AbstractServantBase<T>::TShPtr_t;
         using typename AbstractServantBase<T>::TWkPtr_t;
-        typedef boost::  weak_ptr<typename Storage::element_type> StorageElementWkPtr_t;
-        typedef boost::shared_ptr<typename Storage::element_type> StorageElementShPtr_t;
+        typedef   weak_ptr<typename Storage::element_type> StorageElementWkPtr_t;
+        typedef shared_ptr<typename Storage::element_type> StorageElementShPtr_t;
 
         virtual ~ServantBase () {}
 
@@ -192,7 +190,7 @@ namespace hpp
 
     /// Abstraction of storage ot HPP class.
     ///
-    /// In most cases, it is sufficient to use boost::shared_ptr<Class>. However,
+    /// In most cases, it is sufficient to use shared_ptr<Class>. However,
     /// there are some cases where you need more information in the AbstractServantBase
     /// derived class. For instance, if you want to check the inputs (which is
     /// recommended), you may need to store the robot. See
@@ -208,16 +206,16 @@ namespace hpp
     template <typename T, typename Base> class AbstractStorage
     {
       public:
-        typedef boost::weak_ptr<T> ptr_t;
+        typedef weak_ptr<T> ptr_t;
 
         ptr_t element;
 
         AbstractStorage (const ptr_t& _element) : element(_element) {}
-        operator boost::shared_ptr<T   > () const { return element.lock(); }
-        operator boost::weak_ptr  <T   > () const { return element; }
+        operator shared_ptr<T   > () const { return element.lock(); }
+        operator weak_ptr  <T   > () const { return element; }
         long use_count() const { return element.use_count(); }
 
-        // Mimic boost::shared_ptr<D> interface:
+        // Mimic shared_ptr<D> interface:
         typedef T element_type;
         operator bool () const { return use_count()>0; }
     };
@@ -269,7 +267,7 @@ namespace hpp
     /// \cond
     namespace details
     {
-      /// Enabled only if StorageTpl != boost::shared_ptr
+      /// Enabled only if StorageTpl != shared_ptr
       template <typename U, typename V, template<typename> class StorageTpl>
       struct storage_cast_impl {
         static StorageTpl<U> run (const StorageTpl<V>& o) {
@@ -277,19 +275,19 @@ namespace hpp
         }
       };
 
-      /// Enabled only if StorageTpl == boost::shared_ptr
+      /// Enabled only if StorageTpl == shared_ptr
       template <typename U, typename V>
-      struct storage_cast_impl<U, V, boost::shared_ptr> {
-        static boost::shared_ptr<U> run (const boost::shared_ptr<V>& o) {
-          return boost::dynamic_pointer_cast<U>(o);
+      struct storage_cast_impl<U, V, shared_ptr> {
+        static shared_ptr<U> run (const shared_ptr<V>& o) {
+          return dynamic_pointer_cast<U>(o);
         }
       };
 
-      /// Enabled only if StorageTpl == boost::weak_ptr
+      /// Enabled only if StorageTpl == weak_ptr
       template <typename U, typename V>
-      struct storage_cast_impl<U, V, boost::weak_ptr> {
-        static boost::weak_ptr<U> run (const boost::weak_ptr<V>& o) {
-          return boost::dynamic_pointer_cast<U>(o.lock());
+      struct storage_cast_impl<U, V, weak_ptr> {
+        static weak_ptr<U> run (const weak_ptr<V>& o) {
+          return dynamic_pointer_cast<U>(o.lock());
         }
       };
     }
