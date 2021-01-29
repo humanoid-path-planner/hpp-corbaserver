@@ -110,7 +110,7 @@ namespace hpp
 
         virtual TShPtr_t get () const
         {
-          TWkPtr_t wk ((StorageElementWkPtr_t) s);
+          TWkPtr_t wk ((StorageElementWkPtr_t) wrappedObject_);
           if (wk.expired()) {
             // Object expired. Remove the servant and throw.
             objectExpired();
@@ -120,7 +120,7 @@ namespace hpp
 
         StorageElementShPtr_t getT () const
         {
-          StorageElementWkPtr_t wk ((StorageElementWkPtr_t) s);
+          StorageElementWkPtr_t wk ((StorageElementWkPtr_t) wrappedObject_);
           if (wk.expired()) {
             // Object expired. Remove the servant and throw.
             objectExpired();
@@ -130,7 +130,7 @@ namespace hpp
 
         const Storage& getS () const
         {
-          return s;
+          return wrappedObject_;
         }
 
         /// Set to true if the servant should take ownership of this object.
@@ -163,12 +163,12 @@ namespace hpp
 
       protected:
         ServantBase (Server* server, const Storage& _s)
-          : AbstractServantBase<T> (server), s(_s)
+          : AbstractServantBase<T> (server), wrappedObject_(_s)
         {
           persistantStorage (true);
         }
 
-        Storage s;
+        Storage wrappedObject_;
 
       private:
         void objectExpired () const
@@ -426,9 +426,9 @@ namespace hpp
     template <typename OutType, typename InnerBaseType, typename InnerType = InnerBaseType>
     struct vectorToSeqServant
     {
-      Server* s;
+      Server* wrappedObject_;
 
-      vectorToSeqServant (Server* _s) : s (_s) {}
+      vectorToSeqServant (Server* _s) : wrappedObject_ (_s) {}
 
       template <typename InContainer>
       inline OutType* operator() (const InContainer& input)
@@ -441,7 +441,7 @@ namespace hpp
         typename InContainer::const_iterator it = input.begin();
         while (it != input.end()) {
           (*seq)[(CORBA::ULong)i] = makeServantDownCast<InnerBaseType,
-                                                   InnerType> (s, *it)._retn();
+                                                   InnerType> (wrappedObject_, *it)._retn();
           ++it;
           ++i;
         }
