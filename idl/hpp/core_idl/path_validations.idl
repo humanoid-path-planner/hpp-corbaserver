@@ -17,7 +17,27 @@
 module hpp
 {
   module core_idl {
+  typedef string ValidationReport;
   typedef string PathValidationReport;
+
+  interface ConfigValidation
+  {
+    boolean validate (in floatSeq config, out ValidationReport report) raises (Error);
+    //* using namespace hpp::core;
+    //* ValidationReportPtr_t vr;
+    //*
+    //* bool res = get()->validate (hpp::corbaServer::floatSeqToVector(config), vr);
+    //*
+    //* if (vr) {
+    //*   std::ostringstream oss; oss << *vr;
+    //*   std::string res = oss.str();
+    //*   report = CORBA::string_dup(res.c_str());
+    //* } else {
+    //*   report = CORBA::string_dup("");
+    //* }
+    //*
+    //* return res;
+  }; // interface ConfigValidation
 
   interface PathValidation
   {
@@ -43,6 +63,7 @@ module hpp
 
   }; // module core
 }; // module hpp
+//* #include <hpp/core/config-validation.hh>
 //* #include <hpp/core/path-validation.hh>
 //* #include <hpp/core/path-validation-report.hh>
 //* #include <hpp/core_idl/paths.hh>

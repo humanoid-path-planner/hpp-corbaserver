@@ -22,6 +22,7 @@ module hpp
   module core_idl {
   interface Distance;
   interface SteeringMethod;
+  interface ConfigValidation;
   interface PathValidation;
   interface ConfigurationShooter;
   interface Constraint;
@@ -63,6 +64,12 @@ module hpp
     //-> pathValidation
     void setPathValidation (in PathValidation d) raises (Error);
     //-> pathValidation
+
+    ConfigValidation getConfigValidations () raises (Error);
+    //-> configValidations
+    void clearConfigValidations () raises (Error);
+    void addConfigValidation (in ConfigValidation cfgValidation) raises (Error);
+
     ConfigurationShooter getConfigurationShooter () raises (Error);
     //-> configurationShooter
     void setConfigurationShooter (in ConfigurationShooter d) raises (Error);
@@ -93,6 +100,7 @@ module hpp
 //* #include <hpp/core_idl/steering_methods.hh>
 //* #include <hpp/core_idl/path_validations.hh>
 //* #include <hpp/core_idl/configuration_shooters.hh>
+//* #include <hpp/core/config-validations.hh>
 
 #include <hpp/pinocchio_idl/robots.idl>
 #include <hpp/core_idl/distances.idl>

@@ -102,6 +102,7 @@ module hpp
       //* hpp::pinocchio::Frame frame(getT(), frame_id);
       //* return hpp::corbaServer::matrixToFloatSeqSeq(frame.jacobian());
 
+      /// \warning removing joints invalidates joint ids. Use this carefully.
       void removeJoints(in Names_t joints, in floatSeq refConfig) raises (Error);
   };
 
