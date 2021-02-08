@@ -14,6 +14,7 @@
 #include <pthread.h>
 #include <iostream>
 #include <dlfcn.h>
+#include <stdlib.h>
 
 #include <hpp/util/debug.hh>
 #include <hpp/util/exception-factory.hh>
@@ -171,6 +172,18 @@ namespace hpp
       std::string host = "localhost";
       int port = 13331;
       bool endPointSet = false;
+      // Read environment variables
+      char* env = getenv("HPP_HOST");
+      if (env != NULL) {
+        host = env;
+        endPointSet = true;
+      }
+      env = getenv("HPP_PORT");
+      if (env != NULL) {
+        port = atoi(env);
+        endPointSet = true;
+      }
+
       ORBendPoint = endPoint (host, port);
 
       for (int i = 1; i < argc; ++i) {
