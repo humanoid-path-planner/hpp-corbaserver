@@ -2854,6 +2854,21 @@ namespace hpp
 	  throw hpp::Error(exc.what());
 	}
       }
+      core_idl::ConfigValidation_ptr Problem::createConfigValidation (const char* type, pinocchio_idl::Device_ptr robot)
+      {
+        try{
+	core::ProblemSolverPtr_t ps = problemSolver();
+        core_idl::ConfigValidation_var o = makeServantDownCast<core_impl::ConfigValidation> (
+            server_->parent(),
+            (ps->configValidations.get(type))
+	    (reference_to_object<pinocchio::Device> (server_->parent(), robot)));
+        return o._retn();
+	}
+	catch(const std::exception& exc)
+	{
+	  throw hpp::Error(exc.what());
+	}
+      }
       core_idl::Distance_ptr Problem::createDistance (const char* type, core_idl::Problem_ptr problem)
       {
         try{
