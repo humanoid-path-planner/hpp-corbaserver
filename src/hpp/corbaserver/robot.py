@@ -345,14 +345,23 @@ class Robot (object):
     ## \name Collision checking and distance computation
     # \{
 
-    ## Check the validity of a configuration.
+    ## Check the validity of a configuration and return a informative message
+    #
+    # Check whether a configuration of robot is valid.
+    # \param cfg a configuration
+    # \return (boolean, str): whether configuration is valid and a msg explaining what is not valid
+    def isConfigValid (self, cfg):
+        return self.hppcorba.robot.isConfigValid (cfg)
+        valid, msg = self.hppcorba.robot.isConfigValid (cfg)
+        return valid, msg
+
+    ## Checks the validity of a configuration.
     #
     # Check whether a configuration of robot is valid.
     # \param cfg a configuration
     # \return whether configuration is valid
-    # \throw if config is not valid, raise an exception.
-    def isConfigValid (self, cfg):
-        return self.hppcorba.robot.isConfigValid (cfg)
+    def configIsValid (self, cfg):
+        return self.isConfigValid(cfg)[0]
 
     ## Compute distances between bodies and obstacles
     #
