@@ -189,6 +189,31 @@ namespace hpp {
       }
       return out;
     }
+
+    IntMatrix_t intSeqSeqToMatrix (const intSeqSeq& input, const size_type expectedRows, const size_type expectedCols)
+    {
+      size_type rows = (size_type)input.length();
+      if (expectedRows >= 0 && rows != expectedRows) {
+        HPP_THROW (std::runtime_error,
+            "number of rows of input floatSeqSeq (" << rows <<
+            ") is different from the expected number of rows (" << expectedRows << ")");
+      }
+      if (rows == 0) return IntMatrix_t (rows, std::max(size_type(0), expectedCols));
+      size_type cols = (size_type)input[0].length();
+      if (expectedCols >= 0 && cols != expectedCols) {
+        HPP_THROW (std::runtime_error,
+            "number of cols of input floatSeqSeq (" << cols <<
+            ") is different from the expected number of cols (" << expectedCols << ")");
+      }
+      IntMatrix_t out (rows, cols);
+      for (size_type r = 0; r < rows; ++r) {
+        const intSeq& row = input[(CORBA::ULong)r];
+        for (size_type c = 0; c < cols; ++c)
+          out(r,c) = row[(CORBA::ULong)c];
+      }
+      return out;
+    }
+
     std::vector<bool> boolSeqToVector (const hpp::boolSeq& mask,
                                        unsigned int length)
     {

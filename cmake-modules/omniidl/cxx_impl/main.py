@@ -217,7 +217,7 @@ class Builder(idlvisitor.AstVisitor):
                 if _in:
                     in_conv_str  = "hpp::core::matrix_t {} = hpp::corbaServer::floatSeqSeqToMatrix ({});".format (tmp,name)
                     if _out:
-                        out_conv_str = "hpp::corbaServer::matrixToFloatSeqSeq ({}, {});".format (tmp,name)
+                        out_conv_str = "/* not implemented. See vectorToFloatSeq */ hpp::corbaServer::matrixToFloatSeqSeq ({}, {});".format (tmp,name)
                 else: # !_in => _out
                     in_conv_str  = "hpp::core::matrix_t {};".format (tmp,name)
                     assert _out
@@ -246,6 +246,16 @@ class Builder(idlvisitor.AstVisitor):
                 else: # !_in => _out
                     assert _out
                     raise ValueError("inout ComparisonTypes_t is not implemented. See floatSeq convertion for an example.")
+                return tmp, in_conv_str, out_conv_str
+            elif _type.type().name() == "RelativeMotionMatrix":
+                if _in:
+                    in_conv_str  = "hpp::core::RelativeMotion::matrix_type {} = hpp::corbaServer::intSeqSeqToMatrix ({}).cast<hpp::core::RelativeMotion::RelativeMotionType>();".format (tmp,name)
+                    if _out:
+                        out_conv_str = "/* not implemented. See vectorToFloatSeq */ hpp::corbaServer::matrixToIntSeqSeq ({}.cast<int>(), {});".format (tmp,name)
+                else: # !_in => _out
+                    in_conv_str  = "hpp::core::RelativeMotion::matrix_type {}".format (tmp)
+                    assert _out
+                    out_conv_str = "{} = hpp::corbaServer::matrixToIntSeqSeq ({}.cast<int>());".format (name,tmp)
                 return tmp, in_conv_str, out_conv_str
             print ("typedef", _type.type().name())
             return name, "", out_conv_str

@@ -63,6 +63,8 @@ namespace hpp {
 
     core::matrix_t floatSeqSeqToMatrix (const floatSeqSeq& input, const size_type expectedRows = -1, const size_type expectedCols = -1);
 
+    IntMatrix_t intSeqSeqToMatrix (const intSeqSeq& input, const size_type expectedRows = -1, const size_type expectedCols = -1);
+
     std::vector<bool> boolSeqToVector (const hpp::boolSeq& mask,
                                        unsigned int length = 3);
 

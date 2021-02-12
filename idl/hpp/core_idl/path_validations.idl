@@ -14,11 +14,18 @@
 
 #include <hpp/core_idl/paths.idl>
 
+#define HPP_CORE_OBSTACLE_USER_INTERFACE                                       \
+   void setSecurityMargins(in floatSeqSeq margins) raises(Error); \
+   void setSecurityMarginBetweenBodies(in string body_a, in string body_b, in value_type margin) raises(Error); \
+   void filterCollisionPairs (in RelativeMotionMatrix relMotion) raises(Error);
+  
+
 module hpp
 {
   module core_idl {
   typedef string ValidationReport;
   typedef string PathValidationReport;
+  typedef intSeqSeq RelativeMotionMatrix;
 
   interface ConfigValidation
   {
@@ -44,6 +51,8 @@ module hpp
       void add (in ConfigValidation validation) raises (Error);
       size_type numberConfigValidations() raises (Error);
       void clear() raises (Error);
+
+      HPP_CORE_OBSTACLE_USER_INTERFACE
   }; // interface ConfigValidations
 
   interface PathValidation
