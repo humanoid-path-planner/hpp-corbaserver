@@ -55,6 +55,11 @@ module hpp
       HPP_CORE_OBSTACLE_USER_INTERFACE
   }; // interface ConfigValidations
 
+  interface CollisionValidation : ConfigValidation
+  {
+      HPP_CORE_OBSTACLE_USER_INTERFACE
+  }; // interface PathValidations
+
   interface PathValidation
   {
     boolean validate (in Path p, in boolean reverse, out Path validPart, out PathValidationReport report) raises (Error);
@@ -77,12 +82,34 @@ module hpp
     //* return res;
   }; // interface SteeringMethod
 
+  interface PathValidations : PathValidation
+  {
+      HPP_CORE_OBSTACLE_USER_INTERFACE
+  }; // interface PathValidations
+
+  interface ContinuousValidation : PathValidation
+  {
+      HPP_CORE_OBSTACLE_USER_INTERFACE
+  }; // interface PathValidations
+
+  module pathValidation_idl {
+    // \todo at the moment, multiple parent classes is not supported.
+    interface Discretized : PathValidation
+    {
+        HPP_CORE_OBSTACLE_USER_INTERFACE
+    }; // interface PathValidations
+  }; // module pathValidation
+
   }; // module core
 }; // module hpp
 //* #include <hpp/core/config-validation.hh>
 //* #include <hpp/core/config-validations.hh>
+//* #include <hpp/core/collision-validation.hh>
 //* #include <hpp/core/path-validation.hh>
+//* #include <hpp/core/path-validations.hh>
 //* #include <hpp/core/path-validation-report.hh>
+//* #include <hpp/core/path-validation/discretized.hh>
+//* #include <hpp/core/continuous-validation.hh>
 //* #include <hpp/core_idl/paths.hh>
 
 #endif // HPP_CORE_PATH_VALIDATIONS_IDL
