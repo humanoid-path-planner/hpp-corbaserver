@@ -74,6 +74,17 @@ module hpp
     void appendPath (in Path p) raises (Error);
 
     void concatenate (in PathVector p) raises (Error);
+
+    PathVector flatten () raises (Error);
+    //* hpp::core::PathPtr_t p = get();
+    //* hpp::core::PathVectorPtr_t pv =
+    //*   HPP_DYNAMIC_PTR_CAST(hpp::core::PathVector, p);
+    //* hpp::core::PathVectorPtr_t out =
+    //*   hpp::core::PathVector::create (p->outputSize(), p->outputDerivativeSize());
+    //* pv->flatten (out);
+    //*
+    //* return hpp::corbaServer::makeServant<hpp::core_idl::PathVector_ptr>
+    //*   (server_, new PathVector (server_, out));
   }; // interface PathVector
 
   }; // module core
