@@ -79,7 +79,7 @@ namespace hpp {
     {
       std::size_t len = std::distance (begin, end);
       char** nameList = Names_t::allocbuf((CORBA::ULong) len);
-      Names_t *ret = new Names_t ((CORBA::ULong) len, (CORBA::ULong) len, nameList);
+      Names_t *ret = new Names_t ((CORBA::ULong) len, (CORBA::ULong) len, nameList, true);
 
       std::size_t i = 0;
       while (begin != end) {
