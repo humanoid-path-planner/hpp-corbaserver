@@ -568,3 +568,27 @@ class RobotXML (Robot):
         self.rebuildRanks()
     def urdfPath (self):
         return self.urdfString
+
+## Shrink joint range for security
+#
+def shrinkJointRange (robot, joints, ratio):
+    """
+    Reduce the range of selected joints for security
+
+      Input
+        - robot: an instance of Robot class,
+        - joints the list of joint names,
+        - ratio: the range of the joint is shrunk around the middle of its
+                 bounds by this ratio.
+    """
+    for j in joints:
+        bounds = robot.getJointBounds (j)
+        assert (len (bounds) == 2)
+        width = bounds [1] - bounds [0]
+        if width < 0 :
+            raise ValueError("Cannot shrink range of joint " + j + \
+                             ". The joint is not bounded.")
+        mean = .5 * (bounds [1] + bounds [0])
+        m = mean - .5 * ratio * width
+        M = mean + .5 * ratio * width
+        robot.setJointBounds (j, [m, M])
