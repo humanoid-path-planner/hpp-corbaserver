@@ -19,6 +19,7 @@
 from hpp import Transform
 from hpp.corbaserver.client import Client
 
+
 ##
 #  Helper class to load a robot model in hpp::core::ProblemSolver.
 #
@@ -127,7 +128,8 @@ class Robot (object):
         self.rebuildRanks()
 
     def urdfPath (self):
-        return "package://" + self.packageName + '/urdf/' + self.urdfName + self.urdfSuffix + '.urdf'
+        urdfDir = self.urdfDir if hasattr(self, 'urdfDir') else 'urdf'
+        return "package://" + self.packageName + '/' + urdfDir + '/' + self.urdfName + self.urdfSuffix + '.urdf'
 
     def srdfPath (self):
         return "package://" + self.packageName + '/srdf/' + self.urdfName + self.srdfSuffix + '.srdf'
