@@ -1,21 +1,23 @@
 import sys
+
 import hpp_idl.hpp as _hpp
 
-def loadServerPlugin (context, plugin, url = None):
-    client = Tools (url)
+
+def loadServerPlugin (context, plugin, url = None, port=13331):
+    client = Tools (url, port=port)
     return client.loadServerPlugin (context, plugin)
 if sys.version_info.major > 2:
     loadServerPlugin.__doc__ = _hpp.Tools.loadServerPlugin__doc__
 
-def createContext (context, url = None):
-    client = Tools (url)
+def createContext (context, url = None, port=13331):
+    client = Tools (url, port=port)
     return client.createContext (context)
 if sys.version_info.major > 2:
     createContext.__doc__ = _hpp.Tools.createContext__doc__
 
-def Tools(url = None):
+def Tools(url = None, port = 13331):
     from .client import Client
-    _tc = Client(url=url, clients={})
+    _tc = Client(url=url, clients={}, port=port)
     client = _tc._tools
 
     def deleteServantFromObject (*args):
