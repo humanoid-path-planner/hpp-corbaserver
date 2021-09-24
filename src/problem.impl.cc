@@ -2321,17 +2321,25 @@ namespace hpp
       hpp::floatSeqSeq*
       Problem::nodesConnectedComponent (ULong connectedComponentId)
       {
+        const ConnectedComponents_t& connectedComponents
+          (problemSolver()->roadmap ()->connectedComponents ());
+        if ((std::size_t)connectedComponentId < 0 ||
+            (std::size_t)connectedComponentId >= connectedComponents.size ()) {
+          std::ostringstream oss;
+          oss << "connectedComponentId=" << connectedComponentId
+              << " out of range [0," << connectedComponents.size () - 1
+              << "].";
+          throw hpp::Error (oss.str ().c_str ());
+        }
 	hpp::floatSeqSeq* res;
 	try {
-	  const ConnectedComponents_t& connectedComponents
-	    (problemSolver()->roadmap ()->connectedComponents ());
 	  ConnectedComponents_t::const_iterator itcc =
-	    connectedComponents.begin ();
-	  ULong i = 0;
-	  while (i != connectedComponentId) {
-	    ++i; itcc++;
-	  }
-      const NodeVector_t & nodes ((*itcc)->nodes ());
+            connectedComponents.begin ();
+          ULong i = 0;
+          while (i != connectedComponentId) {
+            ++i; itcc++;
+          }
+          const NodeVector_t & nodes ((*itcc)->nodes ());
 	  res = new hpp::floatSeqSeq;
 	  res->length ((CORBA::ULong)nodes.size ());
 	  i=0;
