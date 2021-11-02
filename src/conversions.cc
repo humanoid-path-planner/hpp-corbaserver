@@ -17,6 +17,7 @@
 #include <hpp/corbaserver/conversions.hh>
 
 #include <boost/mpl/for_each.hpp>
+#include <boost/mpl/vector.hpp>
 
 #include <pinocchio/spatial/se3.hpp>
 #include <hpp/corbaserver/config.hh>
@@ -340,7 +341,7 @@ namespace hpp {
 
           std::pair<std::string, const char*>
 
-            // This two do not work because omniidl must be given the option -Wba in order to generate 
+            // This two do not work because omniidl must be given the option -Wba in order to generate
             // a DynSK.cc file containing the conversion to/from Any type.
             , std::pair<matrix_t   , floatSeqSeq>
             , std::pair<vector_t   , floatSeq>
