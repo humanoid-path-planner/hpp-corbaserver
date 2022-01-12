@@ -19,6 +19,21 @@ module hpp
   module core_idl {
     interface Path;
 
+    interface ConnectedComponent {
+      HPP_EXPOSE_MEMORY_DEALLOCATION(Error)
+      floatSeqSeq nodes () raises(Error);
+      //* hpp::core::NodeVector_t nodes = getT()->nodes();
+      //* hpp::core::matrix_t configs (nodes.size(),
+      //*                              nodes[0]->configuration()->size());
+      //* size_type i = 0;
+      //* for (hpp::core::NodeVector_t::const_iterator _node = nodes.begin();
+      //*      _node != nodes.end(); ++_node)
+      //*   configs.row(i++) = *((*_node)->configuration());
+      //* return corbaServer::matrixToFloatSeqSeq(configs);
+    }; // interface ConnectedComponent
+
+    typedef sequence<ConnectedComponent> ConnectedComponentSeq;
+
     interface Roadmap {
       HPP_EXPOSE_MEMORY_DEALLOCATION(Error)
 
@@ -64,6 +79,8 @@ module hpp
       Path getEdge (in size_type i) raises (Error);
       //* return corbaServer::makeServant<hpp::core_idl::Path_ptr> (server_,
       //*   new Path (server_, (*std::next(getT()->edges().begin(),i))->path()));
+      ConnectedComponentSeq getConnectedComponents () raises(Error);
+      //-> connectedComponents
     }; // interface Roadmap
 
     interface PathPlanner
@@ -112,6 +129,7 @@ module hpp
 
 //* #include <iterator>
 //* #include <hpp/pinocchio/serialization.hh>
+//* #include <hpp/core/connected-component.hh>
 //* #include <hpp/core/path-planner.hh>
 //* #include <hpp/core/path-optimizer.hh>
 //* #include <hpp/core/roadmap.hh>

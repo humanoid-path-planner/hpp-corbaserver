@@ -2323,8 +2323,7 @@ namespace hpp
       {
         const ConnectedComponents_t& connectedComponents
           (problemSolver()->roadmap ()->connectedComponents ());
-        if ((std::size_t)connectedComponentId < 0 ||
-            (std::size_t)connectedComponentId >= connectedComponents.size ()) {
+        if ((std::size_t)connectedComponentId >= connectedComponents.size ()) {
           std::ostringstream oss;
           oss << "connectedComponentId=" << connectedComponentId
               << " out of range [0," << connectedComponents.size () - 1
