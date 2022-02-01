@@ -162,6 +162,14 @@ class ProblemSolver (object):
     def addGoalConfig (self, dofArray):
         return self.hppcorba.problem.addGoalConfig (dofArray)
 
+    ## Set goal as a task.
+    def setGoalConstraints(self, constraints):
+        return self.hppcorba.problem.setGoalConstraints(constraints)
+
+    ## Clear goal constraints.
+    def resetGoalConstraints(self):
+        return self.hppcorba.problem.resetGoalConstraints()
+
     ## Get goal configurations of specified problem.
     #  \return Array of degrees of freedom
     def getGoalConfigs (self):

@@ -101,6 +101,12 @@ module hpp
     /// Reset goal configurations
     void resetGoalConfigs () raises (Error);
 
+    /// Set goal as a task.
+    void setGoalConstraints(in Names_t constraints) raises(Error);
+
+    /// Clear goal constraints.
+    void resetGoalConstraints() raises(Error);
+
     /// \}
 
     /// \name Constraints
