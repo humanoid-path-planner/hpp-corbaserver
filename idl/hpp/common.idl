@@ -21,6 +21,7 @@ module hpp
 
   /// Sequence of names
   typedef sequence <string> Names_t;
+  typedef sequence <Names_t> stringSeqSeq;
   /// Corba exception travelling through the Corba channel
   exception Error
   {
