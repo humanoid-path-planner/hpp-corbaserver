@@ -228,6 +228,18 @@ namespace hpp {
       return m;
     }
 
+    stringSeqSeq* vectorToStringSeqSeq (std::vector<std::vector<std::string>> input)
+    {
+      stringSeqSeq* seq_ptr = new stringSeqSeq ();
+      ULong size = (ULong) input.size ();
+      seq_ptr->length (size);
+      for (size_type i=0; i<size; ++i) {
+        Names_t* names = toNames_t<std::vector<std::string>>(input.at(i));
+        (*seq_ptr) [(ULong)i] = *names;
+      }
+      return seq_ptr;
+    }
+
     constraints::ComparisonTypes_t convertComparison
     (hpp::ComparisonTypes_t comp)
     {

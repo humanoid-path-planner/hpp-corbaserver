@@ -68,6 +68,8 @@ namespace hpp {
     std::vector<bool> boolSeqToVector (const hpp::boolSeq& mask,
                                        unsigned int length = 3);
 
+    stringSeqSeq* vectorToStringSeqSeq (std::vector<std::vector<std::string>> input);
+
     inline char* c_str (const std::string& in)
     {
       char* out = new char[in.length()+1];
