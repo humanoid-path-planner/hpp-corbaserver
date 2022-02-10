@@ -87,6 +87,9 @@ namespace hpp
 	virtual void
 	resetGoalConfigs () ;
 
+        void setGoalConstraints(const Names_t& constraints);
+
+        void resetGoalConstraints();
 	virtual void createOrientationConstraint
 	(const char* constraintName, const char* joint1Name,
 	 const char* joint2Name, const Double* p, const hpp::boolSeq& mask);

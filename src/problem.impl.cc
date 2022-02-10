@@ -85,6 +85,7 @@ using hpp::pinocchio::CenterOfMassComputation;
 using hpp::pinocchio::CenterOfMassComputationPtr_t;
 
 using hpp::constraints::DistanceBetweenBodies;
+using hpp::constraints::NumericalConstraints_t;
 using hpp::constraints::Orientation;
 using hpp::constraints::OrientationPtr_t;
 using hpp::constraints::Position;
@@ -515,6 +516,34 @@ namespace hpp
 	problemSolver()->resetGoalConfigs ();
       }
 
+      void Problem::setGoalConstraints(const Names_t& constraints)
+      {
+        try {
+          NumericalConstraints_t ncs;
+          for(CORBA::ULong i=0; i<constraints.length();++i){
+            ImplicitPtr_t c(problemSolver()->numericalConstraint
+                            (std::string(constraints[i])));
+            if (!c) {
+              std::ostringstream os;
+              os << "Constraint \"" << constraints[i] << "\" not found.";
+              throw std::invalid_argument(os.str().c_str());
+            }
+            ncs.push_back(c);
+          }
+          problemSolver()->setGoalConstraints(ncs);
+        } catch(const std::exception& exc){
+	  throw hpp::Error (exc.what ());
+	}
+      }
+
+      void Problem::resetGoalConstraints()
+      {
+        try {
+          problemSolver()->resetGoalConstraints();
+        } catch(const std::exception& exc){
+	  throw hpp::Error (exc.what ());
+	}
+      }
 
       // ---------------------------------------------------------------
       static int numberOfTrue (const hpp::boolSeq& mask)

@@ -80,6 +80,21 @@ module hpp
     //*
     //* validPart = ::hpp::corbaServer::makeServant<hpp::core_idl::Path_ptr> (server_, new Path (server_, vp));
     //* return res;
+
+    boolean validateConfiguration (in floatSeq config,
+                                   out ValidationReport report) raises (Error);
+    //* using namespace hpp::core;
+    //* Configuration_t q(corbaServer::floatSeqToVector(config));
+    //* ValidationReportPtr_t vr;
+    //* bool res = get()->validate(q, vr);
+    //* if (vr) {
+    //*   std::ostringstream oss; oss << *vr;
+    //*   std::string res = oss.str();
+    //*   report = CORBA::string_dup(res.c_str());
+    //* } else {
+    //*   report = CORBA::string_dup("");
+    //* }
+    //* return res;
   }; // interface SteeringMethod
 
   interface PathValidations : PathValidation
@@ -111,5 +126,6 @@ module hpp
 //* #include <hpp/core/path-validation/discretized.hh>
 //* #include <hpp/core/continuous-validation.hh>
 //* #include <hpp/core_idl/paths.hh>
+//* #include <hpp/corbaserver/conversions.hh>
 
 #endif // HPP_CORE_PATH_VALIDATIONS_IDL
