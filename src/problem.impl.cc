@@ -81,9 +81,6 @@
 #include <hpp/constraints/symbolic-calculus.hh>
 #include <hpp/constraints/symbolic-function.hh>
 #include <hpp/constraints/manipulability.hh>
-#ifdef HPP_CONSTRAINTS_USE_QPOASES
-# include <hpp/constraints/static-stability.hh>
-#endif
 #include <hpp/constraints/configuration-constraint.hh>
 #include <hpp/corbaserver/server.hh>
 #include <hpp/corbaserver/server-plugin.hh>
@@ -125,10 +122,6 @@ using hpp::constraints::RelativeTransformation;
 using hpp::constraints::Transformation;
 using hpp::constraints::ConvexShapeContact;
 using hpp::constraints::ConvexShapeContactPtr_t;
-#ifdef HPP_CONSTRAINTS_USE_QPOASES
-using hpp::constraints::StaticStability;
-using hpp::constraints::StaticStabilityPtr_t;
-#endif
 using hpp::constraints::DifferentiableFunctionPtr_t;
 using hpp::constraints::LockedJoint;
 using hpp::constraints::LockedJointPtr_t;
@@ -942,71 +935,6 @@ namespace hpp
           throw hpp::Error (exc.what ());
         }
       }
-
-      // ---------------------------------------------------------------
-
-#ifdef HPP_CONSTRAINTS_USE_QPOASES
-      void Problem::createStaticStabilityConstraint
-      (const char* constraintName, const hpp::Names_t& jointNames,
-       const hpp::floatSeqSeq& points, const hpp::floatSeqSeq& normals,
-       const char* comRootJointName)
-      {
-	if (!problemSolver()->robot ()) throw hpp::Error ("No robot loaded");
-        DevicePtr_t robot = problemSolver()->robot();
-        JointPtr_t comRJ;
-        try {
-          std::string name (constraintName);
-          /// Create the com
-          comRJ = robot->getJointByName(comRootJointName);
-          CenterOfMassComputationPtr_t com =
-            CenterOfMassComputation::create (robot);
-          com->add (comRJ);
-
-          /// Create the contacts
-          StaticStability::Contacts_t contacts;
-          if (jointNames.length () != points.length()
-              || jointNames.length () != normals.length()) {
-            throw Error ("There should be as many joint names, points and normals");
-          }
-          for (CORBA::ULong i = 0; i < jointNames.length (); i+=2) {
-            StaticStability::Contact_t c;
-            // Set joints
-            std::string jn1 (jointNames[i  ]);
-            std::string jn2 (jointNames[i+1]);
-            if (jn1.empty ()) c.joint1.reset();
-            else c.joint1 = robot->getJointByName (jn1);
-            if (jn2.empty ()) c.joint2.reset();
-            else c.joint2 = robot->getJointByName (jn2);
-            // Set points and normals
-            if (points[i].length () != 3 || points[i+1].length () != 3
-                || normals[i].length () != 3 || normals[i+1].length () != 3)
-              throw Error ("Points and normals must be of length 3");
-            for (size_t j = 0; j < 3; j++) {
-              c.point1[j]  = points [i  ][j];
-              c.point2[j]  = points [i+1][j];
-              c.normal1[j] = normals[i  ][j];
-              c.normal2[j] = normals[i+1][j];
-            }
-            contacts.push_back (c);
-          }
-          StaticStabilityPtr_t f = StaticStability::create
-            (name, robot, contacts, com);
-          problemSolver()->addNumericalConstraint (name,
-              Implicit::create (f,
-                constraints::ComparisonTypes_t(1, constraints::EqualToZero))
-              );
-        } catch (const std::exception& exc) {
-          throw hpp::Error (exc.what ());
-        }
-      }
-#else
-      void Problem::createStaticStabilityConstraint
-      (const char*, const hpp::Names_t&, const hpp::floatSeqSeq&,
-       const hpp::floatSeqSeq&, const char*)
-      {
-	throw hpp::Error ("Not implemented");
-      }
-#endif
 
       // ---------------------------------------------------------------
 
