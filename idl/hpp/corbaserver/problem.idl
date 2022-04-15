@@ -283,11 +283,6 @@ module hpp
      in floatSeqSeq pts, in intSeqSeq objectTriangles,
      in intSeqSeq floorTriangles) raises (Error);
 
-    void createStaticStabilityConstraint (in string constraintName,
-     in Names_t jointNames, in floatSeqSeq points, in floatSeqSeq normals,
-     in string comRootJointName)
-      raises (Error);
-
     /// Create position constraint between two joints
     ///
     /// \param constraintName name of the constraint created,

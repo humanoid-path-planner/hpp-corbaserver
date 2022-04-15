@@ -473,12 +473,15 @@ class StaticStabilityConstraintsFactory:
     ##        a full COM computations.
     ## \param leftAnkle, rightAnkle: names of the ankle joints.
     ## \param q0 input configuration for computing constraint reference,
+    ## \param maskCom mask that determines which components of the center of
+    ##        mass are constrained. For example (True, True, False) means that
+    ##        the height of the center of mass is not constrained.
     ## \return a list of the names of the created constraints
     ##
     ## The constraints are stored in the core::ProblemSolver constraints map
     ## and are accessible through the method
     ## hpp::core::ProblemSolver::addNumericalConstraint:
-    def createStaticStabilityConstraint (self, prefix, comName, leftAnkle, rightAnkle, q0):
+    def createStaticStabilityConstraint (self, prefix, comName, leftAnkle, rightAnkle, q0, maskCom = (True,)*3):
         robot = self.hppcorba.robot
         problem = self.hppcorba.problem
 
@@ -492,7 +495,7 @@ class StaticStabilityConstraintsFactory:
         # COM wrt left ankle frame
         xloc = Ml.inverse().transform(x)
         result.append (prefix + "relative-com")
-        problem.createRelativeComConstraint (result[-1], comName, leftAnkle, xloc.tolist(), (True,)*3)
+        problem.createRelativeComConstraint (result[-1], comName, leftAnkle, xloc.tolist(), maskCom)
 
         # Pose of the left foot
         result.append (prefix + "pose-left-foot")

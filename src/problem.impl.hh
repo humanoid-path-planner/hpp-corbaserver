@@ -161,11 +161,6 @@ namespace hpp
          const hpp::floatSeqSeq& points, const hpp::intSeqSeq& objTriangles,
          const hpp::intSeqSeq& floorTriangles);
 
-        void createStaticStabilityConstraint (
-            const char* constraintName, const hpp::Names_t& jointNames,
-            const hpp::floatSeqSeq& points, const hpp::floatSeqSeq& normals,
-            const char* comRootJointName);
-
 	virtual void createPositionConstraint (const char* constraintName,
 					       const char* joint1Name,
 					       const char* joint2Name,
