@@ -26,7 +26,7 @@
 // DAMAGE.
 
 #ifndef HPP_CORBASERVER_HH
-# define HPP_CORBASERVER_HH
-# include <hpp/corbaserver/fwd.hh>
-# include <hpp/corbaserver/server.hh>
-#endif //! HPP_CORBASERVER_HH
+#define HPP_CORBASERVER_HH
+#include <hpp/corbaserver/fwd.hh>
+#include <hpp/corbaserver/server.hh>
+#endif  //! HPP_CORBASERVER_HH

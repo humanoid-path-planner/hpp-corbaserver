@@ -8,7 +8,7 @@ New in 4.10.0
 * Expose ConfigurationConstraint.
 * Expose setSecurityMargins and filterCollisionPairs.
 New in 4.7.0
-* Bind CenterOfMassComputation. 
+* Bind CenterOfMassComputation.
 * Bind Path::reverse
 * Bind functions integrate, difference, interpolate and saturate.
 * Handle LockedJointPtr_t instances the same way as ImplicitPtr_t: use the same container.

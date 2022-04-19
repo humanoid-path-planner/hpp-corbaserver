@@ -3,7 +3,7 @@ import unittest
 # Check imports
 import hpp_idl.hpp.constraints_idl
 import hpp_idl.hpp.corbaserver
-import hpp_idl.hpp.core_idl
+import hpp_idl.hpp.core_idl  # noqa: F401
 from hpp.corbaserver import Client
 from hpp.corbaserver.robot import Robot
 from hpp.utils import ServerManager
@@ -11,12 +11,25 @@ from hpp.utils import ServerManager
 
 class Test(unittest.TestCase):
     def test_createRobotFromPython(self):
-        with ServerManager('../src/hppcorbaserver'):
+        with ServerManager("../src/hppcorbaserver"):
             self.client = Client()
             self.client.robot.createRobot("test")
             self.assertEqual(self.client.robot.getRobotName(), "test")
 
-            types = ["FreeFlyer", "Planar", "RX", "RY", "RZ", "RUBX", "RUBY", "RUBZ", "PX", "PY", "PZ", "Translation"]
+            types = [
+                "FreeFlyer",
+                "Planar",
+                "RX",
+                "RY",
+                "RZ",
+                "RUBX",
+                "RUBY",
+                "RUBZ",
+                "PX",
+                "PY",
+                "PZ",
+                "Translation",
+            ]
 
             parent = ""
             for i, type in enumerate(types):
@@ -34,5 +47,5 @@ class Test(unittest.TestCase):
             self.assertListEqual(types, _types)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

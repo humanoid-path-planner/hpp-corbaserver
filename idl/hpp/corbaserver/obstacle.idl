@@ -22,7 +22,7 @@ module hpp
     /// Load obstacle from urdf file
     ///
     /// \param package Name of the package containing the model.
-    /// \param filename name of the urdf file, it may contain "package://" 
+    /// \param filename name of the urdf file, it may contain "package://"
     /// \param prefix prefix added to object names in case the same file is
     ///        loaded several times
     ///

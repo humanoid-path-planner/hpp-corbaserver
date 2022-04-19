@@ -33,21 +33,17 @@
 
 #include "hpp/corbaserver/core_idl/steering-methods.hh"
 
-namespace hpp
-{
-  namespace corbaServer
-  {
-    template <>
-    std::vector< ServantFactoryBase<core_idl::SteeringMethod>* >&
-    objectDowncasts<core_idl::SteeringMethod> ()
-    {
-      static std::vector< ServantFactoryBase<core_idl::SteeringMethod>* > vector;
-      return vector;
-    }
+namespace hpp {
+namespace corbaServer {
+template <>
+std::vector<ServantFactoryBase<core_idl::SteeringMethod>*>&
+objectDowncasts<core_idl::SteeringMethod>() {
+  static std::vector<ServantFactoryBase<core_idl::SteeringMethod>*> vector;
+  return vector;
+}
 
-    namespace core_idl
-    {
-      HPP_CORBASERVER_ADD_DOWNCAST_OBJECT(SteeringMethod, SteeringMethod, 0)
-    } // end of namespace core.
-  } // end of namespace corbaServer.
-} // end of namespace hpp.
+namespace core_idl {
+HPP_CORBASERVER_ADD_DOWNCAST_OBJECT(SteeringMethod, SteeringMethod, 0)
+}  // namespace core_idl
+}  // end of namespace corbaServer.
+}  // end of namespace hpp.

@@ -31,19 +31,17 @@
 //
 // See the COPYING file for more information.
 
-#include <iostream>
-#include <hpp/util/debug.hh>
-#include "hpp/corbaserver/server.hh"
-
 #include <hpp/core/problem-solver.hh>
+#include <hpp/util/debug.hh>
+#include <iostream>
+
+#include "hpp/corbaserver/server.hh"
 
 using hpp::corbaServer::Server;
 
-int
-main (int argc, const char* argv[])
-{
-  Server server (hpp::core::ProblemSolver::create (), argc, argv, true);
+int main(int argc, const char* argv[]) {
+  Server server(hpp::core::ProblemSolver::create(), argc, argv, true);
 
-  server.startCorbaServer ();
+  server.startCorbaServer();
   server.processRequest(true);
 }

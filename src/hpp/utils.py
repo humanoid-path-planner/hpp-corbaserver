@@ -16,21 +16,21 @@ except ImportError:  # Python2 fallback
 
 class ServerManager:
     """A context to ensure a server is running."""
-    def __init__(self, server='hppcorbaserver'):
+
+    def __init__(self, server="hppcorbaserver"):
         self.server = server
-        run(['killall', self.server])
+        run(["killall", self.server])
 
     def __enter__(self):
         """Run the server in background
 
-        stdout and stderr outputs of the child process are redirected to devnull (hidden).
+        stdout and stderr outputs of the child process are redirected to devnull.
         preexec_fn is used to ignore ctrl-c signal send to the main script
         (otherwise they are forwarded to the child process)
         """
-        self.process = subprocess.Popen(self.server,
-                                        stdout=DEVNULL,
-                                        stderr=DEVNULL,
-                                        preexec_fn=os.setpgrp)
+        self.process = subprocess.Popen(
+            self.server, stdout=DEVNULL, stderr=DEVNULL, preexec_fn=os.setpgrp
+        )
         # give it some time to start
         time.sleep(3)
 

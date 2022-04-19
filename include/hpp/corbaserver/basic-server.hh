@@ -27,48 +27,41 @@
 // DAMAGE.
 
 #ifndef HPP_CORBASERVER_BASIC_SERVER_HH
-# define HPP_CORBASERVER_BASIC_SERVER_HH
+#define HPP_CORBASERVER_BASIC_SERVER_HH
 
-# include <stdexcept>
-
-# include <hpp/corbaserver/server-plugin.hh>
+#include <hpp/corbaserver/server-plugin.hh>
+#include <stdexcept>
 
 namespace hpp {
-  namespace corbaServer {
-    class HPP_CORBASERVER_DLLAPI BasicServer: public ServerPlugin
-    {
-    public:
-      virtual ~ServerPlugin () {}
+namespace corbaServer {
+class HPP_CORBASERVER_DLLAPI BasicServer : public ServerPlugin {
+ public:
+  virtual ~ServerPlugin() {}
 
-      /// Start corba server
-      virtual void startCorbaServer (const std::string& contextId,
-         const std::string& contextKind) = 0;
+  /// Start corba server
+  virtual void startCorbaServer(const std::string& contextId,
+                                const std::string& contextKind) = 0;
 
-      virtual std::string name() const = 0;
+  virtual std::string name() const = 0;
 
-      core::ProblemSolverPtr_t problemSolver () const
-      {
-        return problemSolverMap_->selected();
-      }
+  core::ProblemSolverPtr_t problemSolver() const {
+    return problemSolverMap_->selected();
+  }
 
-      ProblemSolverMapPtr_t problemSolverMap () const
-      {
-        return problemSolverMap_;
-      }
+  ProblemSolverMapPtr_t problemSolverMap() const { return problemSolverMap_; }
 
-      /// Set planner that will be controlled by server
-      void setProblemSolverMap (ProblemSolverMapPtr_t psMap)
-      {
-        problemSolverMap_ = psMap;
-      }
+  /// Set planner that will be controlled by server
+  void setProblemSolverMap(ProblemSolverMapPtr_t psMap) {
+    problemSolverMap_ = psMap;
+  }
 
-    protected:
-      ServerPlugin (bool multithread) : multithread_ (multithread) {}
+ protected:
+  ServerPlugin(bool multithread) : multithread_(multithread) {}
 
-      bool multithread_;
-      ProblemSolverMapPtr_t problemSolverMap_;
-    }; // class ServerPlugin
-  } // namespace corbaserver
-} // namespace hpp
+  bool multithread_;
+  ProblemSolverMapPtr_t problemSolverMap_;
+};  // class ServerPlugin
+}  // namespace corbaServer
+}  // namespace hpp
 
-#endif // HPP_CORBASERVER_SERVER_PLUGIN_HH
+#endif  // HPP_CORBASERVER_SERVER_PLUGIN_HH

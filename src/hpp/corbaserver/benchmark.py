@@ -29,30 +29,46 @@
 
 from __future__ import print_function
 import numpy as np
-import sys
 
-## \cond
-class _BenchmarkIter (object):
-    def __init__ (self, seedI, caseI, iterPerCaseI, case = None):
+# # \cond
+
+
+class _BenchmarkIter(object):
+    def __init__(self, seedI, caseI, iterPerCaseI, case=None):
         self.seedI = seedI
         self.caseI = caseI
         self.case = case
-        self.newCase = True;
+        self.newCase = True
         self.iterPerCaseI = iterPerCaseI
 
-    def __repr__ (self):
+    def __repr__(self):
         if self.case is None:
-            return "iteration " + str(self.iterPerCaseI) + " for case " + str(self.caseI) + " at seed " + str(self.seedI)
+            return (
+                "iteration "
+                + str(self.iterPerCaseI)
+                + " for case "
+                + str(self.caseI)
+                + " at seed "
+                + str(self.seedI)
+            )
         else:
-            return "iteration " + str(self.iterPerCaseI) + " for case " + str(case) + " at seed " + str(self.seedI)
+            return (
+                "iteration "
+                + str(self.iterPerCaseI)
+                + " for case "
+                + str(self.case)
+                + " at seed "
+                + str(self.seedI)
+            )
 
-class _BenchmarkIterator (object):
-    def __init__(self, seedRange, cases, iterPerCase, initCase, startAt = None):
+
+class _BenchmarkIterator(object):
+    def __init__(self, seedRange, cases, iterPerCase, initCase, startAt=None):
         self.seedRangeL = len(seedRange)
         self.casesL = len(cases)
         self.iterPerCase = iterPerCase
         if startAt is None:
-            self.current = _BenchmarkIter (0, 0, 0)
+            self.current = _BenchmarkIter(0, 0, 0)
         else:
             self.current = startAt
         self.start = True
@@ -60,10 +76,10 @@ class _BenchmarkIterator (object):
     def __iter__(self):
         return self
 
-    def next(self): # Python 2 iteration
-        return self.__next__ ()
+    def next(self):  # Python 2 iteration
+        return self.__next__()
 
-    def __next__(self): # Python 3 iteration
+    def __next__(self):  # Python 3 iteration
         if self.start:
             self.newCase = True
             self.start = False
@@ -81,9 +97,11 @@ class _BenchmarkIterator (object):
                 self.current.seedI = 0
             self.current.iterPerCaseI = 0
         return self.current
-## \endcond
 
-## class to do benchmarking
+
+# # \endcond
+
+# # class to do benchmarking
 #
 # ## Basic usage ##
 #
@@ -92,7 +110,7 @@ class _BenchmarkIterator (object):
 # robot = hpp.corbaserver.robot.Robot (...)
 # ps = hpp.corbaserver.problem_solver.ProblemSolver (...)
 # ...
-# 
+#
 # from hpp.corbaserver import Benchmark
 # benchmark = Benchmark (robot.client, robot, ps)
 # benchmark.iterPerCase = 10
@@ -101,7 +119,7 @@ class _BenchmarkIterator (object):
 #
 # \sa hpp.corbaserver.benchmark.Benchmark.do
 # hpp.corbaserver.benchmark.Benchmark.seedRange
-# 
+#
 # If you wish to replot datas stored in a file:
 # \code{.py}
 # from hpp.corbaserver import Benchmark
@@ -174,18 +192,18 @@ class _BenchmarkIterator (object):
 # \endcode
 # This will restart the server whenever it crashes and will resume
 # the benchmarks where it stopped.
-class Benchmark (object):
-    ## Used to transform HPP output into seconds
-    toSeconds = np.array ([60*60,60,1,1e-3])
-    ## The filename of the crash file.
+class Benchmark(object):
+    # # Used to transform HPP output into seconds
+    toSeconds = np.array([60 * 60, 60, 1, 1e-3])
+    # # The filename of the crash file.
     crashFile = "/tmp/resume.hpp.corbaserver.benchmark.pickle"
 
-    def __init__ (self, client, robot, problemSolver):
-        ## A list of seed to initialize the random generator.
+    def __init__(self, client, robot, problemSolver):
+        # # A list of seed to initialize the random generator.
         self.seedRange = list(range(1))
-        ## A list of cases for which benchmarking will be done.
+        # # A list of cases for which benchmarking will be done.
         self.cases = [None]
-        ## Number of times one case is repeated (for one seed).
+        # # Number of times one case is repeated (for one seed).
         self.iterPerCase = 1
 
         self.client = client
@@ -194,115 +212,150 @@ class Benchmark (object):
 
         self.current = None
         # internal datas
-        self.results = dict ()
-        self.results['user'] = []
-        self.results['time'] = []
-        self.results['pathLength'] = []
-        self.results['states']=[]
+        self.results = dict()
+        self.results["user"] = []
+        self.results["time"] = []
+        self.results["pathLength"] = []
+        self.results["states"] = []
 
-    ## Solve the same problem for the specified cases, for various random seed.
+    # # Solve the same problem for the specified cases, for various random seed.
     # \param initCase a function of 3 arguments:
     #        - the calling Benchmark instance
     #        - the current element of the list of Benchmark.cases
     #        - the current _BenchmarkIterator (Normally not useful).
-    def do(self, initCase = lambda this, case, iter: None):
-        for iter in _BenchmarkIterator (self.seedRange, self.cases, self.iterPerCase, initCase, startAt = self.current):
-            self.client.problem.clearRoadmap ()
-            self.client.problem.setRandomSeed (self.seedRange[iter.seedI])
+    def do(self, initCase=lambda this, case, iter: None):
+        for iter in _BenchmarkIterator(
+            self.seedRange, self.cases, self.iterPerCase, initCase, startAt=self.current
+        ):
+            self.client.problem.clearRoadmap()
+            self.client.problem.setRandomSeed(self.seedRange[iter.seedI])
             try:
                 if iter.newCase:
                     print("=======================================================")
-                    print("Case ", self.getCase (iter))
+                    print("Case ", self.getCase(iter))
                     print("=======================================================")
-                    self.results['user'].append (initCase (self, self.getCase(iter), iter))
-                self.results['time'].append (self.client.problem.solve ())
-                self.results['pathLength'].append (self.client.problem.pathLength (self.client.problem.numberPaths()-1))
-                self.results['states'].append(self.ps.numberNodes())
+                    self.results["user"].append(
+                        initCase(self, self.getCase(iter), iter)
+                    )
+                self.results["time"].append(self.client.problem.solve())
+                self.results["pathLength"].append(
+                    self.client.problem.pathLength(
+                        self.client.problem.numberPaths() - 1
+                    )
+                )
+                self.results["states"].append(self.ps.numberNodes())
             except Exception as err:
                 # write current data to restart at the same point
                 self.current = iter
-                self.writeResume ()
+                self.writeResume()
                 print(err)
-                print("\nOops, something went wrong.\nTo resume at the benchmark just before the crash, use method thisobject.tryResumeAndDelete () before calling method do()\n")
+                print(
+                    "\nOops, something went wrong.\nTo resume at the benchmark just "
+                    "before the crash, use method thisobject.tryResumeAndDelete () "
+                    "before calling method do()\n"
+                )
                 raise
 
-            print("Solved", iter, "in", self.results['time'][-1])
+            print("Solved", iter, "in", self.results["time"][-1])
         i = 0
         nb = self.iterPerCase * len(self.seedRange)
         for c in self.cases:
-            t = np.array (self.results['time'][i:i+nb]).dot (self.toSeconds)
-            pl = np.array (self.results['pathLength'][i:i+nb])
-            nodes = np.array (self.results['states'])
+            t = np.array(self.results["time"][i : i + nb]).dot(self.toSeconds)
+            pl = np.array(self.results["pathLength"][i : i + nb])
+            nodes = np.array(self.results["states"])
             print("=====================================================")
             print("Case", c)
             print("Mean time (s):", np.mean(t))
-            print("Std dev time (s):",  np.std(t))
+            print("Std dev time (s):", np.std(t))
             print("Mean number of nodes:", np.mean(nodes))
-            print("Std dev nb nodes:",  np.std(nodes))
+            print("Std dev nb nodes:", np.std(nodes))
             print("Average length:", np.mean(pl))
             print("std dev length:", np.std(pl))
             print("=====================================================")
             i += nb
-        t = np.array (self.results['time']).dot (self.toSeconds)
-        nodes = np.array (self.results['states'])
-        pl = np.array (self.results['pathLength'])
+        t = np.array(self.results["time"]).dot(self.toSeconds)
+        nodes = np.array(self.results["states"])
+        pl = np.array(self.results["pathLength"])
         print("=====================================================")
         print("All cases together")
         print("Mean time (s):", np.mean(t))
-        print("Std dev time (s):",  np.std(t))
+        print("Std dev time (s):", np.std(t))
         print("Mean number of nodes:", np.mean(nodes))
-        print("Std dev nb nodes:",  np.std(nodes))
+        print("Std dev nb nodes:", np.std(nodes))
         print("Average length:", np.mean(pl))
         print("std dev length:", np.std(pl))
         print("=====================================================")
         return t, pl
 
-    def getCase (self, iter):
+    def getCase(self, iter):
         return self.cases[iter.caseI]
 
-    ## Write data to file.
+    # # Write data to file.
     # \param filename if None, it uses member Benchmark.crashFile
-    def writeResume (self, filename = None):
-        if filename is None: fname = self.crashFile
-        else: fname = filename
+    def writeResume(self, filename=None):
+        if filename is None:
+            fname = self.crashFile
+        else:
+            fname = filename
         import pickle as pk
-        with open (fname, 'w') as f:
+
+        with open(fname, "w") as f:
             pk.dump(self.cases, f)
             pk.dump(self.seedRange, f)
             pk.dump(self.iterPerCase, f)
             pk.dump(self.current, f)
             pk.dump(self.results, f)
 
-    ## In case of crash of HPP, the benchmark class writes temporary datas to a file.
+    # # In case of crash of HPP, the benchmark class writes temporary datas to a file.
     #  The method will check if the crash file exists and:
-    #  - if it exists, the benchmarking will be initialized at the state before the crash. No datas are lost.
+    #  - if it exists, the benchmarking will be initialized at the state before
+    #    the crash. No datas are lost.
     #    The crash file is deleted after having been loaded.
     #  - if it does not exist, the method does nothing.
     # \param filename if None, it uses member Benchmark.crashFile
-    def tryResumeAndDelete (self, filename = None):
-        if filename is None: fname = self.crashFile
-        else: fname = filename
+    def tryResumeAndDelete(self, filename=None):
+        if filename is None:
+            fname = self.crashFile
+        else:
+            fname = filename
         import os
-        if os.path.isfile (fname):
-            print("Retrieving datas from file", fname)
-            self.resumeFrom (fname)
-            os.remove (fname)
 
-    def resumeFrom (self, fname):
+        if os.path.isfile(fname):
+            print("Retrieving datas from file", fname)
+            self.resumeFrom(fname)
+            os.remove(fname)
+
+    def resumeFrom(self, fname):
         import pickle as pk
-        with open (fname, 'r') as f:
+
+        with open(fname, "r") as f:
             cases = pk.load(f)
             if not cases == self.cases:
-                print("Cases are different.\nValue in file is :", cases, "\nValue in this instance was:\n", self.cases)
+                print(
+                    "Cases are different.\nValue in file is :",
+                    cases,
+                    "\nValue in this instance was:\n",
+                    self.cases,
+                )
             self.cases = cases
 
             seedRange = pk.load(f)
             if not seedRange == self.seedRange:
-                print("Seed range is different.\nValue in file is :", seedRange, "\nValue in this instance was:\n", self.seedRange)
+                print(
+                    "Seed range is different.\nValue in file is :",
+                    seedRange,
+                    "\nValue in this instance was:\n",
+                    self.seedRange,
+                )
 
             iterPerCase = pk.load(f)
             if not iterPerCase == self.iterPerCase:
-                print("Number of iteration per case is different.\nValue in file is :", iterPerCase, "\nValue in this instance was:\n", self.iterPerCase)
+                print(
+                    "Number of iteration per case is different.\nValue in file is :",
+                    iterPerCase,
+                    "\nValue in this instance was:\n",
+                    self.iterPerCase,
+                )
             self.iterPerCase = iterPerCase
 
             self.current = pk.load(f)
@@ -315,10 +368,10 @@ class Benchmark (object):
         i = 0
         nb = self.iterPerCase * len(self.seedRange)
         for c in self.cases:
-            times.append(np.array (self.results['time'][i:i+nb]).dot (self.toSeconds))
+            times.append(np.array(self.results["time"][i : i + nb]).dot(self.toSeconds))
             i += nb
 
-        self._boxplot (axes, times, "Time (s)")
+        self._boxplot(axes, times, "Time (s)")
         return times
 
     def plotPathLength(self, axes):
@@ -327,37 +380,51 @@ class Benchmark (object):
         i = 0
         nb = self.iterPerCase * len(self.seedRange)
         for c in self.cases:
-            pls.append(np.array (self.results['pathLength'][i:i+nb]))
+            pls.append(np.array(self.results["pathLength"][i : i + nb]))
             i += nb
 
-        self._boxplot (axes, pls, "Path length")
+        self._boxplot(axes, pls, "Path length")
         return pls
 
     def _boxplot(self, axes, datas, ylabel):
         import matplotlib.pyplot as plt
+
         # rectangular box plot
-        bplot = axes.boxplot(datas,
-                vert=True,   # vertical box aligmnent
-                patch_artist=True)   # fill with color
+        axes.boxplot(
+            datas, vert=True, patch_artist=True  # vertical box aligmnent
+        )  # fill with color
 
         # adding horizontal grid lines
         axes.yaxis.grid(True)
-        axes.set_xticks([x+1 for x in range(len(self.cases))], )
+        axes.set_xticks(
+            [x + 1 for x in range(len(self.cases))],
+        )
         axes.set_ylabel(ylabel)
 
         # add x-tick labels
-        plt.setp(axes, xticks=[x+1 for x in range(len(self.cases))],
-                xticklabels=[str(c) for c in self.cases])
+        plt.setp(
+            axes,
+            xticks=[x + 1 for x in range(len(self.cases))],
+            xticklabels=[str(c) for c in self.cases],
+        )
 
-    ## This method create a database which store the benchmark results. 
+    # # This method create a database which store the benchmark results.
     # You can then use it in the platform http://plannerarena.org/ to plot your results.
     # \param nameDatabase the name of the created file (extension must be in .db)
-    # \param experimentName the name of the current scenario/problem (used when you append several scenario in the same database)
-    # \param nameLogFile the name of the text file writed 
+    # \param experimentName the name of the current scenario/problem (used when you
+    #  append several scenario in the same database)
+    # \param nameLogFile the name of the text file writed
     # \param append if True, the current result will be added in the given database.
-    def writeDatabase(self,nameDatabase,experimentName = 'default',nameLogFile = 'temp.log',append = False):
+    def writeDatabase(
+        self,
+        nameDatabase,
+        experimentName="default",
+        nameLogFile="temp.log",
+        append=False,
+    ):
         import os
-        if os.path.isfile(nameLogFile) : 
+
+        if os.path.isfile(nameLogFile):
             os.remove(nameLogFile)
 
         if not append and os.path.isfile(nameDatabase):
@@ -365,93 +432,129 @@ class Benchmark (object):
 
         # write log file :
         # write experiment header :
-        log = open(nameLogFile,'w')
-        log.write('Experiment '+experimentName+'\n')
-        log.write('0 experiment properties\n')
-        p = os.popen('hostname')
-        log.write('Running on '+p.read())
-        p = os.popen('date --rfc-3339=seconds')
-        log.write('Starting at '+p.read())
-        log.write('<<<| \n')
-        log.write('Configuration of the experiment : \n')
-        log.write('Robot name : '+self.robot.displayName+'\n')
-        log.write('Initial config : '+str(self.ps.getInitialConfig())+'\n')
+        log = open(nameLogFile, "w")
+        log.write("Experiment " + experimentName + "\n")
+        log.write("0 experiment properties\n")
+        p = os.popen("hostname")
+        log.write("Running on " + p.read())
+        p = os.popen("date --rfc-3339=seconds")
+        log.write("Starting at " + p.read())
+        log.write("<<<| \n")
+        log.write("Configuration of the experiment : \n")
+        log.write("Robot name : " + self.robot.displayName + "\n")
+        log.write("Initial config : " + str(self.ps.getInitialConfig()) + "\n")
         for qgoal in self.ps.getGoalConfigs():
-            log.write('Goal config : '+str(qgoal)+'\n')
+            log.write("Goal config : " + str(qgoal) + "\n")
 
-        log.write('Joints bounds : \n')
-        for jointName in self.robot.allJointNames :
-            if len(self.robot.client.robot.getJointBounds(jointName)) > 0 :
-                log.write(jointName+' : '+str(self.robot.client.robot.getJointBounds(jointName))+'\n')
+        log.write("Joints bounds : \n")
+        for jointName in self.robot.allJointNames:
+            if len(self.robot.client.robot.getJointBounds(jointName)) > 0:
+                log.write(
+                    jointName
+                    + " : "
+                    + str(self.robot.client.robot.getJointBounds(jointName))
+                    + "\n"
+                )
 
-        log.write('|>>> \n')
-        log.write('<<<| \n')
-        p = os.popen('cat /proc/cpuinfo')
+        log.write("|>>> \n")
+        log.write("<<<| \n")
+        p = os.popen("cat /proc/cpuinfo")
         log.write(p.read())
-        log.write('|>>> \n')
-        log.write('0 is the random seed\n')
-        # hardcoded value : time and memory limit for all the benchmark (required by the parser)
-        log.write('0 seconds per run\n')
-        log.write('8192 MB per run\n')
+        log.write("|>>> \n")
+        log.write("0 is the random seed\n")
+        # hardcoded value : time and memory limit for all the benchmark
+        # (required by the parser)
+        log.write("0 seconds per run\n")
+        log.write("8192 MB per run\n")
         nbRuns = len(self.seedRange) * self.iterPerCase
-        log.write(str(nbRuns)+' runs per planner\n')
-        t = np.array (self.results['time']).dot (self.toSeconds)
-        log.write(str(t.sum()) +' seconds spent to collect the data\n')
-        log.write('1 enum type\n')
-        log.write('status|Timeout|solved|Crash|Unknown status\n')
-        log.write(str(len(self.cases))+" planners\n")
+        log.write(str(nbRuns) + " runs per planner\n")
+        t = np.array(self.results["time"]).dot(self.toSeconds)
+        log.write(str(t.sum()) + " seconds spent to collect the data\n")
+        log.write("1 enum type\n")
+        log.write("status|Timeout|solved|Crash|Unknown status\n")
+        log.write(str(len(self.cases)) + " planners\n")
 
-        i=0
-        # for each algorithm (case ) : 
+        i = 0
+        # for each algorithm (case ) :
         for c in self.cases:
-            if c == 'None' :
-                log.write('Default\n')
-            else :
-                log.write(str(c)+'\n') # need a better way to display this
-           
-            log.write('0 common properties\n')
-            log.write('6 properties for each run\n')
+            if c == "None":
+                log.write("Default\n")
+            else:
+                log.write(str(c) + "\n")  # need a better way to display this
+
+            log.write("0 common properties\n")
+            log.write("6 properties for each run\n")
             # solved, status, seed and time are mandatory for the parser
-            log.write('solved BOOLEAN\n')
-            log.write('status ENUM\n')  # for now it's always 1 (= solved)
-            log.write('seed INTEGER\n')
-            log.write('pathLenght INTEGER\n')
-            log.write('graph_states INTEGER\n')
-            log.write('time REAL\n')
-            log.write(str(nbRuns)+' runs\n')
+            log.write("solved BOOLEAN\n")
+            log.write("status ENUM\n")  # for now it's always 1 (= solved)
+            log.write("seed INTEGER\n")
+            log.write("pathLenght INTEGER\n")
+            log.write("graph_states INTEGER\n")
+            log.write("time REAL\n")
+            log.write(str(nbRuns) + " runs\n")
             nbSeed = len(self.seedRange)
             for s in range(nbSeed):
                 for j in range(self.iterPerCase):
-                # write a line for each run 
-                    log.write('1; 1; '+str(self.seedRange[s])+'; '+str(self.results['pathLength'][i+j])+'; '+str(self.results['states'][ i+j])+"; "+str(t[i+j])+'; \n')
+                    # write a line for each run
+                    log.write(
+                        "1; 1; "
+                        + str(self.seedRange[s])
+                        + "; "
+                        + str(self.results["pathLength"][i + j])
+                        + "; "
+                        + str(self.results["states"][i + j])
+                        + "; "
+                        + str(t[i + j])
+                        + "; \n"
+                    )
                 i += self.iterPerCase
 
-            log.write('. \n')
-        
+            log.write(". \n")
+
         log.close()
         # compute the database :
         from hpp.corbaserver import ompl_benchmark_statistics as omplBench
-        omplBench.readBenchmarkLog(nameDatabase,[nameLogFile],False)
-        omplBench.computeViews(nameDatabase,False)
-        if nameLogFile=='temp.log' : 
+
+        omplBench.readBenchmarkLog(nameDatabase, [nameLogFile], False)
+        omplBench.computeViews(nameDatabase, False)
+        if nameLogFile == "temp.log":
             os.remove(nameLogFile)
 
     def _printStats(self, times, nodes, pathLengths):
-        return "Mean time (s): " + str(np.mean(times)) + '\n' \
-            + "Std dev time (s): " + str(np.std(times)) + '\n' \
-            + "Mean number of nodes: " + str(np.mean(nodes)) + '\n' \
-            + "Std dev nb nodes: " +  str(np.std(nodes)) + '\n' \
-            + "Average length: " + str(np.mean(pathLengths)) + '\n' \
-            + "std dev length: " + str(np.std(pathLengths))
+        return (
+            "Mean time (s): "
+            + str(np.mean(times))
+            + "\n"
+            + "Std dev time (s): "
+            + str(np.std(times))
+            + "\n"
+            + "Mean number of nodes: "
+            + str(np.mean(nodes))
+            + "\n"
+            + "Std dev nb nodes: "
+            + str(np.std(nodes))
+            + "\n"
+            + "Average length: "
+            + str(np.mean(pathLengths))
+            + "\n"
+            + "std dev length: "
+            + str(np.std(pathLengths))
+        )
 
     def __str__(self):
         res = ""
-        for i in range(len(self.results['time'])):
-            res += "Time (s): " + str(np.array (self.results['time'][i]).dot (self.toSeconds)) \
-                    + "\nNumber of nodes: " + str(self.results['states'][i]) \
-                    + "\nLength: " + str(self.results['pathLength'][i]) + '\n'
-        times = np.array (self.results['time']).dot (self.toSeconds)
-        nodes = np.array (self.results['states'])
-        pathLengths = np.array (self.results['pathLength'])
+        for i in range(len(self.results["time"])):
+            res += (
+                "Time (s): "
+                + str(np.array(self.results["time"][i]).dot(self.toSeconds))
+                + "\nNumber of nodes: "
+                + str(self.results["states"][i])
+                + "\nLength: "
+                + str(self.results["pathLength"][i])
+                + "\n"
+            )
+        times = np.array(self.results["time"]).dot(self.toSeconds)
+        nodes = np.array(self.results["states"])
+        pathLengths = np.array(self.results["pathLength"])
         res += self._printStats(times, nodes, pathLengths)
         return res

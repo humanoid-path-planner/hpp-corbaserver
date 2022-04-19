@@ -27,92 +27,79 @@
 // DAMAGE.
 
 #ifndef HPP_CORBASERVER_SERVER_PLUGIN_HH
-# define HPP_CORBASERVER_SERVER_PLUGIN_HH
+#define HPP_CORBASERVER_SERVER_PLUGIN_HH
 
-# include <stdexcept>
+#include <hpp/corba/template/server.hh>
+#include <hpp/corbaserver/config.hh>
+#include <hpp/corbaserver/fwd.hh>
+#include <hpp/corbaserver/problem-solver-map.hh>
+#include <hpp/corbaserver/server.hh>
+#include <hpp/util/exception.hh>
+#include <stdexcept>
 
-# include <hpp/util/exception.hh>
-
-# include <hpp/corbaserver/config.hh>
-# include <hpp/corbaserver/fwd.hh>
-# include <hpp/corbaserver/problem-solver-map.hh>
-
-# include <hpp/corbaserver/server.hh>
-# include <hpp/corba/template/server.hh>
-
-#define HPP_CORBASERVER_DEFINE_PLUGIN(PluginClassName)                         \
-    extern "C" {                                                               \
-      ::hpp::corbaServer::ServerPlugin* createServerPlugin (::hpp::corbaServer::Server* server)  \
-      {                                                                        \
-        return new PluginClassName (server);                                   \
-      }                                                                        \
-    }
+#define HPP_CORBASERVER_DEFINE_PLUGIN(PluginClassName)  \
+  extern "C" {                                          \
+  ::hpp::corbaServer::ServerPlugin* createServerPlugin( \
+      ::hpp::corbaServer::Server* server) {             \
+    return new PluginClassName(server);                 \
+  }                                                     \
+  }
 
 namespace hpp {
-  namespace corbaServer {
-    class HPP_CORBASERVER_DLLAPI ServerPlugin
-    {
-    public:
-      virtual ~ServerPlugin () {}
+namespace corbaServer {
+class HPP_CORBASERVER_DLLAPI ServerPlugin {
+ public:
+  virtual ~ServerPlugin() {}
 
-      /// Start corba server
-      virtual void startCorbaServer (const std::string& contextId,
-         const std::string& contextKind) = 0;
+  /// Start corba server
+  virtual void startCorbaServer(const std::string& contextId,
+                                const std::string& contextKind) = 0;
 
-      virtual std::string name() const = 0;
+  virtual std::string name() const = 0;
 
-      virtual ::CORBA::Object_ptr servant (const std::string& name) const = 0;
+  virtual ::CORBA::Object_ptr servant(const std::string& name) const = 0;
 
-      Server* parent ()
-      {
-        return parent_;
-      }
+  Server* parent() { return parent_; }
 
-      core::ProblemSolverPtr_t problemSolver () const
-      {
-        return problemSolverMap_->selected();
-      }
+  core::ProblemSolverPtr_t problemSolver() const {
+    return problemSolverMap_->selected();
+  }
 
-      ProblemSolverMapPtr_t problemSolverMap () const
-      {
-        return problemSolverMap_;
-      }
+  ProblemSolverMapPtr_t problemSolverMap() const { return problemSolverMap_; }
 
-      /// Set planner that will be controlled by server
-      void setProblemSolverMap (ProblemSolverMapPtr_t psMap)
-      {
-        problemSolverMap_ = psMap;
-      }
+  /// Set planner that will be controlled by server
+  void setProblemSolverMap(ProblemSolverMapPtr_t psMap) {
+    problemSolverMap_ = psMap;
+  }
 
-    protected:
-      ServerPlugin (Server* parent)
-        : parent_ (parent) {}
+ protected:
+  ServerPlugin(Server* parent) : parent_(parent) {}
 
-      Server* parent_;
-      ProblemSolverMapPtr_t problemSolverMap_;
+  Server* parent_;
+  ProblemSolverMapPtr_t problemSolverMap_;
 
-      template <typename T> void initializeTplServer (corba::Server<T>*& server,
-         const std::string& contextId,
-         const std::string& contextKind,
-         const std::string& objectId,
-         const std::string& objectKind)
-      {
-        server = new corba::Server <T> (0, NULL);
-        server->initRootPOA(parent()->multiThread());
+  template <typename T>
+  void initializeTplServer(corba::Server<T>*& server,
+                           const std::string& contextId,
+                           const std::string& contextKind,
+                           const std::string& objectId,
+                           const std::string& objectKind) {
+    server = new corba::Server<T>(0, NULL);
+    server->initRootPOA(parent()->multiThread());
 
-        int ret = parent()->nameService()
-          ? server->startCorbaServer(contextId, contextKind, objectId, objectKind)
-          : server->startCorbaServer();
+    int ret = parent()->nameService()
+                  ? server->startCorbaServer(contextId, contextKind, objectId,
+                                             objectKind)
+                  : server->startCorbaServer();
 
-        if (ret != 0) {
-          throw std::runtime_error ("Failed to start corba "
-              + contextId + '.' + contextKind + '/'
-              + objectId + '.' + objectKind
-              + " server.");
-        }
-      }
-    }; // class ServerPlugin
-  } // namespace corbaserver
-} // namespace hpp
+    if (ret != 0) {
+      throw std::runtime_error("Failed to start corba " + contextId + '.' +
+                               contextKind + '/' + objectId + '.' + objectKind +
+                               " server.");
+    }
+  }
+};  // class ServerPlugin
+}  // namespace corbaServer
+}  // namespace hpp
 
-#endif // HPP_CORBASERVER_SERVER_PLUGIN_HH
+#endif  // HPP_CORBASERVER_SERVER_PLUGIN_HH

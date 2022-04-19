@@ -27,90 +27,79 @@
 // DAMAGE.
 
 #ifndef HPP_CORBASERVER_BASIC_SERVER_HH
-# define HPP_CORBASERVER_BASIC_SERVER_HH
+#define HPP_CORBASERVER_BASIC_SERVER_HH
 
-# include <stdexcept>
+#include <hpp/corba/template/server.hh>
+#include <hpp/corbaserver/server-plugin.hh>
+#include <hpp/util/exception.hh>
+#include <stdexcept>
 
-# include <hpp/util/exception.hh>
-
-# include <hpp/corba/template/server.hh>
-# include <hpp/corbaserver/server-plugin.hh>
-
-# include "robot.impl.hh"
-# include "obstacle.impl.hh"
-# include "problem.impl.hh"
+#include "obstacle.impl.hh"
+#include "problem.impl.hh"
+#include "robot.impl.hh"
 
 namespace hpp {
-  namespace corbaServer {
-    namespace impl {
-      class Obstacle;
-      class Problem;
-      class Robot;
-    }
+namespace corbaServer {
+namespace impl {
+class Obstacle;
+class Problem;
+class Robot;
+}  // namespace impl
 
-    class HPP_CORBASERVER_LOCAL BasicServer: public ServerPlugin
-    {
-      public:
-        BasicServer (Server* parent);
+class HPP_CORBASERVER_LOCAL BasicServer : public ServerPlugin {
+ public:
+  BasicServer(Server* parent);
 
-        ~BasicServer ();
+  ~BasicServer();
 
-        /// Start corba server
-        void startCorbaServer (const std::string& contextId,
-            const std::string& contextKind);
+  /// Start corba server
+  void startCorbaServer(const std::string& contextId,
+                        const std::string& contextKind);
 
-        ::CORBA::Object_ptr servant (const std::string& name) const;
+  ::CORBA::Object_ptr servant(const std::string& name) const;
 
-        std::string name() const;
+  std::string name() const;
 
-      private:
-        corba::Server <impl::Obstacle>* obstacleImpl_;
-        corba::Server <impl::Problem >* problemImpl_;
-        corba::Server <impl::Robot   >* robotImpl_;
-    }; // class ServerPlugin
+ private:
+  corba::Server<impl::Obstacle>* obstacleImpl_;
+  corba::Server<impl::Problem>* problemImpl_;
+  corba::Server<impl::Robot>* robotImpl_;
+};  // class ServerPlugin
 
-    BasicServer::BasicServer (Server* parent)
-      : ServerPlugin (parent)
-      , obstacleImpl_ (NULL)
-      , problemImpl_  (NULL)
-      , robotImpl_    (NULL)
-    {
-    }
+BasicServer::BasicServer(Server* parent)
+    : ServerPlugin(parent),
+      obstacleImpl_(NULL),
+      problemImpl_(NULL),
+      robotImpl_(NULL) {}
 
-    BasicServer::~BasicServer ()
-    {
-      if (obstacleImpl_) delete obstacleImpl_;
-      if (problemImpl_ ) delete problemImpl_;
-      if (robotImpl_   ) delete robotImpl_;
-    }
+BasicServer::~BasicServer() {
+  if (obstacleImpl_) delete obstacleImpl_;
+  if (problemImpl_) delete problemImpl_;
+  if (robotImpl_) delete robotImpl_;
+}
 
-    std::string BasicServer::name () const
-    {
-      return "basic";
-    }
+std::string BasicServer::name() const { return "basic"; }
 
-    /// Start corba server
-    void BasicServer::startCorbaServer(
-        const std::string& contextId,
-        const std::string& contextKind)
-    {
-      initializeTplServer(obstacleImpl_, contextId, contextKind, name(), "obstacle");
-      initializeTplServer(problemImpl_ , contextId, contextKind, name(), "problem");
-      initializeTplServer(robotImpl_   , contextId, contextKind, name(), "robot");
+/// Start corba server
+void BasicServer::startCorbaServer(const std::string& contextId,
+                                   const std::string& contextKind) {
+  initializeTplServer(obstacleImpl_, contextId, contextKind, name(),
+                      "obstacle");
+  initializeTplServer(problemImpl_, contextId, contextKind, name(), "problem");
+  initializeTplServer(robotImpl_, contextId, contextKind, name(), "robot");
 
-      obstacleImpl_->implementation ().setServer (this);
-      problemImpl_ ->implementation ().setServer (this);
-      robotImpl_   ->implementation ().setServer (this);
-    }
+  obstacleImpl_->implementation().setServer(this);
+  problemImpl_->implementation().setServer(this);
+  robotImpl_->implementation().setServer(this);
+}
 
-    ::CORBA::Object_ptr BasicServer::servant(const std::string& name) const
-    {
-      if (name == "obstacle") return obstacleImpl_->implementation()._this();
-      if (name == "problem" ) return problemImpl_ ->implementation()._this();
-      if (name == "robot"   ) return robotImpl_   ->implementation()._this();
-      throw std::invalid_argument ("No servant " + name);
-    }
-  } // namespace corbaserver
-} // namespace hpp
+::CORBA::Object_ptr BasicServer::servant(const std::string& name) const {
+  if (name == "obstacle") return obstacleImpl_->implementation()._this();
+  if (name == "problem") return problemImpl_->implementation()._this();
+  if (name == "robot") return robotImpl_->implementation()._this();
+  throw std::invalid_argument("No servant " + name);
+}
+}  // namespace corbaServer
+}  // namespace hpp
 
-#endif // HPP_CORBASERVER_SERVER_PLUGIN_HH
+#endif  // HPP_CORBASERVER_SERVER_PLUGIN_HH

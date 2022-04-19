@@ -18,7 +18,7 @@
    void setSecurityMargins(in floatSeqSeq margins) raises(Error); \
    void setSecurityMarginBetweenBodies(in string body_a, in string body_b, in value_type margin) raises(Error); \
    void filterCollisionPairs (in RelativeMotionMatrix relMotion) raises(Error);
-  
+
 
 module hpp
 {

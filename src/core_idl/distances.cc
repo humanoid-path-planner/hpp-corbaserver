@@ -33,22 +33,18 @@
 
 #include "hpp/corbaserver/core_idl/distances.hh"
 
-namespace hpp
-{
-  namespace corbaServer
-  {
-    template <>
-    std::vector< ServantFactoryBase<core_idl::Distance>* >&
-    objectDowncasts<core_idl::Distance> ()
-    {
-      static std::vector< ServantFactoryBase<core_idl::Distance>* > vector;
-      return vector;
-    }
+namespace hpp {
+namespace corbaServer {
+template <>
+std::vector<ServantFactoryBase<core_idl::Distance>*>&
+objectDowncasts<core_idl::Distance>() {
+  static std::vector<ServantFactoryBase<core_idl::Distance>*> vector;
+  return vector;
+}
 
-    namespace core_idl
-    {
-      HPP_CORBASERVER_ADD_DOWNCAST_OBJECT(       Distance, Distance, 0)
-      HPP_CORBASERVER_ADD_DOWNCAST_OBJECT(WeighedDistance, Distance, 1)
-    } // end of namespace core.
-  } // end of namespace corbaServer.
-} // end of namespace hpp.
+namespace core_idl {
+HPP_CORBASERVER_ADD_DOWNCAST_OBJECT(Distance, Distance, 0)
+HPP_CORBASERVER_ADD_DOWNCAST_OBJECT(WeighedDistance, Distance, 1)
+}  // namespace core_idl
+}  // end of namespace corbaServer.
+}  // end of namespace hpp.

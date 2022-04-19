@@ -35,9 +35,8 @@
 
 #include <pinocchio/spatial/se3.hpp>
 
-hpp::corbaServer::DevicePtr_t getRobotOrThrow (hpp::core::ProblemSolverPtr_t p)
-{
-  hpp::corbaServer::DevicePtr_t robot = p->robot ();
-  if (!robot) throw hpp::Error ("No robot in problem solver.");
+hpp::corbaServer::DevicePtr_t getRobotOrThrow(hpp::core::ProblemSolverPtr_t p) {
+  hpp::corbaServer::DevicePtr_t robot = p->robot();
+  if (!robot) throw hpp::Error("No robot in problem solver.");
   return robot;
 }

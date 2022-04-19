@@ -424,7 +424,7 @@ module hpp
     //                         "Translation"]
     // \param pos initial position of the joint
     // \param joinBounds bounds of the joint. See setJointBounds for details.
-    // \note In the joint types, R stands for Rotation, RUB stands for 
+    // \note In the joint types, R stands for Rotation, RUB stands for
     //       Rotation UnBounded, P stands for Prismatic. Translation is 3D.
     void appendJoint(in string parentJoint,
                      in string jointName, in string jointType,
