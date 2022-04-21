@@ -31,36 +31,29 @@ def Tools(url = None, port = 13331):
     return client
 
 class _Deleter:
-    def __init__ (self, o, client=None):
+    def __init__ (self, o, client):
         import CORBA
         orb = CORBA.ORB_init()
         self.client = client
         self.ostr = orb.object_to_string(o)
+        self.type = type(o)
     def __del__ (self):
         import CORBA
         try:
-            if not self.client:
-                from .client import Client
-                self.client = Client(clients={})._tools
             self.client.deleteServant(self.ostr)
         except CORBA.TRANSIENT:
             pass
         except CORBA.COMM_FAILURE:
             pass
 
-def wrap_delete(o, client=None):
+def wrap_delete(o, client):
     """
     Automatically delete the servant on the server when the Python object is deleted.
     \param o the CORBA object
-    \param client either an instance of Client or a client to the Tools interface.
+    \param client a client to the Tools interface.
     """
     from .client import Client
-    if isinstance(client, Client):
-        o.__wrap_delete__ = _Deleter(o,client._tools)
-    elif client is not None:
-        o.__wrap_delete__ = _Deleter(o,client)
-    else:
-        o.__wrap_delete__ = _Deleter(o)
+    o.__wrap_delete__ = _Deleter(o,client)
     return o
 
 def equals(a, b, client=None):
