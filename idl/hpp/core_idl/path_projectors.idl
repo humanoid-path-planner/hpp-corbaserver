@@ -1,0 +1,40 @@
+// Copyright (C) 2022 by Florent Lamiraux, LAAS-CNRS.
+//
+// This file is part of the hpp-corbaserver.
+//
+// This software is provided "as is" without warranty of any kind,
+// either expressed or implied, including but not limited to the
+// implied warranties of fitness for a particular purpose.
+//
+// See the COPYING file for more information.
+
+#ifndef HPP_CORE_PATH_PROJECTORS_IDL
+#define HPP_CORE_PATH_PROJECTORS_IDL
+
+#include <hpp/common.idl>
+#include <hpp/core_idl/paths.idl>
+
+module hpp
+{
+  module core_idl{
+    interface PathProjector
+    {
+      HPP_EXPOSE_MEMORY_DEALLOCATION(Error)
+
+      Path apply(in Path input, out boolean success) raises(Error);
+      //* hpp::core::PathPtr_t _input =
+      //* ::hpp::corbaServer::reference_to_object<hpp::core::Path>
+      //* (server_, input);
+      //* hpp::core::PathPtr_t __return__;
+      //* success = getT()->apply (_input, __return__);
+      //* return ::hpp::corbaServer::makeServantDownCast<hpp::core_impl::Path,
+      //*     hpp::core_impl::Path>(server_, __return__)._retn();
+
+    }; // interface PathProjector
+  }; // module core_idl
+}; // module hpp
+//* #include <hpp/core/path-projector.hh>
+//* #include <hpp/core_idl/paths.hh>
+//* #include <hpp/corbaserver/conversions.hh>
+
+#endif // HPP_CORE_PATH_PROJECTORS_IDL

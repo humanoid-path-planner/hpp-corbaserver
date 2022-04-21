@@ -94,6 +94,7 @@
 #include "hpp/core_idl/distances-fwd.hh"
 #include "hpp/core_idl/paths-fwd.hh"
 #include "hpp/core_idl/steering_methods-fwd.hh"
+#include "hpp/core_idl/path_projectors-fwd.hh"
 #include "hpp/core_idl/path_validations-fwd.hh"
 #include "hpp/core_idl/path_planners-fwd.hh"
 #include "hpp/core_idl/_problem-fwd.hh"
@@ -2808,6 +2809,25 @@ namespace hpp
 	}
       }
 
+      core_idl::PathProjector_ptr Problem::createPathProjector
+      (const char* type, core_idl::Problem_ptr problem, value_type parameter)
+      {
+        try{
+	core::ProblemSolverPtr_t ps = problemSolver();
+        core_idl::PathProjector_var o = makeServantDownCast
+          <core_impl::PathProjector> (
+            server_->parent(),
+            (ps->pathProjectors.get(type)) (
+             reference_to_object<core::Problem> (server_->parent(), problem),
+             parameter));
+        return o._retn();
+	}
+	catch(const std::exception& exc)
+	{
+	  throw hpp::Error(exc.what());
+	}
+      }
+
       core_idl::PathValidation_ptr Problem::createPathValidation (const char* type, pinocchio_idl::Device_ptr robot, value_type parameter)
       {
         try{
@@ -2826,6 +2846,7 @@ namespace hpp
 	  throw hpp::Error(exc.what());
 	}
       }
+
       core_idl::ConfigurationShooter_ptr Problem::createConfigurationShooter (const char* type, core_idl::Problem_ptr problem)
       {
         try{

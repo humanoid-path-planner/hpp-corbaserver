@@ -372,6 +372,7 @@ namespace hpp
         core_idl::PathPlanner_ptr createPathPlanner (const char* type, core_idl::Problem_ptr _problem, core_idl::Roadmap_ptr roadmap);
         core_idl::PathOptimizer_ptr createPathOptimizer (const char* type, core_idl::Problem_ptr _problem);
 
+        core_idl::PathProjector_ptr createPathProjector (const char* type, core_idl::Problem_ptr robot, value_type parameter);
         core_idl::PathValidation_ptr createPathValidation (const char* type, pinocchio_idl::Device_ptr robot, value_type parameter);
         core_idl::ConfigValidation_ptr createConfigValidation (const char* type, pinocchio_idl::Device_ptr robot) override;
         core_idl::ConfigurationShooter_ptr createConfigurationShooter (const char* type, core_idl::Problem_ptr _problem);

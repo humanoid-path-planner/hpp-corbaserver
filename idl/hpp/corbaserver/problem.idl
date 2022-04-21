@@ -16,6 +16,7 @@
 #include <hpp/core_idl/paths.idl>
 #include <hpp/core_idl/steering_methods.idl>
 #include <hpp/core_idl/path_planners.idl>
+#include <hpp/core_idl/path_projectors.idl>
 #include <hpp/core_idl/path_validations.idl>
 #include <hpp/core_idl/_problem.idl>
 
@@ -785,6 +786,7 @@ module hpp
 
     core_idl::ConfigValidation createConfigValidation (in string type, in pinocchio_idl::Device robot) raises (Error);
     core_idl::PathValidation createPathValidation (in string type, in pinocchio_idl::Device robot, in value_type parameter) raises (Error);
+    core_idl::PathProjector createPathProjector (in string type, in core_idl::Problem robot, in value_type parameter) raises (Error);
     core_idl::ConfigurationShooter createConfigurationShooter (in string type, in core_idl::Problem _problem) raises (Error);
     core_idl::Distance createDistance (in string type, in core_idl::Problem _problem) raises (Error);
     core_idl::SteeringMethod createSteeringMethod (in string type, in core_idl::Problem _problem) raises (Error);
