@@ -1,8 +1,6 @@
 """Test the content of hpp/utils.py."""
-import os
 import unittest
 
-import omniORB
 from hpp.corbaserver import Client
 from hpp.utils import ServerManager
 
@@ -14,7 +12,7 @@ class Test(unittest.TestCase):
             Client()
 
         # Check that we can instanciate a working client if a server is running
-        with ServerManager('../src/hppcorbaserver'):
+        with ServerManager("../src/hppcorbaserver"):
             client = Client()
             client.robot.createRobot("HRP-7")
             self.assertEqual(client.robot.getRobotName(), "HRP-7")
@@ -24,5 +22,5 @@ class Test(unittest.TestCase):
             Client()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

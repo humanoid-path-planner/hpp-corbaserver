@@ -33,21 +33,17 @@
 
 #include "hpp/corbaserver/core_idl/path-validations.hh"
 
-namespace hpp
-{
-  namespace corbaServer
-  {
-    template <>
-    std::vector< ServantFactoryBase<core_idl::PathValidation>* >&
-    objectDowncasts<core_idl::PathValidation> ()
-    {
-      static std::vector< ServantFactoryBase<core_idl::PathValidation>* > vector;
-      return vector;
-    }
+namespace hpp {
+namespace corbaServer {
+template <>
+std::vector<ServantFactoryBase<core_idl::PathValidation>*>&
+objectDowncasts<core_idl::PathValidation>() {
+  static std::vector<ServantFactoryBase<core_idl::PathValidation>*> vector;
+  return vector;
+}
 
-    namespace core_idl
-    {
-      HPP_CORBASERVER_ADD_DOWNCAST_OBJECT(PathValidation, PathValidation, 0)
-    } // end of namespace core.
-  } // end of namespace corbaServer.
-} // end of namespace hpp.
+namespace core_idl {
+HPP_CORBASERVER_ADD_DOWNCAST_OBJECT(PathValidation, PathValidation, 0)
+}  // namespace core_idl
+}  // end of namespace corbaServer.
+}  // end of namespace hpp.

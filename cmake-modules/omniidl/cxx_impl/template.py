@@ -31,18 +31,19 @@
 # DAMAGE.
 #
 # Description:
-#   
+#
 #   Interface implementation templates for HPP
 
-## Code to actually implement an interface
-##
+# # Code to actually implement an interface
+# #
 base_interface_def = """
 //
 // Class implementing IDL interface @fq_name@
 //
 @open_namespaces@
 template <typename _Base, typename _Storage>
-class @impl_tpl_name@: public @impl_base_name@<@hpp_class@, _Storage>, public virtual _Base
+class @impl_tpl_name@:
+public @impl_base_name@<@hpp_class@, _Storage>, public virtual _Base
 {
 public:
   typedef @hpp_class@ HppBase;
@@ -74,7 +75,8 @@ base_interface_code = """\
 //
 @open_namespaces@
 template <typename _Base, typename _Storage>
-@impl_tpl_name@<_Base, _Storage>::@impl_tpl_name@(::hpp::corbaServer::Server* server, const _Storage& s)
+@impl_tpl_name@<_Base, _Storage>::@impl_tpl_name@(::hpp::corbaServer::Server* server,
+                                                  const _Storage& s)
   : @impl_base_name@<@hpp_class@, _Storage> (server, s)
 {
   // add extra constructor code here
@@ -130,7 +132,8 @@ inherited_interface_code = """\
 //
 @open_namespaces@
 template <typename _Base, typename _Storage>
-@impl_tpl_name@<_Base, _Storage>::@impl_tpl_name@(::hpp::corbaServer::Server* server, const _Storage& s)
+@impl_tpl_name@<_Base, _Storage>::@impl_tpl_name@(::hpp::corbaServer::Server* server,
+                                                  const _Storage& s)
   : @impl_base_name@<_Base, _Storage> (server, s)
 {
   // add extra constructor code here
@@ -178,9 +181,8 @@ template <typename _Base, typename _Storage>
   }
 }"""
 
-predefined_operations_impl_code = \
-{
-        "str":  """
+predefined_operations_impl_code = {
+    "str": """
 template <typename _Base, typename _Storage>
 @return_type@ @impl_tpl_name@<_Base, _Storage>::str ()
 {
@@ -193,7 +195,7 @@ template <typename _Base, typename _Storage>
     throw @error_type@ (e.what());
   }
 }""",
-        "deleteThis":  """
+    "deleteThis": """
 template <typename _Base, typename _Storage>
 void @impl_tpl_name@<_Base, _Storage>::deleteThis ()
 {
@@ -227,7 +229,8 @@ HPP_CORBASERVER_ADD_DOWNCAST_OBJECT(@class_name@, @base_class_name@, @depth@)
 
 storage_decl = """\
 template <typename D>
-class @storage_class_name@ : public ::hpp::corbaServer::AbstractStorage<D, @hpp_base_class@>
+class @storage_class_name@ :
+public ::hpp::corbaServer::AbstractStorage<D, @hpp_base_class@>
 {
 public:
   typedef ::hpp::corbaServer::AbstractStorage <D, @hpp_base_class@> parent_t;
@@ -240,7 +243,8 @@ public:
 
   template <typename T> @storage_class_name@<T> cast () const
   {
-    return @storage_class_name@<T> (@storage_attr_call@HPP_DYNAMIC_PTR_CAST(T, element.lock()));
+    return @storage_class_name@<T> (
+        @storage_attr_call@HPP_DYNAMIC_PTR_CAST(T, element.lock()));
   }
 };
 """

@@ -13,7 +13,7 @@ Configuration
   ---------------------
 
     --enable-openhrp
-    implement a Corba Request to OpenHrp::Modelloader in order to load the 
+    implement a Corba Request to OpenHrp::Modelloader in order to load the
     model of HRP2.
 
 Compilation
@@ -259,4 +259,3 @@ configuration-related scripts to be executed by `/bin/bash'.
 
 `configure' also accepts some other, not widely useful, options.  Run
 `configure --help' for more details.
-

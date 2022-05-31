@@ -29,7 +29,8 @@
 import numpy as np
 from numpy import linalg
 
-class Quaternion (object):
+
+class Quaternion(object):
     """
     Quaternion class :
     ------------------
@@ -48,7 +49,8 @@ class Quaternion (object):
     It can also return a rotation vector, a rotation matrix, or a SO3
       (see the methods : to...() for more information).
     """
-    def __init__(self,*args):
+
+    def __init__(self, *args):
         """
         Instanciation of the quaternion with 1, 2 or 4 arguments  :
         -----------------------------------------------------------
@@ -97,105 +99,137 @@ class Quaternion (object):
           e.g. : quat().fromRPY(R,P,Y)
         """
 
-
-        error=False
-        if len(args)==0: # By default, if no argument is given
-            self.array=np.array([0.,0.,0.,1.,])
-        elif len (args) == 4: # From 4 elements
-            if np.array(args).size==4:
-                self.array = np.double(np.array (args))
+        error = False
+        if len(args) == 0:  # By default, if no argument is given
+            self.array = np.array(
+                [
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0,
+                ]
+            )
+        elif len(args) == 4:  # From 4 elements
+            if np.array(args).size == 4:
+                self.array = np.double(np.array(args))
             else:
-                error=True
-        elif len (args) == 1:
-            if type(args[0])==Quaternion: # From a Quaternion
-                self.array=args[0].array.copy()
-            elif np.array(args[0]).size==1: # From one sized element, this element will be the scalar part, the vector part will be set at (0,0,0)
-                self.array=np.double(np.hstack([np.array([0,0,0]),
-                                                np.array(args[0])]))
-            elif np.array(args[0]).size==4 and max(np.array(args[0]).shape)==4: # From an array, matrix, tuple or list of 4 elements
-                self.array = np.double(np.array(args[0])).reshape(4,)
-            elif np.array(args[0]).size==3 and max(np.array(args[0]).shape)==3: # From an array, matrix, tuple or list of 3 elements interpreted as a rotation vector
-                rV=np.double(np.array(args[0])).reshape(3,)
-                alpha=np.double(linalg.norm(rV))
-                if alpha !=0:
-                    e=rV/alpha
+                error = True
+        elif len(args) == 1:
+            if type(args[0]) == Quaternion:  # From a Quaternion
+                self.array = args[0].array.copy()
+            elif np.array(args[0]).size == 1:
+                # From one sized element, this element will be the scalar part,
+                # the vector part will be set at (0,0,0)
+                self.array = np.double(
+                    np.hstack([np.array([0, 0, 0]), np.array(args[0])])
+                )
+            elif np.array(args[0]).size == 4 and max(np.array(args[0]).shape) == 4:
+                # From an array, matrix, tuple or list of 4 elements
+                self.array = np.double(np.array(args[0])).reshape(
+                    4,
+                )
+            elif np.array(args[0]).size == 3 and max(np.array(args[0]).shape) == 3:
+                # From an array, matrix, tuple or list of 3 elements
+                # interpreted as a rotation vector
+                rV = np.double(np.array(args[0])).reshape(
+                    3,
+                )
+                alpha = np.double(linalg.norm(rV))
+                if alpha != 0:
+                    e = rV / alpha
                 else:
-                    e=rV
-                self.array=np.hstack([np.sin(alpha/2.)*e, np.cos(alpha/2.),])
-            elif len(np.array(args[0]).shape)==2 and np.array(args[0]).shape[0]>=3 and np.array(args[0]).shape[1]>=3: # From a 2 dimension array convertible array, matrix, tuple or list with at least (3*3) elements interpreted  as a rotation matrix
-                rM=np.double(np.array(args[0])[:3,:3])
-                selec=np.zeros(4)
-                selec[0]=1+rM[0,0]+rM[1,1]+rM[2,2]
-                selec[1]=1+rM[0,0]-rM[1,1]-rM[2,2]
-                selec[2]=1-rM[0,0]+rM[1,1]-rM[2,2]
-                selec[3]=1-rM[0,0]-rM[1,1]+rM[2,2]
-                param=selec.argmax()
-                if selec[param]>0:
-                    q=np.zeros(4)
-                    if param==0:
-                        q[3]=np.sqrt(selec[param])
-                        q[0]=(rM[2,1]-rM[1,2])/q[3]
-                        q[1]=(rM[0,2]-rM[2,0])/q[3]
-                        q[2]=(rM[1,0]-rM[0,1])/q[3]
-                        self.array=q*0.5
+                    e = rV
+                self.array = np.hstack(
+                    [
+                        np.sin(alpha / 2.0) * e,
+                        np.cos(alpha / 2.0),
+                    ]
+                )
+            elif (
+                len(np.array(args[0]).shape) == 2
+                and np.array(args[0]).shape[0] >= 3
+                and np.array(args[0]).shape[1] >= 3
+            ):
+                # From a 2 dimension array convertible array, matrix, tuple or list
+                # with at least (3*3) elements interpreted  as a rotation matrix
+                rM = np.double(np.array(args[0])[:3, :3])
+                selec = np.zeros(4)
+                selec[0] = 1 + rM[0, 0] + rM[1, 1] + rM[2, 2]
+                selec[1] = 1 + rM[0, 0] - rM[1, 1] - rM[2, 2]
+                selec[2] = 1 - rM[0, 0] + rM[1, 1] - rM[2, 2]
+                selec[3] = 1 - rM[0, 0] - rM[1, 1] + rM[2, 2]
+                param = selec.argmax()
+                if selec[param] > 0:
+                    q = np.zeros(4)
+                    if param == 0:
+                        q[3] = np.sqrt(selec[param])
+                        q[0] = (rM[2, 1] - rM[1, 2]) / q[3]
+                        q[1] = (rM[0, 2] - rM[2, 0]) / q[3]
+                        q[2] = (rM[1, 0] - rM[0, 1]) / q[3]
+                        self.array = q * 0.5
                         # print '--1--V3'
-                    elif param==1:
-                        q[0]=np.sqrt(selec[param])
-                        q[3]=(rM[2,1]-rM[1,2])/q[0]
-                        q[1]=(rM[1,0]+rM[0,1])/q[0]
-                        q[2]=(rM[0,2]+rM[2,0])/q[0]
-                        self.array=q*0.5
+                    elif param == 1:
+                        q[0] = np.sqrt(selec[param])
+                        q[3] = (rM[2, 1] - rM[1, 2]) / q[0]
+                        q[1] = (rM[1, 0] + rM[0, 1]) / q[0]
+                        q[2] = (rM[0, 2] + rM[2, 0]) / q[0]
+                        self.array = q * 0.5
                         # print '--2--V3'
-                    elif param==2:
-                        q[1]=np.sqrt(selec[param])
-                        q[3]=(rM[0,2]-rM[2,0])/q[1]
-                        q[0]=(rM[1,0]+rM[0,1])/q[1]
-                        q[2]=(rM[2,1]+rM[1,2])/q[1]
-                        self.array=q*0.5
+                    elif param == 2:
+                        q[1] = np.sqrt(selec[param])
+                        q[3] = (rM[0, 2] - rM[2, 0]) / q[1]
+                        q[0] = (rM[1, 0] + rM[0, 1]) / q[1]
+                        q[2] = (rM[2, 1] + rM[1, 2]) / q[1]
+                        self.array = q * 0.5
                         # print '--3--V3'
-                    elif param==3:
-                        q[2]=np.sqrt(selec[param])
-                        q[3]=(rM[1,0]-rM[0,1])/q[2]
-                        q[0]=(rM[0,2]+rM[2,0])/q[2]
-                        q[1]=(rM[2,1]+rM[1,2])/q[2]
-                        self.array=q*0.5
+                    elif param == 3:
+                        q[2] = np.sqrt(selec[param])
+                        q[3] = (rM[1, 0] - rM[0, 1]) / q[2]
+                        q[0] = (rM[0, 2] + rM[2, 0]) / q[2]
+                        q[1] = (rM[2, 1] + rM[1, 2]) / q[2]
+                        self.array = q * 0.5
                         # print '--4--V3'
                 else:
-                    error=True
+                    error = True
             else:
-                error=True
-        elif len(args)==2: # From a a vector part (3 elements) and scalar part (1 element)
-            arg0=np.double(np.array(args[0]))
-            arg1=np.double(np.array(args[1]))
-            if arg0.size==1 and arg1.size==3:
-                self.array=np.zeros(4)
-                self.array[3]=arg0
-                self.array[0:3]=arg1[:]
-            elif arg0.size==3 and arg1.size==1:
-                self.array=np.zeros(4)
-                self.array[3]=arg1
-                self.array[0:3]=arg0[:]
+                error = True
+        elif (
+            len(args) == 2
+        ):  # From a a vector part (3 elements) and scalar part (1 element)
+            arg0 = np.double(np.array(args[0]))
+            arg1 = np.double(np.array(args[1]))
+            if arg0.size == 1 and arg1.size == 3:
+                self.array = np.zeros(4)
+                self.array[3] = arg0
+                self.array[0:3] = arg1[:]
+            elif arg0.size == 3 and arg1.size == 1:
+                self.array = np.zeros(4)
+                self.array[3] = arg1
+                self.array[0:3] = arg0[:]
             else:
-                error=True
+                error = True
 
         else:
-            error=True
+            error = True
 
-        if error==False and self.array.shape!=(4,):
+        if not error and self.array.shape != (4,):
             del self.array
-            error=True
+            error = True
         if error:
-            raise TypeError ("Impossible to instanciate the Quaternion object with the given arguments")
+            raise TypeError(
+                "Impossible to instanciate the Quaternion object "
+                "with the given arguments"
+            )
 
     def __str__(self):
         """
         String representation of the quaternion.
         """
-        aff='['
-        aff+=str(self.array [0])+' i + '
-        aff+=str(self.array [1])+' j + '
-        aff+=str(self.array [2])+' k + '
-        aff+=str(self.array [3])+']'
+        aff = "["
+        aff += str(self.array[0]) + " i + "
+        aff += str(self.array[1]) + " j + "
+        aff += str(self.array[2]) + " k + "
+        aff += str(self.array[3]) + "]"
         return aff
 
     def __neg__(self):
@@ -205,57 +239,60 @@ class Quaternion (object):
         """
         return Quaternion(-self.array)
 
-    def __add__(self,other):
+    def __add__(self, other):
         """
         If other is not a quaternion it is casted to a quaternion,
         the elements are added one to one.
         """
-        if type(other)!=Quaternion:
-            q2=Quaternion(other)
+        if type(other) != Quaternion:
+            q2 = Quaternion(other)
         else:
-            q2=other
-        return Quaternion(self.array+q2.array)
+            q2 = other
+        return Quaternion(self.array + q2.array)
 
-    def __sub__(self,other):
+    def __sub__(self, other):
         """
         If other is not a quaternion it is casted to a quaternion,
         the elements are substracted one to one.
         """
-        if type(other)!=Quaternion:
-            q2=Quaternion(other)
+        if type(other) != Quaternion:
+            q2 = Quaternion(other)
         else:
-            q2=other
-        return Quaternion(self.array-q2.array)
+            q2 = other
+        return Quaternion(self.array - q2.array)
 
-    def __mul__(self,other):
+    def __mul__(self, other):
         """
         If other is not a quaternion it is casted to a quaternion,
         the result of the quaternion multiplication is returned.
         """
-        if type(other)!=Quaternion:
-            q2=Quaternion(other)
+        if type(other) != Quaternion:
+            q2 = Quaternion(other)
         else:
-            q2=other
-        qr=np.zeros(4)
-        qr[3]=self.array[3]*q2.array[3]-np.vdot(self.array[0:3],q2.array[0:3])
-        qr[0:3]=np.cross(self.array[0:3],q2.array[0:3])+\
-                 self.array[3]*q2.array[0:3]+q2.array[3]*self.array[0:3]
+            q2 = other
+        qr = np.zeros(4)
+        qr[3] = self.array[3] * q2.array[3] - np.vdot(self.array[0:3], q2.array[0:3])
+        qr[0:3] = (
+            np.cross(self.array[0:3], q2.array[0:3])
+            + self.array[3] * q2.array[0:3]
+            + q2.array[3] * self.array[0:3]
+        )
         return Quaternion(qr)
 
-    def __rmul__(self,other):
+    def __rmul__(self, other):
         """
         other is casted to a quaternion,
         the result of the quaternion multiplication is returned.
         """
-        return  Quaternion(other)*self
+        return Quaternion(other) * self
 
-    def transform (self, v):
+    def transform(self, v):
         """
         apply rotation to a vector
         """
-        u = np.array (self.array [0:3])
-        s = self.array [3]
-        return 2*u.dot(v)*u + (s*s - u.dot(u))*v + 2*s*np.cross(u, v)
+        u = np.array(self.array[0:3])
+        s = self.array[3]
+        return 2 * u.dot(v) * u + (s * s - u.dot(u)) * v + 2 * s * np.cross(u, v)
 
     def __abs__(self):
         """
@@ -267,50 +304,50 @@ class Quaternion (object):
         """
         Returns the conjugate of the quaternion.
         """
-        return Quaternion(-self.array[0:3],self.array [3])
+        return Quaternion(-self.array[0:3], self.array[3])
 
     def inv(self):
         """
         Returns the inverse of the quaternion.
         """
-        return Quaternion(self.conjugate().array/(abs(self)**2))
+        return Quaternion(self.conjugate().array / (abs(self) ** 2))
 
-    def __div__(self,other):
+    def __div__(self, other):
         """
         If other is not a quaternion it is casted to a quaternion,
         the result of the quaternion multiplication with the inverse of other
         is returned.
         """
-        if type(other)!=Quaternion:
-            q2=Quaternion(other)
+        if type(other) != Quaternion:
+            q2 = Quaternion(other)
         else:
-            q2=other
-        return self*q2.inv()
+            q2 = other
+        return self * q2.inv()
 
-    def __pow__(self,n):
+    def __pow__(self, n):
         """
         Returns quaternion**n with quaternion**0 = Quaternion(1,0,0,0).
         """
-        r=Quaternion()
+        r = Quaternion()
         for i in range(n):
-                r=r*self
+            r = r * self
         return r
 
-    def normalize (self):
+    def normalize(self):
         """
         Changes the values of the quaternion to make it a unit quaternion
         representing the same rotation as the original one
         and returns the updated version.
         """
-        self.array /= abs(self);
+        self.array /= abs(self)
         return self
 
-    def normalized (self):
+    def normalized(self):
         """
         Returns the unit quaternion representation of the quaternion
         without changing the original.
         """
-        qr=Quaternion(self)
+        qr = Quaternion(self)
         qr.normalize()
         return qr
 
@@ -319,17 +356,17 @@ class Quaternion (object):
         Returns a (3*3) array (rotation matrix)
         representing the same rotation as the (normalized) quaternion.
         """
-        q=self.normalized().array
-        rm=np.zeros((3,3))
-        rm[0,0]=1-2*(q[1]**2+q[2]**2)
-        rm[0,1]=2*q[0]*q[1]-2*q[3]*q[2]
-        rm[0,2]=2*q[0]*q[2]+2*q[3]*q[1]
-        rm[1,0]=2*q[0]*q[1]+2*q[3]*q[2]
-        rm[1,1]=1-2*(q[0]**2+q[2]**2)
-        rm[1,2]=2*q[1]*q[2]-2*q[3]*q[0]
-        rm[2,0]=2*q[0]*q[2]-2*q[3]*q[1]
-        rm[2,1]=2*q[1]*q[2]+2*q[3]*q[0]
-        rm[2,2]=1-2*(q[0]**2+q[1]**2)
+        q = self.normalized().array
+        rm = np.zeros((3, 3))
+        rm[0, 0] = 1 - 2 * (q[1] ** 2 + q[2] ** 2)
+        rm[0, 1] = 2 * q[0] * q[1] - 2 * q[3] * q[2]
+        rm[0, 2] = 2 * q[0] * q[2] + 2 * q[3] * q[1]
+        rm[1, 0] = 2 * q[0] * q[1] + 2 * q[3] * q[2]
+        rm[1, 1] = 1 - 2 * (q[0] ** 2 + q[2] ** 2)
+        rm[1, 2] = 2 * q[1] * q[2] - 2 * q[3] * q[0]
+        rm[2, 0] = 2 * q[0] * q[2] - 2 * q[3] * q[1]
+        rm[2, 1] = 2 * q[1] * q[2] + 2 * q[3] * q[0]
+        rm[2, 2] = 1 - 2 * (q[0] ** 2 + q[1] ** 2)
         return rm
 
     def toRotationVector(self):
@@ -337,11 +374,11 @@ class Quaternion (object):
         Returns a 3-sized array (rotation vector)
         representing the same rotation as the (normalized) quaternion.
         """
-        q=self.normalized().array
-        rV=np.zeros(3)
-        alpha=2*np.arccos(q[3])
-        if linalg.norm(q[0:3])!=0:
-            rV=alpha*q[0:3]/linalg.norm(q[0:3])
+        q = self.normalized().array
+        rV = np.zeros(3)
+        alpha = 2 * np.arccos(q[3])
+        if linalg.norm(q[0:3]) != 0:
+            rV = alpha * q[0:3] / linalg.norm(q[0:3])
         return rV
 
     def copy(self):
@@ -366,19 +403,27 @@ class Quaternion (object):
             followed by a rotation of P about the new y-axis,
             followed by a rotation of R about the new x-axis.
         """
-        q=self.normalized().array
-        d = -q[0]*q[1] + q[2]*q[3]
-        if np.fabs(d-0.5) < 1e-6: # d == 0.5
-            r=-2*np.arctan2(q[1],q[3])
-        elif np.fabs(d+0.5) < 1e-6: # d == -0.5
-            r= 2*np.arctan2(q[1],q[3])
+        q = self.normalized().array
+        d = -q[0] * q[1] + q[2] * q[3]
+        if np.fabs(d - 0.5) < 1e-6:  # d == 0.5
+            r = -2 * np.arctan2(q[1], q[3])
+        elif np.fabs(d + 0.5) < 1e-6:  # d == -0.5
+            r = 2 * np.arctan2(q[1], q[3])
         else:
-            r=np.arctan2(2*(q[3]*q[0]+q[1]*q[2]),1-2*(q[0]**2+q[1]**2))
-        p=np.arctan2(2*(q[3]*q[1]-q[2]*q[0]),np.sqrt((2*(q[3]*q[0]+q[1]*q[2]))**2+(1-2*(q[0]**2+q[1]**2))**2)) # We cas use arcsin but arctan2 is more robust
-        y=np.arctan2(2*(q[3]*q[2]+q[0]*q[1]),1-2*(q[1]**2+q[2]**2))
-        return np.array([r,p,y])
+            r = np.arctan2(
+                2 * (q[3] * q[0] + q[1] * q[2]), 1 - 2 * (q[0] ** 2 + q[1] ** 2)
+            )
+        p = np.arctan2(
+            2 * (q[3] * q[1] - q[2] * q[0]),
+            np.sqrt(
+                (2 * (q[3] * q[0] + q[1] * q[2])) ** 2
+                + (1 - 2 * (q[0] ** 2 + q[1] ** 2)) ** 2
+            ),
+        )  # We cas use arcsin but arctan2 is more robust
+        y = np.arctan2(2 * (q[3] * q[2] + q[0] * q[1]), 1 - 2 * (q[1] ** 2 + q[2] ** 2))
+        return np.array([r, p, y])
 
-    def fromRPY(self,R,P,Y):
+    def fromRPY(self, R, P, Y):
         """
         Set the values of the quaternion to the values of a unit quaternion
         representing the same rotation as the one performed by Roll Pitch Yaw :
@@ -389,71 +434,83 @@ class Quaternion (object):
             followed by a rotation of P about the new y-axis,
             followed by a rotation of R about the new x-axis.
         """
-        r=R/2.
-        p=P/2.
-        y=Y/2.
-        self.array[0]=np.sin(r)*np.cos(p)*np.cos(y)-np.cos(r)*np.sin(p)*np.sin(y)
-        self.array[1]=np.cos(r)*np.sin(p)*np.cos(y)+np.sin(r)*np.cos(p)*np.sin(y)
-        self.array[2]=np.cos(r)*np.cos(p)*np.sin(y)-np.sin(r)*np.sin(p)*np.cos(y)
-        self.array[3]=np.cos(r)*np.cos(p)*np.cos(y)+np.sin(r)*np.sin(p)*np.sin(y)
+        r = R / 2.0
+        p = P / 2.0
+        y = Y / 2.0
+        self.array[0] = np.sin(r) * np.cos(p) * np.cos(y) - np.cos(r) * np.sin(
+            p
+        ) * np.sin(y)
+        self.array[1] = np.cos(r) * np.sin(p) * np.cos(y) + np.sin(r) * np.cos(
+            p
+        ) * np.sin(y)
+        self.array[2] = np.cos(r) * np.cos(p) * np.sin(y) - np.sin(r) * np.sin(
+            p
+        ) * np.cos(y)
+        self.array[3] = np.cos(r) * np.cos(p) * np.cos(y) + np.sin(r) * np.sin(
+            p
+        ) * np.sin(y)
         return self.normalize()
 
-    def toTuple (self):
+    def toTuple(self):
         """
         Return quaternion as a tuple a float starting with real part.
         """
-        return tuple (self.array)
+        return tuple(self.array)
 
-    def fromTwoVector(self,a,b):
+    def fromTwoVector(self, a, b):
         """
         Return a quaternion build representing the rotation between the two vectors.
-        In other words, the built rotation represent a rotation sending the line of direction a to the line of direction b,
-         both lines passing through the origin.
-         Equations from Eigen https://eigen.tuxfamily.org/dox/classEigen_1_1Quaternion.html#title13
+        In other words, the built rotation represent a rotation sending
+        the line of direction a to the line of direction b,
+        both lines passing through the origin.
+        Equations from Eigen
+        https://eigen.tuxfamily.org/dox/classEigen_1_1Quaternion.html#title13
         """
         if len(a) != 3 or len(b) != 3:
-            raise TypeError ("fromTwoVector method require two 3D vectors as input.")
+            raise TypeError("fromTwoVector method require two 3D vectors as input.")
 
         v0 = np.array(a)
         n0 = np.linalg.norm(v0)
         v1 = np.array(b)
         n1 = np.linalg.norm(v1)
-        if n0 < (np.finfo(np.float32).eps) or n1 < (np.finfo(np.float32).eps) :
-          return self
+        if n0 < (np.finfo(np.float32).eps) or n1 < (np.finfo(np.float32).eps):
+            return self
         v0 = v0 / n0
         v1 = v1 / n1
         c = v1.dot(v0)
 
-        if c > -1. + (np.finfo(np.float32).eps) :
-          axis = np.cross(v0,v1)
-          s = np.sqrt((1. + c)*2.)
-          invs = 1./s
-          self.array[0:3] = axis*invs
-          self.array[3] = 0.5*s
-          return self.normalize()
-        else :
-        # both vectors are nearly opposite, previous method may lead to numerical error.
-        # here we accurately compute the rotation axis by computing the intersection between two planes :
-        # x^T v1 = 0
-        # x^T v0 = 0
-        # ||x|| = 1
-        # which lead to a singular value problem
-          c = max(c,-1.)
-          m = np.matrix([v0,v1]).transpose()
-          u,s,vh  = np.linalg.svd(m)
-          axis = u[:,2].transpose()
-          w2 = (1.+c)*0.5
-          self.array[0:3] = axis*np.sqrt(1.-w2)
-          self.array[3] = np.sqrt(w2)
-          return self.normalize()
+        if c > -1.0 + (np.finfo(np.float32).eps):
+            axis = np.cross(v0, v1)
+            s = np.sqrt((1.0 + c) * 2.0)
+            invs = 1.0 / s
+            self.array[0:3] = axis * invs
+            self.array[3] = 0.5 * s
+            return self.normalize()
+        else:
+            # both vectors are nearly opposite, previous method may lead to numerical
+            # error.
+            # here we accurately compute the rotation axis by computing
+            # the intersection between two planes :
+            # x^T v1 = 0
+            # x^T v0 = 0
+            # ||x|| = 1
+            # which lead to a singular value problem
+            c = max(c, -1.0)
+            m = np.matrix([v0, v1]).transpose()
+            u, s, vh = np.linalg.svd(m)
+            axis = u[:, 2].transpose()
+            w2 = (1.0 + c) * 0.5
+            self.array[0:3] = axis * np.sqrt(1.0 - w2)
+            self.array[3] = np.sqrt(w2)
+            return self.normalize()
 
-    def fromAngleAxis(self,axis,angle,degree=False):
+    def fromAngleAxis(self, axis, angle, degree=False):
         """
         Build a quaternion from an axis of rotation and an angle.
         The angle is in radians by default and in degree if degree is set to True.
         The axis is normalized.
         """
         if degree:
-            angle = angle * np.pi / 180.
-        self.array[0:3] = np.sin(angle/2) * np.asarray(axis) / linalg.norm(axis)
-        self.array[3] = np.cos(angle/2)
+            angle = angle * np.pi / 180.0
+        self.array[0:3] = np.sin(angle / 2) * np.asarray(axis) / linalg.norm(axis)
+        self.array[3] = np.cos(angle / 2)

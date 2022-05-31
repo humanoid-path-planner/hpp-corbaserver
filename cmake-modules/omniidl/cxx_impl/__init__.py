@@ -1,7 +1,7 @@
 # -*- python -*-
 #                           Package   : hpp-corbaserver
 # __init__.py               Created on: 2019
-#			    Author    : Joseph Mirabel
+# 			    Author    : Joseph Mirabel
 #
 #    Copyright (C) 2019 LAAS-CNRS
 #
@@ -51,7 +51,8 @@ usage_string = """\
 
 Extra features added to IDL language:
 
-  - automatically generate implementation of interfaces, when the API is rigorously the same.
+  - automatically generate implementation of interfaces,
+    when the API is rigorously the same.
     For instance, in interface Bar:
     * string foo (in string a);
     assumes class Bar has a method whose prototype is similar to:
@@ -62,7 +63,8 @@ Extra features added to IDL language:
     *   return CORBA::String_dup(served_object.foo(std::string(a)).c_str());
     * }
 
-    As of now, interfaces as return types or arguments works only if the interface storage type
+    As of now, interfaces as return types or arguments
+    works only if the interface storage type
     is implicitely constructible from a shared ptr to the interface internal object.
 
   - a few function names have special behaviour:
@@ -79,8 +81,8 @@ Extra features added to IDL language:
       * //-> distance
       * void setDistance (in Distance d) raises (Error);
       * //-> distance
-    - to come: "//-" and "//+": the comment is insert as code in the default implementation.
-      Usefull in order to check the inputs.
+    - to come: "//-" and "//+": the comment is insert as code in the default
+      implementation. Usefull in order to check the inputs.
 
   - to define your own storage class. For class Foo, define a struct FooStorage
     * #ifdef __OMNIIDL_CXX_IMPL__
@@ -92,12 +94,12 @@ Extra features added to IDL language:
 
     The option -nf is useful in that context.
   """
-unused_usage_string =  """\
+unused_usage_string = """\
   -Wbs=<suffix>     Specify suffix for generated stub files
   -Wba              Generate code for TypeCodes and Any
   -Wbtp             Generate 'tie' implementation skeletons
   -Wbtf             Generate flattened 'tie' implementation skeletons
-  -Wbsplice-modules Splice together multiply opened modules into one 
+  -Wbsplice-modules Splice together multiply opened modules into one
   -Wbexample        Generate example implementation code
   -WbF              Generate code fragments (for experts only)
   -WbBOA            Generate BOA compatible skeletons
@@ -113,97 +115,99 @@ unused_usage_string =  """\
 # Encountering an unknown AST node will cause an AttributeError exception
 # to be thrown in one of the visitors. Store a list of those not-supported
 # so we can produce a friendly error message later.
-AST_unsupported_nodes = [ "Native" ]
+AST_unsupported_nodes = ["Native"]
 
 try:
     # omniidl 4.1.6
-    config.state._config['HPP Suffix'] = ".hpp"
-    config.state._config['HXX Suffix'] = ".hxx"
-    config.state._config['CC Suffix']  = ".cc"
-    config.state._config['Include Prefix']  = ""
-    config.state._config['C++11']  = False
-except AttributeError: #'dict' object has no attribute '_config'
+    config.state._config["HPP Suffix"] = ".hpp"
+    config.state._config["HXX Suffix"] = ".hxx"
+    config.state._config["CC Suffix"] = ".cc"
+    config.state._config["Include Prefix"] = ""
+    config.state._config["C++11"] = False
+except AttributeError:  # 'dict' object has no attribute '_config'
     # omniidl 4.2.2
-    config.state['HPP Suffix'] = ".hpp"
-    config.state['HXX Suffix'] = ".hxx"
-    config.state['CC Suffix']  = ".cc"
-    config.state['Include Prefix']  = ""
-    config.state['C++11']  = True
+    config.state["HPP Suffix"] = ".hpp"
+    config.state["HXX Suffix"] = ".hxx"
+    config.state["CC Suffix"] = ".cc"
+    config.state["Include Prefix"] = ""
+    config.state["C++11"] = True
+
 
 def process_args(args):
     for arg in args:
         if False:
             pass
-        #if arg == "a":
+        # if arg == "a":
         #    config.state['Typecode']          = 1
-        #elif arg == "tp":
+        # elif arg == "tp":
         #    config.state['Normal Tie']        = 1
-        #elif arg == "tf":
+        # elif arg == "tf":
         #    config.state['Flattened Tie']     = 1
-        #elif arg == "splice-modules":
+        # elif arg == "splice-modules":
         #    config.state['Splice Modules']    = 1
-        #elif arg == "example":
+        # elif arg == "example":
         #    config.state['Example Code']      = 1
-        #elif arg == "F":
+        # elif arg == "F":
         #    config.state['Fragment']          = 1
-        #elif arg == "BOA":
+        # elif arg == "BOA":
         #    config.state['BOA Skeletons']     = 1
-        #elif arg == "old":
+        # elif arg == "old":
         #    config.state['Old Signatures']    = 1
-        #elif arg == "old_prefix":
+        # elif arg == "old_prefix":
         #    config.state['Reserved Prefix']   = "_"
-        #elif arg == "keep_inc_path":
+        # elif arg == "keep_inc_path":
         #    config.state['Keep Include Path'] = 1
-        #elif arg == "use_quotes":
+        # elif arg == "use_quotes":
         #    config.state['Use Quotes']        = 1
-        #elif arg == "virtual_objref":
+        # elif arg == "virtual_objref":
         #    config.state['Virtual Objref Methods'] = 1
-        #elif arg == "impl_mapping":
+        # elif arg == "impl_mapping":
         #    config.state['Impl Mapping'] = 1
-        #elif arg == "debug":
+        # elif arg == "debug":
         #    config.state['Debug']             = 1
         elif arg[:2] == "h=":
-            config.state['HH Suffix']         = arg[2:]
+            config.state["HH Suffix"] = arg[2:]
         elif arg[:3] == "hh=":
-            config.state['HPP Suffix']        = arg[3:]
+            config.state["HPP Suffix"] = arg[3:]
         elif arg[:2] == "i=":
-            config.state['HXX Suffix']        = arg[2:]
+            config.state["HXX Suffix"] = arg[2:]
         elif arg[:2] == "c=":
-            config.state['CC Suffix']         = arg[2:]
-        #elif arg[:2] == "s=":
+            config.state["CC Suffix"] = arg[2:]
+        # elif arg[:2] == "s=":
         #    config.state['SK Suffix']         = arg[2:]
-        #elif arg[:2] == "d=":
+        # elif arg[:2] == "d=":
         #    config.state['DYNSK Suffix']      = arg[2:]
-        #elif arg[:2] == "e=":
+        # elif arg[:2] == "e=":
         #    config.state['IMPL Suffix']       = arg[2:]
-        #elif arg == "inline":
+        # elif arg == "inline":
         #    config.state['Inline Includes']   = 1
-        #elif arg == "shortcut":
+        # elif arg == "shortcut":
         #    config.state['Shortcut']          = 1
-        #elif arg[:9] == "shortcut=":
+        # elif arg[:9] == "shortcut=":
         #    if arg[9:] == "refcount":
         #        config.state['Shortcut']      = 2
         #    elif arg[9:] == "simple":
         #        config.state['Shortcut']      = 1
         #    else:
         #        util.fatalError('Unknown shortcut option "%s"' % arg[9:])
-        #elif arg == "dll_includes":
+        # elif arg == "dll_includes":
         #    config.state['DLLIncludes']       = 1
-        elif arg[:len('guard_prefix=')] == "guard_prefix=":
-            config.state['GuardPrefix']       = arg[len('guard_prefix='):]
-        elif arg[:len('inc_prefix=')]   == "inc_prefix=":
-            config.state['Include Prefix']    = arg[len('inc_prefix='):]
+        elif arg[: len("guard_prefix=")] == "guard_prefix=":
+            config.state["GuardPrefix"] = arg[len("guard_prefix=") :]
+        elif arg[: len("inc_prefix=")] == "inc_prefix=":
+            config.state["Include Prefix"] = arg[len("inc_prefix=") :]
         elif arg == "c++11":
-            config.state['CC Suffix']         = arg[2:]
+            config.state["CC Suffix"] = arg[2:]
         else:
-            util.fatalError("Argument \"" + str(arg) + "\" is unknown")
+            util.fatalError('Argument "' + str(arg) + '" is unknown')
+
 
 def run(tree, backend_args):
     # Process arguments
     dirname, filename = os.path.split(tree.file())
-    basename,ext      = os.path.splitext(filename)
-    config.state['Basename']  = basename
-    config.state['Directory'] = dirname
+    basename, ext = os.path.splitext(filename)
+    config.state["Basename"] = basename
+    config.state["Directory"] = dirname
 
     process_args(backend_args)
 
@@ -220,13 +224,12 @@ def run(tree, backend_args):
         # Build the map of AST nodes to Environments
         tree.accept(id.WalkTree())
 
-
-        hh_filename  = config.state['Basename'] + config.state['HH Suffix']
-        hpp_filename = config.state['Basename'] + config.state['HPP Suffix']
-        hxx_filename = config.state['Basename'] + config.state['HXX Suffix']
-        cc_filename  = config.state['Basename'] + config.state['CC Suffix']
+        hh_filename = config.state["Basename"] + config.state["HH Suffix"]
+        hpp_filename = config.state["Basename"] + config.state["HPP Suffix"]
+        hxx_filename = config.state["Basename"] + config.state["HXX Suffix"]
+        cc_filename = config.state["Basename"] + config.state["CC Suffix"]
         if config.state["Include Prefix"]:
-            prefix = config.state['Include Prefix'] + '/'
+            prefix = config.state["Include Prefix"] + "/"
         else:
             prefix = ""
 
@@ -234,35 +237,41 @@ def run(tree, backend_args):
 
         hpp_stream = output.Stream(output.createFile(hpp_filename), 2)
         hxx_stream = output.Stream(output.createFile(hxx_filename), 2)
-        cc_stream  = output.Stream(output.createFile( cc_filename), 2)
+        cc_stream = output.Stream(output.createFile(cc_filename), 2)
         main.self = main
-        main.__init__(hpp_stream, hxx_stream, cc_stream,
-                idl_filename,
-                prefix, hh_filename, hpp_filename, hxx_filename)
+        main.__init__(
+            hpp_stream,
+            hxx_stream,
+            cc_stream,
+            idl_filename,
+            prefix,
+            hh_filename,
+            hpp_filename,
+            hxx_filename,
+        )
 
         main.run(tree)
 
-        hpp_stream .close()
+        hpp_stream.close()
         hxx_stream.close()
-        cc_stream .close()
+        cc_stream.close()
 
     except AttributeError as e:
         name = e.args[0]
-        unsupported_visitors = map(lambda x:"visit" + x,
-                                   AST_unsupported_nodes[:])
+        unsupported_visitors = map(lambda x: "visit" + x, AST_unsupported_nodes[:])
         if name in unsupported_visitors:
             # delete all possibly partial output files
             for file in output.listAllCreatedFiles():
                 os.unlink(file)
 
             util.unsupportedIDL()
-            
+
         raise
 
-    except SystemExit as e:
+    except SystemExit:
         # fatalError function throws SystemExit exception
         # delete all possibly partial output files
         for file in output.listAllCreatedFiles():
             os.unlink(file)
-        
+
         raise

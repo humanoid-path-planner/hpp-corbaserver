@@ -29,58 +29,59 @@
 import numpy as np
 from hpp import Quaternion
 
-class Transform (object):
-    def __init__ (self, *args):
-        if len (args) == 0:
-            self.translation = np.array ([0.,0.,0.])
-            self.quaternion = Quaternion ()
-        if len (args) == 7:
-            self.translation = np.array (args [0:3])
-            self.quaternion = Quaternion (args [3:7])
-        if len (args) == 2:
-            self.quaternion = Quaternion (args [0])
-            self.translation = np.array (args [1])
-        if len (args) == 1:
-            if isinstance (args [0], Transform) :
-                self.quaternion = args [0].quaternion
-                self.translation = args [0].translation
-            elif isinstance (args [0], (list,tuple)):
-                self.translation = np.array (args [0][0:3])
-                self.quaternion = Quaternion (args [0][3:7])
-        self.quaternion.normalize ()
 
-    def __mul__ (self, other):
+class Transform(object):
+    def __init__(self, *args):
+        if len(args) == 0:
+            self.translation = np.array([0.0, 0.0, 0.0])
+            self.quaternion = Quaternion()
+        if len(args) == 7:
+            self.translation = np.array(args[0:3])
+            self.quaternion = Quaternion(args[3:7])
+        if len(args) == 2:
+            self.quaternion = Quaternion(args[0])
+            self.translation = np.array(args[1])
+        if len(args) == 1:
+            if isinstance(args[0], Transform):
+                self.quaternion = args[0].quaternion
+                self.translation = args[0].translation
+            elif isinstance(args[0], (list, tuple)):
+                self.translation = np.array(args[0][0:3])
+                self.quaternion = Quaternion(args[0][3:7])
+        self.quaternion.normalize()
+
+    def __mul__(self, other):
         rot = self.quaternion * other.quaternion
-        trans = self.quaternion.transform (other.translation) +\
-            self.translation
-        return Transform (rot, trans)
+        trans = self.quaternion.transform(other.translation) + self.translation
+        return Transform(rot, trans)
 
-    def inverse (self):
+    def inverse(self):
         rot = self.quaternion.conjugate()
-        trans = - self.quaternion.conjugate().transform (self.translation)
-        return Transform (rot, trans)
+        trans = -self.quaternion.conjugate().transform(self.translation)
+        return Transform(rot, trans)
 
-    def transform (self, v):
-        res = self.quaternion.transform (v) + self.translation
+    def transform(self, v):
+        res = self.quaternion.transform(v) + self.translation
         return res
-        
-    def __str__ (self):
-        return "quaternion:  %s,\ntranslation: %s"%(self.quaternion,
-                                                    self.translation)
 
-    def __getitem__ (self, i):
-        if i<3: return self.translation [i]
-        if i<7: return self.quaternion.toTuple () [i-3]
-        raise IndexError ("index out of range")
+    def __str__(self):
+        return "quaternion:  %s,\ntranslation: %s" % (self.quaternion, self.translation)
 
-    def __len__ (self):
+    def __getitem__(self, i):
+        if i < 3:
+            return self.translation[i]
+        if i < 7:
+            return self.quaternion.toTuple()[i - 3]
+        raise IndexError("index out of range")
+
+    def __len__(self):
         return 7
 
-    def toHomogeneousMatrix (self):
+    def toHomogeneousMatrix(self):
         H = np.eye(4)
-        H[:3,:3] = self.quaternion.toRotationMatrix()
-        H[:3,3] = self.translation
+        H[:3, :3] = self.quaternion.toRotationMatrix()
+        H[:3, 3] = self.translation
         return H
 
-    def toTuple (self):
-        return tuple (self.translation) + self.quaternion.toTuple ()
+    def toTuple(self):
+        return tuple(self.translation) + self.quaternion.toTuple()

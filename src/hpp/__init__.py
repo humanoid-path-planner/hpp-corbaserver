@@ -26,19 +26,21 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 # DAMAGE.
 
-from .quaternion import Quaternion
-from .transform import Transform
+from .quaternion import Quaternion  # noqa: F401
+from .transform import Transform  # noqa: F401
+
 
 def retrieveRosResource(path):
     import os
-    ros_package_paths = os.environ["ROS_PACKAGE_PATH"].split(':')
+
+    ros_package_paths = os.environ["ROS_PACKAGE_PATH"].split(":")
 
     if path.startswith("package://"):
-        relpath = path[len("package://"):]
+        relpath = path[len("package://") :]
         for dir in ros_package_paths:
-            abspath = os.path.join(dir,relpath)
+            abspath = os.path.join(dir, relpath)
             if os.path.exists(abspath):
                 return abspath
-        return IOError ("Could not find resource " + path)
+        return IOError("Could not find resource " + path)
     else:
         return path

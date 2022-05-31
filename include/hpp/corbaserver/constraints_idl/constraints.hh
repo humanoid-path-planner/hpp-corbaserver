@@ -32,132 +32,107 @@
 // See the COPYING file for more information.
 
 #ifndef HPP_CONSTRAINTS_IDL_CONSTRAINTS_HH
-# define HPP_CONSTRAINTS_IDL_CONSTRAINTS_HH
+#define HPP_CONSTRAINTS_IDL_CONSTRAINTS_HH
 
-# include <hpp/constraints/differentiable-function.hh>
-# include <hpp/constraints/implicit.hh>
+#include <hpp/constraints/differentiable-function.hh>
+#include <hpp/constraints/implicit.hh>
+#include <hpp/constraints_idl/constraints-idl.hh>
+#include <hpp/corbaserver/conversions.hh>
+#include <hpp/corbaserver/fwd.hh>
+#include <hpp/corbaserver/servant-base.hh>
 
-# include <hpp/corbaserver/fwd.hh>
-# include <hpp/corbaserver/conversions.hh>
-# include <hpp/constraints_idl/constraints-idl.hh>
+namespace hpp {
+namespace corbaServer {
+namespace constraints_idl {
+template <typename _Base, typename _Storage>
+class DifferentiableFunctionServant
+    : public ServantBase<constraints::DifferentiableFunction, _Storage>,
+      public virtual _Base {
+  SERVANT_BASE_TYPEDEFS(hpp::constraints_idl::DifferentiableFunction,
+                        constraints::DifferentiableFunction);
 
-# include <hpp/corbaserver/servant-base.hh>
+ public:
+  DifferentiableFunctionServant(Server* server, const Storage& s)
+      : _ServantBase(server, s) {}
 
-namespace hpp
-{
-  namespace corbaServer
-  {
-    namespace constraints_idl
-    {
-      template <typename _Base, typename _Storage>
-      class DifferentiableFunctionServant : public ServantBase<constraints::DifferentiableFunction, _Storage>, public virtual _Base
-      {
-          SERVANT_BASE_TYPEDEFS(hpp::constraints_idl::DifferentiableFunction, constraints::DifferentiableFunction);
+  virtual ~DifferentiableFunctionServant() {}
 
-        public:
-          DifferentiableFunctionServant (Server* server, const Storage& s)
-          : _ServantBase (server, s) {}
+  floatSeq* value(const floatSeq& arg) {
+    return vectorToFloatSeq(
+        (*get())(floatSeqToVector(arg, get()->inputSize())).vector());
+  }
 
-          virtual ~DifferentiableFunctionServant () {}
+  floatSeqSeq* jacobian(const floatSeq& arg) {
+    matrix_t J(get()->outputDerivativeSize(), get()->inputDerivativeSize());
+    get()->jacobian(J, floatSeqToVector(arg));
+    return matrixToFloatSeqSeq(J);
+  }
 
-          floatSeq* value (const floatSeq& arg)
-          {
-            return vectorToFloatSeq (
-                (*get()) (floatSeqToVector(arg, get()->inputSize())).vector()
-                );
-          }
+  size_type inputSize() { return get()->inputSize(); }
+  size_type inputDerivativeSize() { return get()->inputDerivativeSize(); }
+  size_type outputSize() { return get()->outputSize(); }
+  size_type outputDerivativeSize() { return get()->outputDerivativeSize(); }
+  char* name() { return c_str(get()->name()); }
 
-          floatSeqSeq* jacobian (const floatSeq& arg)
-          {
-            matrix_t J (get()->outputDerivativeSize(), get()->inputDerivativeSize());
-            get()->jacobian (J, floatSeqToVector(arg));
-            return matrixToFloatSeqSeq (J);
-          }
+  char* str() {
+    std::ostringstream oss;
+    oss << *get();
+    std::string res = oss.str();
+    return CORBA::string_dup(res.c_str());
+  }
+};
 
-          size_type inputSize ()
-          {
-            return get()->inputSize();
-          }
-          size_type inputDerivativeSize ()
-          {
-            return get()->inputDerivativeSize();
-          }
-          size_type  outputSize ()
-          {
-            return get()->outputSize ();
-          }
-          size_type  outputDerivativeSize ()
-          {
-            return get()->outputDerivativeSize ();
-          }
-          char* name ()
-          {
-            return c_str(get()->name ());
-          }
+typedef DifferentiableFunctionServant<
+    POA_hpp::constraints_idl::DifferentiableFunction,
+    constraints::DifferentiableFunctionPtr_t>
+    DifferentiableFunction;
 
-          char* str ()
-          {
-            std::ostringstream oss; oss << *get();
-            std::string res = oss.str();
-            return CORBA::string_dup(res.c_str());
-          }
-      };
+template <typename _Base, typename _Storage>
+class ImplicitServant : public ServantBase<constraints::Implicit, _Storage>,
+                        public virtual _Base {
+  SERVANT_BASE_TYPEDEFS(hpp::constraints_idl::Implicit, constraints::Implicit);
 
-      typedef DifferentiableFunctionServant<POA_hpp::constraints_idl::DifferentiableFunction, constraints::DifferentiableFunctionPtr_t> DifferentiableFunction;
+ public:
+  ImplicitServant(Server* server, const Storage& s) : _ServantBase(server, s) {}
 
-      template <typename _Base, typename _Storage>
-      class ImplicitServant : public ServantBase<constraints::Implicit, _Storage>, public virtual _Base
-      {
-          SERVANT_BASE_TYPEDEFS(hpp::constraints_idl::Implicit, constraints::Implicit);
+  virtual ~ImplicitServant() {}
 
-        public:
-          ImplicitServant (Server* server, const Storage& s)
-          : _ServantBase (server, s) {}
+  hpp::constraints_idl::DifferentiableFunction_ptr function() {
+    hpp::constraints_idl::DifferentiableFunction_var f =
+        makeServantDownCast<DifferentiableFunction>(server_,
+                                                    get()->functionPtr());
+    return f._retn();
+  }
 
-          virtual ~ImplicitServant () {}
+  void setRightHandSideFromConfig(const floatSeq& config) {
+    get()->rightHandSideFromConfig(
+        floatSeqToVector(config, get()->function().inputSize()));
+  }
 
-          hpp::constraints_idl::DifferentiableFunction_ptr function ()
-          {
-            hpp::constraints_idl::DifferentiableFunction_var f =
-              makeServantDownCast<DifferentiableFunction> (server_, get()->functionPtr());
-            return f._retn();
-          }
+  void setRightHandSide(const floatSeq& rhs) {
+    get()->rightHandSide(floatSeqToVector(rhs, get()->rhsSize()));
+  }
 
-          void setRightHandSideFromConfig (const floatSeq& config)
-          {
-            get()->rightHandSideFromConfig (
-                floatSeqToVector(config, get()->function().inputSize()));
-          }
+  floatSeq* getRightHandSide() {
+    return vectorToFloatSeq(get()->rightHandSide());
+  }
 
-          void setRightHandSide (const floatSeq& rhs)
-          {
-            get()->rightHandSide (floatSeqToVector(rhs, get()->rhsSize()));
-          }
+  hpp::size_type rhsSize() { return get()->rhsSize(); }
 
-          floatSeq* getRightHandSide ()
-          {
-            return vectorToFloatSeq (get()->rightHandSide());
-          }
+  CORBA::Boolean constantRightHandSide() {
+    return get()->constantRightHandSide();
+  }
 
-          hpp::size_type rhsSize ()
-          {
-            return get()->rhsSize();
-          }
+  floatSeq* rightHandSideAt(value_type s) {
+    return vectorToFloatSeq(get()->rightHandSideAt(s));
+  }
+};
 
-          CORBA::Boolean constantRightHandSide ()
-          {
-            return get()->constantRightHandSide();
-          }
+typedef ImplicitServant<POA_hpp::constraints_idl::Implicit,
+                        constraints::ImplicitPtr_t>
+    Implicit;
+}  // namespace constraints_idl
+}  // end of namespace corbaServer.
+}  // end of namespace hpp.
 
-          floatSeq* rightHandSideAt (value_type s)
-          {
-            return vectorToFloatSeq (get()->rightHandSideAt(s));
-          }
-      };
-
-      typedef ImplicitServant<POA_hpp::constraints_idl::Implicit, constraints::ImplicitPtr_t> Implicit;
-    } // end of namespace constraints.
-  } // end of namespace corbaServer.
-} // end of namespace hpp.
-
-#endif // HPP_CONSTRAINTS_IDL_CONSTRAINTS_HH
+#endif  // HPP_CONSTRAINTS_IDL_CONSTRAINTS_HH

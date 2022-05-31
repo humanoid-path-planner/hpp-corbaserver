@@ -27,59 +27,54 @@
 // DAMAGE.
 
 #ifndef HPP_CORBASERVER_OBJECT_MAP_HH
-# define HPP_CORBASERVER_OBJECT_MAP_HH
+#define HPP_CORBASERVER_OBJECT_MAP_HH
 
-# include <pinocchio/fwd.hpp>
-# include <hpp/fcl/BVH/BVH_model.h>
-# include <hpp/fcl/shape/geometric_shapes.h>
+#include <hpp/fcl/BVH/BVH_model.h>
+#include <hpp/fcl/shape/geometric_shapes.h>
 
-# include <hpp/corbaserver/fwd.hh>
-# include <hpp/common-idl.hh>
+#include <hpp/common-idl.hh>
+#include <hpp/corbaserver/fwd.hh>
+#include <pinocchio/fwd.hpp>
 
 namespace hpp {
-  namespace corbaServer {
-    class ObjectMap
-    {
-      public:
-        void createBox (const std::string boxName, value_type x, value_type y, value_type z);
-        void createSphere (const std::string name, value_type radius);
-        void createCylinder (const std::string name, value_type radius, value_type length);
+namespace corbaServer {
+class ObjectMap {
+ public:
+  void createBox(const std::string boxName, value_type x, value_type y,
+                 value_type z);
+  void createSphere(const std::string name, value_type radius);
+  void createCylinder(const std::string name, value_type radius,
+                      value_type length);
 
-        void createPolyhedron (const std::string polyhedronName);
-        std::size_t addPoint (const std::string polyhedronName, value_type x, value_type y, value_type z);
-        std::size_t addTriangle (const std::string polyhedronName, std::size_t pt1, std::size_t pt2, std::size_t pt3);
+  void createPolyhedron(const std::string polyhedronName);
+  std::size_t addPoint(const std::string polyhedronName, value_type x,
+                       value_type y, value_type z);
+  std::size_t addTriangle(const std::string polyhedronName, std::size_t pt1,
+                          std::size_t pt2, std::size_t pt3);
 
-        CollisionGeometryPtr_t geometry (const std::string name) /*const*/;
+  CollisionGeometryPtr_t geometry(const std::string name) /*const*/;
 
-      protected:
-        struct PolyhedronData {
-          std::vector <fcl::Vec3f> pts;
-          std::vector <fcl::Triangle> tris;
-        };
-        typedef std::map <std::string, PolyhedronData> PolyhedronMap_t;
-        typedef std::map <std::string, BasicShapePtr_t> ShapeMap_t;
+ protected:
+  struct PolyhedronData {
+    std::vector<fcl::Vec3f> pts;
+    std::vector<fcl::Triangle> tris;
+  };
+  typedef std::map<std::string, PolyhedronData> PolyhedronMap_t;
+  typedef std::map<std::string, BasicShapePtr_t> ShapeMap_t;
 
-        enum GeomType {
-          Shape = 1,
-          Polyhedron = 2,
-          BothGeomType = 3
-        };
+  enum GeomType { Shape = 1, Polyhedron = 2, BothGeomType = 3 };
 
-        enum ThrowType {
-          NoThrow,
-          ThrowIfItExists,
-          ThrowIfItDoesNotExist
-        };
+  enum ThrowType { NoThrow, ThrowIfItExists, ThrowIfItDoesNotExist };
 
-        template <GeomType geomType, ThrowType throwType>
-        bool nameExists (const std::string& name) const;
+  template <GeomType geomType, ThrowType throwType>
+  bool nameExists(const std::string& name) const;
 
-        /// Map of basic shapes
-        ShapeMap_t shapeMap_;
-        /// Map of polyhedra in construction.
-        PolyhedronMap_t polyhedronMap_;
-    };
-  } // end of namespace corbaServer.
-} // end of namespace hpp.
+  /// Map of basic shapes
+  ShapeMap_t shapeMap_;
+  /// Map of polyhedra in construction.
+  PolyhedronMap_t polyhedronMap_;
+};
+}  // end of namespace corbaServer.
+}  // end of namespace hpp.
 
-#endif // HPP_CORBASERVER_OBJECT_MAP_HH
+#endif  // HPP_CORBASERVER_OBJECT_MAP_HH
