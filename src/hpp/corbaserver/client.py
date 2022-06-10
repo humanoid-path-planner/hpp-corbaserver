@@ -163,6 +163,7 @@ def _getIIOPurl(service="NameService", host=None, port=None):
     import os
 
     try:
+        import socket
         import rospy
 
         try:
@@ -170,7 +171,7 @@ def _getIIOPurl(service="NameService", host=None, port=None):
             if rospy.client.get_master().target is not None:
                 _host = rospy.get_param("/hpp/host", _host)
                 _port = rospy.get_param("/hpp/port", _port)
-        except OSError:
+        except (OSError, socket.error):
             pass
     except ImportError:
         pass
