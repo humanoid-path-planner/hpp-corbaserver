@@ -166,14 +166,11 @@ def _getIIOPurl(service="NameService", host=None, port=None):
         import socket
         import rospy
 
-        try:
-            # Check is ROS master is reachable.
-            if rospy.client.get_master().target is not None:
-                _host = rospy.get_param("/hpp/host", _host)
-                _port = rospy.get_param("/hpp/port", _port)
-        except (OSError, socket.error):
-            pass
-    except ImportError:
+        # Check is ROS master is reachable.
+        if rospy.client.get_master().target is not None:
+            _host = rospy.get_param("/hpp/host", _host)
+            _port = rospy.get_param("/hpp/port", _port)
+    except (ImportError, OSError, socket.error):
         pass
     _host = os.getenv("HPP_HOST", _host)
     _port = os.getenv("HPP_PORT", _port)
