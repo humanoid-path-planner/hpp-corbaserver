@@ -97,24 +97,23 @@ class Tools : public virtual POA_hpp::Tools {
     }
   }
 
-  virtual Names_t* getContexts () {
+  virtual Names_t* getContexts() {
     try {
-      std::vector<std::string> contexts (server_->getContexts());
+      std::vector<std::string> contexts(server_->getContexts());
       return toNames_t(contexts);
     } catch (const std::exception& e) {
       throw hpp::Error(e.what());
     }
   }
 
-  bool deleteContext (const char* context)
-  {
+  bool deleteContext(const char* context) {
     try {
       std::string c(context);
       return server_->deleteContext(c);
     } catch (const std::exception& e) {
       throw hpp::Error(e.what());
     }
-    }
+  }
 
   CORBA::Object_ptr getServer(const char* contextName, const char* pluginName,
                               const char* objectName) {
@@ -262,8 +261,7 @@ bool Server::createContext(const std::string& name) {
 std::vector<std::string> Server::getContexts() const {
   std::vector<std::string> contexts;
   contexts.reserve(contexts_.size());
-  for (auto const pair : contexts_)
-    contexts.push_back(pair.first);
+  for (auto const pair : contexts_) contexts.push_back(pair.first);
   return contexts;
 }
 

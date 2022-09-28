@@ -135,7 +135,7 @@ class HPP_CORBASERVER_DLLAPI Server {
   void requestShutdown(bool wait);
 
   bool createContext(const std::string& contextName);
-  
+
   std::vector<std::string> getContexts() const;
 
   bool deleteContext(const std::string& contextName);
