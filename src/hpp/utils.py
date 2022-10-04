@@ -38,4 +38,7 @@ class ServerManager:
     def __exit__(self, exc_type, exc_value, exc_traceback):
         tool = hpp.corbaserver.tools.Tools()
         tool.shutdown()
+        # Give some time to HPP to properly shutdown.
+        time.sleep(1)
+        # Once HPP process is stopped, this removes the defunct process. 
         self.process.communicate()
