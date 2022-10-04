@@ -31,6 +31,13 @@ module hpp
     /// whichever ProblemSolver in this map.
     boolean createContext (in string context_) raises (Error);
 
+    /// List the existing contexts.
+    Names_t getContexts () raises (Error);
+
+    /// Remove a context.
+    /// \return True if effectively deleted and False if not found.
+    boolean deleteContext (in string context_) raises (Error);
+
     /// Get a server object
     Object getServer (in string context_, in string pluginName, in string objectname) raises (Error);
 
