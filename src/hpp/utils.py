@@ -4,6 +4,7 @@
 import os
 import subprocess
 import time
+import hpp.corbaserver
 
 try:
     from subprocess import DEVNULL, run
@@ -35,4 +36,6 @@ class ServerManager:
         time.sleep(3)
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
-        self.process.kill()
+        tool = hpp.corbaserver.tools.Tools()
+        tool.shutdown()
+        self.process.communicate()
