@@ -40,5 +40,5 @@ class ServerManager:
         tool.shutdown()
         # Give some time to HPP to properly shutdown.
         time.sleep(1)
-        # Once HPP process is stopped, this removes the defunct process. 
+        # Once HPP process is stopped, this removes the defunct process.
         self.process.communicate()
