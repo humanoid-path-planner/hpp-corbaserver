@@ -1,48 +1,42 @@
-# Copyright (c) 2012, 2020 CNRS
-# Author: Florent Lamiraux, Guilhem Saurel
+# Copyright (c) 2012, 2020 CNRS Author: Florent Lamiraux, Guilhem Saurel
 #
 # Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are
-# met:
+# modification, are permitted provided that the following conditions are met:
 #
-# 1. Redistributions of source code must retain the above copyright
-#    notice, this list of conditions and the following disclaimer.
+# 1. Redistributions of source code must retain the above copyright notice, this
+#   list of conditions and the following disclaimer.
 #
-# 2. Redistributions in binary form must reproduce the above copyright
-# notice, this list of conditions and the following disclaimer in the
-# documentation and/or other materials provided with the distribution.
+# 1. Redistributions in binary form must reproduce the above copyright notice,
+#   this list of conditions and the following disclaimer in the documentation
+#   and/or other materials provided with the distribution.
 #
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-# HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
-# DAMAGE.
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-SET(LIBRARY_NAME ${PROJECT_NAME})
-SET(IDL_SOURCES
-  obstacle
-  problem
-  robot
-  tools
-  )
+set(LIBRARY_NAME ${PROJECT_NAME})
+set(IDL_SOURCES obstacle problem robot tools)
 
-OMNIIDL_INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/idl)
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/src)
+omniidl_include_directories(${CMAKE_SOURCE_DIR}/idl)
+include_directories(${CMAKE_BINARY_DIR}/src)
 
-FOREACH(IDL ${IDL_SOURCES})
-  GENERATE_IDL_CPP (hpp/corbaserver/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver
-    -Wbguard_prefix=hpp_corbaserver_idl
-    HEADER_SUFFIX -idl.hh)
-  GENERATE_IDL_PYTHON (${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver
+foreach(IDL ${IDL_SOURCES})
+  generate_idl_cpp(
+    hpp/corbaserver/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver
+    -Wbguard_prefix=hpp_corbaserver_idl HEADER_SUFFIX -idl.hh)
+  generate_idl_python(
+    ${IDL}
+    ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver
     ENABLE_DOCSTRING
-    STUBS hpp_stubs.corbaserver
+    STUBS
+    hpp_stubs.corbaserver
     ARGUMENTS
     -Wbmodules=hpp_idl
     -Wbextern=common:hpp_stubs
@@ -56,127 +50,137 @@ FOREACH(IDL ${IDL_SOURCES})
     -Wbextern=path_planners:hpp_stubs.core
     -Wbextern=_constraints:hpp_stubs.core
     -Wbextern=configuration_shooters:hpp_stubs.core
-    -Wbextern=_problem:hpp_stubs.core
-    )
-  INSTALL(
-    FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/${IDL}-idl.hh
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp/corbaserver)
-ENDFOREACH()
+    -Wbextern=_problem:hpp_stubs.core)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/corbaserver/${IDL}-idl.hh
+          DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp/corbaserver)
+endforeach()
 # Enable generation of dynamic type codes (in file commonDynSK.cc)
-GENERATE_IDL_CPP (hpp/common ${CMAKE_SOURCE_DIR}/idl/hpp ENABLE_Wba
-  HEADER_SUFFIX -idl.hh)
-GENERATE_IDL_PYTHON (common ${CMAKE_SOURCE_DIR}/idl/hpp
-    ENABLE_DOCSTRING
-    STUBS hpp_stubs
-    ARGUMENTS
-    -Wbmodules=hpp_idl
-  )
-INSTALL(
-  FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/common-idl.hh
-  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp)
+generate_idl_cpp(hpp/common ${CMAKE_SOURCE_DIR}/idl/hpp ENABLE_Wba
+                 HEADER_SUFFIX -idl.hh)
+generate_idl_python(
+  common
+  ${CMAKE_SOURCE_DIR}/idl/hpp
+  ENABLE_DOCSTRING
+  STUBS
+  hpp_stubs
+  ARGUMENTS
+  -Wbmodules=hpp_idl)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/common-idl.hh
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp)
 
-MAKE_DIRECTORY(${CMAKE_BINARY_DIR}/src/hpp_idl)
-MAKE_DIRECTORY(${CMAKE_BINARY_DIR}/src/hpp/core_idl)
-FOREACH(IDL
-    configuration_shooters
-    _constraints
-    distances
-    paths
-    path_planners
-    path_projectors
-    path_validations
-    _problem
-    steering_methods
-    )
-  GENERATE_IDL_CPP (hpp/core_idl/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/core_idl
-    ARGUMENTS
-    -Wbguard_prefix=hpp_core_idl
-    HEADER_SUFFIX -idl.hh)
-  GENERATE_IDL_CPP_IMPL (hpp/core_idl/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/core_idl
+make_directory(${CMAKE_BINARY_DIR}/src/hpp_idl)
+make_directory(${CMAKE_BINARY_DIR}/src/hpp/core_idl)
+foreach(
+  IDL
+  configuration_shooters
+  _constraints
+  distances
+  paths
+  path_planners
+  path_projectors
+  path_validations
+  _problem
+  steering_methods)
+  generate_idl_cpp(hpp/core_idl/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/core_idl
+                   ARGUMENTS -Wbguard_prefix=hpp_core_idl HEADER_SUFFIX -idl.hh)
+  generate_idl_cpp_impl(
+    hpp/core_idl/${IDL}
+    ${CMAKE_SOURCE_DIR}/idl/hpp/core_idl
     ARGUMENTS
     -Wbguard_prefix=hpp_core_idl
     -Wbinc_prefix=hpp/core_idl
-    HH_SUFFIX -idl.hh)
-  GENERATE_IDL_PYTHON (${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/core_idl
-      ENABLE_DOCSTRING
-      STUBS hpp_stubs.core
-      ARGUMENTS
-      -Wbmodules=hpp_idl
-      -Wbextern=constraints:hpp_stubs.constraints
-      -Wbextern=robots:hpp_stubs.pinocchio
-      -Wbextern=common:hpp_stubs
-    )
-  INSTALL(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/core_idl/${IDL}-idl.hh
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/core_idl/${IDL}.hh
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/core_idl/${IDL}-fwd.hh
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp/core_idl)
-ENDFOREACH()
-
-MAKE_DIRECTORY(${CMAKE_BINARY_DIR}/src/hpp/constraints_idl)
-FOREACH(IDL constraints)
-  GENERATE_IDL_CPP (hpp/constraints_idl/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/constraints_idl
+    HH_SUFFIX
+    -idl.hh)
+  generate_idl_python(
+    ${IDL}
+    ${CMAKE_SOURCE_DIR}/idl/hpp/core_idl
+    ENABLE_DOCSTRING
+    STUBS
+    hpp_stubs.core
     ARGUMENTS
-    -Wbguard_prefix=hpp_constraints_idl
-    HEADER_SUFFIX -idl.hh)
-  GENERATE_IDL_CPP_IMPL (hpp/constraints_idl/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/constraints_idl
+    -Wbmodules=hpp_idl
+    -Wbextern=constraints:hpp_stubs.constraints
+    -Wbextern=robots:hpp_stubs.pinocchio
+    -Wbextern=common:hpp_stubs)
+  install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/core_idl/${IDL}-idl.hh
+          ${CMAKE_CURRENT_BINARY_DIR}/hpp/core_idl/${IDL}.hh
+          ${CMAKE_CURRENT_BINARY_DIR}/hpp/core_idl/${IDL}-fwd.hh
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp/core_idl)
+endforeach()
+
+make_directory(${CMAKE_BINARY_DIR}/src/hpp/constraints_idl)
+foreach(IDL constraints)
+  generate_idl_cpp(
+    hpp/constraints_idl/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/constraints_idl
+    ARGUMENTS -Wbguard_prefix=hpp_constraints_idl HEADER_SUFFIX -idl.hh)
+  generate_idl_cpp_impl(
+    hpp/constraints_idl/${IDL}
+    ${CMAKE_SOURCE_DIR}/idl/hpp/constraints_idl
     ARGUMENTS
     -Wbguard_prefix=hpp_constraints_idl
     -Wbinc_prefix=hpp/constraints_idl
-    HH_SUFFIX -idl.hh)
-  GENERATE_IDL_PYTHON (${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/constraints_idl
-      ENABLE_DOCSTRING
-      STUBS hpp_stubs.constraints
-      ARGUMENTS
-      -Wbmodules=hpp_idl
-      -Wbextern=common:hpp_stubs
-    )
-  INSTALL(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/constraints_idl/${IDL}-idl.hh
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/constraints_idl/${IDL}.hh
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/constraints_idl/${IDL}-fwd.hh
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp/constraints_idl)
-ENDFOREACH()
-
-MAKE_DIRECTORY(${CMAKE_BINARY_DIR}/src/hpp/pinocchio_idl)
-FOREACH(IDL robots)
-  GENERATE_IDL_CPP (hpp/pinocchio_idl/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/pinocchio_idl
+    HH_SUFFIX
+    -idl.hh)
+  generate_idl_python(
+    ${IDL}
+    ${CMAKE_SOURCE_DIR}/idl/hpp/constraints_idl
+    ENABLE_DOCSTRING
+    STUBS
+    hpp_stubs.constraints
     ARGUMENTS
-    -Wbguard_prefix=hpp_pinocchio_idl
-    HEADER_SUFFIX -idl.hh)
-  GENERATE_IDL_CPP_IMPL (hpp/pinocchio_idl/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/pinocchio_idl
+    -Wbmodules=hpp_idl
+    -Wbextern=common:hpp_stubs)
+  install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/constraints_idl/${IDL}-idl.hh
+          ${CMAKE_CURRENT_BINARY_DIR}/hpp/constraints_idl/${IDL}.hh
+          ${CMAKE_CURRENT_BINARY_DIR}/hpp/constraints_idl/${IDL}-fwd.hh
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp/constraints_idl)
+endforeach()
+
+make_directory(${CMAKE_BINARY_DIR}/src/hpp/pinocchio_idl)
+foreach(IDL robots)
+  generate_idl_cpp(
+    hpp/pinocchio_idl/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/pinocchio_idl
+    ARGUMENTS -Wbguard_prefix=hpp_pinocchio_idl HEADER_SUFFIX -idl.hh)
+  generate_idl_cpp_impl(
+    hpp/pinocchio_idl/${IDL}
+    ${CMAKE_SOURCE_DIR}/idl/hpp/pinocchio_idl
     ARGUMENTS
     -Wbguard_prefix=hpp_pinocchio_idl
     -Wbinc_prefix=hpp/pinocchio_idl
-    HH_SUFFIX -idl.hh)
-  GENERATE_IDL_PYTHON (${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/pinocchio_idl
-      ENABLE_DOCSTRING
-      STUBS hpp_stubs.pinocchio
-      ARGUMENTS
-      -Wbmodules=hpp_idl
-      -Wbextern=common:hpp_stubs
-    )
-  INSTALL(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/pinocchio_idl/${IDL}-idl.hh
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/pinocchio_idl/${IDL}.hh
-    ${CMAKE_CURRENT_BINARY_DIR}/hpp/pinocchio_idl/${IDL}-fwd.hh
+    HH_SUFFIX
+    -idl.hh)
+  generate_idl_python(
+    ${IDL}
+    ${CMAKE_SOURCE_DIR}/idl/hpp/pinocchio_idl
+    ENABLE_DOCSTRING
+    STUBS
+    hpp_stubs.pinocchio
+    ARGUMENTS
+    -Wbmodules=hpp_idl
+    -Wbextern=common:hpp_stubs)
+  install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/hpp/pinocchio_idl/${IDL}-idl.hh
+          ${CMAKE_CURRENT_BINARY_DIR}/hpp/pinocchio_idl/${IDL}.hh
+          ${CMAKE_CURRENT_BINARY_DIR}/hpp/pinocchio_idl/${IDL}-fwd.hh
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/hpp/pinocchio_idl)
-ENDFOREACH()
+endforeach()
 
-INSTALL(DIRECTORY ${CMAKE_SOURCE_DIR}/idl/hpp
-  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/idl)
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/idl/hpp
+        DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/idl)
 
-INSTALL(
-  DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/hpp_idl ${CMAKE_CURRENT_BINARY_DIR}/hpp_stubs
-  DESTINATION ${PYTHON_SITELIB}
-  )
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/hpp_idl
+                  ${CMAKE_CURRENT_BINARY_DIR}/hpp_stubs
+        DESTINATION ${PYTHON_SITELIB})
 
-ADD_CUSTOM_TARGET(generate_idl_cpp DEPENDS ${ALL_IDL_CPP_STUBS} ${ALL_IDL_CPP_IMPL_STUBS})
-ADD_CUSTOM_TARGET(generate_idl_python DEPENDS ${ALL_IDL_PYTHON_STUBS})
+add_custom_target(generate_idl_cpp DEPENDS ${ALL_IDL_CPP_STUBS}
+                                           ${ALL_IDL_CPP_IMPL_STUBS})
+add_custom_target(generate_idl_python DEPENDS ${ALL_IDL_PYTHON_STUBS})
 
-IF (NOT CLIENT_ONLY)
-  ADD_LIBRARY(${LIBRARY_NAME}
-    SHARED
+if(NOT CLIENT_ONLY)
+  add_library(
+    ${LIBRARY_NAME} SHARED
     object-map.cc
     obstacle.impl.cc
     obstacle.impl.hh
@@ -190,48 +194,55 @@ IF (NOT CLIENT_ONLY)
     tools.cc
     tools.hh
     conversions.cc
-
     ${ALL_IDL_CPP_STUBS}
-    ${ALL_IDL_CPP_IMPL_STUBS}
-    )
+    ${ALL_IDL_CPP_IMPL_STUBS})
 
-  TARGET_LINK_LIBRARIES(${LIBRARY_NAME} PUBLIC hpp-core::hpp-core hpp-template-corba::hpp-template-corba)
-  TARGET_INCLUDE_DIRECTORIES(${LIBRARY_NAME} PUBLIC $<INSTALL_INTERFACE:include>)
-  PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} omniORB4)
-  PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} omniDynamic4)
+  target_link_libraries(
+    ${LIBRARY_NAME} PUBLIC hpp-core::hpp-core
+                           hpp-template-corba::hpp-template-corba)
+  target_include_directories(${LIBRARY_NAME}
+                             PUBLIC $<INSTALL_INTERFACE:include>)
+  pkg_config_use_dependency(${LIBRARY_NAME} omniORB4)
+  pkg_config_use_dependency(${LIBRARY_NAME} omniDynamic4)
 
-  INSTALL(TARGETS ${LIBRARY_NAME} EXPORT ${TARGETS_EXPORT_NAME} DESTINATION lib)
+  install(
+    TARGETS ${LIBRARY_NAME}
+    EXPORT ${TARGETS_EXPORT_NAME}
+    DESTINATION lib)
 
   # Standalone corba server
-  ADD_EXECUTABLE (hppcorbaserver hpp-corbaserver.cc)
-  TARGET_LINK_LIBRARIES (hppcorbaserver PUBLIC ${LIBRARY_NAME})
-  PKG_CONFIG_USE_DEPENDENCY(hppcorbaserver omniORB4)
+  add_executable(hppcorbaserver hpp-corbaserver.cc)
+  target_link_libraries(hppcorbaserver PUBLIC ${LIBRARY_NAME})
+  pkg_config_use_dependency(hppcorbaserver omniORB4)
 
-  INSTALL (TARGETS hppcorbaserver DESTINATION bin)
-ELSE (NOT CLIENT_ONLY)
-  ADD_LIBRARY(${LIBRARY_NAME}
-    SHARED
-    client.cc
-    ${ALL_IDL_CPP_STUBS}
-    )
+  install(TARGETS hppcorbaserver DESTINATION bin)
+else(NOT CLIENT_ONLY)
+  add_library(${LIBRARY_NAME} SHARED client.cc ${ALL_IDL_CPP_STUBS})
 
-  PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} omniORB4)
+  pkg_config_use_dependency(${LIBRARY_NAME} omniORB4)
 
-  INSTALL(TARGETS ${LIBRARY_NAME} EXPORT ${TARGETS_EXPORT_NAME} DESTINATION lib)
-ENDIF (NOT CLIENT_ONLY)
-TARGET_INCLUDE_DIRECTORIES(${LIBRARY_NAME} PUBLIC $<INSTALL_INTERFACE:include>)
+  install(
+    TARGETS ${LIBRARY_NAME}
+    EXPORT ${TARGETS_EXPORT_NAME}
+    DESTINATION lib)
+endif(NOT CLIENT_ONLY)
+target_include_directories(${LIBRARY_NAME} PUBLIC $<INSTALL_INTERFACE:include>)
 
-ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_cpp)
-ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_python)
+add_dependencies(${LIBRARY_NAME} generate_idl_cpp)
+add_dependencies(${LIBRARY_NAME} generate_idl_python)
 
-FOREACH (FILE __init__.py quaternion.py transform.py utils.py rostools.py)
-  PYTHON_INSTALL_ON_SITE(
-    hpp ${FILE}
-    )
-ENDFOREACH ()
+foreach(FILE __init__.py quaternion.py transform.py utils.py rostools.py)
+  python_install_on_site(hpp ${FILE})
+endforeach()
 
-FOREACH (FILE __init__.py client.py robot.py  problem_solver.py tools.py benchmark.py ompl_benchmark_statistics.py)
-  PYTHON_INSTALL_ON_SITE(
-    hpp/corbaserver ${FILE}
-    )
-ENDFOREACH ()
+foreach(
+  FILE
+  __init__.py
+  client.py
+  robot.py
+  problem_solver.py
+  tools.py
+  benchmark.py
+  ompl_benchmark_statistics.py)
+  python_install_on_site(hpp/corbaserver ${FILE})
+endforeach()
