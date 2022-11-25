@@ -60,7 +60,7 @@ class ObjectMap {
     std::vector<fcl::Triangle> tris;
   };
   typedef std::map<std::string, PolyhedronData> PolyhedronMap_t;
-  typedef std::map<std::string, BasicShapePtr_t> ShapeMap_t;
+  typedef std::map<std::string, CollisionGeometryPtr_t> ShapeMap_t;
 
   enum GeomType { Shape = 1, Polyhedron = 2, BothGeomType = 3 };
 
