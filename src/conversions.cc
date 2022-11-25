@@ -76,6 +76,19 @@ Transform__slice* toHppTransform(const Transform3f& in) {
   return out;
 }
 
+void toIntSeq(std::vector<int> const& input, intSeq& output) {
+  ULong size = (ULong)input.size();
+  output.length(size);
+
+  for (std::size_t i = 0; i < size; ++i) {
+    output[(ULong)i] = input[i];
+  }
+}
+
+intSeq* toIntSeq(std::vector<int> const& in) {
+  return toIntSeq(in.begin(), in.end());
+}
+
 floatSeq* vectorToFloatSeq(core::vectorIn_t input) {
   floatSeq* q_ptr = new floatSeq();
   vectorToFloatSeq(input, *q_ptr);
@@ -116,6 +129,13 @@ intSeqSeq* matrixToIntSeqSeq(Eigen::Ref<const IntMatrix_t> input) {
     }
     (*res)[(ULong)i] = row;
   }
+  return res;
+}
+
+std::vector<int> intSeqToVector(const intSeq& input) {
+  std::vector<int> res(input.length());
+  for (unsigned int i = 0; i < input.length(); ++i)
+    res[i] = input[i];
   return res;
 }
 

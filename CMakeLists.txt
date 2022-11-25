@@ -68,6 +68,7 @@ if(NOT CLIENT_ONLY)
       include/hpp/corbaserver/servant-base.hh
       include/hpp/corbaserver/server.hh
       include/hpp/corbaserver/server-plugin.hh
+      include/hpp/corbaserver/steering-method.hh
       include/hpp/corbaserver/conversions.hh)
 endif(NOT CLIENT_ONLY)
 

@@ -48,6 +48,8 @@ void toHppTransform(const Transform3f& in, Transform_ out);
 
 Transform__slice* toHppTransform(const Transform3f& in);
 
+void toIntSeq(std::vector<int> const& in, intSeq& out);
+
 floatSeq* vectorToFloatSeq(core::vectorIn_t input);
 
 void vectorToFloatSeq(core::vectorIn_t input, floatSeq& output);
@@ -62,6 +64,8 @@ inline floatSeq* vectorToFloatSeq(core::ConfigurationPtr_t input) {
 floatSeqSeq* matrixToFloatSeqSeq(core::matrixIn_t input);
 
 intSeqSeq* matrixToIntSeqSeq(Eigen::Ref<const IntMatrix_t> input);
+
+std::vector<int> intSeqToVector(const intSeq& dofArray);
 
 vector3_t floatSeqToVector3(const floatSeq& dofArray);
 
@@ -124,12 +128,14 @@ inline intSeq* toIntSeq(InputIt begin, InputIt end) {
 
   std::size_t i = 0;
   while (begin != end) {
-    (*indexes)[i] = *begin;
+    (*indexes)[(CORBA::ULong)i] = *begin;
     ++begin;
     ++i;
   }
   return indexes;
 }
+
+intSeq* toIntSeq(std::vector<int> const& in);
 
 template <typename InputIt>
 inline boolSeq* toBoolSeq(InputIt begin, InputIt end) {
