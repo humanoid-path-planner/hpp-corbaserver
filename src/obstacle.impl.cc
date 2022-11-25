@@ -90,12 +90,12 @@ void Obstacle::loadPolyhedron(const char* name, const char* resourcename) {
     fcl::MeshLoader loader(fcl::BV_OBBRSS);
     std::string filename(::pinocchio::retrieveResourcePath(
         resourcename, ::pinocchio::rosPaths()));
-    fcl::CollisionGeometryPtr_t fclgeom (
+    fcl::CollisionGeometryPtr_t fclgeom(
         loader.load(filename, fcl::Vec3f::Ones()));
     CollisionGeometryPtr_t geom(fclgeom.get(),
-        [fclgeom](...) mutable { fclgeom.reset(); }
-    );
-    problemSolver()->addObstacle(name, geom, Transform3f::Identity(), true, true);
+                                [fclgeom](...) mutable { fclgeom.reset(); });
+    problemSolver()->addObstacle(name, geom, Transform3f::Identity(), true,
+                                 true);
   } catch (const std::exception& exc) {
     throw hpp::Error(exc.what());
   }
@@ -147,7 +147,8 @@ void Obstacle::addObstacle(const char* objectName, Boolean collision,
 
   std::string objName(objectName);
   CollisionGeometryPtr_t geometry = objectMap_.geometry(objectName);
-  problemSolver()->addObstacle(objName, geometry, Transform3f::Identity(), collision, distance);
+  problemSolver()->addObstacle(objName, geometry, Transform3f::Identity(),
+                               collision, distance);
 }
 
 CollisionObjectPtr_t Obstacle::getObstacleByName(const char* name) {

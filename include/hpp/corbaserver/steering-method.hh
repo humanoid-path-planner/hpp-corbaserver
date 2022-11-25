@@ -42,8 +42,8 @@ namespace core {
 namespace steeringMethod {
 typedef Spline<path::BernsteinBasis, 3> SplineBernstein3;
 typedef Spline<path::BernsteinBasis, 5> SplineBernstein5;
-}
-}
+}  // namespace steeringMethod
+}  // namespace core
 }  // end of namespace hpp.
 
 #endif  //! HPP_CORBASERVER_FWD_HH

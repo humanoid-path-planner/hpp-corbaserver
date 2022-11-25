@@ -134,8 +134,7 @@ intSeqSeq* matrixToIntSeqSeq(Eigen::Ref<const IntMatrix_t> input) {
 
 std::vector<int> intSeqToVector(const intSeq& input) {
   std::vector<int> res(input.length());
-  for (unsigned int i = 0; i < input.length(); ++i)
-    res[i] = input[i];
+  for (unsigned int i = 0; i < input.length(); ++i) res[i] = input[i];
   return res;
 }
 

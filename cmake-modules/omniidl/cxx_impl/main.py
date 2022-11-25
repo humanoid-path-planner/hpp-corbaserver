@@ -260,18 +260,14 @@ class Builder(idlvisitor.AstVisitor):
                         tmp, name
                     )
                     if _out:
-                        out_conv_str = (
-                            "hpp::corbaServer::toIntSeq ({}, {});".format(
-                                tmp, name
-                            )
+                        out_conv_str = "hpp::corbaServer::toIntSeq ({}, {});".format(
+                            tmp, name
                         )
                 else:  # !_in => _out
                     assert _out
                     in_conv_str = "std::vector<int> {};".format(tmp, name)
-                    out_conv_str = (
-                        "{} = hpp::corbaServer::toIntSeq ({});".format(
-                            name, tmp
-                        )
+                    out_conv_str = "{} = hpp::corbaServer::toIntSeq ({});".format(
+                        name, tmp
                     )
                 return tmp, in_conv_str, out_conv_str
             elif _type.type().name() == "floatSeq":
