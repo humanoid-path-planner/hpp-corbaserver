@@ -33,8 +33,25 @@ module hpp
     //-> constraints
   }; // interface SteeringMethod
 
+  module steeringMethod_idl {
+
+    interface SplineBernstein3 : SteeringMethod {
+      Path steer(in floatSeq q1, in intSeq order1, in floatSeqSeq derivatives1,
+                 in floatSeq q2, in intSeq order2, in floatSeqSeq derivatives2)
+        raises (Error);
+    };
+
+    interface SplineBernstein5 : SteeringMethod {
+      Path steer(in floatSeq q1, in intSeq order1, in floatSeqSeq derivatives1,
+                 in floatSeq q2, in intSeq order2, in floatSeqSeq derivatives2)
+        raises (Error);
+    };
+
+  }; // module steeringMethod
+
   }; // module core
 }; // module hpp
+//* #include <hpp/corbaserver/steering-method.hh>
 //* #include <hpp/core/steering-method.hh>
 //* #include <hpp/core_idl/paths.hh>
 //* #include <hpp/core_idl/_constraints.hh>

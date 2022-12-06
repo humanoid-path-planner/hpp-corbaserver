@@ -42,14 +42,14 @@ void ObjectMap::createBox(const std::string name, value_type x, value_type y,
                           value_type z) {
   // Check that object does not already exist.
   if (nameExists<BothGeomType, ThrowIfItExists>(name)) return;
-  shapeMap_[name] = BasicShapePtr_t(new fcl::Box(x, y, z));
+  shapeMap_[name] = CollisionGeometryPtr_t(new fcl::Box(x, y, z));
 }
 
 // --------------------------------------------------------------------
 
 void ObjectMap::createSphere(const std::string name, value_type radius) {
   if (nameExists<BothGeomType, ThrowIfItExists>(name)) return;
-  shapeMap_[name] = BasicShapePtr_t(new fcl::Sphere(radius));
+  shapeMap_[name] = CollisionGeometryPtr_t(new fcl::Sphere(radius));
 }
 
 // --------------------------------------------------------------------
@@ -57,7 +57,7 @@ void ObjectMap::createSphere(const std::string name, value_type radius) {
 void ObjectMap::createCylinder(const std::string name, value_type radius,
                                value_type length) {
   if (nameExists<BothGeomType, ThrowIfItExists>(name)) return;
-  shapeMap_[name] = BasicShapePtr_t(new fcl::Cylinder(radius, length));
+  shapeMap_[name] = CollisionGeometryPtr_t(new fcl::Cylinder(radius, length));
 }
 
 // --------------------------------------------------------------------
@@ -89,7 +89,8 @@ CollisionGeometryPtr_t ObjectMap::geometry(const std::string name) {
   // Check that polyhedron exists.
   if (nameExists<Polyhedron, NoThrow>(name)) {
     const PolyhedronData& poly = polyhedronMap_[name];
-    PolyhedronPtr_t polyhedron = PolyhedronPtr_t(new Polyhedron_t);
+    Polyhedron_t* polyhedron = new Polyhedron_t;
+    geometry.reset(polyhedron);
     int res = polyhedron->beginModel();
     if (res != fcl::BVH_OK) {
       std::ostringstream oss;
@@ -99,7 +100,6 @@ CollisionGeometryPtr_t ObjectMap::geometry(const std::string name) {
 
     polyhedron->addSubModel(poly.pts, poly.tris);
     polyhedron->endModel();
-    geometry = polyhedron;
   } else if (nameExists<Shape, ThrowIfItDoesNotExist>(name)) {
     geometry = shapeMap_[name];
   }

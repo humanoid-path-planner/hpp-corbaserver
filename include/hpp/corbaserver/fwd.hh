@@ -59,7 +59,7 @@ typedef shared_ptr<ProblemSolverMap> ProblemSolverMapPtr_t;
 
 typedef pinocchio::BodyPtr_t BodyPtr_t;
 using fcl::CollisionGeometry;
-using fcl::CollisionGeometryPtr_t;
+using pinocchio::CollisionGeometryPtr_t;
 typedef pinocchio::CollisionObject CollisionObject_t;
 typedef pinocchio::CollisionObjectPtr_t CollisionObjectPtr_t;
 typedef pinocchio::CollisionObjectConstPtr_t CollisionObjectConstPtr_t;
@@ -102,9 +102,6 @@ typedef core::SteeringMethod SteeringMethod_t;
 typedef core::SteeringMethodPtr_t SteeringMethodPtr_t;
 typedef pinocchio::Transform3f Transform3f;
 typedef fcl::BVHModel<fcl::OBBRSS> Polyhedron_t;
-typedef fcl::shared_ptr<Polyhedron_t> PolyhedronPtr_t;
-typedef fcl::ShapeBase BasicShape_t;
-typedef fcl::shared_ptr<BasicShape_t> BasicShapePtr_t;
 
 typedef pinocchio::value_type value_type;
 typedef pinocchio::matrix_t matrix_t;

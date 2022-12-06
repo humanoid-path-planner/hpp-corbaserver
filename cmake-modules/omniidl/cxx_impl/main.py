@@ -254,6 +254,22 @@ class Builder(idlvisitor.AstVisitor):
         elif _type.typedef():
             if _type.type().name() in ("size_t", "size_type", "value_type"):
                 return name, "", out_conv_str
+            elif _type.type().name() == "intSeq":
+                if _in:
+                    in_conv_str = "std::vector<int> {} = hpp::corbaServer::intSeqToVector ({});".format(
+                        tmp, name
+                    )
+                    if _out:
+                        out_conv_str = "hpp::corbaServer::toIntSeq ({}, {});".format(
+                            tmp, name
+                        )
+                else:  # !_in => _out
+                    assert _out
+                    in_conv_str = "std::vector<int> {};".format(tmp, name)
+                    out_conv_str = "{} = hpp::corbaServer::toIntSeq ({});".format(
+                        name, tmp
+                    )
+                return tmp, in_conv_str, out_conv_str
             elif _type.type().name() == "floatSeq":
                 if _in:
                     in_conv_str = "hpp::core::vector_t {} = hpp::corbaServer::floatSeqToVector ({});".format(
