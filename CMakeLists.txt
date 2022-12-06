@@ -46,7 +46,6 @@ project(${PROJECT_NAME} ${PROJECT_ARGS})
 # Dependencies
 add_required_dependency("omniORB4 >= 4.1.4")
 add_required_dependency("omniDynamic4 >= 4.1.4")
-findpython()
 if(NOT CLIENT_ONLY)
   add_project_dependency("hpp-core" REQUIRED)
   add_project_dependency("hpp-template-corba" REQUIRED)
