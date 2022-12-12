@@ -51,6 +51,10 @@ if(NOT CLIENT_ONLY)
   add_project_dependency("hpp-template-corba" REQUIRED)
 endif(NOT CLIENT_ONLY)
 
+if(NOT FINDPYTHON_ALREADY_CALLED)
+  findpython()
+endif()
+
 set(ALL_IDL_CPP_STUBS "")
 set(ALL_IDL_CPP_IMPL_STUBS "")
 set(ALL_IDL_PYTHON_STUBS "")
