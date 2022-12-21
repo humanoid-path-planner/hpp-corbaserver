@@ -37,13 +37,15 @@ module hpp
 
     interface SplineBernstein3 : SteeringMethod {
       Path steer(in floatSeq q1, in intSeq order1, in floatSeqSeq derivatives1,
-                 in floatSeq q2, in intSeq order2, in floatSeqSeq derivatives2)
+                 in floatSeq q2, in intSeq order2, in floatSeqSeq derivatives2,
+                 in float length)
         raises (Error);
     };
 
     interface SplineBernstein5 : SteeringMethod {
       Path steer(in floatSeq q1, in intSeq order1, in floatSeqSeq derivatives1,
-                 in floatSeq q2, in intSeq order2, in floatSeqSeq derivatives2)
+                 in floatSeq q2, in intSeq order2, in floatSeqSeq derivatives2,
+                 in float length)
         raises (Error);
     };
 
