@@ -3,11 +3,12 @@ import sys
 import hpp_idl.hpp as _hpp
 from .client import Client
 
+
 def loadServerPlugin(context, plugin, url=None, port=None):
     if port is None:
         import os
 
-        port = os.getenv('HPP_PORT', Client.defaultPort)
+        port = os.getenv("HPP_PORT", Client.defaultPort)
     client = Tools(url, port=port)
     return client.loadServerPlugin(context, plugin)
 

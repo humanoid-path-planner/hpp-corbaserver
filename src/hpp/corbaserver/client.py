@@ -24,6 +24,7 @@ class Client:
     """
     Connect and create clients for all HPP services.
     """
+
     defaultPort = 13331
     defaultClients = {
         "problem": hpp_idl.hpp.corbaserver.Problem,
@@ -135,7 +136,10 @@ class Client:
                 service="NameService", host=host, port=port, default_port=2809
             )
             urlHppTools = _getIIOPurl(
-                service="hpp-corbaserver", host=host, port=port, default_port=self.defaultPort
+                service="hpp-corbaserver",
+                host=host,
+                port=port,
+                default_port=self.defaultPort,
             )
             try:
                 self.initWithDirectLink(urlHppTools)
