@@ -1,13 +1,13 @@
 import sys
 
 import hpp_idl.hpp as _hpp
-
+from .client import Client
 
 def loadServerPlugin(context, plugin, url=None, port=None):
     if port is None:
         import os
 
-        port = os.getenv("HPP_PORT", 13331)
+        port = os.getenv('HPP_PORT', Client.defaultPort)
     client = Tools(url, port=port)
     return client.loadServerPlugin(context, plugin)
 
@@ -16,7 +16,7 @@ if sys.version_info.major > 2:
     loadServerPlugin.__doc__ = _hpp.Tools.loadServerPlugin__doc__
 
 
-def createContext(context, url=None, port=13331):
+def createContext(context, url=None, port=Client.defaultPort):
     client = Tools(url, port=port)
     return client.createContext(context)
 
@@ -25,7 +25,7 @@ if sys.version_info.major > 2:
     createContext.__doc__ = _hpp.Tools.createContext__doc__
 
 
-def Tools(url=None, port=13331):
+def Tools(url=None, port=Client.defaultPort):
     from .client import Client
 
     _tc = Client(url=url, clients={}, port=port)

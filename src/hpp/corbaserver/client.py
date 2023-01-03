@@ -24,7 +24,7 @@ class Client:
     """
     Connect and create clients for all HPP services.
     """
-
+    defaultPort = 13331
     defaultClients = {
         "problem": hpp_idl.hpp.corbaserver.Problem,
         "obstacle": hpp_idl.hpp.corbaserver.Obstacle,
@@ -135,7 +135,7 @@ class Client:
                 service="NameService", host=host, port=port, default_port=2809
             )
             urlHppTools = _getIIOPurl(
-                service="hpp-corbaserver", host=host, port=port, default_port=13331
+                service="hpp-corbaserver", host=host, port=port, default_port=self.defaultPort
             )
             try:
                 self.initWithDirectLink(urlHppTools)
@@ -159,7 +159,7 @@ def _getIIOPurl(service="NameService", host=None, port=None, default_port=None):
     - use default values ("localhost", 2809)
     """
     _host = "localhost"
-    _port = 2809
+    _port = None
     import os
 
     try:
