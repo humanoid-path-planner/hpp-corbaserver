@@ -132,10 +132,11 @@ class Client:
                     self.initWithNameService(url + "/NameService")
         else:
             urlNameService = _getIIOPurl(
-                service="NameService", host=host, port=port if port else 2809
+                service="NameService", host=host, port=port, default_port = 2809
             )
             urlHppTools = _getIIOPurl(
-                service="hpp-corbaserver", host=host, port=port if port else 13331
+                service="hpp-corbaserver", host=host, port=port,
+                default_port = 13331
             )
             try:
                 self.initWithDirectLink(urlHppTools)
@@ -150,7 +151,7 @@ class Client:
             self._makeClient(serviceId, serviceName, class_, context)
 
 
-def _getIIOPurl(service="NameService", host=None, port=None):
+def _getIIOPurl(service="NameService", host=None, port=None, default_port=None):
     """
     Returns "corbaloc:iiop:<host>:<port>/NameService"
     where host and port are, in this order of priority:
@@ -178,6 +179,8 @@ def _getIIOPurl(service="NameService", host=None, port=None):
         _host = host
     if port:
         _port = port
+    if _port is None:
+        _port = default_port
     if _host is None and _port is None:
         url = "corbaloc:iiop:"
     else:
