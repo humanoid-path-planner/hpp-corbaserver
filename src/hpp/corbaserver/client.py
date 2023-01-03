@@ -132,11 +132,10 @@ class Client:
                     self.initWithNameService(url + "/NameService")
         else:
             urlNameService = _getIIOPurl(
-                service="NameService", host=host, port=port, default_port = 2809
+                service="NameService", host=host, port=port, default_port=2809
             )
             urlHppTools = _getIIOPurl(
-                service="hpp-corbaserver", host=host, port=port,
-                default_port = 13331
+                service="hpp-corbaserver", host=host, port=port, default_port=13331
             )
             try:
                 self.initWithDirectLink(urlHppTools)

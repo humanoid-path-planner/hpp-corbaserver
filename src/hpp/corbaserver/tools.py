@@ -6,7 +6,8 @@ import hpp_idl.hpp as _hpp
 def loadServerPlugin(context, plugin, url=None, port=None):
     if port is None:
         import os
-        port = os.getenv('HPP_PORT', 13331)
+
+        port = os.getenv("HPP_PORT", 13331)
     client = Tools(url, port=port)
     return client.loadServerPlugin(context, plugin)
 
