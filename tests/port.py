@@ -3,6 +3,7 @@ import unittest
 
 import os, time
 from hpp.corbaserver import Client
+from hpp.corbaserver.tools import Tools
 import subprocess
 from subprocess import DEVNULL, run
 
@@ -31,8 +32,8 @@ class Test(unittest.TestCase):
         os.environ["HPP_PORT"] = "13332"
         client = Client()
         self.assertEqual(client.robot.getRobotName(), "HRP-7")
-        self.process.terminate()
-        run(["killall", "hppcorbaserver"])
+        tools = Tools(port="13332")
+        tools.shutdown()
 
 
 if __name__ == "__main__":
