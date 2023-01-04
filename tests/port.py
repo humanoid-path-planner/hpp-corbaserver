@@ -24,15 +24,16 @@ class Test(unittest.TestCase):
         )
         # give it some time to start
         time.sleep(3)
-        
+
         client = Client(port=13332)
         client.robot.createRobot("HRP-7")
         self.assertEqual(client.robot.getRobotName(), "HRP-7")
-        os.environ['HPP_PORT'] = '13332'
+        os.environ["HPP_PORT"] = "13332"
         client = Client()
         self.assertEqual(client.robot.getRobotName(), "HRP-7")
         self.process.terminate()
         run(["killall", "hppcorbaserver"])
+
 
 if __name__ == "__main__":
     unittest.main()
