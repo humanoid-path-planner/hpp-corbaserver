@@ -1,11 +1,12 @@
 """Test running hppcorbaserver on another port."""
+import os
+import subprocess
+import time
 import unittest
+from subprocess import DEVNULL
 
-import os, time
 from hpp.corbaserver import Client
 from hpp.corbaserver.tools import Tools
-import subprocess
-from subprocess import DEVNULL, run
 
 
 class Test(unittest.TestCase):
