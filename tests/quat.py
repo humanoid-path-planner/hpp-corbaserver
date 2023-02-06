@@ -10,7 +10,6 @@ for q in (
     [0, 0, -1 / sqrt(2), 1 / sqrt(2)],
     [0, -1 / sqrt(2), 0, 1 / sqrt(2)],
 ):
-
     q1 = Quaternion(q)
     r, p, y = q1.toRPY()
 
