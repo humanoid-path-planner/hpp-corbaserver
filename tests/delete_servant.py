@@ -5,6 +5,7 @@ from hpp.corbaserver import Client
 from hpp.corbaserver.tools import Tools
 from hpp.utils import ServerManager
 
+
 class Test(unittest.TestCase):
     def test_delete_servant_from_object_twice(self):
         with ServerManager("../src/hppcorbaserver"):

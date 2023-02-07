@@ -146,7 +146,9 @@ class Tools : public virtual POA_hpp::Tools {
       // there should be no harm in continuing the program since
       // the request was to delete an object which has already been
       // deleted.
-      hppDout(warning, "Trying to delete an non existant servant. Object not active: " << id);
+      hppDout(warning,
+              "Trying to delete an non existant servant. Object not active: "
+                  << id);
     }
   }
 
