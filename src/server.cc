@@ -139,6 +139,14 @@ class Tools : public virtual POA_hpp::Tools {
       server_->poa()->deactivate_object(objectId.in());
     } catch (const std::exception& e) {
       throw hpp::Error(e.what());
+    } catch (PortableServer::POA::ObjectNotActive const& e) {
+      // This allows to call `deleteServant` twice on the
+      // same object. OmniORB and Python does not offer a nice mechanism
+      // to avoid calling this method twice. We simply warn because
+      // there should be no harm in continuing the program since
+      // the request was to delete an object which has already been
+      // deleted.
+      hppDout(warning, "Trying to delete an non existant servant. Object not active: " << id);
     }
   }
 
