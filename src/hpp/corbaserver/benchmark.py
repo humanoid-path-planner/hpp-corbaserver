@@ -101,6 +101,7 @@ class _BenchmarkIterator(object):
 
 # # \endcond
 
+
 # # class to do benchmarking
 #
 # ## Basic usage ##
