@@ -4,6 +4,7 @@ add_python_unit_test(py-utils tests/utils.py src)
 if(PYTHON_VERSION_MAJOR EQUAL 3)
   add_python_unit_test(py-port tests/port.py src)
 endif()
+add_python_unit_test(py-delete-servant tests/delete_servant.py src)
 
 # robot & utils start a hppcorbaserver in a separate process. They shouldn't be
 # launched at the same time.
