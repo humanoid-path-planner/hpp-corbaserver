@@ -18,19 +18,30 @@ urdf_string = """
 """
 filename = "./tmp-path.bin"
 
+
 class Test(unittest.TestCase):
     def test_save_then_read_path(self):
         with ServerManager("../src/hppcorbaserver"):
             self.client = Client()
-            self.client.robot.loadRobotModelFromString("robot", "anchor", urdf_string, "")
-            ok, pid, msg = self.client.problem.directPath([-0.3,], [0.3], False)
+            self.client.robot.loadRobotModelFromString(
+                "robot", "anchor", urdf_string, ""
+            )
+            ok, pid, msg = self.client.problem.directPath(
+                [
+                    -0.3,
+                ],
+                [0.3],
+                False,
+            )
             assert ok
             path = self.client.problem.getPath(pid)
             self.client.problem.savePath(path, filename)
 
         with ServerManager("../src/hppcorbaserver"):
             self.client = Client()
-            self.client.robot.loadRobotModelFromString("robot", "anchor", urdf_string, "")
+            self.client.robot.loadRobotModelFromString(
+                "robot", "anchor", urdf_string, ""
+            )
             path = self.client.problem.readPath(filename)
 
             assert path.initial() == [-0.3]
