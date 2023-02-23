@@ -2306,6 +2306,51 @@ void Problem::loadRoadmap(const char* filename) {
   }
 }
 
+void Problem::savePath(hpp::core_idl::Path_ptr _path, const char* filename) {
+  typedef hpp::serialization::archive_tpl<
+      boost::archive::binary_oarchive,
+      hpp::serialization::remove_duplicate::vector_archive>
+      archive_type;
+
+  core::PathPtr_t path =
+      reference_to_object<core::Path>(server_->parent(), _path);
+  try {
+    std::ofstream fs(filename);
+    archive_type ar(fs);
+    ar.initialize();
+    ar << hpp::serialization::make_nvp("path", path);
+  } catch (const std::exception& exc) {
+    throw hpp::Error(exc.what());
+  }
+}
+
+hpp::core_idl::Path_ptr Problem::loadPath(const char* filename) {
+  typedef hpp::serialization::archive_tpl<
+      boost::archive::binary_iarchive,
+      hpp::serialization::remove_duplicate::vector_archive>
+      archive_type;
+
+  try {
+    core::ProblemSolverPtr_t ps(problemSolver());
+    DevicePtr_t robot = getRobotOrThrow(ps);
+
+    std::ifstream fs(filename);
+    archive_type ar(fs);
+    // Skip rebuilding the robot. The name should the same as the robot name
+    // used when serializing.
+    ar.insert(robot->name(), robot.get());
+    ar.initialize();
+    core::PathPtr_t path;
+    ar >> hpp::serialization::make_nvp("path", path);
+
+    hpp::core_idl::Path_var d =
+        makeServantDownCast<core_impl::Path>(server_->parent(), path);
+    return d._retn();
+  } catch (const std::exception& exc) {
+    throw hpp::Error(exc.what());
+  }
+}
+
 // ---------------------------------------------------------------
 
 void Problem::scCreateScalarMultiply(const char* outName, Double scalar,

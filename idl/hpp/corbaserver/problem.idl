@@ -739,6 +739,17 @@ module hpp
 
     unsigned long addPath (in core_idl::PathVector _path) raises (Error);
 
+    /// Save a path to file.
+    /// \param _path the path to save.
+    /// \param filename name of the file where the path is saved.
+    /// \note the file in binary format.
+    void savePath (in core_idl::Path _path, in string filename) raises (Error);
+
+    /// Load a path from a file
+    /// \param filename name of the file from which the path is read.
+    /// \note the file in binary format.
+    core_idl::Path loadPath (in string filename) raises (Error);
+
     core_idl::SteeringMethod getSteeringMethod () raises (Error);
 
     core_idl::PathValidation getPathValidation () raises (Error);

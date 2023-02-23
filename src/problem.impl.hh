@@ -326,6 +326,9 @@ class Problem : public virtual POA_hpp::corbaserver::Problem {
   virtual void saveRoadmap(const char* filename);
   virtual void loadRoadmap(const char* filename);
 
+  virtual void savePath(hpp::core_idl::Path_ptr path, const char* filename);
+  virtual hpp::core_idl::Path_ptr loadPath(const char* filename);
+
   virtual void scCreateScalarMultiply(const char* outName, Double scalar,
                                       const char* inName);
 
