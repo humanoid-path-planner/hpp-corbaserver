@@ -2,7 +2,6 @@
 import unittest
 
 from hpp.corbaserver import Client
-from hpp.corbaserver.tools import Tools
 from hpp.utils import ServerManager
 
 urdf_string = """
