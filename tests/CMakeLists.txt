@@ -6,6 +6,7 @@ if(PYTHON_VERSION_MAJOR EQUAL 3)
 endif()
 add_python_unit_test(py-delete-servant tests/delete_servant.py src)
 add_python_unit_test(py-path-serialization tests/path_serialization.py src)
+add_python_unit_test(py-problem tests/problem.py src)
 
 # robot & utils start a hppcorbaserver in a separate process. They shouldn't be
 # launched at the same time.
