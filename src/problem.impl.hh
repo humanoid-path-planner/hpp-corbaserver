@@ -382,6 +382,12 @@ class Problem : public virtual POA_hpp::corbaserver::Problem {
   core_idl::SteeringMethod_ptr createSteeringMethod(
       const char* type, core_idl::Problem_ptr _problem);
 
+  core_idl::Constraint_ptr createConstraintSet(pinocchio_idl::Device_ptr robot,
+                                               const char* name);
+  core_idl::Constraint_ptr createConfigProjector(
+      pinocchio_idl::Device_ptr robot, const char* name, Double threshold,
+      ULong iterations);
+
  private:
   /// Return the selected problem solver
   core::ProblemSolverPtr_t problemSolver();

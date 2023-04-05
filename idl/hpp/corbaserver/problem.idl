@@ -802,6 +802,9 @@ module hpp
     core_idl::Distance createDistance (in string type, in core_idl::Problem _problem) raises (Error);
     core_idl::SteeringMethod createSteeringMethod (in string type, in core_idl::Problem _problem) raises (Error);
 
+    core_idl::Constraint createConstraintSet (in pinocchio_idl::Device robot, in string name) raises (Error);
+    core_idl::Constraint createConfigProjector (in pinocchio_idl::Device robot, in string name, in double threshold, in unsigned long iterations) raises (Error);
+
     /// \}
   };
   }; // interface Problem
