@@ -82,6 +82,8 @@ module hpp
     /// The CORBA object below \b is a ConfigProjector
     Constraint getConfigProjector () raises (Error);
     //-> configProjector
+
+    void addConstraint(in Constraint a_constraint) raises (Error);
   }; // interface ConstraintSet
 
   }; // module core

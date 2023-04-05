@@ -2764,6 +2764,34 @@ core_idl::SteeringMethod_ptr Problem::createSteeringMethod(
     throw hpp::Error(exc.what());
   }
 }
+core_idl::Constraint_ptr Problem::createConstraintSet(
+    pinocchio_idl::Device_ptr robot, const char* name) {
+  try {
+    pinocchio::DevicePtr_t device =
+        reference_to_object<pinocchio::Device>(server_->parent(), robot);
+    core::ConstraintSetPtr_t c = core::ConstraintSet::create(device, name);
+    core_idl::Constraint_var o =
+        makeServantDownCast<core_impl::Constraint>(server_->parent(), c);
+    return o._retn();
+  } catch (const std::exception& exc) {
+    throw hpp::Error(exc.what());
+  }
+}
+core_idl::Constraint_ptr Problem::createConfigProjector(
+    pinocchio_idl::Device_ptr robot, const char* name, Double threshold,
+    ULong iterations) {
+  try {
+    pinocchio::DevicePtr_t device =
+        reference_to_object<pinocchio::Device>(server_->parent(), robot);
+    core::ConfigProjectorPtr_t c =
+        core::ConfigProjector::create(device, name, threshold, iterations);
+    core_idl::Constraint_var o =
+        makeServantDownCast<core_impl::Constraint>(server_->parent(), c);
+    return o._retn();
+  } catch (const std::exception& exc) {
+    throw hpp::Error(exc.what());
+  }
+}
 
 }  // namespace impl
 }  // namespace corbaServer
