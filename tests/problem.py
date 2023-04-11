@@ -18,10 +18,13 @@ class Test(unittest.TestCase):
 
             c_constraint_set = self.client.problem.createConstraintSet(c_robot, "myset")
             assert c_constraint_set.getConfigProjector() is None
-            c_config_proj = self.client.problem.createConfigProjector(c_robot, "myproj", 1e-4, 40)
+            c_config_proj = self.client.problem.createConfigProjector(
+                c_robot, "myproj", 1e-4, 40
+            )
             c_constraint_set.addConstraint(c_config_proj)
             assert c_constraint_set.getConfigProjector() is not None
             assert c_constraint_set.getConfigProjector().name() == c_config_proj.name()
+
 
 if __name__ == "__main__":
     unittest.main()
