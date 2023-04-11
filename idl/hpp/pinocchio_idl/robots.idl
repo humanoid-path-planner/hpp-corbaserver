@@ -33,6 +33,10 @@ module hpp
 
       floatSeq neutralConfiguration () raises (Error);
 
+      size_type configSize() raises (Error);
+
+      size_type numberDof() raises (Error);
+
       void integrate(in floatSeq config_in, in floatSeq velocity, out floatSeq result) raises (Error);
       //* hpp::pinocchio::DevicePtr_t d = getT();
       //* hpp::pinocchio::Configuration_t res (d->configSize());
@@ -80,6 +84,23 @@ module hpp
 
       boolean setCurrentConfiguration (in floatSeq configuration) raises (Error);
       //->currentConfiguration
+
+      floatSeq getCurrentVelocity () raises (Error);
+      //->currentVelocity
+
+      boolean setCurrentVelocity (in floatSeq velocity) raises (Error);
+      //->currentVelocity
+
+      floatSeq getCurrentAcceleration () raises (Error);
+      //->currentAcceleration
+
+      boolean setCurrentAcceleration (in floatSeq acceleration) raises (Error);
+      //->currentAcceleration
+
+      short computationFlag() raises (Error);
+
+      void controlComputation(in short flag) raises (Error);
+      //* getT()->controlComputation(hpp::pinocchio::Computation_t(flag));
 
       void computeForwardKinematics() raises (Error);
 
