@@ -12,6 +12,7 @@ add_python_unit_test(py-problem tests/problem.py src)
 # launched at the same time.
 set_tests_properties("py-robot" PROPERTIES RUN_SERIAL "ON")
 set_tests_properties("py-utils" PROPERTIES RUN_SERIAL "ON")
+set_tests_properties("py-port" PROPERTIES RUN_SERIAL "ON")
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/hppcorbaserver.sh
                ${CMAKE_CURRENT_BINARY_DIR}/hppcorbaserver.sh)
