@@ -1,4 +1,5 @@
 import sys
+import CORBA
 
 import hpp_idl.hpp as _hpp
 from .client import Client
@@ -45,16 +46,12 @@ def Tools(url=None, port=Client.defaultPort):
 
 class _Deleter:
     def __init__(self, o, client=None):
-        import CORBA
-
         orb = CORBA.ORB_init()
         self.client = client
         self.ostr = orb.object_to_string(o)
         self.type = type(o)
 
     def __del__(self):
-        import CORBA
-
         try:
             if not self.client:
                 from .client import Client
@@ -90,8 +87,6 @@ def equals(a, b, client=None):
     param a, b object to compare.
     param client either an instance of Client or a client to the Tools interface.
     """
-    import CORBA
-
     orb = CORBA.ORB_init()
     return a == b or orb.object_to_string(a) == orb.object_to_string(b)
 
