@@ -46,5 +46,6 @@ class Test(unittest.TestCase):
             assert path.initial() == [-0.3]
             assert path.end() == [0.3]
 
+
 if __name__ == "__main__":
     unittest.main()
