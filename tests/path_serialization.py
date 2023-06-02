@@ -19,7 +19,7 @@ filename = "./tmp-path.bin"
 
 
 class Test(unittest.TestCase):
-    def test_save_then_read_path(self):
+    def test_save_then_load_path(self):
         with ServerManager("../src/hppcorbaserver"):
             self.client = Client()
             self.client.robot.loadRobotModelFromString(
@@ -41,7 +41,11 @@ class Test(unittest.TestCase):
             self.client.robot.loadRobotModelFromString(
                 "robot", "anchor", urdf_string, ""
             )
-            path = self.client.problem.readPath(filename)
+            path = self.client.problem.loadPath(filename)
 
             assert path.initial() == [-0.3]
             assert path.end() == [0.3]
+
+
+if __name__ == "__main__":
+    unittest.main()
