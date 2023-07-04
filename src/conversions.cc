@@ -210,7 +210,15 @@ core::matrix_t floatSeqSeqToMatrix(const floatSeqSeq& input,
   matrix_t out(rows, cols);
   for (size_type r = 0; r < rows; ++r) {
     const floatSeq& row = input[(CORBA::ULong)r];
-    for (size_type c = 0; c < cols; ++c) out(r, c) = row[(CORBA::ULong)c];
+    size_type cols_in_row = (size_type)row.length();
+    if (cols_in_row != cols)
+      HPP_THROW(std::runtime_error,
+              "number of cols of input floatSeqSeq ("
+                  << cols_in_row << ") is different from the expected number of cols ("
+		<< expectedCols << ") in row " << r);
+    for (size_type c = 0; c < cols; ++c) {
+      out(r, c) = row[(CORBA::ULong)c];
+    }
   }
   return out;
 }
