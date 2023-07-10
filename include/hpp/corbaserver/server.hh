@@ -104,6 +104,24 @@ class HPP_CORBASERVER_DLLAPI Server {
   Server(ProblemSolverMapPtr_t problemSolverMap, int argc, const char* argv[],
          bool multiThread = false);
 
+  /// Constructor
+  /// \param problemSolver the object that will handle Corba requests.
+  /// \param multiThread whether the server may process request using
+  ///        multithred policy.
+  Server(core::ProblemSolverPtr_t problemSolver, bool multiThread = false);
+
+  ///\name CORBA server initialization
+  /// \{
+
+  /// Configure using command line argument
+  bool parseArguments(int argc, const char* argv[]);
+
+  /// Initialize ORB and CORBA servers.
+  void initialize();
+
+  /// \}
+
+
   /// \brief Shutdown CORBA server
   ~Server();
 
@@ -166,14 +184,6 @@ class HPP_CORBASERVER_DLLAPI Server {
   void clearServantsMap();
 
  private:
-  ///\name CORBA server initialization
-  /// \{
-  /// Initialize ORB and CORBA servers.
-
-  void parseArguments(int argc, const char* argv[]);
-
-  /// \}
-
   corba::Server<Tools>* tools_;
 
   std::string ORBendPoint;
