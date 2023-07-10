@@ -59,10 +59,12 @@ using omniORB::fatalException;
 namespace {
 void usage(const char* app) {
   std::cerr << "Usage: " << app << " [options] ..." << '\n'
-            << "  --name <name>" << '\n'
-            << "  --help" << '\n'
-            << "  --single-thread" << '\n'
-            << "  --multi-thread" << std::endl;
+            << "  --name <name>      " << '\n'
+            << "  --help             " << '\n'
+            << "  --verbosity <level>" << '\t' << "where level is a positive integer between 0 (no logs) to 50 (very verbose)."<< '\n'
+            << "  --benchmark        " << '\t' << "enable benchmarking (written in the logs)."<< '\n'
+            << "  --single-thread    " << '\n'
+            << "  --multi-thread     " << std::endl;
 }
 
 std::string endPoint(const std::string& host, const int port) {
@@ -246,6 +248,11 @@ void Server::parseArguments(int argc, const char* argv[]) {
     } else if (strcmp(argv[i], "-ORBendPoint") == 0) {
       ORBendPoint = argv[++i];
       endPointSet = true;
+    } else if (strcmp(argv[i], "--verbosity") == 0) {
+      int verbosityLevel = atoi(argv[++i]);
+      ::hpp::debug::setVerbosityLevel(verbosityLevel);
+    } else if (strcmp(argv[i], "--benchmark") == 0) {
+      ::hpp::debug::enableBenchmark(true);
     }
   }
   if (endPointSet) std::cout << "End point: " << ORBendPoint << std::endl;
