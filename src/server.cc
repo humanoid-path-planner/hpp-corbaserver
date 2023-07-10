@@ -58,13 +58,21 @@ using omniORB::fatalException;
 
 namespace {
 void usage(const char* app) {
-  std::cerr << "Usage: " << app << " [options] ..." << '\n'
-            << "  --name <name>      " << '\n'
-            << "  --help             " << '\n'
-            << "  --verbosity <level>" << '\t' << "where level is a positive integer between 0 (no logs) to 50 (very verbose)."<< '\n'
-            << "  --benchmark        " << '\t' << "enable benchmarking (written in the logs)."<< '\n'
-            << "  --single-thread    " << '\n'
-            << "  --multi-thread     " << std::endl;
+  std::cerr << "Usage: " << app << " [options] ...\n"
+            << "  --name <name>      \n"
+            << "  --host <host>      \n"
+            << "  --port <port>      \n"
+            << "  --help             \n"
+            << "  --verbosity <level>\twhere level is a positive integer between 0 (no logs) to 50 (very verbose).\n"
+            << "  --benchmark        \tenable benchmarking (written in the logs).\n"
+            << "  --single-thread    \n"
+            << "  --multi-thread     \n"
+            << "\n"
+               "Environment variables:\n"
+               "- HPP_LOGGINGDIR: change the directory where logs are written.\n"
+               "- HPP_HOST: change the default host.\n"
+               "- HPP_PORT: change the default port.\n"
+            << std::flush;
 }
 
 std::string endPoint(const std::string& host, const int port) {
