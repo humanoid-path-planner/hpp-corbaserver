@@ -40,7 +40,12 @@
 using hpp::corbaServer::Server;
 
 int main(int argc, const char* argv[]) {
-  Server server(hpp::core::ProblemSolver::create(), argc, argv, true);
+  Server server(hpp::core::ProblemSolver::create(), true);
+
+  if (!server.parseArguments(argc, argv)) {
+    return 1;
+  }
+  server.initialize();
 
   server.startCorbaServer();
   server.processRequest(true);

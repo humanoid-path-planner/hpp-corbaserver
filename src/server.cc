@@ -182,12 +182,7 @@ Server::Server(core::ProblemSolverPtr_t problemSolver, int argc,
       nameService_(false),
       problemSolverMap_(new ProblemSolverMap(problemSolver)) {
   parseArguments(argc, argv);
-
-  const char* options[][2] = {{"endPoint", ORBendPoint.c_str()}, {0, 0}};
-  tools_ = new corba::Server<Tools>(argc, argv, "", options);
-  if (!nameService_) tools_->initOmniINSPOA("hpp-corbaserver");
-  tools_->initRootPOA(multiThread_);
-  tools_->implementation().setServer(this);
+  initialize();
 }
 
 Server::Server(ProblemSolverMapPtr_t problemSolverMap, int argc,
@@ -196,9 +191,17 @@ Server::Server(ProblemSolverMapPtr_t problemSolverMap, int argc,
       nameService_(false),
       problemSolverMap_(problemSolverMap) {
   parseArguments(argc, argv);
+  initialize();
+}
 
-  const char* options[][2] = {{"endPoint", ORBendPoint.c_str()}, {0, 0}};
-  tools_ = new corba::Server<Tools>(argc, argv, "", options);
+Server::Server(core::ProblemSolverPtr_t problemSolver, bool inMultiThread)
+    : multiThread_(inMultiThread),
+      nameService_(false),
+      problemSolverMap_(new ProblemSolverMap(problemSolver)) {
+}
+
+
+void Server::initialize() {
   if (!nameService_) tools_->initOmniINSPOA("hpp-corbaserver");
   tools_->initRootPOA(multiThread_);
   tools_->implementation().setServer(this);
@@ -206,7 +209,7 @@ Server::Server(ProblemSolverMapPtr_t problemSolverMap, int argc,
 
 Server::~Server() {}
 
-void Server::parseArguments(int argc, const char* argv[]) {
+bool Server::parseArguments(int argc, const char* argv[]) {
   mainContextId_ = "corbaserver";
 
   std::string host = "localhost";
@@ -236,6 +239,7 @@ void Server::parseArguments(int argc, const char* argv[]) {
       std::cout << "Server main context: " << mainContextId_ << std::endl;
     } else if (strcmp(argv[i], "--help") == 0) {
       usage(argv[0]);
+      return false;
     } else if (strcmp(argv[i], "--single-thread") == 0) {
       multiThread_ = false;
       std::cout << "Switched to single thread mode." << std::endl;
@@ -264,6 +268,11 @@ void Server::parseArguments(int argc, const char* argv[]) {
     }
   }
   if (endPointSet) std::cout << "End point: " << ORBendPoint << std::endl;
+
+  const char* options[][2] = {{"endPoint", ORBendPoint.c_str()}, {0, 0}};
+  tools_ = new corba::Server<Tools>(argc, argv, "", options);
+
+  return true;
 }
 
 void Server::startCorbaServer() {
