@@ -58,21 +58,23 @@ using omniORB::fatalException;
 
 namespace {
 void usage(const char* app) {
-  std::cerr << "Usage: " << app << " [options] ...\n"
-            << "  --name <name>      \n"
-            << "  --host <host>      \n"
-            << "  --port <port>      \n"
-            << "  --help             \n"
-            << "  --verbosity <level>\twhere level is a positive integer between 0 (no logs) to 50 (very verbose).\n"
-            << "  --benchmark        \tenable benchmarking (written in the logs).\n"
-            << "  --single-thread    \n"
-            << "  --multi-thread     \n"
-            << "\n"
-               "Environment variables:\n"
-               "- HPP_LOGGINGDIR: change the directory where logs are written.\n"
-               "- HPP_HOST: change the default host.\n"
-               "- HPP_PORT: change the default port.\n"
-            << std::flush;
+  std::cerr
+      << "Usage: " << app << " [options] ...\n"
+      << "  --name <name>      \n"
+      << "  --host <host>      \n"
+      << "  --port <port>      \n"
+      << "  --help             \n"
+      << "  --verbosity <level>\twhere level is a positive integer between 0 "
+         "(no logs) to 50 (very verbose).\n"
+      << "  --benchmark        \tenable benchmarking (written in the logs).\n"
+      << "  --single-thread    \n"
+      << "  --multi-thread     \n"
+      << "\n"
+         "Environment variables:\n"
+         "- HPP_LOGGINGDIR: change the directory where logs are written.\n"
+         "- HPP_HOST: change the default host.\n"
+         "- HPP_PORT: change the default port.\n"
+      << std::flush;
 }
 
 std::string endPoint(const std::string& host, const int port) {
@@ -188,9 +190,7 @@ Server::Server(core::ProblemSolverPtr_t problemSolver, int argc,
 Server::Server(core::ProblemSolverPtr_t problemSolver, bool inMultiThread)
     : multiThread_(inMultiThread),
       nameService_(false),
-      problemSolverMap_(new ProblemSolverMap(problemSolver)) {
-}
-
+      problemSolverMap_(new ProblemSolverMap(problemSolver)) {}
 
 void Server::initialize() {
   if (!nameService_) tools_->initOmniINSPOA("hpp-corbaserver");

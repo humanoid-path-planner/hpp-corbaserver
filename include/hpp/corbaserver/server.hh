@@ -107,7 +107,6 @@ class HPP_CORBASERVER_DLLAPI Server {
 
   /// \}
 
-
   /// \brief Shutdown CORBA server
   ~Server();
 
