@@ -91,20 +91,6 @@ class HPP_CORBASERVER_DLLAPI Server {
          bool multiThread = false);
 
   /// Constructor
-  /// \param problemSolverMap the object that will handle Corba requests.
-  /// \param argc, argv parameter to feed ORB initialization.
-  /// \param multiThread whether the server may process request using
-  ///        multithred policy.
-  /// \note It is recommended to configure your Corba implementation
-  ///       through environment variables and to set argc to 1 and argv to
-  ///       any string.
-  /// \note It is highly recommended not to enable multi-thread policy in
-  ///       CORBA request processing if this library is run from an openGL
-  ///       based GUI, since OpenGL does not support multithreading.
-  Server(ProblemSolverMapPtr_t problemSolverMap, int argc, const char* argv[],
-         bool multiThread = false);
-
-  /// Constructor
   /// \param problemSolver the object that will handle Corba requests.
   /// \param multiThread whether the server may process request using
   ///        multithred policy.

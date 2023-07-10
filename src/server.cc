@@ -185,15 +185,6 @@ Server::Server(core::ProblemSolverPtr_t problemSolver, int argc,
   initialize();
 }
 
-Server::Server(ProblemSolverMapPtr_t problemSolverMap, int argc,
-               const char* argv[], bool inMultiThread)
-    : multiThread_(inMultiThread),
-      nameService_(false),
-      problemSolverMap_(problemSolverMap) {
-  parseArguments(argc, argv);
-  initialize();
-}
-
 Server::Server(core::ProblemSolverPtr_t problemSolver, bool inMultiThread)
     : multiThread_(inMultiThread),
       nameService_(false),
