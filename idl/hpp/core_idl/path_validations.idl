@@ -105,6 +105,12 @@ module hpp
   interface ContinuousValidation : PathValidation
   {
       HPP_CORE_OBSTACLE_USER_INTERFACE
+
+      void setBreakDistance(in value_type breakDistance) raises (Error);
+      //-> breakDistance
+
+      value_type getBreakDistance() raises (Error);
+      //-> breakDistance
   }; // interface PathValidations
 
   module pathValidation_idl {
