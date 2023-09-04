@@ -55,12 +55,9 @@ class _Deleter:
         try:
             if not self.client:
                 from .client import Client
-
                 self.client = Client(clients={})._tools
             self.client.deleteServant(self.ostr)
-        except CORBA.TRANSIENT:
-            pass
-        except CORBA.COMM_FAILURE:
+        except CORBA.SystemException:
             pass
 
 
