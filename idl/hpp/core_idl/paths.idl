@@ -87,10 +87,16 @@ module hpp
     //*   (server_, new PathVector (server_, out));
   }; // interface PathVector
 
+  module path_idl {
+    interface Hermite : Path {
+    };
+  }; // module path
+
   }; // module core
 }; // module hpp
 //* #include <hpp/core/path.hh>
 //* #include <hpp/core/path-vector.hh>
+//* #include <hpp/core/path/hermite.hh>
 //* #include <hpp/core_idl/_constraints.hh>
 
 #include <hpp/core_idl/_constraints.idl>
