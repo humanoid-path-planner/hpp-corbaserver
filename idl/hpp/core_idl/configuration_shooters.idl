@@ -35,13 +35,18 @@ module hpp
       //-> sigmas
       void setSigmas (in floatSeq s) raises (Error);
       //-> sigmas
-    }; // interface WeighedConfigurationShooter
-  }; //-> configurationShooter
+    }; // interface Gaussian
 
+    interface UniformSeedable : ConfigurationShooter
+    {
+      void seed (in long seed_) raises (Error);
+    }; // interface UniformSeedable
+  }; //-> configurationShooter
 
   }; // module core
 }; // module hpp
 //* #include <hpp/core/configuration-shooter.hh>
 //* #include <hpp/core/configuration-shooter/gaussian.hh>
+//* #include <hpp/core/configuration-shooter/uniform-tpl.hh>
 
 #endif // HPP_CORE_CONFIGURATION_SHOOTERS_IDL
