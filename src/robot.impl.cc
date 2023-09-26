@@ -746,7 +746,6 @@ TransformSeq* Robot::getLinksPosition(const floatSeq& dofArray,
     Configuration_t config = floatSeqToConfig(_robot, dofArray, true);
     DeviceSync robot(_robot);
     robot.currentConfiguration(config);
-    robot.computeForwardKinematics();
     robot.computeFramesForwardKinematics();
 
     const Model& model(robot.model());
@@ -1228,12 +1227,7 @@ hpp::floatSeq* Robot::getCenterOfMass() {
 hpp::floatSeq* Robot::getCenterOfMassVelocity() {
   try {
     DevicePtr_t robot = getRobotOrThrow(problemSolver());
-    pinocchio::Computation_t flags = robot->computationFlag();
-    if (!(flags & pinocchio::COM) || (flags & pinocchio::JACOBIAN)) {
-      robot->controlComputation(pinocchio::COMPUTE_ALL);
-      robot->computeForwardKinematics();
-      robot->controlComputation(flags);
-    }
+    robot->computeForwardKinematics(pinocchio::COMPUTE_ALL);
     return vectorToFloatSeq(robot->jacobianCenterOfMass() *
                             robot->currentVelocity());
   } catch (const std::exception& exc) {
@@ -1246,12 +1240,7 @@ hpp::floatSeq* Robot::getCenterOfMassVelocity() {
 hpp::floatSeqSeq* Robot::getJacobianCenterOfMass() {
   try {
     DevicePtr_t robot = getRobotOrThrow(problemSolver());
-    pinocchio::Computation_t flags = robot->computationFlag();
-    if (!(flags & pinocchio::COM) || (flags & pinocchio::JACOBIAN)) {
-      robot->controlComputation(pinocchio::COMPUTE_ALL);
-      robot->computeForwardKinematics();
-      robot->controlComputation(flags);
-    }
+    robot->computeForwardKinematics(pinocchio::COMPUTE_ALL);
     const ComJacobian_t& jacobian = robot->jacobianCenterOfMass();
     return matrixToFloatSeqSeq(jacobian);
   } catch (const std::exception& exc) {

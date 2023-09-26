@@ -71,9 +71,6 @@ class Test(unittest.TestCase):
             c_robot.setCurrentVelocity(v)
             c_robot.setCurrentAcceleration(a)
 
-            c_robot.controlComputation(1)
-            assert c_robot.computationFlag() == 1
-
 
 if __name__ == "__main__":
     unittest.main()

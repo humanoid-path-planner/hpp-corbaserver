@@ -102,7 +102,7 @@ module hpp
       void controlComputation(in short flag) raises (Error);
       //* getT()->controlComputation(hpp::pinocchio::Computation_t(flag));
 
-      void computeForwardKinematics() raises (Error);
+      void computeForwardKinematics(in short computationFlag) raises (Error);
 
       void computeFramesForwardKinematics () raises (Error);
 
