@@ -1148,7 +1148,6 @@ void Problem::resetConstraints() {
   if (!problemSolver()->robot()) throw hpp::Error("No robot loaded");
   try {
     problemSolver()->resetConstraints();
-    problemSolver()->robot()->controlComputation(pinocchio::JOINT_POSITION);
   } catch (const std::exception& exc) {
     throw hpp::Error(exc.what());
   }
