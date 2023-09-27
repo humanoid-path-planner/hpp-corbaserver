@@ -35,13 +35,13 @@
 #ifndef HPP_CORBASERVER_SERVER_HH
 #define HPP_CORBASERVER_SERVER_HH
 
-#include <boost/thread/mutex.hpp>
 #include <omniORB4/CORBA.h>
 
 #include <hpp/corba/template/server.hh>
 #include <hpp/corbaserver/config.hh>
 #include <hpp/corbaserver/fwd.hh>
 #include <hpp/corbaserver/problem-solver-map.hh>
+#include <hpp/corbaserver/read-write-lock.hh>
 
 namespace hpp {
 namespace corbaServer {
@@ -207,7 +207,7 @@ class HPP_CORBASERVER_DLLAPI Server {
   ServantKeyToServantMap_t servantKeyToServantMap_;
   ServantToServantKeyMap_t servantToServantKeyMap_;
   // Mutex for accessing servant / servant key maps.
-  boost::mutex mutex_;
+  ReadWriteLock lock_;
 };
 }  // end of namespace corbaServer.
 }  // end of namespace hpp.

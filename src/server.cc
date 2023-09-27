@@ -55,7 +55,6 @@ using CORBA::Exception;
 using CORBA::Object_var;
 using CORBA::SystemException;
 using omniORB::fatalException;
-typedef boost::mutex::scoped_lock scoped_lock_t;
 
 namespace {
 void usage(const char* app) {
@@ -183,7 +182,7 @@ class Tools : public virtual POA_hpp::Tools {
 
   virtual Names_t* getAllServants() override {
     try {
-      std::vector<std::string> names {server_->getAllObjectIds()};
+      std::vector<std::string> names{server_->getAllObjectIds()};
       return toNames_t(names);
     } catch (const std::exception& e) {
       throw hpp::Error(e.what());
@@ -408,16 +407,21 @@ int Server::processRequest(bool loop) { return tools_->processRequest(loop); }
 void Server::requestShutdown(bool wait) { orb()->shutdown(wait); }
 
 PortableServer::Servant Server::getServant(ServantKey servantKey) const {
-  scoped_lock_t guard(*const_cast<boost::mutex*>(&this->mutex_));
+  PortableServer::Servant servant = NULL;
+
+  ReadWriteLock* lock = const_cast<ReadWriteLock*>(&this->lock_);
+  lock->readLock();
+
   ServantKeyToServantMap_t::const_iterator _servant =
       servantKeyToServantMap_.find(servantKey);
-  if (_servant == servantKeyToServantMap_.end()) return NULL;
-  return _servant->second;
+  if (_servant != servantKeyToServantMap_.end()) servant = _servant->second;
+  lock->readUnlock();
+  return servant;
 }
 
 void Server::addServantKeyAndServant(ServantKey servantKey,
                                      PortableServer::Servant servant) {
-  scoped_lock_t guard(mutex_);
+  lock_.writeLock();
   typedef std::pair<ServantToServantKeyMap_t::iterator, bool> Ret_t;
   Ret_t ret =
       servantToServantKeyMap_.insert(std::make_pair(servant, servantKey));
@@ -431,26 +435,30 @@ void Server::addServantKeyAndServant(ServantKey servantKey,
   Ret2_t ret2 =
       servantKeyToServantMap_.insert(std::make_pair(servantKey, servant));
   if (!ret2.second) ret2.first->second = servant;
+  lock_.writeUnlock();
 }
 
 void Server::removeServant(PortableServer::Servant servant) {
-  scoped_lock_t guard(mutex_);
+  lock_.writeLock();
   ServantToServantKeyMap_t::iterator _it =
       servantToServantKeyMap_.find(servant);
-  if (_it == servantToServantKeyMap_.end()) return;
-  servantKeyToServantMap_.erase(_it->second);
-  servantToServantKeyMap_.erase(_it);
+  if (_it != servantToServantKeyMap_.end()) {
+    servantKeyToServantMap_.erase(_it->second);
+    servantToServantKeyMap_.erase(_it);
+  }
+  lock_.writeUnlock();
 }
 
 void Server::clearServantsMap() {
   PortableServer::POA_var _poa(poa());
-  scoped_lock_t guard(mutex_);
+  lock_.writeLock();
   for (const auto& pair : servantKeyToServantMap_) {
     PortableServer::ObjectId_var objectId = _poa->servant_to_id(pair.second);
     _poa->deactivate_object(objectId.in());
   }
   servantKeyToServantMap_.clear();
   servantToServantKeyMap_.clear();
+  lock_.writeUnlock();
 }
 
 void Server::removeExpriredServants() {
@@ -458,7 +466,7 @@ void Server::removeExpriredServants() {
   ServantKeyToServantMap_t k2sMap;
   ServantToServantKeyMap_t s2kMap;
 
-  scoped_lock_t guard(mutex_);
+  lock_.writeLock();
   for (const auto& pair : servantKeyToServantMap_) {
     AbstractServantKey* sk = dynamic_cast<AbstractServantKey*>(pair.second);
     if (sk == NULL || !sk->expired()) {
@@ -473,18 +481,21 @@ void Server::removeExpriredServants() {
   }
   servantKeyToServantMap_.swap(k2sMap);
   servantToServantKeyMap_.swap(s2kMap);
+  lock_.writeUnlock();
 }
 
 std::vector<std::string> Server::getAllObjectIds() {
   std::vector<std::string> objectIds;
-  objectIds.reserve(servantKeyToServantMap_.size());
-
   PortableServer::POA_var _poa(poa());
-  scoped_lock_t guard(mutex_);
+
+  lock_.readLock();
+  objectIds.reserve(servantKeyToServantMap_.size());
   for (const auto& pair : servantKeyToServantMap_) {
     PortableServer::ObjectId_var objectId = _poa->servant_to_id(pair.second);
-    objectIds.emplace_back(orb()->object_to_string(_poa->id_to_reference(objectId)));
+    objectIds.emplace_back(
+        orb()->object_to_string(_poa->id_to_reference(objectId)));
   }
+  lock_.readUnlock();
   return objectIds;
 }
 
