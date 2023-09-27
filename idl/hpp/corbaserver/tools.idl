@@ -47,6 +47,10 @@ module hpp
 
     void deleteAllServants () raises (Error);
 
+    void deleteExpiredServants () raises (Error);
+
+    Names_t getAllServants() raises (Error);
+
     /// Shutdown the server.
     void shutdown ();
   }; // interface Tools

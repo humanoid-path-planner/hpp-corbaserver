@@ -92,6 +92,8 @@ struct hpp_traits {};
 class AbstractServantKey {
  public:
   virtual Server::ServantKey getServantKey() const = 0;
+
+  virtual bool expired() const = 0;
 };
 
 /// Base class for classes which provides bindings for HPP classes.
@@ -134,6 +136,11 @@ class ServantBase : public AbstractServantBase<T> {
       objectExpired();
     }
     return wk.lock();
+  }
+
+  bool expired() const final {
+    TWkPtr_t wk((StorageElementWkPtr_t)wrappedObject_);
+    return wk.expired();
   }
 
   StorageElementShPtr_t getT() const {

@@ -55,6 +55,7 @@ using CORBA::Exception;
 using CORBA::Object_var;
 using CORBA::SystemException;
 using omniORB::fatalException;
+typedef boost::mutex::scoped_lock scoped_lock_t;
 
 namespace {
 void usage(const char* app) {
@@ -167,6 +168,23 @@ class Tools : public virtual POA_hpp::Tools {
   virtual void deleteAllServants() override {
     try {
       server_->clearServantsMap();
+    } catch (const std::exception& e) {
+      throw hpp::Error(e.what());
+    }
+  }
+
+  virtual void deleteExpiredServants() override {
+    try {
+      server_->removeExpriredServants();
+    } catch (const std::exception& e) {
+      throw hpp::Error(e.what());
+    }
+  }
+
+  virtual Names_t* getAllServants() override {
+    try {
+      std::vector<std::string> names {server_->getAllObjectIds()};
+      return toNames_t(names);
     } catch (const std::exception& e) {
       throw hpp::Error(e.what());
     }
@@ -390,6 +408,7 @@ int Server::processRequest(bool loop) { return tools_->processRequest(loop); }
 void Server::requestShutdown(bool wait) { orb()->shutdown(wait); }
 
 PortableServer::Servant Server::getServant(ServantKey servantKey) const {
+  scoped_lock_t guard(*const_cast<boost::mutex*>(&this->mutex_));
   ServantKeyToServantMap_t::const_iterator _servant =
       servantKeyToServantMap_.find(servantKey);
   if (_servant == servantKeyToServantMap_.end()) return NULL;
@@ -398,6 +417,7 @@ PortableServer::Servant Server::getServant(ServantKey servantKey) const {
 
 void Server::addServantKeyAndServant(ServantKey servantKey,
                                      PortableServer::Servant servant) {
+  scoped_lock_t guard(mutex_);
   typedef std::pair<ServantToServantKeyMap_t::iterator, bool> Ret_t;
   Ret_t ret =
       servantToServantKeyMap_.insert(std::make_pair(servant, servantKey));
@@ -414,6 +434,7 @@ void Server::addServantKeyAndServant(ServantKey servantKey,
 }
 
 void Server::removeServant(PortableServer::Servant servant) {
+  scoped_lock_t guard(mutex_);
   ServantToServantKeyMap_t::iterator _it =
       servantToServantKeyMap_.find(servant);
   if (_it == servantToServantKeyMap_.end()) return;
@@ -423,12 +444,48 @@ void Server::removeServant(PortableServer::Servant servant) {
 
 void Server::clearServantsMap() {
   PortableServer::POA_var _poa(poa());
+  scoped_lock_t guard(mutex_);
   for (const auto& pair : servantKeyToServantMap_) {
     PortableServer::ObjectId_var objectId = _poa->servant_to_id(pair.second);
     _poa->deactivate_object(objectId.in());
   }
   servantKeyToServantMap_.clear();
   servantToServantKeyMap_.clear();
+}
+
+void Server::removeExpriredServants() {
+  PortableServer::POA_var _poa(poa());
+  ServantKeyToServantMap_t k2sMap;
+  ServantToServantKeyMap_t s2kMap;
+
+  scoped_lock_t guard(mutex_);
+  for (const auto& pair : servantKeyToServantMap_) {
+    AbstractServantKey* sk = dynamic_cast<AbstractServantKey*>(pair.second);
+    if (sk == NULL || !sk->expired()) {
+      // Remove the object
+      PortableServer::ObjectId_var objectId = _poa->servant_to_id(pair.second);
+      _poa->deactivate_object(objectId.in());
+    } else {
+      // Keep the object
+      k2sMap.insert(pair);
+      s2kMap.insert(std::make_pair(pair.second, pair.first));
+    }
+  }
+  servantKeyToServantMap_.swap(k2sMap);
+  servantToServantKeyMap_.swap(s2kMap);
+}
+
+std::vector<std::string> Server::getAllObjectIds() {
+  std::vector<std::string> objectIds;
+  objectIds.reserve(servantKeyToServantMap_.size());
+
+  PortableServer::POA_var _poa(poa());
+  scoped_lock_t guard(mutex_);
+  for (const auto& pair : servantKeyToServantMap_) {
+    PortableServer::ObjectId_var objectId = _poa->servant_to_id(pair.second);
+    objectIds.emplace_back(orb()->object_to_string(_poa->id_to_reference(objectId)));
+  }
+  return objectIds;
 }
 
 }  // end of namespace corbaServer.

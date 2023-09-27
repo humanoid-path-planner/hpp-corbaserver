@@ -1,11 +1,28 @@
 import unittest
 
 # Check imports
+from hpp.corbaserver.tools import Tools
 from hpp.corbaserver import Client
 from hpp.utils import ServerManager
 
 
 class Test(unittest.TestCase):
+    def test_tools(self):
+        with ServerManager("../src/hppcorbaserver"):
+            tools = Tools()
+            cl = Client()
+            cl.robot.createRobot("foo")
+            pb = cl.problem.getProblem()
+
+            object_ids = tools.getAllServants()
+            assert len(object_ids) == 1
+            assert object_ids[0] == cl.orb.object_to_string(pb)
+
+            pb2 = cl.orb.string_to_object(object_ids[0])
+            assert type(pb) == type(pb2)
+            pb2.persistantStorage(False)
+
+
     def test_createConstraints(self):
         with ServerManager("../src/hppcorbaserver"):
             self.client = Client()
