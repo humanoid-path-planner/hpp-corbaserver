@@ -206,6 +206,17 @@ void @impl_tpl_name@<_Base, _Storage>::deleteThis ()
     throw @error_type@ (e.what());
   }
 }""",
+    "persistantStorage": """
+template <typename _Base, typename _Storage>
+void @impl_tpl_name@<_Base, _Storage>::persistantStorage (::CORBA::Boolean persistant)
+{
+  try {
+    // automatically generated code.
+    _ServantBase::persistantStorage(persistant);
+  } catch (const std::exception& e) {
+    throw @error_type@ (e.what());
+  }
+}""",
 }
 
 definition_object_downcast = """\
