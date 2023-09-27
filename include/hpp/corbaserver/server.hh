@@ -35,6 +35,7 @@
 #ifndef HPP_CORBASERVER_SERVER_HH
 #define HPP_CORBASERVER_SERVER_HH
 
+#include <boost/thread/mutex.hpp>
 #include <omniORB4/CORBA.h>
 
 #include <hpp/corba/template/server.hh>
@@ -168,6 +169,10 @@ class HPP_CORBASERVER_DLLAPI Server {
 
   void clearServantsMap();
 
+  void removeExpriredServants();
+
+  std::vector<std::string> getAllObjectIds();
+
  private:
   corba::Server<Tools>* tools_;
 
@@ -201,6 +206,8 @@ class HPP_CORBASERVER_DLLAPI Server {
       ServantToServantKeyMap_t;
   ServantKeyToServantMap_t servantKeyToServantMap_;
   ServantToServantKeyMap_t servantToServantKeyMap_;
+  // Mutex for accessing servant / servant key maps.
+  boost::mutex mutex_;
 };
 }  // end of namespace corbaServer.
 }  // end of namespace hpp.
