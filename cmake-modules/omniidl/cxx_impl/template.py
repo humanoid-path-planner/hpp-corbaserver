@@ -206,6 +206,17 @@ void @impl_tpl_name@<_Base, _Storage>::deleteThis ()
     throw @error_type@ (e.what());
   }
 }""",
+    "deleteIfExpired": """
+template <typename _Base, typename _Storage>
+::CORBA::Boolean @impl_tpl_name@<_Base, _Storage>::deleteIfExpired ()
+{
+  try {
+    // automatically generated code.
+    return _ServantBase::deleteIfExpired();
+  } catch (const std::exception& e) {
+    throw @error_type@ (e.what());
+  }
+}""",
     "persistantStorage": """
 template <typename _Base, typename _Storage>
 void @impl_tpl_name@<_Base, _Storage>::persistantStorage (::CORBA::Boolean persistant)

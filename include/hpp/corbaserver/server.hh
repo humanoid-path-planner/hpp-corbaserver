@@ -169,8 +169,6 @@ class HPP_CORBASERVER_DLLAPI Server {
 
   void clearServantsMap();
 
-  void removeExpriredServants();
-
   std::vector<std::string> getAllObjectIds();
 
  private:

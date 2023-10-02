@@ -25,6 +25,8 @@ module hpp
 
   interface Constraint
   {
+    HPP_EXPOSE_MEMORY_DEALLOCATION(Error)
+
     boolean apply (inout floatSeq config) raises (Error);
 
     string name () raises (Error);
