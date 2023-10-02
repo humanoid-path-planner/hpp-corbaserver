@@ -180,6 +180,14 @@ class ServantBase : public AbstractServantBase<T> {
     this->server_->poa()->deactivate_object(objectId.in());
   }
 
+  bool deleteIfExpired() {
+    if (expired()) {
+      deleteThis();
+      return true;
+    }
+    return false;
+  }
+
  protected:
   ServantBase(Server* server, const Storage& _s)
       : AbstractServantBase<T>(server), wrappedObject_(_s) {

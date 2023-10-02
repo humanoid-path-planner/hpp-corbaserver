@@ -18,6 +18,8 @@ module hpp
 
   interface Distance
   {
+    HPP_EXPOSE_MEMORY_DEALLOCATION(Error)
+
     value_type call (in floatSeq q1, in floatSeq q2) raises (Error);
     //-> operator()
   }; // interface Distance

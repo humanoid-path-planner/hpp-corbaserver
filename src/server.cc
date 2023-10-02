@@ -172,14 +172,6 @@ class Tools : public virtual POA_hpp::Tools {
     }
   }
 
-  virtual void deleteExpiredServants() override {
-    try {
-      server_->removeExpriredServants();
-    } catch (const std::exception& e) {
-      throw hpp::Error(e.what());
-    }
-  }
-
   virtual Names_t* getAllServants() override {
     try {
       std::vector<std::string> names{server_->getAllObjectIds()};
@@ -458,29 +450,6 @@ void Server::clearServantsMap() {
   }
   servantKeyToServantMap_.clear();
   servantToServantKeyMap_.clear();
-  lock_.writeUnlock();
-}
-
-void Server::removeExpriredServants() {
-  PortableServer::POA_var _poa(poa());
-  ServantKeyToServantMap_t k2sMap;
-  ServantToServantKeyMap_t s2kMap;
-
-  lock_.writeLock();
-  for (const auto& pair : servantKeyToServantMap_) {
-    AbstractServantKey* sk = dynamic_cast<AbstractServantKey*>(pair.second);
-    if (sk == NULL || !sk->expired()) {
-      // Remove the object
-      PortableServer::ObjectId_var objectId = _poa->servant_to_id(pair.second);
-      _poa->deactivate_object(objectId.in());
-    } else {
-      // Keep the object
-      k2sMap.insert(pair);
-      s2kMap.insert(std::make_pair(pair.second, pair.first));
-    }
-  }
-  servantKeyToServantMap_.swap(k2sMap);
-  servantToServantKeyMap_.swap(s2kMap);
   lock_.writeUnlock();
 }
 

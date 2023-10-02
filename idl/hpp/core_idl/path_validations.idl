@@ -29,6 +29,8 @@ module hpp
 
   interface ConfigValidation
   {
+    HPP_EXPOSE_MEMORY_DEALLOCATION(Error)
+
     boolean validate (in floatSeq config, out ValidationReport report) raises (Error);
     //* using namespace hpp::core;
     //* ValidationReportPtr_t vr;
@@ -62,6 +64,8 @@ module hpp
 
   interface PathValidation
   {
+    HPP_EXPOSE_MEMORY_DEALLOCATION(Error)
+
     boolean validate (in Path p, in boolean reverse, out Path validPart, out PathValidationReport report) raises (Error);
     //* using namespace hpp::core;
     //* PathPtr_t _p (::hpp::corbaServer::reference_to_servant_base<core::Path>(server_, p)->get());
