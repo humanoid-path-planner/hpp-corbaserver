@@ -22,7 +22,6 @@ class Test(unittest.TestCase):
             assert type(pb) == type(pb2)
             pb2.persistantStorage(False)
 
-
     def test_createConstraints(self):
         with ServerManager("../src/hppcorbaserver"):
             self.client = Client()
