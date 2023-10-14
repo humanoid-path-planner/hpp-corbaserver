@@ -42,15 +42,6 @@ module hpp
     DifferentiableFunction function () raises (Error);
     //-> functionPtr
 
-    void setRightHandSideFromConfig (in floatSeq config) raises (Error);
-    //-> rightHandSideFromConfig
-
-    void setRightHandSide (in floatSeq rhs) raises (Error);
-    //-> rightHandSide
-
-    floatSeq getRightHandSide () raises (Error);
-    //-> rightHandSide
-
     size_type rightHandSideSize () raises (Error);
 
     size_type parameterSize () raises (Error);
