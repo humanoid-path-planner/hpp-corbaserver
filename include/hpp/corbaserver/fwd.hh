@@ -64,7 +64,6 @@ typedef pinocchio::CollisionObject CollisionObject_t;
 typedef pinocchio::CollisionObjectPtr_t CollisionObjectPtr_t;
 typedef pinocchio::CollisionObjectConstPtr_t CollisionObjectConstPtr_t;
 typedef pinocchio::Configuration_t Configuration_t;
-typedef core::ConfigurationPtr_t ConfigurationPtr_t;
 typedef core::ConfigIterator_t ConfigIterator_t;
 typedef core::ConfigConstIterator_t ConfigConstIterator_t;
 typedef core::ConnectedComponent ConnectedComponent;

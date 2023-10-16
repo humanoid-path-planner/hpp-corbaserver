@@ -438,7 +438,7 @@ void Problem::movePathToProblem(ULong pathId, const char* name,
 void Problem::setInitialConfig(const hpp::floatSeq& dofArray) {
   try {
     DevicePtr_t robot = getRobotOrThrow(problemSolver());
-    ConfigurationPtr_t config = floatSeqToConfigPtr(robot, dofArray, true);
+    Configuration_t config = floatSeqToConfig(robot, dofArray, true);
     problemSolver()->initConfig(config);
   } catch (const std::exception& exc) {
     throw hpp::Error(exc.what());
@@ -451,16 +451,16 @@ hpp::floatSeq* Problem::getInitialConfig() {
   hpp::floatSeq* dofArray;
 
   // Get robot in hppPlanner object.
-  ConfigurationPtr_t config = problemSolver()->initConfig();
+  Configuration_t config = problemSolver()->initConfig();
 
-  if (config) {
-    std::size_t deviceDim = config->size();
+  std::size_t deviceDim = config.size();
+  if (deviceDim > 0) {
 
     dofArray = new hpp::floatSeq();
     dofArray->length((CORBA::ULong)deviceDim);
 
     for (unsigned int i = 0; i < deviceDim; i++) {
-      (*dofArray)[i] = (*config)[i];
+      (*dofArray)[i] = (config)[i];
     }
     return dofArray;
   } else {
@@ -473,7 +473,7 @@ hpp::floatSeq* Problem::getInitialConfig() {
 void Problem::addGoalConfig(const hpp::floatSeq& dofArray) {
   try {
     DevicePtr_t robot = getRobotOrThrow(problemSolver());
-    ConfigurationPtr_t config = floatSeqToConfigPtr(robot, dofArray, true);
+    Configuration_t config = floatSeqToConfig(robot, dofArray, true);
     problemSolver()->addGoalConfig(config);
   } catch (const std::exception& exc) {
     throw hpp::Error(exc.what());
@@ -490,14 +490,14 @@ hpp::floatSeqSeq* Problem::getGoalConfigs() {
     configSequence = new hpp::floatSeqSeq();
     configSequence->length((CORBA::ULong)nbGoalConfig);
     for (std::size_t i = 0; i < nbGoalConfig; ++i) {
-      const ConfigurationPtr_t& config = goalConfigs[i];
-      std::size_t deviceDim = config->size();
+      const Configuration_t& config = goalConfigs[i];
+      std::size_t deviceDim = config.size();
 
       hpp::floatSeq dofArray;
       dofArray.length((CORBA::ULong)deviceDim);
 
       for (std::size_t j = 0; j < deviceDim; ++j)
-        dofArray[(CORBA::ULong)j] = (*config)[j];
+        dofArray[(CORBA::ULong)j] = (config)[j];
       (*configSequence)[(CORBA::ULong)i] = dofArray;
     }
     return configSequence;
@@ -1041,13 +1041,13 @@ bool Problem::applyConstraints(const hpp::floatSeq& input,
   bool success = false;
   DevicePtr_t robot = getRobotOrThrow(problemSolver());
   try {
-    ConfigurationPtr_t config = floatSeqToConfigPtr(robot, input, true);
-    success = problemSolver()->constraints()->apply(*config);
+    Configuration_t config = floatSeqToConfig(robot, input, true);
+    success = problemSolver()->constraints()->apply(config);
     if (hpp::core::ConfigProjectorPtr_t configProjector =
             problemSolver()->constraints()->configProjector()) {
       residualError = configProjector->residualError();
     }
-    output = vectorToFloatSeq(*config);
+    output = vectorToFloatSeq(config);
   } catch (const std::exception& exc) {
     throw hpp::Error(exc.what());
   }
@@ -1088,10 +1088,10 @@ void Problem::computeValueAndJacobian(const hpp::floatSeq& config,
                                       hpp::floatSeqSeq_out jacobian) {
   DevicePtr_t robot = getRobotOrThrow(problemSolver());
   try {
-    ConfigurationPtr_t configuration = floatSeqToConfigPtr(robot, config, true);
+    Configuration_t configuration = floatSeqToConfig(robot, config, true);
     vector_t v;
     matrix_t J;
-    problemSolver()->computeValueAndJacobian(*configuration, v, J);
+    problemSolver()->computeValueAndJacobian(configuration, v, J);
     value = vectorToFloatSeq(v);
     jacobian = matrixToFloatSeqSeq(J);
   } catch (const std::exception& exc) {
@@ -1109,11 +1109,11 @@ bool Problem::generateValidConfig(ULong maxIter, hpp::floatSeq_out output,
   core::ConfigurationShooterPtr_t shooter =
       ps->problem()->configurationShooter();
   bool success = false, configIsValid = false;
-  ConfigurationPtr_t config;
+  Configuration_t config;
   while (!configIsValid && maxIter > 0) {
     try {
       config = shooter->shoot();
-      success = ps->constraints()->apply(*config);
+      success = ps->constraints()->apply(config);
       if (hpp::core::ConfigProjectorPtr_t configProjector =
               ps->constraints()->configProjector()) {
         residualError = configProjector->residualError();
@@ -1121,14 +1121,14 @@ bool Problem::generateValidConfig(ULong maxIter, hpp::floatSeq_out output,
       if (success) {
         core::ValidationReportPtr_t validationReport;
         configIsValid = ps->problem()->configValidations()->validate(
-            *config, validationReport);
+            config, validationReport);
       }
     } catch (const std::exception& exc) {
       throw hpp::Error(exc.what());
     }
     maxIter--;
   }
-  output = vectorToFloatSeq(*config);
+  output = vectorToFloatSeq(config);
   return configIsValid;
 }
 
@@ -1647,19 +1647,19 @@ bool Problem::directPath(const hpp::floatSeq& startConfig,
                          const hpp::floatSeq& endConfig,
                          CORBA::Boolean validate, ULong& pathId,
                          CORBA::String_out report) {
-  ConfigurationPtr_t start;
-  ConfigurationPtr_t end;
+  Configuration_t start;
+  Configuration_t end;
   bool pathValid = false;
   DevicePtr_t robot = getRobotOrThrow(problemSolver());
   try {
-    start = floatSeqToConfigPtr(robot, startConfig, true);
-    end = floatSeqToConfigPtr(robot, endConfig, true);
+    start = floatSeqToConfig(robot, startConfig, true);
+    end = floatSeqToConfig(robot, endConfig, true);
     if (!problemSolver()->problem()) {
       problemSolver()->resetProblem();
     }
     std::size_t pid;
     std::string r;
-    pathValid = problemSolver()->directPath(*start, *end, validate, pid, r);
+    pathValid = problemSolver()->directPath(start, end, validate, pid, r);
     report = CORBA::string_dup(r.c_str());
     pathId = (ULong)pid;
   } catch (const std::exception& exc) {
@@ -1695,7 +1695,7 @@ bool Problem::reversePath(ULong pathId, ULong& reversedPathId) {
 void Problem::addConfigToRoadmap(const hpp::floatSeq& config) {
   try {
     DevicePtr_t robot = getRobotOrThrow(problemSolver());
-    ConfigurationPtr_t configuration(floatSeqToConfigPtr(robot, config, true));
+    Configuration_t configuration(floatSeqToConfig(robot, config, true));
     problemSolver()->addConfigToRoadmap(configuration);
   } catch (const std::exception& exc) {
     throw hpp::Error(exc.what());
@@ -1716,8 +1716,8 @@ void Problem::addEdgeToRoadmap(const hpp::floatSeq& config1,
     }
     PathVectorPtr_t path = problemSolver()->paths()[pathId];
     DevicePtr_t robot = getRobotOrThrow(problemSolver());
-    ConfigurationPtr_t start(floatSeqToConfigPtr(robot, config1, true));
-    ConfigurationPtr_t finish(floatSeqToConfigPtr(robot, config2, true));
+    Configuration_t start(floatSeqToConfig(robot, config1, true));
+    Configuration_t finish(floatSeqToConfig(robot, config2, true));
     if (bothEdges) {
       problemSolver()->addEdgeToRoadmap(start, finish, path);
       problemSolver()->addEdgeToRoadmap(finish, start, path->reverse());
@@ -1743,17 +1743,17 @@ void Problem::appendDirectPath(ULong pathId, const hpp::floatSeq& config,
     PathVectorPtr_t path = problemSolver()->paths()[pathId];
     Configuration_t start(path->end());
     DevicePtr_t robot = getRobotOrThrow(problemSolver());
-    ConfigurationPtr_t end(floatSeqToConfigPtr(robot, config, true));
+    Configuration_t end(floatSeqToConfig(robot, config, true));
     if (!problemSolver()->problem()) {
       problemSolver()->resetProblem();
     }
     SteeringMethodPtr_t sm(problemSolver()->problem()->steeringMethod());
-    PathPtr_t dp = (*sm)(start, *end);
+    PathPtr_t dp = (*sm)(start, end);
     if (!dp) {
       std::ostringstream oss;
       oss << "steering method failed to build a path between q1="
           << pinocchio::displayConfig(start)
-          << "; q2=" << pinocchio::displayConfig(*end) << ".";
+          << "; q2=" << pinocchio::displayConfig(end) << ".";
       throw std::runtime_error(oss.str().c_str());
     }
     if (validate) {
@@ -2018,13 +2018,13 @@ hpp::floatSeqSeq* Problem::nodes() {
     std::size_t i = 0;
     for (Nodes_t::const_iterator itNode = nodes.begin(); itNode != nodes.end();
          itNode++) {
-      ConfigurationPtr_t config = (*itNode)->configuration();
-      ULong size = (ULong)config->size();
+      Configuration_t config = (*itNode)->configuration();
+      ULong size = (ULong)config.size();
       double* dofArray = hpp::floatSeq::allocbuf(size);
       hpp::floatSeq floats(size, size, dofArray, true);
       // convert the config in dofseq
-      for (size_type j = 0; j < config->size(); ++j) {
-        dofArray[j] = (*config)[j];
+      for (size_type j = 0; j < config.size(); ++j) {
+        dofArray[j] = (config)[j];
       }
       (*res)[(CORBA::ULong)i] = floats;
       ++i;
@@ -2052,9 +2052,9 @@ void Problem::edge(ULong edgeId, hpp::floatSeq_out q1, hpp::floatSeq_out q2) {
       ++i;
       itEdge++;
     }
-    ConfigurationPtr_t config1 = (*itEdge)->from()->configuration();
-    ConfigurationPtr_t config2 = (*itEdge)->to()->configuration();
-    ULong size = (ULong)config1->size();
+    Configuration_t config1 = (*itEdge)->from()->configuration();
+    Configuration_t config2 = (*itEdge)->to()->configuration();
+    ULong size = (ULong)config1.size();
 
     hpp::floatSeq* q1_ptr = new hpp::floatSeq();
     q1_ptr->length(size);
@@ -2062,8 +2062,8 @@ void Problem::edge(ULong edgeId, hpp::floatSeq_out q1, hpp::floatSeq_out q2) {
     q2_ptr->length(size);
 
     for (i = 0; i < size; ++i) {
-      (*q1_ptr)[(CORBA::ULong)i] = (*config1)[i];
-      (*q2_ptr)[(CORBA::ULong)i] = (*config2)[i];
+      (*q1_ptr)[(CORBA::ULong)i] = (config1)[i];
+      (*q2_ptr)[(CORBA::ULong)i] = (config2)[i];
     }
     q1 = q1_ptr;
     q2 = q2_ptr;
@@ -2094,14 +2094,14 @@ hpp::floatSeq* Problem::node(ULong nodeId) {
 
     if (nodes.size() > nodeId) {
       Nodes_t::const_iterator itNode = std::next(nodes.begin(), nodeId);
-      ConfigurationPtr_t conf = (*itNode)->configuration();
-      ULong size = (ULong)conf->size();
+      Configuration_t conf = (*itNode)->configuration();
+      ULong size = (ULong)conf.size();
 
       hpp::floatSeq* q_ptr = new hpp::floatSeq();
       q_ptr->length(size);
 
       for (ULong i = 0; i < size; ++i) {
-        (*q_ptr)[i] = (*conf)[i];
+        (*q_ptr)[i] = (conf)[i];
       }
       return q_ptr;
     } else {
@@ -2193,13 +2193,13 @@ hpp::floatSeqSeq* Problem::nodesConnectedComponent(ULong connectedComponentId) {
     i = 0;
     for (NodeVector_t::const_iterator itNode = nodes.begin();
          itNode != nodes.end(); itNode++) {
-      ConfigurationPtr_t config = (*itNode)->configuration();
-      ULong size = (ULong)config->size();
+      Configuration_t config = (*itNode)->configuration();
+      ULong size = (ULong)config.size();
       double* dofArray = hpp::floatSeq::allocbuf(size);
       hpp::floatSeq floats(size, size, dofArray, true);
       // convert the config in dofseq
-      for (size_type j = 0; j < config->size(); ++j) {
-        dofArray[j] = (*config)[j];
+      for (size_type j = 0; j < config.size(); ++j) {
+        dofArray[j] = (config)[j];
       }
       (*res)[i] = floats;
       ++i;
@@ -2221,7 +2221,7 @@ hpp::floatSeq* Problem::getNearestConfig(const hpp::floatSeq& config,
         problemSolver()->roadmap()->connectedComponents());
     hpp::core::NodePtr_t nearest;
     DevicePtr_t robot = getRobotOrThrow(problemSolver());
-    ConfigurationPtr_t configuration = floatSeqToConfigPtr(robot, config, true);
+    Configuration_t configuration = floatSeqToConfig(robot, config, true);
     if (connectedComponentId < 0) {
       nearest =
           problemSolver()->roadmap()->nearestNode(configuration, distance);
@@ -2239,7 +2239,7 @@ hpp::floatSeq* Problem::getNearestConfig(const hpp::floatSeq& config,
                                                         distance);
     }
     if (!nearest) throw hpp::Error("Nearest node not found");
-    res = vectorToFloatSeq(*(nearest->configuration()));
+    res = vectorToFloatSeq(nearest->configuration());
   } catch (const std::exception& exc) {
     throw hpp::Error(exc.what());
   }
