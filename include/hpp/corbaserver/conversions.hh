@@ -54,11 +54,6 @@ floatSeq* vectorToFloatSeq(core::vectorIn_t input);
 
 void vectorToFloatSeq(core::vectorIn_t input, floatSeq& output);
 
-inline floatSeq* vectorToFloatSeq(core::ConfigurationPtr_t input) {
-  if (!input) return NULL;
-  return vectorToFloatSeq(*input);
-}
-
 /// Returns a sequence of the rows of the input matrix.
 // Return [ [input.row(0)], [input.row(1)], ...]
 floatSeqSeq* matrixToFloatSeqSeq(core::matrixIn_t input);
@@ -75,10 +70,6 @@ vector_t floatSeqToVector(const floatSeq& dofArray,
 Configuration_t floatSeqToConfig(const DevicePtr_t& robot,
                                  const floatSeq& dofArray,
                                  bool throwIfNotNormalized);
-
-ConfigurationPtr_t floatSeqToConfigPtr(const DevicePtr_t& robot,
-                                       const floatSeq& dofArray,
-                                       bool throwIfNotNormalized);
 
 core::matrix_t floatSeqSeqToMatrix(const floatSeqSeq& input,
                                    const size_type expectedRows = -1,

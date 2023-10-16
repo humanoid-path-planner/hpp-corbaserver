@@ -182,13 +182,6 @@ Configuration_t floatSeqToConfig(const DevicePtr_t& robot,
   return q;
 }
 
-ConfigurationPtr_t floatSeqToConfigPtr(const DevicePtr_t& robot,
-                                       const floatSeq& dofArray,
-                                       bool throwIfNotNormalized) {
-  return ConfigurationPtr_t(new Configuration_t(
-      floatSeqToConfig(robot, dofArray, throwIfNotNormalized)));
-}
-
 core::matrix_t floatSeqSeqToMatrix(const floatSeqSeq& input,
                                    const size_type expectedRows,
                                    const size_type expectedCols) {

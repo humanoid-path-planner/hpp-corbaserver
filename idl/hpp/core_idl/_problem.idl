@@ -36,12 +36,12 @@ module hpp
     pinocchio_idl::Device robot () raises (Error);
 
     void setInitConfig (in floatSeq init) raises (Error);
-    //* pinocchio::ConfigurationPtr_t q (corbaServer::floatSeqToConfigPtr(getT()->robot(), init, true));
+    //* pinocchio::Configuration_t q (corbaServer::floatSeqToConfig(getT()->robot(), init, true));
     //* getT()->initConfig (q);
     floatSeq getInitConfig () raises (Error);
     //-> initConfig
     void addGoalConfig (in floatSeq goal) raises (Error);
-    //* pinocchio::ConfigurationPtr_t q (corbaServer::floatSeqToConfigPtr(getT()->robot(), goal, true));
+    //* pinocchio::Configuration_t q (corbaServer::floatSeqToConfig(getT()->robot(), goal, true));
     //* getT()->addGoalConfig (q);
     void resetGoalConfigs () raises (Error);
 

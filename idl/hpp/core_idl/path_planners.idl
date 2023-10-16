@@ -24,11 +24,11 @@ module hpp
       floatSeqSeq nodes () raises(Error);
       //* hpp::core::NodeVector_t nodes = getT()->nodes();
       //* hpp::core::matrix_t configs (nodes.size(),
-      //*                              nodes[0]->configuration()->size());
+      //*                              nodes[0]->configuration().size());
       //* size_type i = 0;
       //* for (hpp::core::NodeVector_t::const_iterator _node = nodes.begin();
       //*      _node != nodes.end(); ++_node)
-      //*   configs.row(i++) = *((*_node)->configuration());
+      //*   configs.row(i++) = (*_node)->configuration();
       //* return corbaServer::matrixToFloatSeqSeq(configs);
     }; // interface ConnectedComponent
 
@@ -55,8 +55,8 @@ module hpp
       /// cannot be checked here because the robot is not accessible.
       floatSeq nearestNode (in floatSeq config, out value_type distance,
           in boolean reverse) raises (Error);
-      //* return corbaServer::vectorToFloatSeq(*(getT()->nearestNode(
-      //*   corbaServer::floatSeqToVector(config), distance, reverse)->configuration()));
+      //* return corbaServer::vectorToFloatSeq(getT()->nearestNode(
+      //*   corbaServer::floatSeqToVector(config), distance, reverse)->configuration());
 
       floatSeqSeq nearestNodes (in floatSeq config, out size_type k) raises (Error);
       //* hpp::core::Nodes_t nodes = getT()->nearestNodes(
@@ -64,14 +64,14 @@ module hpp
       //* hpp::core::matrix_t configs (nodes.size(), config.length());
       //* size_type i = 0;
       //* for (hpp::core::Nodes_t::const_iterator _node = nodes.begin(); _node != nodes.end(); ++_node)
-      //*   configs.row(i++) = *((*_node)->configuration());
+      //*   configs.row(i++) = (*_node)->configuration();
       //* return corbaServer::matrixToFloatSeqSeq(configs);
 
       size_type getNbNodes () raises (Error);
       //* return getT()->nodes().size();
 
       floatSeq getNode (in size_type i) raises (Error);
-      //* return corbaServer::vectorToFloatSeq(*((*std::next(getT()->nodes().begin(), i))->configuration()));
+      //* return corbaServer::vectorToFloatSeq((*std::next(getT()->nodes().begin(), i))->configuration());
 
       size_type getNbEdges () raises (Error);
       //* return getT()->edges().size();
