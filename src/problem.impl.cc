@@ -455,7 +455,6 @@ hpp::floatSeq* Problem::getInitialConfig() {
 
   std::size_t deviceDim = config.size();
   if (deviceDim > 0) {
-
     dofArray = new hpp::floatSeq();
     dofArray->length((CORBA::ULong)deviceDim);
 
