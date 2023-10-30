@@ -26,8 +26,10 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 # DAMAGE.
 
-import numpy as np
 import csv
+
+import numpy as np
+
 from hpp import Quaternion
 
 # Test construction from SO3 matrix

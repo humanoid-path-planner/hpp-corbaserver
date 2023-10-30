@@ -36,8 +36,8 @@
 
 import os
 
-from omniidl_be.cxx import id, config, util, ast, output, support, descriptor
 from cxx_impl import main
+from omniidl_be.cxx import ast, config, descriptor, id, output, support, util
 
 cpp_args = ["-D__OMNIIDL_CXX_IMPL__"]
 usage_string = """\

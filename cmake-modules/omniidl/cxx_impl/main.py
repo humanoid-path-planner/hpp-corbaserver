@@ -38,9 +38,9 @@
 
 from __future__ import print_function
 
-from omniidl import idlast, idlvisitor
-from omniidl_be.cxx import ast, util, id, types, output, config
 from cxx_impl import template
+from omniidl import idlast, idlvisitor
+from omniidl_be.cxx import ast, config, id, output, types, util
 
 
 def if_cpp11(then, _else):
@@ -265,7 +265,9 @@ class Builder(idlvisitor.AstVisitor):
                         )
                 else:  # !_in => _out
                     assert _out
-                    in_conv_str = "std::vector<int> {};".format(tmp, name)
+                    in_conv_str = "std::vector<int> {};".format(
+                        tmp,
+                    )
                     out_conv_str = "{} = hpp::corbaServer::toIntSeq ({});".format(
                         name, tmp
                     )
@@ -283,7 +285,9 @@ class Builder(idlvisitor.AstVisitor):
                         )
                 else:  # !_in => _out
                     assert _out
-                    in_conv_str = "hpp::core::vector_t {};".format(tmp, name)
+                    in_conv_str = "hpp::core::vector_t {};".format(
+                        tmp,
+                    )
                     out_conv_str = (
                         "{} = hpp::corbaServer::vectorToFloatSeq ({});".format(
                             name, tmp
@@ -300,7 +304,9 @@ class Builder(idlvisitor.AstVisitor):
                             tmp, name
                         )
                 else:  # !_in => _out
-                    in_conv_str = "hpp::core::matrix_t {};".format(tmp, name)
+                    in_conv_str = "hpp::core::matrix_t {};".format(
+                        tmp,
+                    )
                     assert _out
                     out_conv_str = (
                         "{} = hpp::corbaServer::matrixToFloatSeqSeq ({});".format(
@@ -343,7 +349,9 @@ class Builder(idlvisitor.AstVisitor):
                         tmp, name
                     )
                 else:
-                    in_conv_str += "strings_t {};".format(tmp, name)
+                    in_conv_str += "strings_t {};".format(
+                        tmp,
+                    )
                 if _out:
                     out_conv_str = "hpp::corbaServer::toNames_t ({var}.begin(), {var}.end());".format(
                         var=tmp
@@ -398,7 +406,6 @@ class Builder(idlvisitor.AstVisitor):
                 typeptr=self.toCppNamespace(
                     id.Name(_type.type().scopedName()).suffix("Ptr_t")
                 ).fullyQualify(cxx=1),
-                servanttype=hpp_servant_name(id.Name(_type.type().scopedName())),
                 tmp=tmp,
                 name=name,
             )

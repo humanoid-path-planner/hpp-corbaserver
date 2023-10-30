@@ -1,6 +1,8 @@
-from hpp import Quaternion
-from math import sqrt, pi, sin, cos
+from math import cos, pi, sin, sqrt
+
 import numpy as np
+
+from hpp import Quaternion
 
 ok = True
 for q in (

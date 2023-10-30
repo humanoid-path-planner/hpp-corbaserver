@@ -4,6 +4,7 @@
 import os
 import subprocess
 import time
+
 import hpp.corbaserver
 
 try:

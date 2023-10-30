@@ -2,10 +2,9 @@
 Provide a client for CORBA services which initialize CORBA automatically and
 create client to wanted HPP services.
 """
-from omniORB import CORBA
 import CosNaming
-
 import hpp_idl.hpp.corbaserver
+from omniORB import CORBA
 
 
 class CorbaError(Exception):
@@ -168,6 +167,7 @@ def _getIIOPurl(service="NameService", host=None, port=None, default_port=None):
 
     try:
         import socket
+
         import rospy
 
         # Check is ROS master is reachable.

@@ -37,21 +37,23 @@
 # Author: Mark Moll, Ioan Sucan, Luis G. Torres
 
 from __future__ import print_function
-from os.path import exists
+
 import os
 import sqlite3
 from optparse import OptionParser
+from os.path import exists
 
 plottingEnabled = True
 try:
+    from math import floor
+
     import matplotlib
+    import matplotlib.pyplot as plt
+    import numpy as np
 
     # matplotlib.use('pdf')
     from matplotlib import __version__ as matplotlibversion
     from matplotlib.backends.backend_pdf import PdfPages
-    import matplotlib.pyplot as plt
-    import numpy as np
-    from math import floor
 except ImportError:
     print("Matplotlib or Numpy was not found; disabling plotting capabilities...")
     plottingEnabled = False

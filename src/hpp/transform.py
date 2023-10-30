@@ -27,6 +27,7 @@
 # DAMAGE.
 
 import numpy as np
+
 from hpp import Quaternion
 
 
