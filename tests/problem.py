@@ -1,8 +1,9 @@
 import unittest
 
+from hpp.corbaserver import Client
+
 # Check imports
 from hpp.corbaserver.tools import Tools
-from hpp.corbaserver import Client
 from hpp.utils import ServerManager
 
 
@@ -19,7 +20,7 @@ class Test(unittest.TestCase):
             assert object_ids[0] == cl.orb.object_to_string(pb)
 
             pb2 = cl.orb.string_to_object(object_ids[0])
-            assert type(pb) == type(pb2)
+            assert type(pb) == type(pb2)  # noqa: E721
             pb2.persistantStorage(False)
 
     def test_createConstraints(self):
