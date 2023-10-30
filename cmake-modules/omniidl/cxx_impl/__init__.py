@@ -36,7 +36,7 @@
 
 import os
 
-from cxx_impl import main
+from cxx_impl.main import Main
 from omniidl_be.cxx import ast, config, descriptor, id, output, support, util
 
 cpp_args = ["-D__OMNIIDL_CXX_IMPL__"]
@@ -238,8 +238,7 @@ def run(tree, backend_args):
         hpp_stream = output.Stream(output.createFile(hpp_filename), 2)
         hxx_stream = output.Stream(output.createFile(hxx_filename), 2)
         cc_stream = output.Stream(output.createFile(cc_filename), 2)
-        main.self = main
-        main.__init__(
+        main = Main(
             hpp_stream,
             hxx_stream,
             cc_stream,

@@ -50,26 +50,82 @@ def if_cpp11(then, _else):
         return _else
 
 
-def __init__(
-    hpp_stream,
-    hxx_stream,
-    cc_stream,
-    idl_filename,
-    prefix,
-    hh_filename,
-    hpp_filename,
-    hxx_filename,
-):
-    self.hpp_stream = hpp_stream
-    self.hxx_stream = hxx_stream
-    self.cc_stream = cc_stream
+class Main:
+    def __init__(
+        self,
+        hpp_stream,
+        hxx_stream,
+        cc_stream,
+        idl_filename,
+        prefix,
+        hh_filename,
+        hpp_filename,
+        hxx_filename,
+    ):
+        self.hpp_stream = hpp_stream
+        self.hxx_stream = hxx_stream
+        self.cc_stream = cc_stream
 
-    self.idl_filename = idl_filename
+        self.idl_filename = idl_filename
 
-    self.prefix = prefix
-    self.hh_filename = hh_filename
-    self.hpp_filename = hpp_filename
-    self.hxx_filename = hxx_filename
+        self.prefix = prefix
+        self.hh_filename = hh_filename
+        self.hpp_filename = hpp_filename
+        self.hxx_filename = hxx_filename
+
+    # Main code entrypoint
+    def run(self, tree):
+        # first thing is to build the interface implementations
+        decl = output.StringStream()
+        impl = output.StringStream()
+        bii = BuildInterfaceImplementations(decl, impl)
+        tree.accept(bii)
+
+        object_downcasts_methods = output.StringStream()
+        add_object_downcasts = output.StringStream()
+        biod = BuildInterfaceObjectDowncasts(
+            object_downcasts_methods, add_object_downcasts
+        )
+        tree.accept(biod)
+
+        openns, closens = "", ""
+        guard = id.Name([config.state["Basename"]]).guard()
+
+        # Create header file.
+        self.hpp_stream.out(
+            template.hpp_file,
+            guard_prefix=config.state["GuardPrefix"],
+            guard=guard,
+            includes=bii.includes,
+            idl_hh=self.prefix + self.hh_filename,
+            file=self.idl_filename,
+            interface_declarations=str(decl),
+            open_namespaces=openns,
+            close_namespaces=closens,
+        )
+
+        # Create definition of templated functions.
+        self.hxx_stream.out(
+            template.hxx_file,
+            guard_prefix=config.state["GuardPrefix"],
+            guard=guard,
+            idl_hpp=self.prefix + self.hpp_filename,
+            file=self.idl_filename,
+            interface_implementations=str(impl),
+            open_namespaces=openns,
+            close_namespaces=closens,
+        )
+
+        # Create other definition files.
+        self.cc_stream.out(
+            template.cc_file,
+            idl_hxx=self.prefix + self.hxx_filename,
+            file=self.idl_filename,
+            object_downcasts_methods=object_downcasts_methods,
+            add_object_downcasts=add_object_downcasts,
+            open_namespaces=openns,
+            close_namespaces=closens,
+        )
 
 
 def makeError(msg, file, line, errtype=Exception):
@@ -141,59 +197,6 @@ def namespaces(name, environment=None):
         ["}} // namespace {name}".format(name=n) for n in reversed(scope)]
     )
     return open_ns, closens
-
-
-# Main code entrypoint
-def run(tree):
-    # first thing is to build the interface implementations
-    decl = output.StringStream()
-    impl = output.StringStream()
-    bii = BuildInterfaceImplementations(decl, impl)
-    tree.accept(bii)
-
-    object_downcasts_methods = output.StringStream()
-    add_object_downcasts = output.StringStream()
-    biod = BuildInterfaceObjectDowncasts(object_downcasts_methods, add_object_downcasts)
-    tree.accept(biod)
-
-    openns, closens = "", ""
-    guard = id.Name([config.state["Basename"]]).guard()
-
-    # Create header file.
-    hpp_stream.out(
-        template.hpp_file,
-        guard_prefix=config.state["GuardPrefix"],
-        guard=guard,
-        includes=bii.includes,
-        idl_hh=prefix + hh_filename,
-        file=idl_filename,
-        interface_declarations=str(decl),
-        open_namespaces=openns,
-        close_namespaces=closens,
-    )
-
-    # Create definition of templated functions.
-    hxx_stream.out(
-        template.hxx_file,
-        guard_prefix=config.state["GuardPrefix"],
-        guard=guard,
-        idl_hpp=prefix + hpp_filename,
-        file=idl_filename,
-        interface_implementations=str(impl),
-        open_namespaces=openns,
-        close_namespaces=closens,
-    )
-
-    # Create other definition files.
-    cc_stream.out(
-        template.cc_file,
-        idl_hxx=prefix + hxx_filename,
-        file=idl_filename,
-        object_downcasts_methods=object_downcasts_methods,
-        add_object_downcasts=add_object_downcasts,
-        open_namespaces=openns,
-        close_namespaces=closens,
-    )
 
 
 def get_base_class(node, retDepth=False):
@@ -623,7 +626,7 @@ class BuildInterfaceImplementations(Builder):
         # signatures eg
         #   [ char *echoString(const char *mesg) ]
         attributes = []
-        operations = []
+        _operations = []
 
         allCallables = node.callables()
 
@@ -660,7 +663,7 @@ class BuildInterfaceImplementations(Builder):
 
             if isinstance(c, idlast.Attribute):
                 attrType = types.Type(c.attrType())
-                d_attrType = attrType.deref()
+                _d_attrType = attrType.deref()
 
                 for i in c.identifiers():
                     attribname = id.mapID(i)
@@ -752,7 +755,7 @@ class BuildInterfaceImplementations(Builder):
                 opname = id.mapID(c.identifier())
                 arguments = ", ".join(params)
                 argumentsCall = ", ".join(paramNames)
-                args = opname + "(" + arguments + ")"
+                _args = opname + "(" + arguments + ")"
 
                 declarations.out(
                     template.operation_decl_code,
@@ -859,7 +862,7 @@ class BuildInterfaceObjectDowncasts(Builder):
     def visitInterface(self, node):
         idlScopedName = id.Name(node.scopedName())
         servantScope = hpp_servant_scope(idlScopedName)
-        scopedName = hpp_servant_name(idlScopedName)
+        _scopedName = hpp_servant_name(idlScopedName)
 
         base, depth = get_base_class(node, retDepth=True)
         baseScopedName = hpp_servant_name(id.Name(base.scopedName()), servantScope)
