@@ -19,6 +19,8 @@ module hpp
 
   interface ConfigurationShooter
   {
+    HPP_EXPOSE_MEMORY_DEALLOCATION(Error)
+
     floatSeq shoot () raises (Error);
   }; // interface ConfigurationShooter
 
