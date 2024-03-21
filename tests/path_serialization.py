@@ -1,4 +1,5 @@
 """Test deleting twice the same object does not throw."""
+
 import unittest
 
 from hpp.corbaserver import Client

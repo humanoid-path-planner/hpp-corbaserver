@@ -31,7 +31,7 @@ import numpy as np
 from hpp import Quaternion
 
 
-class Transform(object):
+class Transform:
     def __init__(self, *args):
         if len(args) == 0:
             self.translation = np.array([0.0, 0.0, 0.0])
@@ -66,7 +66,7 @@ class Transform(object):
         return res
 
     def __str__(self):
-        return "quaternion:  %s,\ntranslation: %s" % (self.quaternion, self.translation)
+        return f"quaternion:  {self.quaternion},\ntranslation: {self.translation}"
 
     def __getitem__(self, i):
         if i < 3:

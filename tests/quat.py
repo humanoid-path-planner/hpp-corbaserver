@@ -1,7 +1,6 @@
 from math import cos, pi, sin, sqrt
 
 import numpy as np
-
 from hpp import Quaternion
 
 ok = True
@@ -31,8 +30,10 @@ for q in (
 
 assert ok
 
+rng = np.random.default_rng()
+
 for i in range(50):
-    r, p, y = np.random.uniform(low=0, high=pi / 2, size=3)
+    r, p, y = rng.uniform(low=0, high=pi / 2, size=3)
     # Roll
     qr = Quaternion(sin(r / 2), 0, 0, cos(r / 2))
     # Pitch

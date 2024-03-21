@@ -81,7 +81,7 @@ def _convertToCorbaAny(value):
 #  Some method implemented by the server can be considered as private. The
 #  goal of this class is to hide them and to expose those that can be
 #  considered as public.
-class ProblemSolver(object):
+class ProblemSolver:
     def __init__(self, robot, hppcorbaClient=None):
         self.client = robot.client
         self.hppcorba = robot.client if hppcorbaClient is None else hppcorbaClient

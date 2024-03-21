@@ -41,6 +41,6 @@ def retrieveRosResource(path):
             abspath = os.path.join(dir, relpath)
             if os.path.exists(abspath):
                 return abspath
-        return IOError("Could not find resource " + path)
+        return OSError("Could not find resource " + path)
     else:
         return path
