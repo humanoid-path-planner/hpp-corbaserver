@@ -1,4 +1,5 @@
 """Test the content of hpp/utils.py."""
+
 import unittest
 
 from hpp.corbaserver import Client
