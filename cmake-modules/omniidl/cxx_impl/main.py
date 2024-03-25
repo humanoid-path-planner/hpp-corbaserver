@@ -802,9 +802,11 @@ class BuildInterfaceImplementations(Builder):
 
         # Output the _i class definition definition
         self.interface_declarations.out(
-            template.base_interface_def
-            if is_base_class
-            else template.inherited_interface_def,
+            (
+                template.base_interface_def
+                if is_base_class
+                else template.inherited_interface_def
+            ),
             fq_name=fqname,
             impl_tpl_name=impl_tpl_name,
             impl_base_name=impl_base_name,
@@ -819,9 +821,11 @@ class BuildInterfaceImplementations(Builder):
         )
 
         self.interface_implementations.out(
-            template.base_interface_code
-            if is_base_class
-            else template.inherited_interface_code,
+            (
+                template.base_interface_code
+                if is_base_class
+                else template.inherited_interface_code
+            ),
             fqname=fqname,
             impl_name=impl_name,
             impl_tpl_name=impl_tpl_name,

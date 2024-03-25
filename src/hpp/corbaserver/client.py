@@ -2,6 +2,7 @@
 Provide a client for CORBA services which initialize CORBA automatically and
 create client to wanted HPP services.
 """
+
 from omniORB import CORBA
 import CosNaming
 
