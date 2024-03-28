@@ -27,6 +27,7 @@ set(IDL_SOURCES obstacle problem robot tools)
 omniidl_include_directories(${CMAKE_SOURCE_DIR}/idl)
 include_directories(${CMAKE_BINARY_DIR}/src)
 
+make_directory(${CMAKE_BINARY_DIR}/src/hpp/corbaserver)
 foreach(IDL ${IDL_SOURCES})
   generate_idl_cpp(
     hpp/corbaserver/${IDL} ${CMAKE_SOURCE_DIR}/idl/hpp/corbaserver
