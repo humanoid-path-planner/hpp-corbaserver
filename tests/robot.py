@@ -30,8 +30,8 @@ class Test(unittest.TestCase):
 
             parent = ""
             for i, type in enumerate(types):
-                jn = "joint_{}_{}".format(type, i)
-                bn = "body_{}_{}".format(type, i)
+                jn = f"joint_{type}_{i}"
+                bn = f"body_{type}_{i}"
                 self.client.robot.appendJoint(parent, jn, type, [0, 0, 0, 0, 0, 0, 1])
                 self.client.robot.createSphere(bn, 0.001)
                 self.client.robot.addObjectToJoint(jn, bn, [0, 0, 1, 0, 0, 0, 1])

@@ -36,22 +36,23 @@
 
 # Author: Mark Moll, Ioan Sucan, Luis G. Torres
 
-from __future__ import print_function
-from os.path import exists
+
 import os
 import sqlite3
 from optparse import OptionParser
+from os.path import exists
 
 plottingEnabled = True
 try:
+    from math import floor
+
     import matplotlib
+    import matplotlib.pyplot as plt
+    import numpy as np
 
     # matplotlib.use('pdf')
     from matplotlib import __version__ as matplotlibversion
     from matplotlib.backends.backend_pdf import PdfPages
-    import matplotlib.pyplot as plt
-    import numpy as np
-    from math import floor
 except ImportError:
     print("Matplotlib or Numpy was not found; disabling plotting capabilities...")
     plottingEnabled = False
@@ -149,7 +150,7 @@ def readBenchmarkLog(dbname, filenames, moveitformat):
 
     for filename in filenames:
         print("Processing " + filename)
-        logfile = open(filename, "r")
+        logfile = open(filename)
         start_pos = logfile.tell()
         libname = readOptionalLogValue(logfile, 0, {1: "version"})
         if libname is None:
@@ -180,9 +181,7 @@ def readBenchmarkLog(dbname, filenames, moveitformat):
         for name in sorted(expprops.keys()):
             # only add column if it doesn't exist
             if name not in columnNames:
-                c.execute(
-                    "ALTER TABLE experiments ADD %s %s" % (name, expprops[name][1])
-                )
+                c.execute(f"ALTER TABLE experiments ADD {name} {expprops[name][1]}")
 
         hostname = readRequiredLogValue("hostname", logfile, -1, {0: "Running"})
         date = " ".join(ensurePrefix(logfile.readline(), "Starting").split()[2:])
@@ -312,9 +311,7 @@ def readBenchmarkLog(dbname, filenames, moveitformat):
                 propertyType = field[-1]
                 propertyName = "_".join(field[:-1])
                 if propertyName not in columnNames:
-                    c.execute(
-                        "ALTER TABLE runs ADD %s %s" % (propertyName, propertyType)
-                    )
+                    c.execute(f"ALTER TABLE runs ADD {propertyName} {propertyType}")
                 propertyNames.append(propertyName)
             # read measurements
             insertFmtStr = (
@@ -357,8 +354,8 @@ def readBenchmarkLog(dbname, filenames, moveitformat):
                     progressPropertyName = "_".join(field[:-1])
                     if progressPropertyName not in columnNames:
                         c.execute(
-                            "ALTER TABLE progress ADD %s %s"
-                            % (progressPropertyName, progressPropertyType)
+                            "ALTER TABLE progress ADD "
+                            f"{progressPropertyName} {progressPropertyType}"
                         )
                     progressPropertyNames.append(progressPropertyName)
                 # read progress measurements
@@ -408,14 +405,14 @@ def plotAttribute(cur, planners, attribute, typename):
         numValues = len(descriptions)
     for planner in planners:
         cur.execute(
-            "SELECT %s FROM runs WHERE plannerid = %s AND %s IS NOT NULL"
-            % (attribute, planner[0], attribute)
+            f"SELECT {attribute} FROM runs "
+            f"WHERE plannerid = {planner[0]} AND {attribute} IS NOT NULL"
         )
         measurement = [t[0] for t in cur.fetchall() if t[0] is not None]
         if len(measurement) > 0:
             cur.execute(
-                "SELECT count(*) FROM runs WHERE plannerid = %s AND %s IS NULL"
-                % (planner[0], attribute)
+                "SELECT count(*) FROM runs "
+                f"WHERE plannerid = {planner[0]} AND {attribute} IS NULL"
             )
             nanCounts.append(cur.fetchone()[0])
             labels.append(planner[1])
@@ -504,10 +501,9 @@ def plotProgressAttribute(cur, planners, attribute):
     plannerNames = []
     for planner in planners:
         cur.execute(
-            """SELECT count(progress.%s) FROM progress INNER JOIN runs
-            ON progress.runid = runs.id AND runs.plannerid=%s
-            AND progress.%s IS NOT NULL"""
-            % (attribute, planner[0], attribute)
+            f"SELECT count(progress.{attribute}) FROM progress INNER JOIN runs "
+            f"ON progress.runid = runs.id AND runs.plannerid={planner[0]} "
+            f"AND progress.{attribute} IS NOT NULL"
         )
         if cur.fetchone()[0] > 0:
             plannerNames.append(planner[1])
@@ -522,8 +518,8 @@ def plotProgressAttribute(cur, planners, attribute):
             for r in runids:
                 # Select data for given run
                 cur.execute(
-                    "SELECT time, %s FROM progress WHERE runid = %s ORDER BY time"
-                    % (attribute, r)
+                    f"SELECT time, {attribute} FROM progress "
+                    f"WHERE runid = {r} ORDER BY time"
                 )
                 (time, data) = list(zip(*(cur.fetchall())))
                 timeTable.append(time)
@@ -661,7 +657,7 @@ def saveAsMysql(dbname, mysqldump):
         else:
             m = re.search('INSERT INTO "([a-zA-Z0-9_]*)"(.*)', line)
             if m:
-                line = "INSERT INTO %s%s\n" % m.groups()
+                line = "INSERT INTO %s%s\n" % m.groups()  # noqa: UP031
                 line = line.replace('"', r"\"")
                 line = line.replace('"', "'")
 

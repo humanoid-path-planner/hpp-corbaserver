@@ -1,7 +1,6 @@
-# coding: utf-8
-from hpp.corbaserver.ur5 import Robot
 from hpp.corbaserver import ProblemSolver, newProblem
 from hpp.corbaserver.tools import Tools
+from hpp.corbaserver.ur5 import Robot
 
 newProblem()
 robot = Robot("ur5")

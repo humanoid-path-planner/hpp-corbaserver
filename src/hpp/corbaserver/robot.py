@@ -36,7 +36,7 @@ from hpp.corbaserver.client import Client
 #
 #  This class is also a wrapper of idl methods defined by
 #  hpp::corbaserver::Robot. Most methods call idl methods.
-class Robot(object):
+class Robot:
     def __init__(
         self,
         robotName=None,

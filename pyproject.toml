@@ -1,2 +1,27 @@
-[tool.black]
-exclude = "cmake"
+[build-system]
+build-backend = "cmeel.build"
+requires = [
+  "cmeel-boost ~= 1.83.0",
+  "cmeel-omniorbpy",
+  "cmeel[build]",
+  "hpp-core[build]"
+]
+
+[project]
+dependencies = [
+  "cmeel-boost ~= 1.83.0",
+  "hpp-core"
+]
+description = "Corba server for Humanoid Path Planner applications"
+license = "BSD-2-Clause"
+name = "hpp-corbaserver"
+version = "5.0.0"
+
+[tool.ruff]
+extend-exclude = ["cmake"]
+
+[tool.ruff.lint]
+extend-select = ["I", "NPY", "RUF", "UP", "W"]
+
+[tool.tomlsort]
+all = true

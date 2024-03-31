@@ -36,10 +36,9 @@
 
 """Produce interface implementations for HPP"""
 
-from __future__ import print_function
-
 from omniidl import idlast, idlvisitor
-from omniidl_be.cxx import ast, util, id, types, output, config
+from omniidl_be.cxx import ast, config, id, output, types, util
+
 from cxx_impl import template
 
 
@@ -50,26 +49,82 @@ def if_cpp11(then, _else):
         return _else
 
 
-def __init__(
-    hpp_stream,
-    hxx_stream,
-    cc_stream,
-    idl_filename,
-    prefix,
-    hh_filename,
-    hpp_filename,
-    hxx_filename,
-):
-    self.hpp_stream = hpp_stream
-    self.hxx_stream = hxx_stream
-    self.cc_stream = cc_stream
+class Main:
+    def __init__(
+        self,
+        hpp_stream,
+        hxx_stream,
+        cc_stream,
+        idl_filename,
+        prefix,
+        hh_filename,
+        hpp_filename,
+        hxx_filename,
+    ):
+        self.hpp_stream = hpp_stream
+        self.hxx_stream = hxx_stream
+        self.cc_stream = cc_stream
 
-    self.idl_filename = idl_filename
+        self.idl_filename = idl_filename
 
-    self.prefix = prefix
-    self.hh_filename = hh_filename
-    self.hpp_filename = hpp_filename
-    self.hxx_filename = hxx_filename
+        self.prefix = prefix
+        self.hh_filename = hh_filename
+        self.hpp_filename = hpp_filename
+        self.hxx_filename = hxx_filename
+
+    # Main code entrypoint
+    def run(self, tree):
+        # first thing is to build the interface implementations
+        decl = output.StringStream()
+        impl = output.StringStream()
+        bii = BuildInterfaceImplementations(decl, impl)
+        tree.accept(bii)
+
+        object_downcasts_methods = output.StringStream()
+        add_object_downcasts = output.StringStream()
+        biod = BuildInterfaceObjectDowncasts(
+            object_downcasts_methods, add_object_downcasts
+        )
+        tree.accept(biod)
+
+        openns, closens = "", ""
+        guard = id.Name([config.state["Basename"]]).guard()
+
+        # Create header file.
+        self.hpp_stream.out(
+            template.hpp_file,
+            guard_prefix=config.state["GuardPrefix"],
+            guard=guard,
+            includes=bii.includes,
+            idl_hh=self.prefix + self.hh_filename,
+            file=self.idl_filename,
+            interface_declarations=str(decl),
+            open_namespaces=openns,
+            close_namespaces=closens,
+        )
+
+        # Create definition of templated functions.
+        self.hxx_stream.out(
+            template.hxx_file,
+            guard_prefix=config.state["GuardPrefix"],
+            guard=guard,
+            idl_hpp=self.prefix + self.hpp_filename,
+            file=self.idl_filename,
+            interface_implementations=str(impl),
+            open_namespaces=openns,
+            close_namespaces=closens,
+        )
+
+        # Create other definition files.
+        self.cc_stream.out(
+            template.cc_file,
+            idl_hxx=self.prefix + self.hxx_filename,
+            file=self.idl_filename,
+            object_downcasts_methods=object_downcasts_methods,
+            add_object_downcasts=add_object_downcasts,
+            open_namespaces=openns,
+            close_namespaces=closens,
+        )
 
 
 def makeError(msg, file, line, errtype=Exception):
@@ -77,10 +132,8 @@ def makeError(msg, file, line, errtype=Exception):
 
     path = os.path.dirname(__file__)
     path = os.path.dirname(path)
-    help = "omniidl -p{} -bcxx_impl -u".format(path)
-    return errtype(
-        "\n{}:{}: {}\nThe help may help:\n{}\n".format(file, line, msg, help)
-    )
+    help = f"omniidl -p{path} -bcxx_impl -u"
+    return errtype(f"\n{file}:{line}: {msg}\nThe help may help:\n{help}\n")
 
 
 # Given an IDL name convert it into the template name of the
@@ -136,64 +189,9 @@ def namespaces(name, environment=None):
         scope = scope.scope()[len(env) :]
     else:
         scope = scope.scope()
-    open_ns = "\n\n".join(["namespace {name} {{".format(name=n) for n in scope])
-    closens = "\n\n".join(
-        ["}} // namespace {name}".format(name=n) for n in reversed(scope)]
-    )
+    open_ns = "\n\n".join([f"namespace {n} {{" for n in scope])
+    closens = "\n\n".join([f"}} // namespace {n}" for n in reversed(scope)])
     return open_ns, closens
-
-
-# Main code entrypoint
-def run(tree):
-    # first thing is to build the interface implementations
-    decl = output.StringStream()
-    impl = output.StringStream()
-    bii = BuildInterfaceImplementations(decl, impl)
-    tree.accept(bii)
-
-    object_downcasts_methods = output.StringStream()
-    add_object_downcasts = output.StringStream()
-    biod = BuildInterfaceObjectDowncasts(object_downcasts_methods, add_object_downcasts)
-    tree.accept(biod)
-
-    openns, closens = "", ""
-    guard = id.Name([config.state["Basename"]]).guard()
-
-    # Create header file.
-    hpp_stream.out(
-        template.hpp_file,
-        guard_prefix=config.state["GuardPrefix"],
-        guard=guard,
-        includes=bii.includes,
-        idl_hh=prefix + hh_filename,
-        file=idl_filename,
-        interface_declarations=str(decl),
-        open_namespaces=openns,
-        close_namespaces=closens,
-    )
-
-    # Create definition of templated functions.
-    hxx_stream.out(
-        template.hxx_file,
-        guard_prefix=config.state["GuardPrefix"],
-        guard=guard,
-        idl_hpp=prefix + hpp_filename,
-        file=idl_filename,
-        interface_implementations=str(impl),
-        open_namespaces=openns,
-        close_namespaces=closens,
-    )
-
-    # Create other definition files.
-    cc_stream.out(
-        template.cc_file,
-        idl_hxx=prefix + hxx_filename,
-        file=idl_filename,
-        object_downcasts_methods=object_downcasts_methods,
-        add_object_downcasts=add_object_downcasts,
-        open_namespaces=openns,
-        close_namespaces=closens,
-    )
 
 
 def get_base_class(node, retDepth=False):
@@ -245,67 +243,49 @@ class Builder(idlvisitor.AstVisitor):
 
         if _type.string():
             if _in:
-                in_conv_str = "std::string {} ({});".format(tmp, name)
+                in_conv_str = f"std::string {tmp} ({name});"
             else:
-                in_conv_str = "std::string {};".format(tmp)
+                in_conv_str = f"std::string {tmp};"
             if _out:
-                out_conv_str = "{} = hpp::corbaServer::c_str ({});".format(name, tmp)
+                out_conv_str = f"{name} = hpp::corbaServer::c_str ({tmp});"
             return tmp, in_conv_str, out_conv_str
         elif _type.typedef():
             if _type.type().name() in ("size_t", "size_type", "value_type"):
                 return name, "", out_conv_str
             elif _type.type().name() == "intSeq":
                 if _in:
-                    in_conv_str = "std::vector<int> {} = hpp::corbaServer::intSeqToVector ({});".format(
-                        tmp, name
-                    )
+                    in_conv_str = f"std::vector<int> {tmp} = hpp::corbaServer::intSeqToVector ({name});"
                     if _out:
-                        out_conv_str = "hpp::corbaServer::toIntSeq ({}, {});".format(
-                            tmp, name
-                        )
+                        out_conv_str = f"hpp::corbaServer::toIntSeq ({tmp}, {name});"
                 else:  # !_in => _out
                     assert _out
-                    in_conv_str = "std::vector<int> {};".format(tmp, name)
-                    out_conv_str = "{} = hpp::corbaServer::toIntSeq ({});".format(
-                        name, tmp
-                    )
+                    in_conv_str = f"std::vector<int> {tmp};"
+                    out_conv_str = f"{name} = hpp::corbaServer::toIntSeq ({tmp});"
                 return tmp, in_conv_str, out_conv_str
             elif _type.type().name() == "floatSeq":
                 if _in:
-                    in_conv_str = "hpp::core::vector_t {} = hpp::corbaServer::floatSeqToVector ({});".format(
-                        tmp, name
-                    )
+                    in_conv_str = f"hpp::core::vector_t {tmp} = hpp::corbaServer::floatSeqToVector ({name});"
                     if _out:
                         out_conv_str = (
-                            "hpp::corbaServer::vectorToFloatSeq ({}, {});".format(
-                                tmp, name
-                            )
+                            f"hpp::corbaServer::vectorToFloatSeq ({tmp}, {name});"
                         )
                 else:  # !_in => _out
                     assert _out
-                    in_conv_str = "hpp::core::vector_t {};".format(tmp, name)
+                    in_conv_str = f"hpp::core::vector_t {tmp};"
                     out_conv_str = (
-                        "{} = hpp::corbaServer::vectorToFloatSeq ({});".format(
-                            name, tmp
-                        )
+                        f"{name} = hpp::corbaServer::vectorToFloatSeq ({tmp});"
                     )
                 return tmp, in_conv_str, out_conv_str
             elif _type.type().name() == "floatSeqSeq":
                 if _in:
-                    in_conv_str = "hpp::core::matrix_t {} = hpp::corbaServer::floatSeqSeqToMatrix ({});".format(
-                        tmp, name
-                    )
+                    in_conv_str = f"hpp::core::matrix_t {tmp} = hpp::corbaServer::floatSeqSeqToMatrix ({name});"
                     if _out:
-                        out_conv_str = "/* not implemented. See vectorToFloatSeq */ hpp::corbaServer::matrixToFloatSeqSeq ({}, {});".format(
-                            tmp, name
-                        )
+                        out_conv_str = f"/* not implemented. See vectorToFloatSeq */ hpp::corbaServer::matrixToFloatSeqSeq ({tmp}, {name});"
                 else:  # !_in => _out
-                    in_conv_str = "hpp::core::matrix_t {};".format(tmp, name)
+                    in_conv_str = f"hpp::core::matrix_t {tmp};"
                     assert _out
                     out_conv_str = (
-                        "{} = hpp::corbaServer::matrixToFloatSeqSeq ({});".format(
-                            name, tmp
-                        )
+                        f"{name} = hpp::corbaServer::matrixToFloatSeqSeq ({tmp});"
                     )
                 return tmp, in_conv_str, out_conv_str
             elif _type.type().name() == "Transform_":
@@ -317,9 +297,7 @@ class Builder(idlvisitor.AstVisitor):
                     )
                 return (
                     tmp,
-                    "hpp::core::Transform3f {} = hpp::corbaServer::toTransform3f ({});".format(
-                        tmp, name
-                    ),
+                    f"hpp::core::Transform3f {tmp} = hpp::corbaServer::toTransform3f ({name});",
                     out_conv_str,
                 )
             elif _type.type().name() == "TransformSeq":
@@ -331,29 +309,23 @@ class Builder(idlvisitor.AstVisitor):
                     )
                 return (
                     tmp,
-                    "std::vector<hpp::core::Transform3f> {} = hpp::corbaServer::toTransform3f ({});".format(
-                        tmp, name
-                    ),
+                    f"std::vector<hpp::core::Transform3f> {tmp} = hpp::corbaServer::toTransform3f ({name});",
                     out_conv_str,
                 )
             elif _type.type().name() == "Names_t":
                 in_conv_str = "typedef std::vector<std::string> strings_t;"
                 if _in:
-                    in_conv_str += "strings_t {} = hpp::corbaServer::toStrings<strings_t> ({});".format(
-                        tmp, name
-                    )
+                    in_conv_str += f"strings_t {tmp} = hpp::corbaServer::toStrings<strings_t> ({name});"
                 else:
-                    in_conv_str += "strings_t {};".format(tmp, name)
+                    in_conv_str += f"strings_t {tmp};"
                 if _out:
-                    out_conv_str = "hpp::corbaServer::toNames_t ({var}.begin(), {var}.end());".format(
-                        var=tmp
+                    out_conv_str = (
+                        f"hpp::corbaServer::toNames_t ({tmp}.begin(), {tmp}.end());"
                     )
                 return tmp, in_conv_str, out_conv_str
             elif _type.type().name() == "ComparisonTypes_t":
                 if _in:
-                    in_conv_str = "hpp::constraints::ComparisonTypes_t {} = hpp::corbaServer::convertComparison ({});".format(
-                        tmp, name
-                    )
+                    in_conv_str = f"hpp::constraints::ComparisonTypes_t {tmp} = hpp::corbaServer::convertComparison ({name});"
                     if _out:
                         raise ValueError(
                             "inout ComparisonTypes_t is not implemented. See floatSeq convertion for an example."
@@ -366,21 +338,13 @@ class Builder(idlvisitor.AstVisitor):
                 return tmp, in_conv_str, out_conv_str
             elif _type.type().name() == "RelativeMotionMatrix":
                 if _in:
-                    in_conv_str = "hpp::core::RelativeMotion::matrix_type {} = hpp::corbaServer::intSeqSeqToMatrix ({}).cast<hpp::core::RelativeMotion::RelativeMotionType>();".format(
-                        tmp, name
-                    )
+                    in_conv_str = f"hpp::core::RelativeMotion::matrix_type {tmp} = hpp::corbaServer::intSeqSeqToMatrix ({name}).cast<hpp::core::RelativeMotion::RelativeMotionType>();"
                     if _out:
-                        out_conv_str = "/* not implemented. See vectorToFloatSeq */ hpp::corbaServer::matrixToIntSeqSeq ({}.cast<int>(), {});".format(
-                            tmp, name
-                        )
+                        out_conv_str = f"/* not implemented. See vectorToFloatSeq */ hpp::corbaServer::matrixToIntSeqSeq ({tmp}.cast<int>(), {name});"
                 else:  # !_in => _out
-                    in_conv_str = "hpp::core::RelativeMotion::matrix_type {}".format(
-                        tmp
-                    )
+                    in_conv_str = f"hpp::core::RelativeMotion::matrix_type {tmp}"
                     assert _out
-                    out_conv_str = "{} = hpp::corbaServer::matrixToIntSeqSeq ({}.cast<int>());".format(
-                        name, tmp
-                    )
+                    out_conv_str = f"{name} = hpp::corbaServer::matrixToIntSeqSeq ({tmp}.cast<int>());"
                 return tmp, in_conv_str, out_conv_str
             print("typedef", _type.type().name())
             return name, "", out_conv_str
@@ -398,7 +362,6 @@ class Builder(idlvisitor.AstVisitor):
                 typeptr=self.toCppNamespace(
                     id.Name(_type.type().scopedName()).suffix("Ptr_t")
                 ).fullyQualify(cxx=1),
-                servanttype=hpp_servant_name(id.Name(_type.type().scopedName())),
                 tmp=tmp,
                 name=name,
             )
@@ -415,24 +378,20 @@ class Builder(idlvisitor.AstVisitor):
         if _type.void():
             return "", ""
         if _type.is_basic_data_types():
-            return "{} __return__".format(_type.op(types.RET)), "return __return__;"
+            return f"{_type.op(types.RET)} __return__", "return __return__;"
         if _type.string():
             return "char* __return__ = ::hpp::corbaServer::c_str", "return __return__;"
         if _type.typedef():
             if _type.type().name() in ("size_t", "size_type", "value_type"):
-                return "{} __return__".format(_type.op(types.RET)), "return __return__;"
+                return f"{_type.op(types.RET)} __return__", "return __return__;"
             elif _type.type().name() == "floatSeq":
                 return (
-                    "{} __return__ = hpp::corbaServer::vectorToFloatSeq".format(
-                        _type.op(types.RET)
-                    ),
+                    f"{_type.op(types.RET)} __return__ = hpp::corbaServer::vectorToFloatSeq",
                     "return __return__;",
                 )
             elif _type.type().name() == "floatSeqSeq":
                 return (
-                    "{} __return__ = hpp::corbaServer::matrixToFloatSeqSeq".format(
-                        _type.op(types.RET)
-                    ),
+                    f"{_type.op(types.RET)} __return__ = hpp::corbaServer::matrixToFloatSeqSeq",
                     "return __return__;",
                 )
             elif _type.type().name() == "Transform_":
@@ -490,10 +449,7 @@ class Builder(idlvisitor.AstVisitor):
                     id.Name(_type.type().scopedName()).suffix("Ptr_t")
                 ).fullyQualify(cxx=1)
             )
-            conv = "return ::hpp::corbaServer::makeServantDownCast<{basetype},{type}>(server_, __return__)._retn();".format(
-                type=hpp_servant_name(id.Name(_type.type().scopedName())),
-                basetype=hpp_servant_name(id.Name(base.scopedName())),
-            )
+            conv = f"return ::hpp::corbaServer::makeServantDownCast<{hpp_servant_name(id.Name(base.scopedName()))},{hpp_servant_name(id.Name(_type.type().scopedName()))}>(server_, __return__)._retn();"
             return store, conv
         print(_type.type(), _type.kind())
         return "", ""
@@ -532,7 +488,7 @@ class BuildInterfaceImplementations(Builder):
         if not node.members():
             return
 
-        class Storage(object):
+        class Storage:
             pass
 
         storage = Storage()
@@ -585,8 +541,8 @@ class BuildInterfaceImplementations(Builder):
 
         is_base_class = not bool(node.inherits())
         # ptr_t = self.toCppNamespace (scopedName.suffix("Ptr_t")).fullyQualify(cxx=1)
-        wkptr_t = "hpp::weak_ptr<{}>".format(
-            self.toCppNamespace(scopedName).fullyQualify(cxx=1)
+        wkptr_t = (
+            f"hpp::weak_ptr<{self.toCppNamespace(scopedName).fullyQualify(cxx=1)}>"
         )
         if is_base_class:
             key = hpp_servant_name(scopedName)
@@ -616,7 +572,7 @@ class BuildInterfaceImplementations(Builder):
         # signatures eg
         #   [ char *echoString(const char *mesg) ]
         attributes = []
-        operations = []
+        _operations = []
 
         allCallables = node.callables()
 
@@ -637,9 +593,7 @@ class BuildInterfaceImplementations(Builder):
                 elif comment.text().startswith("//*"):
                     if not comments_impl:
                         comments_impl.append(
-                            " // generated from {}:{}\n".format(
-                                node.file(), node.line()
-                            )
+                            f" // generated from {node.file()}:{node.line()}\n"
                         )
                     comments_impl.append(comment.text()[3:])
                 elif comment.text().startswith("//->"):
@@ -653,7 +607,7 @@ class BuildInterfaceImplementations(Builder):
 
             if isinstance(c, idlast.Attribute):
                 attrType = types.Type(c.attrType())
-                d_attrType = attrType.deref()
+                _d_attrType = attrType.deref()
 
                 for i in c.identifiers():
                     attribname = id.mapID(i)
@@ -745,7 +699,7 @@ class BuildInterfaceImplementations(Builder):
                 opname = id.mapID(c.identifier())
                 arguments = ", ".join(params)
                 argumentsCall = ", ".join(paramNames)
-                args = opname + "(" + arguments + ")"
+                _args = opname + "(" + arguments + ")"
 
                 declarations.out(
                     template.operation_decl_code,
@@ -852,7 +806,7 @@ class BuildInterfaceObjectDowncasts(Builder):
     def visitInterface(self, node):
         idlScopedName = id.Name(node.scopedName())
         servantScope = hpp_servant_scope(idlScopedName)
-        scopedName = hpp_servant_name(idlScopedName)
+        _scopedName = hpp_servant_name(idlScopedName)
 
         base, depth = get_base_class(node, retDepth=True)
         baseScopedName = hpp_servant_name(id.Name(base.scopedName()), servantScope)

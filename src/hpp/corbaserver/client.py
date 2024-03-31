@@ -2,10 +2,12 @@
 Provide a client for CORBA services which initialize CORBA automatically and
 create client to wanted HPP services.
 """
-from omniORB import CORBA
-import CosNaming
 
+import typing
+
+import CosNaming
 import hpp_idl.hpp.corbaserver
+from omniORB import CORBA
 
 
 class CorbaError(Exception):
@@ -26,7 +28,7 @@ class Client:
     """
 
     defaultPort = 13331
-    defaultClients = {
+    defaultClients: typing.ClassVar = {
         "problem": hpp_idl.hpp.corbaserver.Problem,
         "obstacle": hpp_idl.hpp.corbaserver.Obstacle,
         "robot": hpp_idl.hpp.corbaserver.Robot,
@@ -167,14 +169,15 @@ def _getIIOPurl(service="NameService", host=None, port=None, default_port=None):
     import os
 
     try:
-        import socket
+        import socket  # noqa: F401
+
         import rospy
 
         # Check is ROS master is reachable.
         if rospy.client.get_master().target is not None:
             _host = rospy.get_param("/hpp/host", _host)
             _port = rospy.get_param("/hpp/port", _port)
-    except (ImportError, OSError, socket.error):
+    except (ImportError, OSError):
         pass
     _host = os.getenv("HPP_HOST", _host)
     _port = os.getenv("HPP_PORT", _port)
@@ -187,5 +190,5 @@ def _getIIOPurl(service="NameService", host=None, port=None, default_port=None):
     if _host is None and _port is None:
         url = "corbaloc:iiop:"
     else:
-        url = "corbaloc:iiop:{}:{}".format(_host, _port)
+        url = f"corbaloc:iiop:{_host}:{_port}"
     return url + "/" + service

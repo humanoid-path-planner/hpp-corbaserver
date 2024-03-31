@@ -27,13 +27,13 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 # DAMAGE.
 
-from __future__ import print_function
+
 import numpy as np
 
 # # \cond
 
 
-class _BenchmarkIter(object):
+class _BenchmarkIter:
     def __init__(self, seedI, caseI, iterPerCaseI, case=None):
         self.seedI = seedI
         self.caseI = caseI
@@ -62,7 +62,7 @@ class _BenchmarkIter(object):
             )
 
 
-class _BenchmarkIterator(object):
+class _BenchmarkIterator:
     def __init__(self, seedRange, cases, iterPerCase, initCase, startAt=None):
         self.seedRangeL = len(seedRange)
         self.casesL = len(cases)
@@ -193,7 +193,7 @@ class _BenchmarkIterator(object):
 # \endcode
 # This will restart the server whenever it crashes and will resume
 # the benchmarks where it stopped.
-class Benchmark(object):
+class Benchmark:
     # # Used to transform HPP output into seconds
     toSeconds = np.array([60 * 60, 60, 1, 1e-3])
     # # The filename of the crash file.
@@ -329,7 +329,7 @@ class Benchmark(object):
     def resumeFrom(self, fname):
         import pickle as pk
 
-        with open(fname, "r") as f:
+        with open(fname) as f:
             cases = pk.load(f)
             if not cases == self.cases:
                 print(
@@ -392,7 +392,9 @@ class Benchmark(object):
 
         # rectangular box plot
         axes.boxplot(
-            datas, vert=True, patch_artist=True  # vertical box aligmnent
+            datas,
+            vert=True,
+            patch_artist=True,  # vertical box aligmnent
         )  # fill with color
 
         # adding horizontal grid lines

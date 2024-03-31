@@ -201,8 +201,8 @@ if(NOT CLIENT_ONLY)
   target_link_libraries(
     ${LIBRARY_NAME} PUBLIC hpp-core::hpp-core
                            hpp-template-corba::hpp-template-corba)
-  target_include_directories(${LIBRARY_NAME}
-                             PUBLIC $<INSTALL_INTERFACE:include>)
+  target_include_directories(
+    ${LIBRARY_NAME} PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
   pkg_config_use_dependency(${LIBRARY_NAME} omniORB4)
   pkg_config_use_dependency(${LIBRARY_NAME} omniDynamic4)
 
@@ -227,7 +227,8 @@ else(NOT CLIENT_ONLY)
     EXPORT ${TARGETS_EXPORT_NAME}
     DESTINATION lib)
 endif(NOT CLIENT_ONLY)
-target_include_directories(${LIBRARY_NAME} PUBLIC $<INSTALL_INTERFACE:include>)
+target_include_directories(
+  ${LIBRARY_NAME} PUBLIC $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 add_dependencies(${LIBRARY_NAME} generate_idl_cpp)
 add_dependencies(${LIBRARY_NAME} generate_idl_python)

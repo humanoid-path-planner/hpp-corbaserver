@@ -1,7 +1,8 @@
 import sys
-import CORBA
 
+import CORBA
 import hpp_idl.hpp as _hpp
+
 from .client import Client
 
 
