@@ -295,7 +295,7 @@ bool Server::createContext(const std::string& name) {
 std::vector<std::string> Server::getContexts() const {
   std::vector<std::string> contexts;
   contexts.reserve(contexts_.size());
-  for (auto const pair : contexts_) contexts.push_back(pair.first);
+  for (auto const& pair : contexts_) contexts.push_back(pair.first);
   return contexts;
 }
 
