@@ -154,8 +154,6 @@ void Robot::loadRobotModel(const char* robotName, const char* rootJointType,
                                     std::string(srdfName));
     // Add device to the planner
     problemSolver()->robot(device);
-    problemSolver()->robot()->controlComputation(
-        hpp::pinocchio::JOINT_POSITION);
   } catch (const std::exception& exc) {
     hppDout(error, exc.what());
     throw hpp::Error(exc.what());
@@ -175,8 +173,6 @@ void Robot::loadHumanoidModel(const char* robotName, const char* rootJointType,
     hpp::pinocchio::urdf::setupHumanoidRobot(robot);
     // Add robot to the planner
     problemSolver()->robot(robot);
-    problemSolver()->robot()->controlComputation(
-        hpp::pinocchio::JOINT_POSITION);
   } catch (const std::exception& exc) {
     hppDout(error, exc.what());
     throw hpp::Error(exc.what());
@@ -196,8 +192,6 @@ void Robot::loadRobotModelFromString(const char* robotName,
         std::string(srdfString));
     // Add device to the planner
     problemSolver()->robot(device);
-    problemSolver()->robot()->controlComputation(
-        hpp::pinocchio::JOINT_POSITION);
   } catch (const std::exception& exc) {
     hppDout(error, exc.what());
     throw hpp::Error(exc.what());
@@ -219,8 +213,6 @@ void Robot::loadHumanoidModelFromString(const char* robotName,
     hpp::pinocchio::urdf::setupHumanoidRobot(robot);
     // Add robot to the planner
     problemSolver()->robot(robot);
-    problemSolver()->robot()->controlComputation(
-        hpp::pinocchio::JOINT_POSITION);
   } catch (const std::exception& exc) {
     hppDout(error, exc.what());
     throw hpp::Error(exc.what());
@@ -1210,12 +1202,7 @@ Double Robot::getMass() {
 hpp::floatSeq* Robot::getCenterOfMass() {
   try {
     DevicePtr_t robot = getRobotOrThrow(problemSolver());
-    pinocchio::Computation_t flags = robot->computationFlag();
-    if (!(flags & pinocchio::COM)) {
-      robot->controlComputation(pinocchio::COMPUTE_ALL);
-      robot->computeForwardKinematics();
-      robot->controlComputation(flags);
-    }
+    robot->computeForwardKinematics();
     return vectorToFloatSeq(robot->positionCenterOfMass());
   } catch (const std::exception& exc) {
     throw hpp::Error(exc.what());

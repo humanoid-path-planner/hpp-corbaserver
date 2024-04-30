@@ -1362,7 +1362,6 @@ void Problem::addNumericalConstraints(const char* configProjName,
       std::string name(constraintNames[i]);
       problemSolver()->addNumericalConstraintToConfigProjector(
           configProjName, name, (std::size_t)priorities[i]);
-      problemSolver()->robot()->controlComputation(pinocchio::COMPUTE_ALL);
     }
   } catch (const std::exception& exc) {
     throw Error(exc.what());
@@ -1394,7 +1393,6 @@ void Problem::addLockedJointConstraints(const char* configProjName,
       std::string name(lockedJointNames[i]);
       problemSolver()->addNumericalConstraintToConfigProjector(configProjName,
                                                                name);
-      problemSolver()->robot()->controlComputation(pinocchio::COMPUTE_ALL);
     }
   } catch (const std::exception& exc) {
     throw Error(exc.what());
