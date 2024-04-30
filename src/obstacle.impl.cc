@@ -63,7 +63,6 @@ void Obstacle::loadObstacleModel(const char* filename, const char* prefix) {
   try {
     DevicePtr_t device(Device::create(prefix));
     hpp::pinocchio::urdf::loadModel(device, 0, "", "anchor", filename, "");
-    device->controlComputation(hpp::pinocchio::JOINT_POSITION);
 
     problemSolver()->addObstacle(device, true, true);
   } catch (const std::exception& exc) {
@@ -77,8 +76,6 @@ void Obstacle::loadObstacleModelFromString(const char* urdfString,
     DevicePtr_t device(Device::create(prefix));
     hpp::pinocchio::urdf::loadModelFromString(device, 0, "", "anchor",
                                               urdfString, "");
-    device->controlComputation(hpp::pinocchio::JOINT_POSITION);
-
     problemSolver()->addObstacle(device, true, true);
   } catch (const std::exception& exc) {
     throw hpp::Error(exc.what());
