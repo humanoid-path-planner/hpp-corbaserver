@@ -86,7 +86,7 @@ std::string endPoint(const std::string& host, const int port) {
 
 class Tools : public virtual POA_hpp::Tools {
  public:
-  Tools() : server_(NULL){};
+  Tools() : server_(NULL) {};
 
   void setServer(Server* server) { server_ = server; }
 
