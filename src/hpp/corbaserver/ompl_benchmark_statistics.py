@@ -232,7 +232,7 @@ def readBenchmarkLog(dbname, filenames, moveitformat):
             numEnums = int(numEnumsOrNone)
         for i in range(numEnums):
             enum = logfile.readline()[:-1].split("|")
-            c.execute('SELECT * FROM enums WHERE name IS "%s"' % enum[0])
+            c.execute(f'SELECT * FROM enums WHERE name IS "{enum[0]}"')
             if c.fetchone() is None:
                 for j in range(len(enum) - 1):
                     c.execute(
@@ -400,7 +400,7 @@ def plotAttribute(cur, planners, attribute, typename):
     measurements = []
     nanCounts = []
     if typename == "ENUM":
-        cur.execute('SELECT description FROM enums where name IS "%s"' % attribute)
+        cur.execute(f'SELECT description FROM enums where name IS "{attribute}"')
         descriptions = [t[0] for t in cur.fetchall()]
         numValues = len(descriptions)
     for planner in planners:
@@ -425,7 +425,7 @@ def plotAttribute(cur, planners, attribute, typename):
                 measurements.append(measurement)
 
     if len(measurements) == 0:
-        print('Skipping "%s": no available measurements' % attribute)
+        print(f'Skipping "{attribute}": no available measurements')
         return
 
     plt.clf()
@@ -594,12 +594,12 @@ def plotStatistics(dbname, fname):
         numRuns = [run[0] for run in c.fetchall()]
         numRuns = numRuns[0] if len(set(numRuns)) == 1 else ",".join(numRuns)
 
-        plt.figtext(pagex, pagey, 'Experiment "%s"' % experiment[1])
+        plt.figtext(pagex, pagey, f'Experiment "{experiment[1]}"')
         plt.figtext(pagex, pagey - 0.05, "Number of averaged runs: %d" % numRuns)
         plt.figtext(
-            pagex, pagey - 0.10, "Time limit per run: %g seconds" % experiment[2]
+            pagex, pagey - 0.10, f"Time limit per run: {experiment[2]:g} seconds"
         )
-        plt.figtext(pagex, pagey - 0.15, "Memory limit per run: %g MB" % experiment[3])
+        plt.figtext(pagex, pagey - 0.15, f"Memory limit per run: {experiment[3]:g} MB")
 
     plt.show()
     pp.savefig(plt.gcf())
@@ -625,10 +625,10 @@ def saveAsMysql(dbname, mysqldump):
         if table.startswith("sqlite"):
             continue
         if table not in last:
-            mysqldump.write("DROP TABLE IF EXISTS `%s`;\n" % table)
+            mysqldump.write(f"DROP TABLE IF EXISTS `{table}`;\n")
     for table in last:
         if table in table_names:
-            mysqldump.write("DROP TABLE IF EXISTS `%s`;\n" % table)
+            mysqldump.write(f"DROP TABLE IF EXISTS `{table}`;\n")
 
     for line in conn.iterdump():
         process = False
@@ -692,48 +692,30 @@ def computeViews(dbname, moveitformat):
             solved, time AS total_time, graph_states
             FROM plannerConfigs INNER JOIN experiments INNER JOIN runs
             ON plannerConfigs.id=runs.plannerid AND experiments.id=runs.experimentid"""
-    s1 = (
-        """SELECT experimentid, plannerid, plannerName, AVG(solved) AS avg_solved,
+    s1 = f"""SELECT experimentid, plannerid, plannerName, AVG(solved) AS avg_solved,
         AVG(total_time) AS avg_total_time, AVG(graph_states) AS avg_graph_states
-        FROM (%s) GROUP BY plannerid, experimentid"""
-        % s0
-    )
-    s2 = (
-        """SELECT plannerid, experimentid, MIN(avg_solved) AS avg_solved, avg_total_time
-        FROM (%s) GROUP BY plannerName, experimentid ORDER BY avg_solved DESC,
+        FROM ({s0}) GROUP BY plannerid, experimentid"""
+    s2 = f"""SELECT plannerid, experimentid, MIN(avg_solved) AS avg_solved, avg_total_time
+        FROM ({s1}) GROUP BY plannerName, experimentid ORDER BY avg_solved DESC,
         avg_total_time ASC"""
-        % s1
-    )
-    s3 = (
-        """SELECT experimentid, plannerid, plannerName AS Name, MIN(avg_solved)
+    s3 = f"""SELECT experimentid, plannerid, plannerName AS Name, MIN(avg_solved)
         AS Solved, avg_total_time AS Time, avg_graph_states AS States
-        FROM (%s) GROUP BY plannerName
+        FROM ({s1}) GROUP BY plannerName
         ORDER BY avg_solved DESC, avg_total_time ASC, avg_graph_states ASC"""
-        % s1
-    )
     c.execute("DROP VIEW IF EXISTS bestPlannerConfigsPerExperiment")
-    c.execute("CREATE VIEW IF NOT EXISTS bestPlannerConfigsPerExperiment AS %s" % s3)
+    c.execute(f"CREATE VIEW IF NOT EXISTS bestPlannerConfigsPerExperiment AS {s3}")
 
-    s1 = (
-        """SELECT plannerid, plannerName, AVG(solved) AS avg_solved, AVG(total_time)
+    s1 = f"""SELECT plannerid, plannerName, AVG(solved) AS avg_solved, AVG(total_time)
         AS avg_total_time, AVG(graph_states) AS avg_graph_states
-        FROM (%s) GROUP BY plannerid"""
-        % s0
-    )
-    s2 = (
-        """SELECT plannerid, MIN(avg_solved) AS avg_solved, avg_total_time
-        FROM (%s) GROUP BY plannerName ORDER BY avg_solved DESC, avg_total_time ASC"""
-        % s1
-    )
-    s3 = (
-        """SELECT plannerid, plannerName AS Name, MIN(avg_solved) AS Solved,
+        FROM ({s0}) GROUP BY plannerid"""
+    s2 = f"""SELECT plannerid, MIN(avg_solved) AS avg_solved, avg_total_time
+        FROM ({s1}) GROUP BY plannerName ORDER BY avg_solved DESC, avg_total_time ASC"""
+    s3 = f"""SELECT plannerid, plannerName AS Name, MIN(avg_solved) AS Solved,
         avg_total_time AS Time, avg_graph_states AS States
-        FROM (%s) GROUP BY plannerName
+        FROM ({s2}) GROUP BY plannerName
         ORDER BY avg_solved DESC, avg_total_time ASC, avg_graph_states ASC"""
-        % s2
-    )
     c.execute("DROP VIEW IF EXISTS bestPlannerConfigs")
-    c.execute("CREATE VIEW IF NOT EXISTS bestPlannerConfigs AS %s" % s3)
+    c.execute(f"CREATE VIEW IF NOT EXISTS bestPlannerConfigs AS {s3}")
 
     conn.commit()
     c.close()
