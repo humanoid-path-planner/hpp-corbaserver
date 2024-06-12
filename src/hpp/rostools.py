@@ -22,7 +22,7 @@ def process_xacro(*args):
 
     # error handling
     except xml.parsers.expat.ExpatError as e:
-        xacro.error("XML parsing error: %s" % unicode(e), alt_text=None)
+        xacro.error(f"XML parsing error: {unicode(e)}", alt_text=None)
         if xacro.verbosity > 0:
             xacro.print_location(filestack, e)
             print(file=sys.stderr)  # add empty separator line before error
