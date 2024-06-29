@@ -176,7 +176,9 @@
         "flake-parts": [
           "flake-parts"
         ],
-        "hpp-util": "hpp-util_2",
+        "hpp-util": [
+          "hpp-util"
+        ],
         "nixpkgs": [
           "nixpkgs"
         ]
@@ -227,11 +229,9 @@
     "hpp-util_2": {
       "inputs": {
         "flake-parts": [
-          "hpp-template-corba",
           "flake-parts"
         ],
         "nixpkgs": [
-          "hpp-template-corba",
           "nixpkgs"
         ]
       },
@@ -271,6 +271,7 @@
         "flake-parts": "flake-parts",
         "hpp-core": "hpp-core",
         "hpp-template-corba": "hpp-template-corba",
+        "hpp-util": "hpp-util_2",
         "nixpkgs": "nixpkgs"
       }
     }

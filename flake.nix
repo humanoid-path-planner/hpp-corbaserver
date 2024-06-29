@@ -12,15 +12,22 @@
       url = "github:hercules-ci/flake-parts";
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
+    hpp-util = {
+      url = "github:humanoid-path-planner/hpp-util/release/5.1.0";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-parts.follows = "flake-parts";
+    };
     hpp-core = {
       url = "github:humanoid-path-planner/hpp-core/release/5.1.0";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-parts.follows = "flake-parts";
+      inputs.hpp-util.follows = "hpp-util";
     };
     hpp-template-corba = {
       url = "github:humanoid-path-planner/hpp-template-corba/release/5.1.0";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-parts.follows = "flake-parts";
+      inputs.hpp-util.follows = "hpp-util";
     };
   };
 
