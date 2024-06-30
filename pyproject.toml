@@ -15,7 +15,7 @@ dependencies = [
 description = "Corba server for Humanoid Path Planner applications"
 license = "BSD-2-Clause"
 name = "hpp-corbaserver"
-version = "5.0.0"
+version = "5.1.0"
 
 [tool.ruff]
 extend-exclude = ["cmake"]
