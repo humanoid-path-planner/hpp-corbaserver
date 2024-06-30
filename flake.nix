@@ -12,22 +12,20 @@
       url = "github:hercules-ci/flake-parts";
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
-    hpp-util = {
-      url = "github:humanoid-path-planner/hpp-util/release/5.1.0";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-parts.follows = "flake-parts";
-    };
     hpp-core = {
       url = "github:humanoid-path-planner/hpp-core/release/5.1.0";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-parts.follows = "flake-parts";
-      inputs.hpp-util.follows = "hpp-util";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-parts.follows = "flake-parts";
+      };
     };
     hpp-template-corba = {
       url = "github:humanoid-path-planner/hpp-template-corba/release/5.1.0";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-parts.follows = "flake-parts";
-      inputs.hpp-util.follows = "hpp-util";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-parts.follows = "flake-parts";
+        hpp-util.follows = "hpp-core/hpp-constraints/hpp-util";
+      };
     };
   };
 
@@ -49,9 +47,12 @@
           ...
         }:
         {
-          packages.default = pkgs.callPackage ./. {
-            hpp-core = inputs.hpp-core.packages.${system}.default;
-            hpp-template-corba = inputs.hpp-template-corba.packages.${system}.default;
+          packages = {
+            inherit (pkgs) cachix;
+            default = pkgs.callPackage ./. {
+              hpp-core = inputs.hpp-core.packages.${system}.default;
+              hpp-template-corba = inputs.hpp-template-corba.packages.${system}.default;
+            };
           };
           devShells.default = pkgs.mkShell { inputsFrom = [ self'.packages.default ]; };
         };

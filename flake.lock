@@ -177,6 +177,8 @@
           "flake-parts"
         ],
         "hpp-util": [
+          "hpp-core",
+          "hpp-constraints",
           "hpp-util"
         ],
         "nixpkgs": [
@@ -226,30 +228,6 @@
         "type": "github"
       }
     },
-    "hpp-util_2": {
-      "inputs": {
-        "flake-parts": [
-          "flake-parts"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1719580825,
-        "narHash": "sha256-trfl8A+P7a1gnACnTXNK98TYWWDAOM3PKfkXxpC3X/8=",
-        "owner": "humanoid-path-planner",
-        "repo": "hpp-util",
-        "rev": "0504f15818a92c7a257cd6b60cd8b6092bd6dbfa",
-        "type": "github"
-      },
-      "original": {
-        "owner": "humanoid-path-planner",
-        "ref": "release/5.1.0",
-        "repo": "hpp-util",
-        "type": "github"
-      }
-    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1719585538,
@@ -271,7 +249,6 @@
         "flake-parts": "flake-parts",
         "hpp-core": "hpp-core",
         "hpp-template-corba": "hpp-template-corba",
-        "hpp-util": "hpp-util_2",
         "nixpkgs": "nixpkgs"
       }
     }
