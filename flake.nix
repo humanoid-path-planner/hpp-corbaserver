@@ -13,14 +13,14 @@
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
     hpp-core = {
-      url = "github:humanoid-path-planner/hpp-core/release/5.1.0";
+      url = "github:humanoid-path-planner/hpp-core";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-parts.follows = "flake-parts";
       };
     };
     hpp-template-corba = {
-      url = "github:humanoid-path-planner/hpp-template-corba/release/5.1.0";
+      url = "github:humanoid-path-planner/hpp-template-corba";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-parts.follows = "flake-parts";
