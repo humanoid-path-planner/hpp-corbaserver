@@ -39,6 +39,16 @@
 
 #include <hpp/core/fwd.hh>
 
+#ifdef COAL_VERSION
+namespace coal {
+template <typename T>
+class BVHModel;
+class CollisionGeometry;
+class OBBRSS;
+class ShapeBase;
+class Triangle;
+}  // namespace coal
+#else
 namespace hpp {
 namespace fcl {
 template <typename T>
@@ -48,7 +58,10 @@ class OBBRSS;
 class ShapeBase;
 class Triangle;
 }  // namespace fcl
+}  // namespace hpp
+#endif
 
+namespace hpp {
 namespace corbaServer {
 class Server;
 class ServerPlugin;
