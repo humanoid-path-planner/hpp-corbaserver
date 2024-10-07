@@ -484,16 +484,17 @@ struct vectorToSeqServant {
 /// // PathVector directly inherits from Path
 /// HPP_CORBASERVER_ADD_DOWNCAST_OBJECT(PathVector, Path, 1)
 /// \endcode
-#define HPP_CORBASERVER_ADD_DOWNCAST_OBJECT(ServantType, BaseServantType, \
-                                            depth)                        \
-  struct HPP_CORE_DLLAPI __InitializerClass_##ServantType {               \
-    __InitializerClass_##ServantType() {                                  \
-      ::hpp::corbaServer::addDowncastObjects<BaseServantType>(            \
-          new ::hpp::corbaServer::ServantFactory<BaseServantType,         \
-                                                 ServantType>(depth));    \
-    }                                                                     \
-  };                                                                      \
-  HPP_CORBASERVER_DLLLOCAL __InitializerClass_##ServantType               \
+#define HPP_CORBASERVER_ADD_DOWNCAST_OBJECT(ServantType, BaseServantType,  \
+                                            depth)                         \
+  struct HPP_CORE_DLLAPI __InitializerClass_##ServantType{                 \
+      __InitializerClass_##ServantType(){                                  \
+          ::hpp::corbaServer::addDowncastObjects<BaseServantType>(         \
+              new ::hpp::corbaServer::ServantFactory<BaseServantType,      \
+                                                     ServantType>(depth)); \
+  }                                                                        \
+  }                                                                        \
+  ;                                                                        \
+  HPP_CORBASERVER_DLLLOCAL __InitializerClass_##ServantType                \
       __instance_##ServantType;
 
 #endif  // HPP_CORBASERVER_SERVANT_BASE_HH
