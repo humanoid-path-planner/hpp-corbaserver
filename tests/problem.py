@@ -20,7 +20,7 @@ class Test(unittest.TestCase):
             assert object_ids[0] == cl.orb.object_to_string(pb)
 
             pb2 = cl.orb.string_to_object(object_ids[0])
-            assert type(pb) == type(pb2)
+            assert type(pb) is type(pb2)
             pb2.persistantStorage(False)
 
     def test_createConstraints(self):
