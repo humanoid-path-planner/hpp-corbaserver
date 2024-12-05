@@ -297,7 +297,7 @@ class Builder(idlvisitor.AstVisitor):
                     )
                 return (
                     tmp,
-                    f"hpp::core::Transform3f {tmp} = hpp::corbaServer::toTransform3f ({name});",
+                    f"hpp::core::Transform3s {tmp} = hpp::corbaServer::toTransform3s ({name});",
                     out_conv_str,
                 )
             elif _type.type().name() == "TransformSeq":
@@ -309,7 +309,7 @@ class Builder(idlvisitor.AstVisitor):
                     )
                 return (
                     tmp,
-                    f"std::vector<hpp::core::Transform3f> {tmp} = hpp::corbaServer::toTransform3f ({name});",
+                    f"std::vector<hpp::core::Transform3s> {tmp} = hpp::corbaServer::toTransform3s ({name});",
                     out_conv_str,
                 )
             elif _type.type().name() == "Names_t":
@@ -396,7 +396,7 @@ class Builder(idlvisitor.AstVisitor):
                 )
             elif _type.type().name() == "Transform_":
                 return (
-                    "hpp::core::Transform3f __return__",
+                    "hpp::core::Transform3s __return__",
                     "return hpp::corbaServer::toHppTransform (__return__);",
                 )
             elif _type.type().name() == "Names_t":
@@ -756,9 +756,11 @@ class BuildInterfaceImplementations(Builder):
 
         # Output the _i class definition definition
         self.interface_declarations.out(
-            template.base_interface_def
-            if is_base_class
-            else template.inherited_interface_def,
+            (
+                template.base_interface_def
+                if is_base_class
+                else template.inherited_interface_def
+            ),
             fq_name=fqname,
             impl_tpl_name=impl_tpl_name,
             impl_base_name=impl_base_name,
@@ -773,9 +775,11 @@ class BuildInterfaceImplementations(Builder):
         )
 
         self.interface_implementations.out(
-            template.base_interface_code
-            if is_base_class
-            else template.inherited_interface_code,
+            (
+                template.base_interface_code
+                if is_base_class
+                else template.inherited_interface_code
+            ),
             fqname=fqname,
             impl_name=impl_name,
             impl_tpl_name=impl_tpl_name,

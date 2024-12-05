@@ -99,7 +99,7 @@ typedef core::PathVector PathVector_t;
 typedef core::PathVectorPtr_t PathVectorPtr_t;
 typedef core::SteeringMethod SteeringMethod_t;
 typedef core::SteeringMethodPtr_t SteeringMethodPtr_t;
-typedef pinocchio::Transform3f Transform3f;
+typedef pinocchio::Transform3s Transform3s;
 typedef coal::BVHModel<coal::OBBRSS> Polyhedron_t;
 
 typedef pinocchio::value_type value_type;

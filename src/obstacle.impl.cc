@@ -91,7 +91,7 @@ void Obstacle::loadPolyhedron(const char* name, const char* resourcename) {
         loader.load(filename, coal::Vec3f::Ones()));
     CollisionGeometryPtr_t geom(coalgeom.get(),
                                 [coalgeom](...) mutable { coalgeom.reset(); });
-    problemSolver()->addObstacle(name, geom, Transform3f::Identity(), true,
+    problemSolver()->addObstacle(name, geom, Transform3s::Identity(), true,
                                  true);
   } catch (const std::exception& exc) {
     throw hpp::Error(exc.what());
@@ -144,7 +144,7 @@ void Obstacle::addObstacle(const char* objectName, Boolean collision,
 
   std::string objName(objectName);
   CollisionGeometryPtr_t geometry = objectMap_.geometry(objectName);
-  problemSolver()->addObstacle(objName, geometry, Transform3f::Identity(),
+  problemSolver()->addObstacle(objName, geometry, Transform3s::Identity(),
                                collision, distance);
 }
 
@@ -159,7 +159,7 @@ CollisionObjectPtr_t Obstacle::getObstacleByName(const char* name) {
 void Obstacle::moveObstacle(const char* objectName, const Transform_ cfg) {
   CollisionObjectPtr_t object = getObstacleByName(objectName);
   if (object) {
-    object->move(toTransform3f(cfg));
+    object->move(toTransform3s(cfg));
     return;
   }
   HPP_THROW(Error, "Object " << objectName << " not found");
@@ -168,12 +168,12 @@ void Obstacle::moveObstacle(const char* objectName, const Transform_ cfg) {
 void Obstacle::getObstaclePosition(const char* objectName, Transform_ cfg) {
   CollisionObjectPtr_t object = getObstacleByName(objectName);
   if (object) {
-    Transform3f transform = object->getTransform();
+    Transform3s transform = object->getTransform();
     toHppTransform(transform, cfg);
     return;
   }
   try {
-    Transform3f transform = problemSolver()->obstacleFramePosition(objectName);
+    Transform3s transform = problemSolver()->obstacleFramePosition(objectName);
     toHppTransform(transform, cfg);
     return;
   } catch (const std::invalid_argument&) {

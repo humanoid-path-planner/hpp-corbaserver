@@ -245,7 +245,7 @@ Long Robot::getNumberDof() {
 
 template <typename T>
 void addJoint(Model& model, const JointIndex parent,
-              const Transform3f& placement, const std::string& name) {
+              const Transform3s& placement, const std::string& name) {
   JointIndex jid = model.addJoint(parent, T(), placement, name);
   model.addJointFrame(jid, -1);
 }
@@ -273,7 +273,7 @@ void Robot::appendJoint(const char* parentName, const char* jointName,
     throw Error(("Joint " + jn + " already exists.").c_str());
 
   // Fill position matrix
-  Transform3f posMatrix = toTransform3f(pos);
+  Transform3s posMatrix = toTransform3s(pos);
 
   // Determine type of joint.
   if (jt == "FreeFlyer")
@@ -413,7 +413,7 @@ Transform__slice* Robot::getRootJointPosition() {
 void Robot::setRootJointPosition(const Transform_ position) {
   try {
     DevicePtr_t robot = getRobotOrThrow(problemSolver());
-    Transform3f t3f(toTransform3f(position));
+    Transform3s t3f(toTransform3s(position));
     robot->rootFrame().positionInParentFrame(t3f);
     robot->computeForwardKinematics();
   } catch (const std::exception& exc) {
@@ -428,7 +428,7 @@ void Robot::setJointPositionInParentFrame(const char* jointName,
   try {
     DevicePtr_t robot = getRobotOrThrow(problemSolver());
     Frame frame = robot->getFrameByName(jointName);
-    frame.positionInParentFrame(toTransform3f(position));
+    frame.positionInParentFrame(toTransform3s(position));
     robot->computeForwardKinematics();
   } catch (const std::exception& exc) {
     throw Error(exc.what());
@@ -546,7 +546,7 @@ hpp::floatSeqSeq* Robot::getCurrentTransformation(const char* jointName) {
     }
 
     // join translation & rotation into homog. transformation
-    const Transform3f& T = joint->currentTransformation();
+    const Transform3s& T = joint->currentTransformation();
     Eigen::Matrix<hpp::pinocchio::value_type, 4, 4> trafo;
     trafo.block<3, 3>(0, 0) = T.rotation();
     trafo.block<3, 1>(0, 3) = T.translation();
@@ -721,7 +721,7 @@ Transform__slice* Robot::getLinkPosition(const char* linkName) {
       HPP_THROW(Error, "Joint index of link " << linkName
                                               << " out of bounds: " << joint);
 
-    Transform3f T = robot->data().oMi[joint] * frame.placement;
+    Transform3s T = robot->data().oMi[joint] * frame.placement;
     return toHppTransform(T);
   } catch (const std::exception& exc) {
     throw Error(exc.what());
@@ -1012,7 +1012,7 @@ CollisionObjectConstPtr_t Robot::getObjectByName(const char* name) {
 void Robot::getObjectPosition(const char* objectName, Transform_ cfg) {
   try {
     CollisionObjectConstPtr_t object = getObjectByName(objectName);
-    Transform3f transform = object->getTransform();
+    Transform3s transform = object->getTransform();
     toHppTransform(transform, cfg);
     return;
   } catch (const std::exception& exc) {
@@ -1291,7 +1291,7 @@ void Robot::addObjectToJoint(const char* jointName, const char* objectName,
     throw Error(("Joint " + jn + " not found.").c_str());
   JointIndex jid = model.getJointId(jn);
 
-  Transform3f placement = toTransform3f(pos);
+  Transform3s placement = toTransform3s(pos);
 
   try {
     CollisionGeometryPtr_t geometry = objectMap_.geometry(objectName);

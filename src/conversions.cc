@@ -39,8 +39,8 @@ namespace hpp {
 namespace corbaServer {
 using CORBA::ULong;
 
-void toTransform3f(const Transform_ in, Transform3f& out) {
-  Transform3f::Quaternion Q(in[6], in[3], in[4], in[5]);
+void toTransform3s(const Transform_ in, Transform3s& out) {
+  Transform3s::Quaternion Q(in[6], in[3], in[4], in[5]);
   const value_type eps = 1e-8;
   if (std::fabs(Q.squaredNorm() - 1) > eps)
     throw Error("Quaternion is not normalized.");
@@ -48,21 +48,21 @@ void toTransform3f(const Transform_ in, Transform3f& out) {
   out.rotation() = Q.matrix();
 }
 
-Transform3f toTransform3f(const Transform_ in) {
-  Transform3f out;
-  toTransform3f(in, out);
+Transform3s toTransform3s(const Transform_ in) {
+  Transform3s out;
+  toTransform3s(in, out);
   return out;
 }
 
-std::vector<Transform3f> toTransform3f(const TransformSeq in) {
-  std::vector<Transform3f> out(in.length());
+std::vector<Transform3s> toTransform3s(const TransformSeq in) {
+  std::vector<Transform3s> out(in.length());
   for (std::size_t i = 0; i < out.size(); ++i)
-    toTransform3f(in[(ULong)i], out[i]);
+    toTransform3s(in[(ULong)i], out[i]);
   return out;
 }
 
-void toHppTransform(const Transform3f& in, Transform_ out) {
-  Transform3f::Quaternion q(in.rotation());
+void toHppTransform(const Transform3s& in, Transform_ out) {
+  Transform3s::Quaternion q(in.rotation());
   out[3] = q.x();
   out[4] = q.y();
   out[5] = q.z();
@@ -70,7 +70,7 @@ void toHppTransform(const Transform3f& in, Transform_ out) {
   for (int i = 0; i < 3; i++) out[i] = in.translation()[i];
 }
 
-Transform__slice* toHppTransform(const Transform3f& in) {
+Transform__slice* toHppTransform(const Transform3s& in) {
   Transform__slice* out = Transform__alloc();
   toHppTransform(in, out);
   return out;

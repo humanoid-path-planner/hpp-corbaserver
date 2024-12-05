@@ -38,15 +38,15 @@ namespace hpp {
 namespace corbaServer {
 typedef Eigen::Matrix<CORBA::Long, Eigen::Dynamic, Eigen::Dynamic> IntMatrix_t;
 
-void toTransform3f(const Transform_ in, Transform3f& out);
+void toTransform3s(const Transform_ in, Transform3s& out);
 
-Transform3f toTransform3f(const Transform_ in);
+Transform3s toTransform3s(const Transform_ in);
 
-std::vector<Transform3f> toTransform3f(const TransformSeq in);
+std::vector<Transform3s> toTransform3s(const TransformSeq in);
 
-void toHppTransform(const Transform3f& in, Transform_ out);
+void toHppTransform(const Transform3s& in, Transform_ out);
 
-Transform__slice* toHppTransform(const Transform3f& in);
+Transform__slice* toHppTransform(const Transform3s& in);
 
 void toIntSeq(std::vector<int> const& in, intSeq& out);
 

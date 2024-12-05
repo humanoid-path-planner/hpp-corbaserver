@@ -131,7 +131,7 @@ namespace impl {
 namespace {
 static const matrix3_t I3(matrix3_t ::Identity());
 static const vector3_t zero(vector3_t ::Zero());
-static const Transform3f Id(Transform3f::Identity());
+static const Transform3s Id(Transform3s::Identity());
 
 typedef hpp::core::segment_t segment_t;
 typedef hpp::core::segments_t segments_t;
@@ -139,8 +139,8 @@ typedef hpp::core::segments_t segments_t;
 template <int PositionOrientationFlag>
 DifferentiableFunctionPtr_t buildGenericFunc(
     const DevicePtr_t& robot, const std::string& name,
-    const std::string& nameF1, const std::string& nameF2, const Transform3f& M1,
-    const Transform3f& M2, const std::vector<bool> mask) {
+    const std::string& nameF1, const std::string& nameF2, const Transform3s& M1,
+    const Transform3s& M2, const std::vector<bool> mask) {
   if (nameF1.empty() && nameF2.empty())
     throw hpp::Error("At least one joint should be provided.");
   if (nameF2.empty())
@@ -150,7 +150,7 @@ DifferentiableFunctionPtr_t buildGenericFunc(
 
   bool relative = (!nameF1.empty());
   JointPtr_t joint1, joint2;
-  Transform3f ref1 = M1, ref2 = M2;
+  Transform3s ref1 = M1, ref2 = M2;
   if (relative) {
     Frame frame = robot->getFrameByName(nameF1);
     ref1 = frame.positionInParentJoint() * M1;
@@ -549,8 +549,8 @@ void Problem::createOrientationConstraint(const char* constraintName,
                                           const hpp::boolSeq& mask) {
   try {
     if (!problemSolver()->robot()) throw hpp::Error("No robot loaded");
-    Transform3f::Quaternion quat(p[3], p[0], p[1], p[2]);
-    Transform3f rotation(quat.matrix(), vector3_t::Zero());
+    Transform3s::Quaternion quat(p[3], p[0], p[1], p[2]);
+    Transform3s rotation(quat.matrix(), vector3_t::Zero());
     std::string name(constraintName);
 
     DifferentiableFunctionPtr_t func =
@@ -575,7 +575,7 @@ void Problem::createTransformationConstraint(const char* constraintName,
                                              const hpp::boolSeq& mask) {
   try {
     if (!problemSolver()->robot()) throw hpp::Error("No robot loaded");
-    Transform3f ref(toTransform3f(p));
+    Transform3s ref(toTransform3s(p));
     std::string name(constraintName);
     DifferentiableFunctionPtr_t func =
         buildGenericFunc < constraints::PositionBit |
@@ -606,7 +606,7 @@ void Problem::createTransformationConstraint2(const char* constraintName,
         buildGenericFunc < constraints::PositionBit |
         constraints::OrientationBit >
             (problemSolver()->robot(), name, joint1Name, joint2Name,
-             toTransform3f(frame1), toTransform3f(frame2),
+             toTransform3s(frame1), toTransform3s(frame2),
              boolSeqToVector(mask, 6));
 
     problemSolver()->addNumericalConstraint(
@@ -633,7 +633,7 @@ void Problem::createTransformationR3xSO3Constraint(const char* constraintName,
         constraints::PositionBit |
         constraints::OrientationBit >
             (problemSolver()->robot(), name, joint1Name, joint2Name,
-             toTransform3f(frame1), toTransform3f(frame2),
+             toTransform3s(frame1), toTransform3s(frame2),
              boolSeqToVector(mask, 6));
 
     problemSolver()->addNumericalConstraint(
@@ -915,7 +915,7 @@ void Problem::createPositionConstraint(const char* constraintName,
     DifferentiableFunctionPtr_t func =
         buildGenericFunc<constraints::PositionBit>(
             problemSolver()->robot(), name, joint1Name, joint2Name,
-            Transform3f(I3, p1), Transform3f(I3, p2), boolSeqToVector(mask));
+            Transform3s(I3, p1), Transform3s(I3, p2), boolSeqToVector(mask));
 
     problemSolver()->addNumericalConstraint(
         name,
