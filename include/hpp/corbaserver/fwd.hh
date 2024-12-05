@@ -39,7 +39,6 @@
 
 #include <hpp/core/fwd.hh>
 
-#ifdef COAL_VERSION
 namespace coal {
 template <typename T>
 class BVHModel;
@@ -48,18 +47,6 @@ class OBBRSS;
 class ShapeBase;
 class Triangle;
 }  // namespace coal
-#else
-namespace hpp {
-namespace fcl {
-template <typename T>
-class BVHModel;
-class CollisionGeometry;
-class OBBRSS;
-class ShapeBase;
-class Triangle;
-}  // namespace fcl
-}  // namespace hpp
-#endif
 
 namespace hpp {
 namespace corbaServer {
@@ -71,7 +58,7 @@ class ProblemSolverMap;
 typedef shared_ptr<ProblemSolverMap> ProblemSolverMapPtr_t;
 
 typedef pinocchio::BodyPtr_t BodyPtr_t;
-using fcl::CollisionGeometry;
+using coal::CollisionGeometry;
 using pinocchio::CollisionGeometryPtr_t;
 typedef pinocchio::CollisionObject CollisionObject_t;
 typedef pinocchio::CollisionObjectPtr_t CollisionObjectPtr_t;
@@ -113,7 +100,7 @@ typedef core::PathVectorPtr_t PathVectorPtr_t;
 typedef core::SteeringMethod SteeringMethod_t;
 typedef core::SteeringMethodPtr_t SteeringMethodPtr_t;
 typedef pinocchio::Transform3f Transform3f;
-typedef fcl::BVHModel<fcl::OBBRSS> Polyhedron_t;
+typedef coal::BVHModel<coal::OBBRSS> Polyhedron_t;
 
 typedef pinocchio::value_type value_type;
 typedef pinocchio::matrix_t matrix_t;

@@ -33,7 +33,7 @@
 
 #ifndef HPP_CORBASERVER_ROBOT_IMPL_HH
 #define HPP_CORBASERVER_ROBOT_IMPL_HH
-#include <hpp/fcl/BVH/BVH_model.h>
+#include <coal/BVH/BVH_model.h>
 
 #include <map>
 #include <string>

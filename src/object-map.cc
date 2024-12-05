@@ -42,14 +42,14 @@ void ObjectMap::createBox(const std::string name, value_type x, value_type y,
                           value_type z) {
   // Check that object does not already exist.
   if (nameExists<BothGeomType, ThrowIfItExists>(name)) return;
-  shapeMap_[name] = CollisionGeometryPtr_t(new fcl::Box(x, y, z));
+  shapeMap_[name] = CollisionGeometryPtr_t(new coal::Box(x, y, z));
 }
 
 // --------------------------------------------------------------------
 
 void ObjectMap::createSphere(const std::string name, value_type radius) {
   if (nameExists<BothGeomType, ThrowIfItExists>(name)) return;
-  shapeMap_[name] = CollisionGeometryPtr_t(new fcl::Sphere(radius));
+  shapeMap_[name] = CollisionGeometryPtr_t(new coal::Sphere(radius));
 }
 
 // --------------------------------------------------------------------
@@ -57,7 +57,7 @@ void ObjectMap::createSphere(const std::string name, value_type radius) {
 void ObjectMap::createCylinder(const std::string name, value_type radius,
                                value_type length) {
   if (nameExists<BothGeomType, ThrowIfItExists>(name)) return;
-  shapeMap_[name] = CollisionGeometryPtr_t(new fcl::Cylinder(radius, length));
+  shapeMap_[name] = CollisionGeometryPtr_t(new coal::Cylinder(radius, length));
 }
 
 // --------------------------------------------------------------------
@@ -67,7 +67,7 @@ std::size_t ObjectMap::addPoint(const std::string name, value_type x,
   // Check that polyhedron exists.
   if (!nameExists<Polyhedron, ThrowIfItDoesNotExist>(name)) return 0;
   PolyhedronData& poly = polyhedronMap_[name];
-  poly.pts.push_back(fcl::Vec3f(x, y, z));
+  poly.pts.push_back(coal::Vec3f(x, y, z));
   return poly.pts.size() - 1;
 }
 
@@ -78,7 +78,7 @@ std::size_t ObjectMap::addTriangle(const std::string name, std::size_t pt1,
   // Check that polyhedron exists.
   if (!nameExists<Polyhedron, ThrowIfItDoesNotExist>(name)) return 0;
   PolyhedronData& poly = polyhedronMap_[name];
-  poly.tris.push_back(fcl::Triangle(pt1, pt2, pt3));
+  poly.tris.push_back(coal::Triangle(pt1, pt2, pt3));
   return poly.tris.size() - 1;
 }
 
@@ -92,9 +92,9 @@ CollisionGeometryPtr_t ObjectMap::geometry(const std::string name) {
     Polyhedron_t* polyhedron = new Polyhedron_t;
     geometry.reset(polyhedron);
     int res = polyhedron->beginModel();
-    if (res != fcl::BVH_OK) {
+    if (res != coal::BVH_OK) {
       std::ostringstream oss;
-      oss << "fcl BVHReturnCode = " << res;
+      oss << "coal BVHReturnCode = " << res;
       throw hpp::Error(oss.str().c_str());
     }
 

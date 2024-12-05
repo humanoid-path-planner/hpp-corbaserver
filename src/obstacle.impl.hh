@@ -33,7 +33,7 @@
 
 #ifndef HPP_CORBASERVER_OBSTACLE_IMPL_HH
 #define HPP_CORBASERVER_OBSTACLE_IMPL_HH
-#include <hpp/fcl/data_types.h>
+#include <coal/data_types.h>
 
 #include <hpp/corbaserver/fwd.hh>
 #include <hpp/corbaserver/object-map.hh>

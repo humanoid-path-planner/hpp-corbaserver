@@ -29,8 +29,8 @@
 #ifndef HPP_CORBASERVER_OBJECT_MAP_HH
 #define HPP_CORBASERVER_OBJECT_MAP_HH
 
-#include <hpp/fcl/BVH/BVH_model.h>
-#include <hpp/fcl/shape/geometric_shapes.h>
+#include <coal/BVH/BVH_model.h>
+#include <coal/shape/geometric_shapes.h>
 
 #include <hpp/common-idl.hh>
 #include <hpp/corbaserver/fwd.hh>
@@ -56,8 +56,8 @@ class ObjectMap {
 
  protected:
   struct PolyhedronData {
-    std::vector<fcl::Vec3f> pts;
-    std::vector<fcl::Triangle> tris;
+    std::vector<coal::Vec3f> pts;
+    std::vector<coal::Triangle> tris;
   };
   typedef std::map<std::string, PolyhedronData> PolyhedronMap_t;
   typedef std::map<std::string, CollisionGeometryPtr_t> ShapeMap_t;

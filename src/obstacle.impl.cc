@@ -33,9 +33,9 @@
 
 #include "obstacle.impl.hh"
 
-#include <hpp/fcl/BVH/BVH_model.h>
-#include <hpp/fcl/mesh_loader/loader.h>
-#include <hpp/fcl/shape/geometric_shapes.h>
+#include <coal/BVH/BVH_model.h>
+#include <coal/mesh_loader/loader.h>
+#include <coal/shape/geometric_shapes.h>
 
 #include <hpp/corbaserver/server-plugin.hh>
 #include <hpp/pinocchio/collision-object.hh>
@@ -84,13 +84,13 @@ void Obstacle::loadObstacleModelFromString(const char* urdfString,
 
 void Obstacle::loadPolyhedron(const char* name, const char* resourcename) {
   try {
-    fcl::MeshLoader loader(fcl::BV_OBBRSS);
+    coal::MeshLoader loader(coal::BV_OBBRSS);
     std::string filename(::pinocchio::retrieveResourcePath(
         resourcename, ::pinocchio::rosPaths()));
-    fcl::CollisionGeometryPtr_t fclgeom(
-        loader.load(filename, fcl::Vec3f::Ones()));
-    CollisionGeometryPtr_t geom(fclgeom.get(),
-                                [fclgeom](...) mutable { fclgeom.reset(); });
+    coal::CollisionGeometryPtr_t coalgeom(
+        loader.load(filename, coal::Vec3f::Ones()));
+    CollisionGeometryPtr_t geom(coalgeom.get(),
+                                [coalgeom](...) mutable { coalgeom.reset(); });
     problemSolver()->addObstacle(name, geom, Transform3f::Identity(), true,
                                  true);
   } catch (const std::exception& exc) {
@@ -131,8 +131,8 @@ void Obstacle::removeObstacle(const char* objectName) {
 void Obstacle::cutObstacle(const char* objectName, const floatSeq& aabb) {
   try {
     vector_t _aabb = floatSeqToVector(aabb, 6);
-    fcl::AABB fclaabb(_aabb.head<3>(), _aabb.tail<3>());
-    problemSolver()->cutObstacle(objectName, fclaabb);
+    coal::AABB coalaabb(_aabb.head<3>(), _aabb.tail<3>());
+    problemSolver()->cutObstacle(objectName, coalaabb);
   } catch (const std::exception& e) {
     throw hpp::Error(e.what());
   }

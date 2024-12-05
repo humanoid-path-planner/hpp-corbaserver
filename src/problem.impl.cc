@@ -34,7 +34,7 @@
 
 #include "problem.impl.hh"
 
-#include <hpp/fcl/shape/geometric_shapes.h>
+#include <coal/shape/geometric_shapes.h>
 
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <hpp/constraints/affine-function.hh>
@@ -827,11 +827,11 @@ void Problem::createConvexShapeContactConstraint(
   if (!problemSolver()->robot()) throw hpp::Error("No robot loaded");
   try {
     JointAndShapes_t floorSurfaces, objectSurfaces;
-    std::vector<fcl::Vec3f> pts(points.length());
+    std::vector<coal::Vec3f> pts(points.length());
     for (CORBA::ULong i = 0; i < points.length(); ++i) {
       if (points[i].length() != 3)
         throw hpp::Error("Points must be of size 3.");
-      pts[i] = fcl::Vec3f(points[i][0], points[i][1], points[i][2]);
+      pts[i] = coal::Vec3f(points[i][0], points[i][1], points[i][2]);
     }
     if (objectJoints.length() != objTriangles.length()) {
       std::ostringstream oss;

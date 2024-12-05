@@ -33,8 +33,8 @@
 
 #include "robot.impl.hh"
 
-#include <hpp/fcl/BVH/BVH_model.h>
-#include <hpp/fcl/shape/geometric_shapes.h>
+#include <coal/BVH/BVH_model.h>
+#include <coal/shape/geometric_shapes.h>
 
 #include <hpp/corbaserver/server-plugin.hh>
 #include <hpp/core/config-validations.hh>
@@ -1392,7 +1392,7 @@ Robot::getCenterOfMassComputation(const char* name) {
 floatSeq* Robot::getRobotAABB() {
   DevicePtr_t robot = getRobotOrThrow(problemSolver());
   try {
-    fcl::AABB aabb = robot->computeAABB();
+    coal::AABB aabb = robot->computeAABB();
     vector_t v(6);
     v.head<3>() = aabb.min_;
     v.tail<3>() = aabb.max_;
