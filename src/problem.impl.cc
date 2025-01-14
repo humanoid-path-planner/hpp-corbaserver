@@ -331,7 +331,7 @@ CORBA::Any* Problem::getParameter(const char* name) {
 char* Problem::getParameterDoc(const char* name) {
   if (problemSolver()->problem() != NULL) {
     try {
-      const core::ParameterDescription& desc =
+      const core::ParameterDescription desc =
           core::Problem::parameterDescription(name);
       std::stringstream ss;
       ss << desc.doc() << " [Default: ";
