@@ -1,4 +1,4 @@
-import sys
+import os, sys
 import xml
 
 from xacro import filestack
@@ -17,8 +17,12 @@ def process_xacro(*args):
 
     opts, input_file_name = xacro.process_args(args)
     try:
+        # If AMENT_PREFIX_PATH is defined (ROS 2), pass the content to retrieve resources
+        ament_prefix_path = os.getenv("AMENT_PREFIX_PATH")
+        if not ament_prefix_path is None:
+            dirs = list(map(lambda s:s+"/share", ament_prefix_path.split(":")))
         # open and process file
-        doc = xacro.process_file(retrieve_resource(input_file_name), **vars(opts))
+        doc = xacro.process_file(retrieve_resource(input_file_name, dirs), **vars(opts))
 
     # error handling
     except xml.parsers.expat.ExpatError as e:
