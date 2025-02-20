@@ -1,5 +1,7 @@
 import sys
 import xml
+import os
+import typing as T
 
 from xacro import filestack
 
@@ -52,17 +54,26 @@ def process_xacro(*args):
     return doc.toprettyxml(indent="  ", **encoding)
 
 
-def retrieve_resource(path, dirs=None, env_var="ROS_PACKAGE_PATH"):
+def retrieve_resource(path, dirs=None, env_var: T.Optional[str]=None):
     """
     Retrieve resource of the form "package://", resolving the package in the list of
     dirs.
     If the list of dirs is None, it is initialized with
     the content of the environnement variable env_var.
+
+    The default environment variable is either ROS_PACKAGE_PATH or AMENT_PREFIX_PATH
+    depending on which one exists.
     """
     if path.startswith("package://"):
-        relpath = path[len("package://") :]
-        import os
+        if env_var is None:
+            if "AMENT_PREFIX_PATH" in os.environ:
+                env_var = "AMENT_PREFIX_PATH"
+            elif "ROS_PACKAGE_PATH" in os.environ:
+                env_var = "ROS_PACKAGE_PATH"
+            else:
+                raise ValueError("AMENT_PREFIX_PATH or ROS_PACKAGE_PATH env var should exists when env_var is not provided.")
 
+        relpath = path[len("package://") :]
         if dirs is None:
             dirs = os.environ[env_var].split(":")
         for dir in dirs:
