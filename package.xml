@@ -1,37 +1,42 @@
-<?xml version='1.0'?>
- <package format='2'>
- <name>hpp-corbaserver</name>
- <version>6.0.0</version>
- <description>Corba server for Humanoid Path Planner applications </description>
+<?xml version="1.0"?>
+<package format="3">
+  <name>hpp-corbaserver</name>
+  <version>6.0.0</version>
+  <description>Corba server for Humanoid Path Planner applications </description>
 
- <maintainer email='hpp@laas.fr'>Joseph Mirabel</maintainer>
- <license>LGPL</license>
+  <maintainer email="guilhem.saurel@laas.fr">Guilhem Saurel</maintainer>
 
- <!-- <url type='website'>https://github.com/humanoid-path-planner/hpp-corbaserver </url> -->
+  <author>Joseph Mirabel</author>
+  <author>Florent Lamiraux et al.</author>
 
- <author>Joseph Mirabel</author>
- <author>Florent Lamiraux et al.</author>
+  <license>BSD-2</license>
 
- <buildtool_depend>catkin</buildtool_depend>
- <build_depend>hpp-core</build_depend>
- <exec_depend>hpp-core</exec_depend>
- <build_export_depend>hpp-core</build_export_depend>
- <build_depend>hpp-template-corba</build_depend>
- <exec_depend>hpp-template-corba</exec_depend>
- <build_export_depend>hpp-template-corba</build_export_depend>
- <build_depend>omniORB4</build_depend>
- <exec_depend>omniORB4</exec_depend>
- <build_export_depend>omniORB4</build_export_depend>
- <build_depend>omniDynamic4</build_depend>
- <exec_depend>omniDynamic4</exec_depend>
- <build_export_depend>omniDynamic4</build_export_depend>
- <build_depend>eigen3</build_depend>
- <exec_depend>eigen3</exec_depend>
- <build_export_depend>eigen3</build_export_depend>
- <build_depend>urdfdom</build_depend>
- <exec_depend>urdfdom</exec_depend>
- <build_export_depend>urdfdom</build_export_depend>
- <build_depend>coal</build_depend>
- <exec_depend>coal</exec_depend>
- <build_export_depend>coal</build_export_depend>
- </package>
+  <url type="website">https://github.com/humanoid-path-planner/hpp-pinocchio</url>
+  <url type="repository">https://github.com/humanoid-path-planner/hpp-pinocchio</url>
+  <url type="bugtracker">https://github.com/humanoid-path-planner/hpp-pinocchio/issues</url>
+
+  <buildtool_depend condition="$ROS_VERSION == 1">catkin</buildtool_depend>
+  <buildtool_depend condition="$ROS_VERSION == 2">ament_cmake</buildtool_depend>
+  <buildtool_depend>cmake</buildtool_depend>
+
+  <build_depend>doxygen</build_depend>
+
+  <depend>coal</depend>
+  <depend>eigen</depend>
+  <depend>hpp-core</depend>
+  <depend>hpp-template-corba</depend>
+  <depend>omniidl</depend>
+  <depend>omniorb</depend>
+  <!-- Required by CMake, but not available in rosdep -->
+  <!-- <depend>omniDynamic4</depend> -->
+  <depend>urdfdom</depend>
+  <depend>pinocchio</depend>
+
+  <!-- The following tags are recommended by REP-136 -->
+  <depend condition="$ROS_PYTHON_VERSION == 2">python</depend>
+  <depend condition="$ROS_PYTHON_VERSION == 3">python3</depend>
+
+  <export>
+    <build_type>cmake</build_type>
+  </export>
+</package>
