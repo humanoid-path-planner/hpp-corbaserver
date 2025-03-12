@@ -55,6 +55,8 @@ module hpp
       /// cannot be checked here because the robot is not accessible.
       floatSeq nearestNode (in floatSeq config, out value_type distance,
           in boolean reverse) raises (Error);
+      //* if (getT()->nodes().size() == 0) throw std::logic_error(
+      //*     "hpp::core::Roadmap::nearestNode: roadmap is empty");
       //* return corbaServer::vectorToFloatSeq(getT()->nearestNode(
       //*   corbaServer::floatSeqToVector(config), distance, reverse)->configuration());
 
