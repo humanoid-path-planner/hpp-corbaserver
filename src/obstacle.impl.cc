@@ -35,6 +35,7 @@
 
 #include <coal/BVH/BVH_model.h>
 #include <coal/mesh_loader/loader.h>
+#include <coal/octree.h>
 #include <coal/shape/geometric_shapes.h>
 
 #include <hpp/corbaserver/server-plugin.hh>
@@ -77,6 +78,96 @@ void Obstacle::loadObstacleModelFromString(const char* urdfString,
     hpp::pinocchio::urdf::loadModelFromString(device, 0, "", "anchor",
                                               urdfString, "");
     problemSolver()->addObstacle(device, true, true);
+  } catch (const std::exception& exc) {
+    throw hpp::Error(exc.what());
+  }
+}
+
+void Obstacle::loadPointCloudFromFilename(const char* objectName,
+                                          const char* filename) {
+  try {
+    core::ProblemSolverPtr_t ps = problemSolver();
+    pinocchio::GeomModelPtr_t gm = ps->obstacleGeomModel();
+
+    if (gm->existGeometryName(objectName)) {
+      // check that the existing geometry is of type coal::OcTree
+      ::pinocchio::GeomIndex id = gm->getGeometryId(objectName);
+      coal::shared_ptr<coal::OcTree> octree =
+          coal::dynamic_pointer_cast<coal::OcTree>(
+              gm->geometryObjects[id].geometry);
+      if (!octree) {
+        HPP_THROW(Error, "Obstacle "
+                             << objectName
+                             << " exists but is not of the correct type.");
+      }
+      std::shared_ptr<octomap::OcTree> tree =
+          std::const_pointer_cast<octomap::OcTree>(octree->getTree());
+      // Update octree
+      tree->clear();
+      tree->readBinary(filename);
+      octree->computeLocalAABB();
+    } else {
+      std::shared_ptr<octomap::OcTree> octree(new octomap::OcTree(filename));
+      coal::CollisionObject colobj(
+          coal::CollisionGeometryPtr_t(new coal::OcTree(octree)));
+      ps->addObstacle(objectName, colobj, true, true);
+    }
+
+  } catch (const std::exception& exc) {
+    throw hpp::Error(exc.what());
+  }
+}
+
+void Obstacle::loadPointCloudFromPoints(const char* objectName,
+                                        const CORBA::Double resolution,
+                                        const floatSeqSeq& points) {
+  auto N = points.length();
+  if (N > 0 && points[0].length() != 3) {
+    HPP_THROW(Error, "points must be a Nx3 matrix (or an empty matrix).");
+  }
+  try {
+    core::ProblemSolverPtr_t ps = problemSolver();
+    pinocchio::GeomModelPtr_t gm = ps->obstacleGeomModel();
+
+    coal::shared_ptr<coal::OcTree> octree;
+    std::shared_ptr<octomap::OcTree> tree;
+    if (gm->existGeometryName(objectName)) {
+      // check that the existing geometry is of type coal::OcTree
+      ::pinocchio::GeomIndex id = gm->getGeometryId(objectName);
+      octree = coal::dynamic_pointer_cast<coal::OcTree>(
+          gm->geometryObjects[id].geometry);
+      if (!octree) {
+        HPP_THROW(Error, "Obstacle "
+                             << objectName
+                             << " exists but is not of the correct type.");
+      }
+      tree = std::const_pointer_cast<octomap::OcTree>(octree->getTree());
+      if (tree->getResolution() != resolution) {
+        HPP_THROW(Error,
+                  "A point cloud with name "
+                      << objectName << " exists with resolution "
+                      << tree->getResolution()
+                      << ", which is different from the asked resolution ("
+                      << resolution << ").\n"
+		         "You can either remove the obstacle or stick to the "
+                         "existing resolution.");
+      }
+      tree->clear();
+    } else {
+      tree = std::make_shared<octomap::OcTree>(resolution);
+      octree = std::make_shared<coal::OcTree>(tree);
+      coal::CollisionObject colobj(
+          octree,
+          false  // Dont compute the local AABB as the octree is not ready yet.
+      );
+      ps->addObstacle(objectName, colobj, true, true);
+    }
+
+    for (decltype(N) i = 0; i < N; ++i) {
+      tree->updateNode(points[i][0], points[i][1], points[i][2], true, true);
+    }
+    tree->updateInnerOccupancy();
+    octree->computeLocalAABB();
   } catch (const std::exception& exc) {
     throw hpp::Error(exc.what());
   }

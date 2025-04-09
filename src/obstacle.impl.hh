@@ -57,6 +57,13 @@ class Obstacle : public virtual POA_hpp::corbaserver::Obstacle {
   virtual void loadObstacleModelFromString(const char* urdfString,
                                            const char* prefix);
 
+  virtual void loadPointCloudFromFilename(const char* objectName,
+                                          const char* filename);
+
+  virtual void loadPointCloudFromPoints(const char* objectName,
+                                        const CORBA::Double resolution,
+                                        const floatSeqSeq& points);
+
   virtual void loadPolyhedron(const char* name, const char* filename);
 
   virtual void removeObstacleFromJoint(const char* objectName,
