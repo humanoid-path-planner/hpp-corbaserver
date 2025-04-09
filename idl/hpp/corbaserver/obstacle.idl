@@ -50,6 +50,28 @@ module hpp
     void loadObstacleModelFromString (in string urdfString, in string prefix)
       raises (Error);
 
+    /// Load (or update if it exists) a point cloud from a filename.
+    ///
+    /// \param filename a filename whose format must be compatible with Octomap
+    void loadPointCloudFromFilename (in string objectName, in string filename)
+      raises (Error);
+
+    /// Load (or update if it exists) a point cloud from a set of points
+    ///
+    /// \param resolution OcTree resolution. See Octomap::OcTree for more info.
+    /// \param points a Nx3 matrix representing the point cloud.
+    ///
+    /// \note OmniORB has a limit in the size of arguments that you can send. If you have
+    /// an exception about the message size limit being exceeded, you can try to increase
+    /// the limit. The option is *giopMaxMsgSize*. The value must be changed both on the
+    /// server and client side.
+    /// See https://omniorb.sourceforge.io/omni40/omniORB/omniORB004.html for the different
+    /// ways of changing a configuration value. The easiest is likely to set the value in
+    /// file `${OmniORB_INSTALLATION_PREFIX}/etc/omniORB.cfg`
+    void loadPointCloudFromPoints (in string objectName, in double resolution,
+                                   in floatSeqSeq points)
+      raises (Error);
+
     /// \brief Remove an obstacle
     ///
     /// \param objectName name of the object to remove
