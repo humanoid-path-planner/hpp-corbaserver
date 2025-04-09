@@ -148,8 +148,9 @@ void Obstacle::loadPointCloudFromPoints(const char* objectName,
                       << objectName << " exists with resolution "
                       << tree->getResolution()
                       << ", which is different from the asked resolution ("
-                      << resolution << ").\n"
-		         "You can either remove the obstacle or stick to the "
+                      << resolution
+                      << ").\n"
+                         "You can either remove the obstacle or stick to the "
                          "existing resolution.");
       }
       tree->clear();
