@@ -163,9 +163,12 @@ DifferentiableFunctionPtr_t buildGenericFunc(
 
   if (relative) {
     // Both joints are provided
-    return constraints::GenericTransformation < PositionOrientationFlag |
-           constraints::RelativeBit >
-               ::create(name, robot, joint1, joint2, ref1, ref2, mask);
+    return constraints::GenericTransformation<
+        PositionOrientationFlag | constraints::RelativeBit>::create(name, robot,
+                                                                    joint1,
+                                                                    joint2,
+                                                                    ref1, ref2,
+                                                                    mask);
   } else {
     return constraints::GenericTransformation<PositionOrientationFlag>::create(
         name, robot, joint2, ref2, ref1, mask);
@@ -578,10 +581,10 @@ void Problem::createTransformationConstraint(const char* constraintName,
     Transform3s ref(toTransform3s(p));
     std::string name(constraintName);
     DifferentiableFunctionPtr_t func =
-        buildGenericFunc < constraints::PositionBit |
-        constraints::OrientationBit > (problemSolver()->robot(), name,
-                                       joint1Name, joint2Name, ref, Id,
-                                       boolSeqToVector(mask, 6));
+        buildGenericFunc<constraints::PositionBit |
+                         constraints::OrientationBit>(
+            problemSolver()->robot(), name, joint1Name, joint2Name, ref, Id,
+            boolSeqToVector(mask, 6));
 
     problemSolver()->addNumericalConstraint(
         name,
@@ -603,11 +606,11 @@ void Problem::createTransformationConstraint2(const char* constraintName,
     if (!problemSolver()->robot()) throw hpp::Error("No robot loaded");
     std::string name(constraintName);
     DifferentiableFunctionPtr_t func =
-        buildGenericFunc < constraints::PositionBit |
-        constraints::OrientationBit >
-            (problemSolver()->robot(), name, joint1Name, joint2Name,
-             toTransform3s(frame1), toTransform3s(frame2),
-             boolSeqToVector(mask, 6));
+        buildGenericFunc<constraints::PositionBit |
+                         constraints::OrientationBit>(
+            problemSolver()->robot(), name, joint1Name, joint2Name,
+            toTransform3s(frame1), toTransform3s(frame2),
+            boolSeqToVector(mask, 6));
 
     problemSolver()->addNumericalConstraint(
         name,
@@ -629,12 +632,12 @@ void Problem::createTransformationR3xSO3Constraint(const char* constraintName,
     if (!problemSolver()->robot()) throw hpp::Error("No robot loaded");
     std::string name(constraintName);
     DifferentiableFunctionPtr_t func =
-        buildGenericFunc < constraints::OutputR3xSO3Bit |
-        constraints::PositionBit |
-        constraints::OrientationBit >
-            (problemSolver()->robot(), name, joint1Name, joint2Name,
-             toTransform3s(frame1), toTransform3s(frame2),
-             boolSeqToVector(mask, 6));
+        buildGenericFunc<constraints::OutputR3xSO3Bit |
+                         constraints::PositionBit |
+                         constraints::OrientationBit>(
+            problemSolver()->robot(), name, joint1Name, joint2Name,
+            toTransform3s(frame1), toTransform3s(frame2),
+            boolSeqToVector(mask, 6));
 
     problemSolver()->addNumericalConstraint(
         name,
