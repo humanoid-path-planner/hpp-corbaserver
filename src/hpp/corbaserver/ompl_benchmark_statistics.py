@@ -443,7 +443,7 @@ def plotAttribute(cur, planners, attribute, typename):
                 measurements[i],
                 width,
                 bottom=heights[0],
-                color=matplotlib.cm.hot(int(floor(i * 256 / numValues))),
+                color=matplotlib.cm.hot(floor(i * 256 / numValues)),
                 label=descriptions[i],
             )
             heights = heights + measurements[i]
