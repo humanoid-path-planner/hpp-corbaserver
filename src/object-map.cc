@@ -78,7 +78,7 @@ std::size_t ObjectMap::addTriangle(const std::string name, std::size_t pt1,
   // Check that polyhedron exists.
   if (!nameExists<Polyhedron, ThrowIfItDoesNotExist>(name)) return 0;
   PolyhedronData& poly = polyhedronMap_[name];
-  poly.tris.push_back(coal::Triangle32(pt1, pt2, pt3));
+  poly.tris.push_back(coal::Triangle(pt1, pt2, pt3));
   return poly.tris.size() - 1;
 }
 
