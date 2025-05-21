@@ -45,7 +45,6 @@ class BVHModel;
 class CollisionGeometry;
 class OBBRSS;
 class ShapeBase;
-class Triangle;
 }  // namespace coal
 
 namespace hpp {
