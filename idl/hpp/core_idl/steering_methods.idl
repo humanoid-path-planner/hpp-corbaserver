@@ -42,6 +42,21 @@ module hpp
                  in floatSeq q2, in intSeq order2, in floatSeqSeq derivatives2,
                  in float length)
         raises (Error);
+
+      Path steerSE3(in floatSeq q1, in intSeq order1, in floatSeqSeq derivatives1,
+                    in floatSeq q2, in intSeq order2, in floatSeqSeq derivatives2,
+                    in float length)
+        raises (Error);
+      //*    hpp::core::vector_t _q1 = hpp::corbaServer::floatSeqToVector (q1);
+      //*    std::vector<int> _order1 = hpp::corbaServer::intSeqToVector (order1);
+      //*    hpp::core::matrix_t _derivatives1 = hpp::corbaServer::floatSeqSeqToMatrix (derivatives1);
+      //*    hpp::core::vector_t _q2 = hpp::corbaServer::floatSeqToVector (q2);
+      //*    std::vector<int> _order2 = hpp::corbaServer::intSeqToVector (order2);
+      //*    hpp::core::matrix_t _derivatives2 = hpp::corbaServer::floatSeqSeqToMatrix (derivatives2);
+      //*    hpp::core::PathPtr_t __return__ (getT()->steer (_q1, _order1, _derivatives1, _q2, _order2, _derivatives2, length, true));
+      //*
+      //*    return ::hpp::corbaServer::makeServantDownCast<hpp::core_impl::Path,hpp::core_impl::Path>(server_, __return__)._retn();
+
     };
 
     interface SplineBernstein5 : SteeringMethod {
@@ -49,6 +64,20 @@ module hpp
                  in floatSeq q2, in intSeq order2, in floatSeqSeq derivatives2,
                  in float length)
         raises (Error);
+
+      Path steerSE3(in floatSeq q1, in intSeq order1, in floatSeqSeq derivatives1,
+                    in floatSeq q2, in intSeq order2, in floatSeqSeq derivatives2,
+                    in float length)
+        raises (Error);
+      //*    hpp::core::vector_t _q1 = hpp::corbaServer::floatSeqToVector (q1);
+      //*    std::vector<int> _order1 = hpp::corbaServer::intSeqToVector (order1);
+      //*    hpp::core::matrix_t _derivatives1 = hpp::corbaServer::floatSeqSeqToMatrix (derivatives1);
+      //*    hpp::core::vector_t _q2 = hpp::corbaServer::floatSeqToVector (q2);
+      //*    std::vector<int> _order2 = hpp::corbaServer::intSeqToVector (order2);
+      //*    hpp::core::matrix_t _derivatives2 = hpp::corbaServer::floatSeqSeqToMatrix (derivatives2);
+      //*    hpp::core::PathPtr_t __return__ (getT()->steer (_q1, _order1, _derivatives1, _q2, _order2, _derivatives2, length, true));
+      //*
+      //*    return ::hpp::corbaServer::makeServantDownCast<hpp::core_impl::Path,hpp::core_impl::Path>(server_, __return__)._retn();
     };
 
   }; // module steeringMethod
