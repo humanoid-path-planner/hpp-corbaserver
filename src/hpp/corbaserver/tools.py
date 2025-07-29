@@ -1,5 +1,3 @@
-import sys
-
 import CORBA
 import hpp_idl.hpp as _hpp
 
@@ -15,8 +13,7 @@ def loadServerPlugin(context, plugin, url=None, port=None):
     return client.loadServerPlugin(context, plugin)
 
 
-if sys.version_info.major > 2:
-    loadServerPlugin.__doc__ = _hpp.Tools.loadServerPlugin__doc__
+loadServerPlugin.__doc__ = _hpp.Tools.loadServerPlugin__doc__
 
 
 def createContext(context, url=None, port=Client.defaultPort):
@@ -24,8 +21,7 @@ def createContext(context, url=None, port=Client.defaultPort):
     return client.createContext(context)
 
 
-if sys.version_info.major > 2:
-    createContext.__doc__ = _hpp.Tools.createContext__doc__
+createContext.__doc__ = _hpp.Tools.createContext__doc__
 
 
 def Tools(url=None, port=Client.defaultPort):
@@ -90,5 +86,4 @@ def equals(a, b, client=None):
     return a == b or orb.object_to_string(a) == orb.object_to_string(b)
 
 
-if sys.version_info.major > 2:
-    Tools.__doc__ = _hpp.Tools__doc__
+Tools.__doc__ = _hpp.Tools__doc__
