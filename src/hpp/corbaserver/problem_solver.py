@@ -44,16 +44,9 @@ def newProblem(client=None, name=None):
 
 
 def _convertToCorbaAny(value):
-    from sys import version_info
-
-    if version_info.major > 2:
-        integers = (int,)
-    else:
-        integers = (
-            long,  # noqa: F821
-            int,
-        )
     import CORBA
+
+    integers = (int,)
 
     t = type(value)
     if t is float:
