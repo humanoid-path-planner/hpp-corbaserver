@@ -31,6 +31,10 @@
 //
 // See the COPYING file for more information.
 
+// clang-format off
+#include <pinocchio/fwd.hpp>
+// clang-format on
+
 #include "robot.impl.hh"
 
 #include <coal/BVH/BVH_model.h>
@@ -58,7 +62,6 @@
 #include <hpp/util/debug.hh>
 #include <hpp/util/exception-factory.hh>
 #include <iostream>
-#include <pinocchio/fwd.hpp>
 #include <pinocchio/multibody/fcl.hpp>
 #include <pinocchio/multibody/geometry.hpp>
 #include <pinocchio/multibody/model.hpp>
