@@ -26,7 +26,7 @@ class Test(unittest.TestCase):
             self.client.robot.loadRobotModelFromString(
                 "robot", "anchor", urdf_string, ""
             )
-            ok, pid, msg = self.client.problem.directPath(
+            ok, pid, _msg = self.client.problem.directPath(
                 [
                     -0.3,
                 ],

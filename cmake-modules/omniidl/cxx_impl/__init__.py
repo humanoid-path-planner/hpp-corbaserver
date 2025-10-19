@@ -206,7 +206,7 @@ def process_args(args):
 def run(tree, backend_args):
     # Process arguments
     dirname, filename = os.path.split(tree.file())
-    basename, ext = os.path.splitext(filename)
+    basename, _ext = os.path.splitext(filename)
     config.state["Basename"] = basename
     config.state["Directory"] = dirname
 
