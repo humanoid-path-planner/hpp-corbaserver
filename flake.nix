@@ -4,6 +4,7 @@
   inputs = {
     gepetto.url = "github:gepetto/nix";
     gazebros2nix.follows = "gepetto/gazebros2nix";
+    flakoboros.follows = "gepetto/flakoboros";
     flake-parts.follows = "gepetto/flake-parts";
     nixpkgs.follows = "gepetto/nixpkgs";
     nix-ros-overlay.follows = "gepetto/nix-ros-overlay";
@@ -20,7 +21,7 @@
         imports = [
           inputs.gepetto.flakeModule
           {
-            gazebros2nix.overrides.hpp-corbaserver = _final: {
+            flakoboros.overrideAttrs.hpp-corbaserver = _: {
               src = lib.fileset.toSource {
                 root = ./.;
                 fileset = lib.fileset.unions [
