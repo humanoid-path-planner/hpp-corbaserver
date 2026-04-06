@@ -3,13 +3,8 @@
 
   inputs = {
     gepetto.url = "github:gepetto/nix";
-    gazebros2nix.follows = "gepetto/gazebros2nix";
-    flakoboros.follows = "gepetto/flakoboros";
     flake-parts.follows = "gepetto/flake-parts";
-    nixpkgs.follows = "gepetto/nixpkgs";
-    nix-ros-overlay.follows = "gepetto/nix-ros-overlay";
     systems.follows = "gepetto/systems";
-    treefmt-nix.follows = "gepetto/treefmt-nix";
   };
 
   outputs =
