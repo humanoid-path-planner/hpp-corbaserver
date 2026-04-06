@@ -33,24 +33,32 @@ set(CXX_DISABLE_WERROR true)
 # Check if the submodule cmake have been initialized
 set(JRL_CMAKE_MODULES "${CMAKE_CURRENT_LIST_DIR}/cmake")
 if(EXISTS "${JRL_CMAKE_MODULES}/base.cmake")
-  message(STATUS "JRL cmakemodules found in 'cmake/' git submodule")
+    message(STATUS "JRL cmakemodules found in 'cmake/' git submodule")
 else()
-  find_package(jrl-cmakemodules QUIET CONFIG)
-  if(jrl-cmakemodules_FOUND)
-    get_property(
-      JRL_CMAKE_MODULES
-      TARGET jrl-cmakemodules::jrl-cmakemodules
-      PROPERTY INTERFACE_INCLUDE_DIRECTORIES)
-    message(STATUS "JRL cmakemodules found on system at ${JRL_CMAKE_MODULES}")
-  else()
-    message(STATUS "JRL cmakemodules not found. Let's fetch it.")
-    include(FetchContent)
-    FetchContent_Declare(
-      "jrl-cmakemodules"
-      GIT_REPOSITORY "https://github.com/jrl-umi3218/jrl-cmakemodules.git")
-    FetchContent_MakeAvailable("jrl-cmakemodules")
-    FetchContent_GetProperties("jrl-cmakemodules" SOURCE_DIR JRL_CMAKE_MODULES)
-  endif()
+    find_package(jrl-cmakemodules QUIET CONFIG)
+    if(jrl-cmakemodules_FOUND)
+        get_property(
+            JRL_CMAKE_MODULES
+            TARGET jrl-cmakemodules::jrl-cmakemodules
+            PROPERTY INTERFACE_INCLUDE_DIRECTORIES
+        )
+        message(
+            STATUS
+            "JRL cmakemodules found on system at ${JRL_CMAKE_MODULES}"
+        )
+    else()
+        message(STATUS "JRL cmakemodules not found. Let's fetch it.")
+        include(FetchContent)
+        FetchContent_Declare(
+            "jrl-cmakemodules"
+            GIT_REPOSITORY "https://github.com/jrl-umi3218/jrl-cmakemodules.git"
+        )
+        FetchContent_MakeAvailable("jrl-cmakemodules")
+        FetchContent_GetProperties(
+            "jrl-cmakemodules"
+            SOURCE_DIR JRL_CMAKE_MODULES
+        )
+    endif()
 endif()
 
 include("${JRL_CMAKE_MODULES}/hpp.cmake")
@@ -59,9 +67,7 @@ include("${JRL_CMAKE_MODULES}/python.cmake")
 
 include(cmake-modules/omniidl.cmake)
 
-set(CLIENT_ONLY
-    FALSE
-    CACHE BOOL "Set to true to install the client only")
+set(CLIENT_ONLY FALSE CACHE BOOL "Set to true to install the client only")
 
 compute_project_args(PROJECT_ARGS LANGUAGES CXX)
 project(${PROJECT_NAME} ${PROJECT_ARGS})
@@ -70,12 +76,12 @@ project(${PROJECT_NAME} ${PROJECT_ARGS})
 add_required_dependency("omniORB4 >= 4.1.4")
 add_required_dependency("omniDynamic4 >= 4.1.4")
 if(NOT CLIENT_ONLY)
-  add_project_dependency("hpp-core" REQUIRED)
-  add_project_dependency("hpp-template-corba" REQUIRED)
+    add_project_dependency("hpp-core" REQUIRED)
+    add_project_dependency("hpp-template-corba" REQUIRED)
 endif(NOT CLIENT_ONLY)
 
 if(NOT FINDPYTHON_ALREADY_CALLED)
-  findpython()
+    findpython()
 endif()
 
 set(ALL_IDL_CPP_STUBS "")
@@ -85,18 +91,19 @@ set(ALL_IDL_PYTHON_STUBS "")
 set(${PROJECT_NAME}_HEADERS include/hpp/corbaserver/client.hh)
 
 if(NOT CLIENT_ONLY)
-  set(${PROJECT_NAME}_HEADERS
-      ${${PROJECT_NAME}_HEADERS}
-      include/hpp/corbaserver/doc.hh
-      include/hpp/corbaserver/fwd.hh
-      include/hpp/corbaserver/object-map.hh
-      include/hpp/corbaserver/problem-solver-map.hh
-      include/hpp/corbaserver/servant-base.hh
-      include/hpp/corbaserver/server.hh
-      include/hpp/corbaserver/server-plugin.hh
-      include/hpp/corbaserver/steering-method.hh
-      include/hpp/corbaserver/read-write-lock.hh
-      include/hpp/corbaserver/conversions.hh)
+    set(${PROJECT_NAME}_HEADERS
+        ${${PROJECT_NAME}_HEADERS}
+        include/hpp/corbaserver/doc.hh
+        include/hpp/corbaserver/fwd.hh
+        include/hpp/corbaserver/object-map.hh
+        include/hpp/corbaserver/problem-solver-map.hh
+        include/hpp/corbaserver/servant-base.hh
+        include/hpp/corbaserver/server.hh
+        include/hpp/corbaserver/server-plugin.hh
+        include/hpp/corbaserver/steering-method.hh
+        include/hpp/corbaserver/read-write-lock.hh
+        include/hpp/corbaserver/conversions.hh
+    )
 endif(NOT CLIENT_ONLY)
 
 add_subdirectory(src)
@@ -108,9 +115,11 @@ set(HPP_CORBASERVER_CMAKE_PLUGIN
     "${CMAKE_INSTALL_PREFIX}/lib/cmake/${PROJECT_NAME}/${PROJECT_NAME}-plugin.cmake"
 )
 set(HPP_CORBASERVER_OMNIIDL_CMAKE
-    "${CMAKE_INSTALL_PREFIX}/lib/cmake/${PROJECT_NAME}/omniidl.cmake")
+    "${CMAKE_INSTALL_PREFIX}/lib/cmake/${PROJECT_NAME}/omniidl.cmake"
+)
 set(PKG_CONFIG_EXTRA
-    "${PKG_CONFIG_EXTRA}\ncmake_plugin=${HPP_CORBASERVER_CMAKE_PLUGIN}")
+    "${PKG_CONFIG_EXTRA}\ncmake_plugin=${HPP_CORBASERVER_CMAKE_PLUGIN}"
+)
 set(PACKAGE_EXTRA_MACROS
     "${PACKAGE_EXTRA_MACROS}\nset(HPP_CORBASERVER_CMAKE_PLUGIN ${HPP_CORBASERVER_CMAKE_PLUGIN})"
 )
@@ -121,14 +130,17 @@ set(PACKAGE_EXTRA_MACROS
     "${PACKAGE_EXTRA_MACROS}\nset(HPP_CORBASERVER_DATAROOTDIR ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATAROOTDIR})"
 )
 install(
-  FILES cmake-modules/${PROJECT_NAME}-plugin.cmake cmake-modules/omniidl.cmake
-  DESTINATION lib/cmake/${PROJECT_NAME}/
-  PERMISSIONS OWNER_READ GROUP_READ WORLD_READ OWNER_WRITE)
+    FILES cmake-modules/${PROJECT_NAME}-plugin.cmake cmake-modules/omniidl.cmake
+    DESTINATION lib/cmake/${PROJECT_NAME}/
+    PERMISSIONS OWNER_READ GROUP_READ WORLD_READ OWNER_WRITE
+)
 
 # install omniidl backend
 install(
-  FILES cmake-modules/omniidl/cxx_impl/__init__.py
+    FILES
+        cmake-modules/omniidl/cxx_impl/__init__.py
         cmake-modules/omniidl/cxx_impl/main.py
         cmake-modules/omniidl/cxx_impl/template.py
-  DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/omniidl/cxx_impl
-  PERMISSIONS OWNER_READ GROUP_READ WORLD_READ OWNER_WRITE)
+    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PROJECT_NAME}/omniidl/cxx_impl
+    PERMISSIONS OWNER_READ GROUP_READ WORLD_READ OWNER_WRITE
+)
