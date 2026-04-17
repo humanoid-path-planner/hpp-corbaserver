@@ -95,9 +95,9 @@ static void localSetJointBounds(const JointPtr_t& joint, vector_t jointBounds) {
       vMax = inf;
     }
   }
-  Eigen::Map<vector_t, Eigen::Unaligned, Eigen::InnerStride<2> > lower(
+  Eigen::Map<vector_t, Eigen::Unaligned, Eigen::InnerStride<2>> lower(
       &jointBounds[0], (jointBounds.size() + 1) / 2);
-  Eigen::Map<vector_t, Eigen::Unaligned, Eigen::InnerStride<2> > upper(
+  Eigen::Map<vector_t, Eigen::Unaligned, Eigen::InnerStride<2>> upper(
       &jointBounds[1], (jointBounds.size()) / 2);
   joint->lowerBounds(lower);
   joint->upperBounds(upper);
@@ -716,7 +716,7 @@ Transform__slice* Robot::getLinkPosition(const char* linkName) {
     }
     FrameIndex body = robot->model().getBodyId(std::string(linkName));
     const ::pinocchio::Frame& frame = robot->model().frames[body];
-    JointIndex joint = frame.parent;
+    JointIndex joint = frame.parentJoint;
     if (frame.type != ::pinocchio::BODY)
       HPP_THROW(Error, linkName << " is not a link");
     if (robot->model().joints.size() <= (std::size_t)joint)
@@ -776,7 +776,7 @@ Names_t* Robot::getLinkNames(const char* jointName) {
     std::vector<std::string> names;
     for (size_type i = 0; i < (size_type)model.frames.size(); ++i) {
       const ::pinocchio::Frame& f = model.frames[i];
-      if (f.type == ::pinocchio::BODY && f.previousFrame == frame.index())
+      if (f.type == ::pinocchio::BODY && f.parentFrame == frame.index())
         names.push_back(f.name);
     }
     return toNames_t(names.begin(), names.end());
